@@ -1,3 +1,11 @@
+# Environment config files
+*env*
+*envrc*
+!.env.default
+
+# Editors/IDE
+.vscode
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

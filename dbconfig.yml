@@ -1,0 +1,5 @@
+development:
+    dialect: postgres
+    datasource: ${HB_DB_URL}
+    dir: postgresql/migrations
+    table: migrations

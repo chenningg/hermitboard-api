@@ -1,2 +1,3 @@
-# hermitboard-api
-Backend API for Hermitboard.
+# Hermitboard API
+
+Backend GraphQL API for Hermitboard.
