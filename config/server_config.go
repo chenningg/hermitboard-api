@@ -7,7 +7,7 @@ import (
 
 type ServerConfig struct {
 	Host string `env:"HOST" envDefault:"0.0.0.0"`
-	Port uint16 `env:"PORT" envDefault:"4000"`
+	Port string `env:"PORT" envDefault:"4000"`
 }
 
 func (serverConfig ServerConfig) Validate() error {

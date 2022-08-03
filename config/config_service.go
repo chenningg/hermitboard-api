@@ -62,7 +62,7 @@ func (configService *configService) Load() error {
 	config.Db.User = urlEncode(config.Db.User)
 
 	// Create database url
-	config.Db.Url = fmt.Sprintf("postgresql://%s:%s@%s:%d/%s", config.Db.User, config.Db.Password, config.Db.Host, config.Db.Port, config.Db.Name)
+	config.Db.Url = fmt.Sprintf("postgresql://%s:%s@%s:%s/%s", config.Db.User, config.Db.Password, config.Db.Host, config.Db.Port, config.Db.Name)
 
 	// Validate configuration
 	if err := config.Validate(); err != nil {

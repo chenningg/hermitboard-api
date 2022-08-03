@@ -10,7 +10,7 @@ type DbConfig struct {
 	User     string `env:"USER" envDefault:"postgres"`
 	Password string `env:"PASSWORD"`
 	Host     string `env:"HOST"`
-	Port     uint16 `env:"PORT" envDefault:"5432"`
+	Port     string `env:"PORT" envDefault:"5432"`
 	Name     string `env:"NAME"`
 }
 
