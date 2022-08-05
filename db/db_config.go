@@ -1,4 +1,4 @@
-package config
+package db
 
 import (
 	"github.com/jellydator/validation"
@@ -6,12 +6,14 @@ import (
 )
 
 type DbConfig struct {
-	Url      string
-	User     string `env:"USER" envDefault:"postgres"`
-	Password string `env:"PASSWORD"`
-	Host     string `env:"HOST"`
-	Port     string `env:"PORT" envDefault:"5432"`
-	Name     string `env:"NAME"`
+	Url         string
+	User        string `env:"USER" envDefault:"postgres"`
+	Password    string `env:"PASSWORD"`
+	Host        string `env:"HOST"`
+	Port        string `env:"PORT" envDefault:"5432"`
+	Name        string `env:"NAME"`
+	Migrations  string `env:"MIGRATIONS" envDefault:"postgres/migrations"`
+	AutoMigrate bool   `env:"AUTO_MIGRATE" envDefault:"false"`
 }
 
 func (dbConfig DbConfig) Validate() error {
@@ -22,5 +24,7 @@ func (dbConfig DbConfig) Validate() error {
 		validation.Field(&dbConfig.Host, validation.Required, is.Host),
 		validation.Field(&dbConfig.Port, validation.Required, is.Port),
 		validation.Field(&dbConfig.Name, validation.Required),
+		validation.Field(&dbConfig.Migrations, validation.Required),
+		validation.Field(&dbConfig.AutoMigrate, validation.Required),
 	)
 }
