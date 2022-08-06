@@ -26,7 +26,7 @@ func NewConfigService(logger logr.Logger) (*configService, error) {
 	// Load in configuration from .env or environment variables.
 	err := configService.Init(logger)
 	if err != nil {
-		return nil, fmt.Errorf("NewConfigService(): %w", err)
+		return nil, fmt.Errorf("NewConfigService(): %v", err)
 	}
 
 	return configService, nil
@@ -58,7 +58,7 @@ func (configService *configService) Init(logger logr.Logger) error {
 	// Unmarshal into configuration struct.
 	err := envLoader.Parse(&config, opts)
 	if err != nil {
-		return fmt.Errorf("Init(): failed to parse config provided: %w", err)
+		return fmt.Errorf("Init(): failed to parse config provided: %v", err)
 	}
 
 	// Clean and encode all URLs
@@ -71,7 +71,7 @@ func (configService *configService) Init(logger logr.Logger) error {
 	// Validate configuration and set it
 	err = config.Validate()
 	if err != nil {
-		return fmt.Errorf("Init(): config provided is invalid: %w", err)
+		return fmt.Errorf("Init(): config provided is invalid: %v", err)
 	}
 
 	configService.config = config

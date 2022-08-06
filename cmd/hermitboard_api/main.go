@@ -1,14 +1,12 @@
 package main
 
 import (
-	"context"
-	"fmt"
 	"os"
 
 	"github.com/chenningg/hermitboard-api/config"
+	"github.com/chenningg/hermitboard-api/db"
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zerologr"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/rs/zerolog"
 )
 
@@ -30,21 +28,13 @@ func main() {
 	config := configService.Config()
 
 	// Open database pool connection
-	dbPool, err := pgxpool.Connect(context.Background(), config.Db.Url)
+	dbService, err := db.NewDbService(config.Db, logger.WithName("db"))
 	if err != nil {
-		// Log database connection error and panic.
-		logger.Error(err, "unable to connect to database", "package", "config")
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
-	defer dbPool.Close()
-
-	var greeting string
-	err = dbPool.QueryRow(context.Background(), "select 'Hello, world!'").Scan(&greeting)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "QueryRow failed: %v\n", err)
+		// Log database error and panic.
+		logger.Error(err, "database setup could not be completed")
 		os.Exit(1)
 	}
 
-	fmt.Println(greeting)
+	// Defer the closing of the database pool.
+	defer dbService.ClosePool()
 }

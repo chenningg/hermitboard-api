@@ -12,6 +12,8 @@ type DbConfig struct {
 	Host        string `env:"HOST"`
 	Port        string `env:"PORT" envDefault:"5432"`
 	Name        string `env:"NAME"`
+	PoolMaxConn int32  `env:"POOL_MAX_CONN" envDefault:"10"`
+	PoolMinConn int32  `env:"POOL_MIN_CONN" envDefault:"0"`
 	Migrations  string `env:"MIGRATIONS" envDefault:"postgres/migrations"`
 	AutoMigrate bool   `env:"AUTO_MIGRATE" envDefault:"false"`
 }
@@ -24,6 +26,8 @@ func (dbConfig DbConfig) Validate() error {
 		validation.Field(&dbConfig.Host, validation.Required, is.Host),
 		validation.Field(&dbConfig.Port, validation.Required, is.Port),
 		validation.Field(&dbConfig.Name, validation.Required),
+		validation.Field(&dbConfig.PoolMaxConn, validation.Required),
+		validation.Field(&dbConfig.PoolMinConn, validation.Required),
 		validation.Field(&dbConfig.Migrations, validation.Required),
 		validation.Field(&dbConfig.AutoMigrate, validation.Required),
 	)
