@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"net/http"
 	"os"
 
 	"github.com/chenningg/hermitboard-api/config"
@@ -8,6 +10,11 @@ import (
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zerologr"
 	"github.com/rs/zerolog"
+
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/chenningg/hermitboard-api/graph"
+	"github.com/chenningg/hermitboard-api/graph/generated"
 )
 
 func main() {
@@ -37,4 +44,13 @@ func main() {
 
 	// Defer the closing of the database pool.
 	defer dbService.ClosePool()
+
+	// Run the web server
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+
+	logger.Info(fmt.Sprintf("connect to http://localhost:%s/ for GraphQL playground", config.Server.Port))
+	logger.Error(http.ListenAndServe(":"+config.Server.Port, nil), "server error")
 }

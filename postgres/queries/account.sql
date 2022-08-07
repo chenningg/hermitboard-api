@@ -1,18 +1,18 @@
 -- name: GetAccount :one
-SELECT * FROM authors
+SELECT * FROM account
 WHERE id = ? LIMIT 1;
 
 -- name: ListAccounts :many
-SELECT * FROM authors
-ORDER BY name;
+SELECT * FROM account
+ORDER BY email;
 
 -- name: CreateAccount :execresult
-INSERT INTO authors (
-  name, bio
+INSERT INTO account (
+  id, email, nickname
 ) VALUES (
-  ?, ?
+  ?, ?, ?
 );
 
 -- name: DeleteAccount :exec
-DELETE FROM authors
+DELETE FROM account
 WHERE id = ?;

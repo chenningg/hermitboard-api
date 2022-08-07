@@ -26,8 +26,8 @@ func (dbConfig DbConfig) Validate() error {
 		validation.Field(&dbConfig.Host, validation.Required, is.Host),
 		validation.Field(&dbConfig.Port, validation.Required, is.Port),
 		validation.Field(&dbConfig.Name, validation.Required),
-		validation.Field(&dbConfig.PoolMaxConn, validation.Required),
-		validation.Field(&dbConfig.PoolMinConn, validation.Required),
+		validation.Field(&dbConfig.PoolMaxConn, validation.NotNil, validation.Min(dbConfig.PoolMaxConn), validation.Max(64)),
+		validation.Field(&dbConfig.PoolMinConn, validation.NotNil, validation.Min(0), validation.Max(dbConfig.PoolMaxConn)),
 		validation.Field(&dbConfig.Migrations, validation.Required),
 		validation.Field(&dbConfig.AutoMigrate, validation.Required),
 	)

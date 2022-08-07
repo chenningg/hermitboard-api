@@ -8,7 +8,7 @@ import (
 type Config struct {
 	App    AppConfig    `envPrefix:"APP_"`
 	Server ServerConfig `envPrefix:"SERVER_"`
-	Db     db.DbConfig     `envPrefix:"DB_"`
+	Db     db.DbConfig  `envPrefix:"DB_"`
 }
 
 func (config Config) Validate() error {
