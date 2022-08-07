@@ -1,0 +1,35 @@
+type Account {
+  id: ID!
+  authId: String!
+  nickname: String!
+  email: Boolean!
+}
+
+# Queries
+extend type Query {
+  accounts: [Account!]!
+}
+
+# Mutations
+input NewAccount {
+  nickname: String!
+  email: String!
+  password: String!
+}
+
+input UpdateAccount {
+  id: ID!
+  nickname: String
+  email: String
+  password: String
+}
+
+input DeleteAccount {
+  id: ID!
+}
+
+extend type Mutation {
+  createAccount(input: NewAccount!): Account!
+  updateAccount(input: UpdateAccount!): Account!
+  deleteAccount(input: DeleteAccount!): ID!
+}

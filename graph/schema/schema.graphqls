@@ -1,0 +1,4 @@
+# Root query and mutation (to be extended by other types).
+type Query
+
+type Mutation

@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/go-logr/logr"
+	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	migrate "github.com/rubenv/sql-migrate"
@@ -49,10 +50,15 @@ func (dbService *dbService) Init(dbConfig DbConfig, logger logr.Logger) error {
 			return fmt.Errorf("Init(): unable to connect to database: %v", err)
 		}
 
+		// Get directory for migration SQL files.
 		migrations := migrate.FileMigrationSource{
 			Dir: dbService.config.Migrations,
 		}
 
+		// Set migration table name.
+		migrate.SetTable(dbService.config.MigrationsTableName)
+
+		// Carry out the migrations.
 		numMigrations, err := migrate.Exec(db, "postgres", migrations, migrate.Up)
 		if err != nil {
 			return fmt.Errorf("Init(): database migration failed: %v", err)
@@ -72,6 +78,11 @@ func (dbService *dbService) Init(dbConfig DbConfig, logger logr.Logger) error {
 
 	poolConfig.MaxConns = dbService.config.PoolMaxConn
 	poolConfig.MinConns = dbService.config.PoolMinConn
+
+	// TODO: Handle custom database types.
+	poolConfig.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
+		return nil
+	}
 
 	// Connect to database pool.
 	dbPool, err := pgxpool.ConnectConfig(context.Background(), poolConfig)
