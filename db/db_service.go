@@ -14,14 +14,14 @@ import (
 
 type DbService interface {
 	Init(dbConfig DbConfig, logger logr.Logger) error
-	Pool() *pgxpool.Pool
+	Db() *pgxpool.Pool
 	ClosePool()
 }
 
 type dbService struct {
 	config DbConfig
 	logger logr.Logger
-	pool   *pgxpool.Pool
+	db     *pgxpool.Pool
 }
 
 func NewDbService(dbConfig DbConfig, logger logr.Logger) (*dbService, error) {
@@ -90,15 +90,15 @@ func (dbService *dbService) Init(dbConfig DbConfig, logger logr.Logger) error {
 		return fmt.Errorf("Init(): unable to connect to database pool: %v", err)
 	}
 
-	dbService.pool = dbPool
+	dbService.db = dbPool
 
 	return nil
 }
 
 func (dbService *dbService) Pool() *pgxpool.Pool {
-	return dbService.pool
+	return dbService.db
 }
 
 func (dbService *dbService) ClosePool() {
-	dbService.pool.Close()
+	dbService.db.Close()
 }

@@ -13,8 +13,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/chenningg/hermitboard-api/graph"
 	"github.com/chenningg/hermitboard-api/graph/generated"
+	"github.com/chenningg/hermitboard-api/graph/resolver"
 )
 
 func main() {
@@ -46,11 +46,11 @@ func main() {
 	defer dbService.ClosePool()
 
 	// Run the web server
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolver.Resolver{}}))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	http.Handle("/playground", playground.Handler("GraphQL playground", "/api"))
+	http.Handle("/api", srv)
 
-	logger.Info(fmt.Sprintf("connect to http://localhost:%s/ for GraphQL playground", config.Server.Port))
-	logger.Error(http.ListenAndServe(":"+config.Server.Port, nil), "server error")
+	logger.Info(fmt.Sprintf("connect to http://%s:%s/playground for GraphQL playground", config.Server.Host, config.Server.Port))
+	logger.Error(http.ListenAndServe(config.Server.Host+":"+config.Server.Port, nil), "server error")
 }
