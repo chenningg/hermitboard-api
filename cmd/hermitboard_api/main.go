@@ -42,9 +42,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Defer the closing of the database pool.
-	defer dbService.ClosePool()
-
 	// Run the web server
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolver.Resolver{}}))
 

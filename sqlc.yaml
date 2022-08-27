@@ -5,8 +5,12 @@ sql:
   engine: "postgresql"
   gen:
     go: 
-      package: "postgres"
-      out: "postgres"
+      package: "db"
+      out: "db"
+      sql_package: "pgx/v4"
       overrides:
         - db_type: "uuid"
-          go_type: "github.com/oklog/ulid/v2.ULID"
+          go_type:
+            import: "github.com/oklog/ulid/v2"
+            package: "ulid"
+            type: "ULID"

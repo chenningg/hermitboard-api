@@ -11,7 +11,6 @@ import (
 )
 
 type ConfigService interface {
-	Init(logger logr.Logger) error
 	Config() *Config
 }
 
@@ -24,41 +23,51 @@ func NewConfigService(logger logr.Logger) (*configService, error) {
 	var configService = new(configService)
 
 	// Load in configuration from .env or environment variables.
-	err := configService.Init(logger)
+	configService.logger = logger
+	configService.logger.V(2).Info("initializing config service")
+
+	// Load in environment variables.
+	if err := configService.loadEnv(); err != nil {
+		return nil, fmt.Errorf("NewConfigService(): failed to load environment variables: %v", err)
+	}
+
+	// Unmarshal into config struct.
+	err := configService.loadConfig()
 	if err != nil {
-		return nil, fmt.Errorf("NewConfigService(): %v", err)
+		return nil, fmt.Errorf("NewConfigService(): failed to load config: %v", err)
 	}
 
 	return configService, nil
 }
 
-func (configService *configService) Init(logger logr.Logger) error {
-	configService.logger = logger
-	configService.logger.Info("initializing config service")
+func (configService *configService) loadEnv() error {
+	configService.logger.V(2).Info("loading environment variables")
 
 	// Load environment variable, defaults to development.
 	env := os.Getenv("HB_APP_ENV")
 	if env == "" {
 		env = "development"
+		configService.logger.V(1).Info("no application environment specified, defaulting to development")
 	}
 
-	// Load environment files in order (files loaded first take precedence).
-	// Load .local files.
-	godotenv.Load(".env." + env + ".local")
+	// Load .env file.
+	err := godotenv.Load()
+	if err != nil {
+		return err
+	}
 
-	// Load .env files.
-	godotenv.Load(".env." + env)
+	return nil
+}
 
-	// Load generic .env file.
-	godotenv.Load()
-
-	config := Config{}
+func (configService *configService) loadConfig() error {
+	configService.logger.V(2).Info("loading config")
 	opts := envLoader.Options{Prefix: "HB_"}
+	config := Config{}
 
 	// Unmarshal into configuration struct.
 	err := envLoader.Parse(&config, opts)
 	if err != nil {
-		return fmt.Errorf("Init(): failed to parse config provided: %v", err)
+		return fmt.Errorf("LoadConfig(): failed to parse config provided: %v", err)
 	}
 
 	// Clean and encode all URLs
@@ -71,7 +80,7 @@ func (configService *configService) Init(logger logr.Logger) error {
 	// Validate configuration and set it
 	err = config.Validate()
 	if err != nil {
-		return fmt.Errorf("Init(): config provided is invalid: %v", err)
+		return fmt.Errorf("LoadConfig(): config file provided is invalid: %v", err)
 	}
 
 	configService.config = config

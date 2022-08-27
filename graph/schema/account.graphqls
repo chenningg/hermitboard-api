@@ -11,25 +11,25 @@ extend type Query {
 }
 
 # Mutations
-input NewAccount {
+input NewAccountDto {
   nickname: String!
   email: String!
   password: String!
 }
 
-input UpdateAccount {
+input UpdateAccountDto {
   id: ID!
   nickname: String
   email: String
   password: String
 }
 
-input DeleteAccount {
+input DeleteAccountDto {
   id: ID!
 }
 
 extend type Mutation {
-  createAccount(input: NewAccount!): Account!
-  updateAccount(input: UpdateAccount!): Account!
-  deleteAccount(input: DeleteAccount!): ID!
+  createAccount(input: NewAccountDto!): Account!
+  updateAccount(input: UpdateAccountDto!): Account!
+  deleteAccount(input: DeleteAccountDto!): ID!
 }

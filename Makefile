@@ -2,18 +2,38 @@
 # Utilities
 # ===================================
 
-# Generates SQLC functions to marshal database values into structs.
-.PHONY: sqlc
-sqlc:
+.PHONY: go-tidy
+go-tidy:
+	go mod tidy
+
+# ===================================
+# Database development
+# ===================================
+
+# Installs SQLC.
+.PHONY: install-sqlc
+install-sqlc:
 	docker pull kjconroy/sqlc
-	docker run --rm -v "${PWD}/:/src" -w /src kjconroy/sqlc generate
+
+# Generates SQLC queries.
+.PHONY: sqlc
+sqlc: install-sqlc
+	docker run --rm -v "$(CURDIR):/src" -w /src kjconroy/sqlc generate
+
+# ===================================
+# GraphQL
+# ===================================
+
+.PHONY: install-gqlgen
+install-gqlgen:
+	go install github.com/99designs/gqlgen@latest
 
 .PHONY: gqlgen
-gqlgen:
+gqlgen: install-gqlgen
 	go run github.com/99designs/gqlgen generate
 
 # ===================================
-# Development
+# Server
 # ===================================
 .PHONY: dev
 dev:
