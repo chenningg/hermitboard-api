@@ -25,6 +25,7 @@ func (assetClass *AssetClass) Validate() error {
 	return fmt.Errorf("invalid value for AssetClass, expected %v, got %v", AssetClassValues(), assetClass.String())
 }
 
+// Encodes a string text to AssetClass type.
 func (assetClass *AssetClass) UnmarshalText(text []byte) error {
 	input := string(text)
 	marshalledAppEnv, err := AssetClassString(input)

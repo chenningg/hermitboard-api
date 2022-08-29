@@ -13,7 +13,7 @@ import (
 )
 
 type DbService interface {
-	Queries() *Queries
+	Queries() Queries
 	MigrateUp() (int, error)
 }
 

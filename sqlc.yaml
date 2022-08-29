@@ -11,6 +11,13 @@ sql:
       overrides:
         - db_type: "uuid"
           go_type:
-            import: "github.com/oklog/ulid/v2"
-            package: "ulid"
+            import: "github.com/chenningg/hermitboard-api/hbtype"
+            package: "hbtype"
             type: "ULID"
+          nullable: false
+        - db_type: "uuid"
+          go_type:
+            import: "github.com/chenningg/hermitboard-api/hbtype"
+            package: "hbtype"
+            type: "NullULID"
+          nullable: true

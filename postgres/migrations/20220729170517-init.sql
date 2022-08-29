@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS blockchain (
     id uuid,
     name TEXT NOT NULL,
     symbol TEXT NOT NULL,
-    native_token_cryptocurrency_id uuid NOT NULL,
+    native_token_cryptocurrency_id uuid,
     chain_id BIGINT,
 
     CONSTRAINT pk_blockchain PRIMARY KEY (id),

@@ -8,7 +8,7 @@ package db
 import (
 	"context"
 
-	ulid "github.com/oklog/ulid/v2"
+	hbtype "github.com/chenningg/hermitboard-api/hbtype"
 )
 
 const createAccount = `-- name: CreateAccount :one
@@ -21,7 +21,7 @@ RETURNING id, auth_id, nickname, email
 `
 
 type CreateAccountParams struct {
-	ID       ulid.ULID
+	ID       hbtype.ULID
 	AuthID   string
 	Nickname string
 	Email    string
@@ -50,7 +50,7 @@ WHERE id = $1
 RETURNING id, auth_id, nickname, email
 `
 
-func (q *Queries) DeleteAccount(ctx context.Context, id ulid.ULID) (Account, error) {
+func (q *Queries) DeleteAccount(ctx context.Context, id hbtype.ULID) (Account, error) {
 	row := q.db.QueryRow(ctx, deleteAccount, id)
 	var i Account
 	err := row.Scan(
@@ -68,7 +68,7 @@ WHERE id = $1
 LIMIT 1
 `
 
-func (q *Queries) GetAccount(ctx context.Context, id ulid.ULID) (Account, error) {
+func (q *Queries) GetAccount(ctx context.Context, id hbtype.ULID) (Account, error) {
 	row := q.db.QueryRow(ctx, getAccount, id)
 	var i Account
 	err := row.Scan(
@@ -120,7 +120,7 @@ RETURNING id, auth_id, nickname, email
 `
 
 type UpdateAccountParams struct {
-	ID       ulid.ULID
+	ID       hbtype.ULID
 	AuthID   string
 	Nickname string
 	Email    string

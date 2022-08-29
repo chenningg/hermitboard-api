@@ -8,6 +8,7 @@ import (
 type AccountRepository interface {
 	GetOne(id ulid.ULID) db.Account
 	GetAll() []db.Account
+	New() db.Account
 }
 
 type accountRepository struct {

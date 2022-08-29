@@ -8,7 +8,6 @@ require (
 	github.com/dmarkham/enumer v1.5.5
 	github.com/go-logr/logr v1.2.3
 	github.com/go-logr/zerologr v1.2.2
-	github.com/jackc/pgconn v1.12.1
 	github.com/jackc/pgx/v4 v4.16.1
 	github.com/jellydator/validation v1.0.0
 	github.com/joho/godotenv v1.4.0
@@ -27,6 +26,7 @@ require (
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
+	github.com/jackc/pgconn v1.12.1 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.0 // indirect

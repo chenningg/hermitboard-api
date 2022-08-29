@@ -36,6 +36,5 @@ gqlgen: install-gqlgen
 # Server
 # ===================================
 .PHONY: dev
-dev:
-	go mod tidy
+dev: go-tidy
 	go run ./cmd/hermitboard_api/main.go

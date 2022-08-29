@@ -7,18 +7,18 @@ package db
 import (
 	"database/sql"
 
-	ulid "github.com/oklog/ulid/v2"
+	hbtype "github.com/chenningg/hermitboard-api/hbtype"
 )
 
 type Account struct {
-	ID       ulid.ULID
+	ID       hbtype.ULID
 	AuthID   string
 	Nickname string
 	Email    string
 }
 
 type Asset struct {
-	ID ulid.ULID
+	ID hbtype.ULID
 }
 
 type AssetClass struct {
@@ -27,26 +27,26 @@ type AssetClass struct {
 }
 
 type Blockchain struct {
-	ID                          ulid.ULID
+	ID                          hbtype.ULID
 	Name                        string
 	Symbol                      string
-	NativeTokenCryptocurrencyID ulid.ULID
+	NativeTokenCryptocurrencyID hbtype.NullULID
 	ChainID                     sql.NullInt64
 }
 
 type Cryptocurrency struct {
-	ID           ulid.ULID
-	AssetID      ulid.ULID
-	AssetClassID ulid.ULID
+	ID           hbtype.ULID
+	AssetID      hbtype.ULID
+	AssetClassID hbtype.ULID
 	Symbol       string
 	ShortName    string
 	LongName     string
 }
 
 type Portfolio struct {
-	ID        ulid.ULID
+	ID        hbtype.ULID
 	Name      string
-	AccountID ulid.ULID
+	AccountID hbtype.ULID
 	IsPublic  bool
 	IsVisible bool
 }
