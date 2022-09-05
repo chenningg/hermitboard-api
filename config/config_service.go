@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	envLoader "github.com/caarlos0/env/v6"
 	"github.com/chenningg/hermitboard-api/url"
@@ -44,14 +45,20 @@ func (configService *configService) loadEnv() error {
 	configService.logger.V(2).Info("loading environment variables")
 
 	// Load environment variable, defaults to development.
-	env := os.Getenv("HB_APP_ENV")
+	env := strings.ToLower(os.Getenv("HB_APP_ENV"))
 	if env == "" {
 		env = "development"
 		configService.logger.V(1).Info("no application environment specified, defaulting to development")
 	}
 
-	// Load .env file.
-	err := godotenv.Load()
+	// Load any local env files
+	err := godotenv.Load(".env." + env + ".local")
+
+	// Also try to load any .env files with appenv suffix.
+	err = godotenv.Load(".env." + env)
+
+	// Finally, if all else fails load .env file.
+	err = godotenv.Load()
 	if err != nil {
 		return err
 	}

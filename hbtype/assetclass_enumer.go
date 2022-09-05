@@ -7,11 +7,11 @@ import (
 	"strings"
 )
 
-const _AssetClassName = "CommodityCryptocurrencyEquityFixedIncomeRealEstate"
+const _AssetClassName = "CashOrCashEquivalentsCommodityCryptocurrencyEquityFixedIncomeFuturesRealEstate"
 
-var _AssetClassIndex = [...]uint8{0, 9, 23, 29, 40, 50}
+var _AssetClassIndex = [...]uint8{0, 21, 30, 44, 50, 61, 68, 78}
 
-const _AssetClassLowerName = "commoditycryptocurrencyequityfixedincomerealestate"
+const _AssetClassLowerName = "cashorcashequivalentscommoditycryptocurrencyequityfixedincomefuturesrealestate"
 
 func (i AssetClass) String() string {
 	if i < 0 || i >= AssetClass(len(_AssetClassIndex)-1) {
@@ -24,34 +24,42 @@ func (i AssetClass) String() string {
 // Re-run the stringer command to generate them again.
 func _AssetClassNoOp() {
 	var x [1]struct{}
-	_ = x[Commodity-(0)]
-	_ = x[Cryptocurrency-(1)]
-	_ = x[Equity-(2)]
-	_ = x[FixedIncome-(3)]
-	_ = x[RealEstate-(4)]
+	_ = x[CashOrCashEquivalents-(0)]
+	_ = x[Commodity-(1)]
+	_ = x[Cryptocurrency-(2)]
+	_ = x[Equity-(3)]
+	_ = x[FixedIncome-(4)]
+	_ = x[Futures-(5)]
+	_ = x[RealEstate-(6)]
 }
 
-var _AssetClassValues = []AssetClass{Commodity, Cryptocurrency, Equity, FixedIncome, RealEstate}
+var _AssetClassValues = []AssetClass{CashOrCashEquivalents, Commodity, Cryptocurrency, Equity, FixedIncome, Futures, RealEstate}
 
 var _AssetClassNameToValueMap = map[string]AssetClass{
-	_AssetClassName[0:9]:        Commodity,
-	_AssetClassLowerName[0:9]:   Commodity,
-	_AssetClassName[9:23]:       Cryptocurrency,
-	_AssetClassLowerName[9:23]:  Cryptocurrency,
-	_AssetClassName[23:29]:      Equity,
-	_AssetClassLowerName[23:29]: Equity,
-	_AssetClassName[29:40]:      FixedIncome,
-	_AssetClassLowerName[29:40]: FixedIncome,
-	_AssetClassName[40:50]:      RealEstate,
-	_AssetClassLowerName[40:50]: RealEstate,
+	_AssetClassName[0:21]:       CashOrCashEquivalents,
+	_AssetClassLowerName[0:21]:  CashOrCashEquivalents,
+	_AssetClassName[21:30]:      Commodity,
+	_AssetClassLowerName[21:30]: Commodity,
+	_AssetClassName[30:44]:      Cryptocurrency,
+	_AssetClassLowerName[30:44]: Cryptocurrency,
+	_AssetClassName[44:50]:      Equity,
+	_AssetClassLowerName[44:50]: Equity,
+	_AssetClassName[50:61]:      FixedIncome,
+	_AssetClassLowerName[50:61]: FixedIncome,
+	_AssetClassName[61:68]:      Futures,
+	_AssetClassLowerName[61:68]: Futures,
+	_AssetClassName[68:78]:      RealEstate,
+	_AssetClassLowerName[68:78]: RealEstate,
 }
 
 var _AssetClassNames = []string{
-	_AssetClassName[0:9],
-	_AssetClassName[9:23],
-	_AssetClassName[23:29],
-	_AssetClassName[29:40],
-	_AssetClassName[40:50],
+	_AssetClassName[0:21],
+	_AssetClassName[21:30],
+	_AssetClassName[30:44],
+	_AssetClassName[44:50],
+	_AssetClassName[50:61],
+	_AssetClassName[61:68],
+	_AssetClassName[68:78],
 }
 
 // AssetClassString retrieves an enum value from the enum constants string name.

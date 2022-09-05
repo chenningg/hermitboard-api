@@ -10,10 +10,12 @@ import (
 type AssetClass int
 
 const (
-	Commodity AssetClass = iota
+	CashOrCashEquivalents AssetClass = iota
+	Commodity
 	Cryptocurrency
 	Equity
 	FixedIncome
+	Futures
 	RealEstate
 )
 

@@ -11,7 +11,7 @@ type ULID struct {
 	ULID ulid.ULID
 }
 
-// Creates a new nullable ULID.
+// Creates a new ULID.
 func NewULID() ULID {
 	return ULID{ULID: ulid.Make()}
 }

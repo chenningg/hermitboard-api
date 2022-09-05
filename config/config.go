@@ -1,14 +1,13 @@
 package config
 
 import (
-	"github.com/chenningg/hermitboard-api/db"
 	"github.com/jellydator/validation"
 )
 
 type Config struct {
 	App    AppConfig    `envPrefix:"APP_"`
 	Server ServerConfig `envPrefix:"SERVER_"`
-	Db     db.DbConfig  `envPrefix:"DB_"`
+	Db     DbConfig     `envPrefix:"DB_"`
 }
 
 func (config Config) Validate() error {

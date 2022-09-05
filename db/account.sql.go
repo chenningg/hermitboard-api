@@ -7,24 +7,26 @@ package db
 
 import (
 	"context"
+	"database/sql"
 
 	hbtype "github.com/chenningg/hermitboard-api/hbtype"
 )
 
 const createAccount = `-- name: CreateAccount :one
 INSERT INTO account (
-    id, auth_id, nickname, email
+    id, auth_id, nickname, email, password
 ) VALUES (
-    $1, $2, $3, $4
+    $1, $2, $3, $4, $5
 )
-RETURNING id, auth_id, nickname, email
+RETURNING id, auth_id, nickname, email, password
 `
 
 type CreateAccountParams struct {
 	ID       hbtype.ULID
-	AuthID   string
+	AuthID   sql.NullString
 	Nickname string
 	Email    string
+	Password sql.NullString
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error) {
@@ -33,6 +35,7 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 		arg.AuthID,
 		arg.Nickname,
 		arg.Email,
+		arg.Password,
 	)
 	var i Account
 	err := row.Scan(
@@ -40,6 +43,7 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 		&i.AuthID,
 		&i.Nickname,
 		&i.Email,
+		&i.Password,
 	)
 	return i, err
 }
@@ -47,7 +51,7 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 const deleteAccount = `-- name: DeleteAccount :one
 DELETE FROM account
 WHERE id = $1
-RETURNING id, auth_id, nickname, email
+RETURNING id, auth_id, nickname, email, password
 `
 
 func (q *Queries) DeleteAccount(ctx context.Context, id hbtype.ULID) (Account, error) {
@@ -58,12 +62,13 @@ func (q *Queries) DeleteAccount(ctx context.Context, id hbtype.ULID) (Account, e
 		&i.AuthID,
 		&i.Nickname,
 		&i.Email,
+		&i.Password,
 	)
 	return i, err
 }
 
 const getAccount = `-- name: GetAccount :one
-SELECT id, auth_id, nickname, email FROM account
+SELECT id, auth_id, nickname, email, password FROM account
 WHERE id = $1
 LIMIT 1
 `
@@ -76,12 +81,13 @@ func (q *Queries) GetAccount(ctx context.Context, id hbtype.ULID) (Account, erro
 		&i.AuthID,
 		&i.Nickname,
 		&i.Email,
+		&i.Password,
 	)
 	return i, err
 }
 
 const listAccounts = `-- name: ListAccounts :many
-SELECT id, auth_id, nickname, email FROM account
+SELECT id, auth_id, nickname, email, password FROM account
 ORDER BY email
 `
 
@@ -99,6 +105,7 @@ func (q *Queries) ListAccounts(ctx context.Context) ([]Account, error) {
 			&i.AuthID,
 			&i.Nickname,
 			&i.Email,
+			&i.Password,
 		); err != nil {
 			return nil, err
 		}
@@ -114,16 +121,18 @@ const updateAccount = `-- name: UpdateAccount :one
 UPDATE account
 SET auth_id = $2,
 nickname = $3,
-email = $4
+email = $4,
+password = $5
 WHERE id = $1
-RETURNING id, auth_id, nickname, email
+RETURNING id, auth_id, nickname, email, password
 `
 
 type UpdateAccountParams struct {
 	ID       hbtype.ULID
-	AuthID   string
+	AuthID   sql.NullString
 	Nickname string
 	Email    string
+	Password sql.NullString
 }
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {
@@ -132,6 +141,7 @@ func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (A
 		arg.AuthID,
 		arg.Nickname,
 		arg.Email,
+		arg.Password,
 	)
 	var i Account
 	err := row.Scan(
@@ -139,6 +149,7 @@ func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (A
 		&i.AuthID,
 		&i.Nickname,
 		&i.Email,
+		&i.Password,
 	)
 	return i, err
 }

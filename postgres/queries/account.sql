@@ -1,8 +1,8 @@
 -- name: CreateAccount :one
 INSERT INTO account (
-    id, auth_id, nickname, email
+    id, auth_id, nickname, email, password
 ) VALUES (
-    $1, $2, $3, $4
+    $1, $2, $3, $4, $5
 )
 RETURNING *;
 
@@ -19,7 +19,8 @@ ORDER BY email;
 UPDATE account
 SET auth_id = $2,
 nickname = $3,
-email = $4
+email = $4,
+password = $5
 WHERE id = $1
 RETURNING *;
 

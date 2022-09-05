@@ -6,19 +6,30 @@ package db
 
 import (
 	"database/sql"
+	"time"
 
 	hbtype "github.com/chenningg/hermitboard-api/hbtype"
+	"github.com/jackc/pgtype"
 )
 
 type Account struct {
 	ID       hbtype.ULID
-	AuthID   string
+	AuthID   sql.NullString
 	Nickname string
 	Email    string
+	Password sql.NullString
+}
+
+type AccountAuthRole struct {
+	ID         hbtype.ULID
+	AccountID  hbtype.ULID
+	AuthRoleID string
 }
 
 type Asset struct {
-	ID hbtype.ULID
+	ID               hbtype.ULID
+	AssetClassID     string
+	CryptocurrencyID hbtype.NullULID
 }
 
 type AssetClass struct {
@@ -26,21 +37,49 @@ type AssetClass struct {
 	Description sql.NullString
 }
 
+type AuthRole struct {
+	ID          string
+	Description sql.NullString
+}
+
 type Blockchain struct {
-	ID                          hbtype.ULID
-	Name                        string
-	Symbol                      string
-	NativeTokenCryptocurrencyID hbtype.NullULID
-	ChainID                     sql.NullInt64
+	ID               hbtype.ULID
+	Name             string
+	Symbol           sql.NullString
+	Icon             sql.NullString
+	CryptocurrencyID hbtype.NullULID
+	ChainID          sql.NullInt64
+}
+
+type BlockchainCryptocurrency struct {
+	ID               hbtype.ULID
+	BlockchainID     hbtype.ULID
+	CryptocurrencyID hbtype.ULID
 }
 
 type Cryptocurrency struct {
-	ID           hbtype.ULID
-	AssetID      hbtype.ULID
-	AssetClassID hbtype.ULID
-	Symbol       string
-	ShortName    string
-	LongName     string
+	ID        hbtype.ULID
+	Symbol    string
+	Icon      sql.NullString
+	ShortName string
+	LongName  string
+}
+
+type DailyAssetPrice struct {
+	ID            hbtype.ULID
+	BaseAssetID   hbtype.ULID
+	Time          time.Time
+	Open          pgtype.Numeric
+	High          pgtype.Numeric
+	Low           pgtype.Numeric
+	Close         pgtype.Numeric
+	AdjustedClose pgtype.Numeric
+}
+
+type Exchange struct {
+	ID   hbtype.ULID
+	Name string
+	Url  sql.NullString
 }
 
 type Portfolio struct {
@@ -49,4 +88,22 @@ type Portfolio struct {
 	AccountID hbtype.ULID
 	IsPublic  bool
 	IsVisible bool
+}
+
+type Transaction struct {
+	ID                hbtype.ULID
+	Time              time.Time
+	TransactionTypeID string
+	BaseAssetID       hbtype.ULID
+	QuoteAssetID      hbtype.NullULID
+	PortfolioID       hbtype.ULID
+	ExchangeID        hbtype.NullULID
+	Units             pgtype.Numeric
+	PricePerUnit      pgtype.Numeric
+	Data              pgtype.JSONB
+}
+
+type TransactionType struct {
+	ID          string
+	Description sql.NullString
 }

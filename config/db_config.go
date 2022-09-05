@@ -1,4 +1,4 @@
-package db
+package config
 
 import (
 	"github.com/jellydator/validation"
