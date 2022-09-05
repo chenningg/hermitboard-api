@@ -25,14 +25,14 @@ CREATE TABLE IF NOT EXISTS auth_role (
 
 INSERT INTO auth_role(id, description)
 VALUES
-    ('demo', 'A demo role with restricted rights.'),
-    ('free', 'A free role with limited feature access.'),
-    ('plus', 'A paying Plus role.'),
-    ('pro', 'A paying Pro role.'),
-    ('enterprise', 'A paying Enterprise role.'),
-    ('support', 'A customer support role with limited permissions.'),
-    ('admin', 'An administrative role with elevated permissions.'),
-    ('super admin', 'A super administrative role with full rights.');
+    ('Demo', 'A demo role with restricted rights.'),
+    ('Free', 'A free role with limited feature access.'),
+    ('Plus', 'A paying Plus role.'),
+    ('Pro', 'A paying Pro role.'),
+    ('Enterprise', 'A paying Enterprise role.'),
+    ('Support', 'A customer support role with limited permissions.'),
+    ('Admin', 'An administrative role with elevated permissions.'),
+    ('SuperAdmin', 'A super administrative role with full rights.');
 
 -- Links an account to one or more auth_roles.
 CREATE TABLE IF NOT EXISTS account_auth_role (
@@ -68,13 +68,13 @@ CREATE TABLE IF NOT EXISTS asset_class (
 
 INSERT INTO asset_class(id, description)
 VALUES
-    ('cash or cash equivalent', 'Value of assets that are cash or can be converted to cash immediately.'),
-    ('commodity', 'A raw material or primary agricultural product that can be bought and sold.'),
-    ('cryptocurrency', 'A digital or virtual currency secured by cryptography.'),
-    ('equity', 'The ownership of assets with financial value that may have debts or other liabilities attached to them.'),
-    ('fixed income', 'Assets and securities that pay out a set level of cash flows to investors.'),
-    ('future', 'Derivative financial contracts that obligate parties to buy or sell an asset at a predetermined future date and price.'),
-    ('real estate', 'Property consisting of land and buildings.');
+    ('CashOrCashEquivalent', 'Value of assets that are cash or can be converted to cash immediately.'),
+    ('Commodity', 'A raw material or primary agricultural product that can be bought and sold.'),
+    ('Cryptocurrency', 'A digital or virtual currency secured by cryptography.'),
+    ('Equity', 'The ownership of assets with financial value that may have debts or other liabilities attached to them.'),
+    ('FixedIncome', 'Assets and securities that pay out a set level of cash flows to investors.'),
+    ('Future', 'Derivative financial contracts that obligate parties to buy or sell an asset at a predetermined future date and price.'),
+    ('RealEstate', 'Property consisting of land and buildings.');
 
 -- A specific asset type derived from an asset.
 CREATE TABLE IF NOT EXISTS cryptocurrency (
@@ -147,13 +147,13 @@ CREATE TABLE IF NOT EXISTS transaction_type (
 
 INSERT INTO transaction_type(id, description)
 VALUES
-    ('buy', 'A buy transaction.'),
-    ('sell', 'A sell transaction.'),
-    ('stake', 'Staking of a cryptocurrency.'),
-    ('dividend income', 'Income from dividends.'),
-    ('rent payment', 'Outflow of cash due to rent payment.'),
-    ('rent income', 'Inflow of cash due to rent collection.'),
-    ('stock dividend', 'Dividends paid out in stock.');
+    ('Buy', 'A buy transaction.'),
+    ('Sell', 'A sell transaction.'),
+    ('Stake', 'Staking of a cryptocurrency.'),
+    ('DividendIncome', 'Income from dividends.'),
+    ('RentPayment', 'Outflow of cash due to rent payment.'),
+    ('RentIncome', 'Inflow of cash due to rent collection.'),
+    ('StockDividend', 'Dividends paid out in stock.');
 
 -- Represents a transaction. A transaction may contain arbitrary data for additional information.
 CREATE TABLE IF NOT EXISTS transaction (

@@ -1,4 +1,4 @@
-//go:generate go run github.com/dmarkham/enumer -type=AuthType
+//go:generate go run github.com/dmarkham/enumer -type=AuthType -json -text -sql
 
 package hbtype
 
@@ -19,17 +19,4 @@ func (authType *AuthType) Validate() error {
 	}
 
 	return fmt.Errorf("invalid value for AuthType, expected %v, got %v", AuthTypeValues(), authType.String())
-}
-
-func (authType *AuthType) UnmarshalText(text []byte) error {
-	input := string(text)
-	marshalledAuthType, err := AuthTypeString(input)
-	// If unable to parse, use a default value.
-	if err != nil {
-		return fmt.Errorf("invalid value for AuthType, expected one of %v, got '%v'", AuthTypeValues(), input)
-	}
-
-	*authType = marshalledAuthType
-
-	return nil
 }
