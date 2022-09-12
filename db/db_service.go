@@ -5,8 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/chenningg/hermitboard-api/config"
-
 	"github.com/go-logr/logr"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -21,11 +19,11 @@ type DbService interface {
 
 type dbService struct {
 	logger  logr.Logger
-	config  config.DbConfig
+	config  DbConfig
 	queries Queries
 }
 
-func NewDbService(dbConfig config.DbConfig, logger logr.Logger) (*dbService, error) {
+func NewDbService(dbConfig DbConfig, logger logr.Logger) (*dbService, error) {
 	var dbService = new(dbService)
 
 	// Initialize logger.

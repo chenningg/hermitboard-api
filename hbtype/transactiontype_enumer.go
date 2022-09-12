@@ -16,8 +16,9 @@ var _TransactionTypeIndex = [...]uint8{0, 3, 7, 12, 26, 37, 47, 60}
 const _TransactionTypeLowerName = "buysellstakedividendincomerentpaymentrentincomestockdividend"
 
 func (i TransactionType) String() string {
+	i -= 1
 	if i < 0 || i >= TransactionType(len(_TransactionTypeIndex)-1) {
-		return fmt.Sprintf("TransactionType(%d)", i)
+		return fmt.Sprintf("TransactionType(%d)", i+1)
 	}
 	return _TransactionTypeName[_TransactionTypeIndex[i]:_TransactionTypeIndex[i+1]]
 }
@@ -26,13 +27,13 @@ func (i TransactionType) String() string {
 // Re-run the stringer command to generate them again.
 func _TransactionTypeNoOp() {
 	var x [1]struct{}
-	_ = x[Buy-(0)]
-	_ = x[Sell-(1)]
-	_ = x[Stake-(2)]
-	_ = x[DividendIncome-(3)]
-	_ = x[RentPayment-(4)]
-	_ = x[RentIncome-(5)]
-	_ = x[StockDividend-(6)]
+	_ = x[Buy-(1)]
+	_ = x[Sell-(2)]
+	_ = x[Stake-(3)]
+	_ = x[DividendIncome-(4)]
+	_ = x[RentPayment-(5)]
+	_ = x[RentIncome-(6)]
+	_ = x[StockDividend-(7)]
 }
 
 var _TransactionTypeValues = []TransactionType{Buy, Sell, Stake, DividendIncome, RentPayment, RentIncome, StockDividend}

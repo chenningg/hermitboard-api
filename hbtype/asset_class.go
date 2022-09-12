@@ -9,7 +9,7 @@ import (
 type AssetClass int
 
 const (
-	CashOrCashEquivalent AssetClass = iota
+	CashOrCashEquivalent AssetClass = iota + 1
 	Commodity
 	Cryptocurrency
 	Equity
@@ -24,4 +24,8 @@ func (assetClass *AssetClass) Validate() error {
 	}
 
 	return fmt.Errorf("invalid value for AssetClass, expected %v, got %v", AssetClassValues(), assetClass.String())
+}
+
+func (assetClass AssetClass) Values() []string {
+	return AssetClassStrings()
 }

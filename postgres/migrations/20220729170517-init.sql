@@ -38,7 +38,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS account_auth_role (
     id uuid,
     account_id uuid NOT NULL,
-    auth_role_id text NOT NULL,
+    auth_role_id TEXT NOT NULL,
 
     CONSTRAINT pk_account_auth_role PRIMARY KEY(id),
     CONSTRAINT fk_account_auth_role_account FOREIGN KEY(account_id) REFERENCES account(id) ON DELETE CASCADE ON UPDATE CASCADE,

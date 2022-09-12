@@ -16,8 +16,9 @@ var _AssetClassIndex = [...]uint8{0, 20, 29, 43, 49, 60, 66, 76}
 const _AssetClassLowerName = "cashorcashequivalentcommoditycryptocurrencyequityfixedincomefuturerealestate"
 
 func (i AssetClass) String() string {
+	i -= 1
 	if i < 0 || i >= AssetClass(len(_AssetClassIndex)-1) {
-		return fmt.Sprintf("AssetClass(%d)", i)
+		return fmt.Sprintf("AssetClass(%d)", i+1)
 	}
 	return _AssetClassName[_AssetClassIndex[i]:_AssetClassIndex[i+1]]
 }
@@ -26,13 +27,13 @@ func (i AssetClass) String() string {
 // Re-run the stringer command to generate them again.
 func _AssetClassNoOp() {
 	var x [1]struct{}
-	_ = x[CashOrCashEquivalent-(0)]
-	_ = x[Commodity-(1)]
-	_ = x[Cryptocurrency-(2)]
-	_ = x[Equity-(3)]
-	_ = x[FixedIncome-(4)]
-	_ = x[Future-(5)]
-	_ = x[RealEstate-(6)]
+	_ = x[CashOrCashEquivalent-(1)]
+	_ = x[Commodity-(2)]
+	_ = x[Cryptocurrency-(3)]
+	_ = x[Equity-(4)]
+	_ = x[FixedIncome-(5)]
+	_ = x[Future-(6)]
+	_ = x[RealEstate-(7)]
 }
 
 var _AssetClassValues = []AssetClass{CashOrCashEquivalent, Commodity, Cryptocurrency, Equity, FixedIncome, Future, RealEstate}

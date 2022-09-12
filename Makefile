@@ -20,6 +20,22 @@ install-sqlc:
 sqlc: install-sqlc
 	docker run --rm -v "$(CURDIR):/src" -w /src kjconroy/sqlc generate
 
+# Installs EntGo.
+.PHONY: install-ent
+install-ent:
+	go install entgo.io/ent/cmd/ent@latest
+
+# Creates a new Ent entity.
+.PHONY: ent-new
+ent-new: install-ent 
+	go run -mod=mod entgo.io/ent/cmd/ent init $(new)
+
+# Runs Ent codegen.
+.PHONY: ent
+ent: install-ent 
+	go generate ./ent
+
+
 # ===================================
 # GraphQL
 # ===================================

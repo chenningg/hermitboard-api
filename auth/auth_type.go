@@ -1,6 +1,6 @@
 //go:generate go run github.com/dmarkham/enumer -type=AuthType -json -text -sql
 
-package hbtype
+package auth
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 type AuthType int
 
 const (
-	Local AuthType = iota
+	Local AuthType = iota + 1
 	Firebase
 )
 
@@ -19,4 +19,8 @@ func (authType *AuthType) Validate() error {
 	}
 
 	return fmt.Errorf("invalid value for AuthType, expected %v, got %v", AuthTypeValues(), authType.String())
+}
+
+func (authType AuthType) Values() []string {
+	return AuthTypeStrings()
 }

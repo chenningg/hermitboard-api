@@ -1,6 +1,6 @@
 //go:generate go run github.com/dmarkham/enumer -type=AuthRole -json -text -sql
 
-package hbtype
+package auth
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 type AuthRole int
 
 const (
-	Demo AuthRole = iota
+	Demo AuthRole = iota + 1
 	Free
 	Plus
 	Pro
@@ -25,4 +25,8 @@ func (authRole *AuthRole) Validate() error {
 	}
 
 	return fmt.Errorf("invalid value for AuthRole, expected %v, got %v", AuthRoleValues(), authRole.String())
+}
+
+func (authRole AuthRole) Values() []string {
+	return AuthRoleStrings()
 }

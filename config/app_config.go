@@ -1,13 +1,13 @@
 package config
 
 import (
-	"github.com/chenningg/hermitboard-api/hbtype"
+	"github.com/chenningg/hermitboard-api/auth"
 	"github.com/jellydator/validation"
 )
 
 type AppConfig struct {
-	Env      hbtype.AppEnv   `env:"ENV" envDefault:"Development"`
-	AuthType hbtype.AuthType `env:"AUTH_TYPE" envDefault:"Local"`
+	Env      AppEnv        `env:"ENV" envDefault:"Development"`
+	AuthType auth.AuthType `env:"AUTH_TYPE" envDefault:"Local"`
 }
 
 func (appConfig AppConfig) Validate() error {

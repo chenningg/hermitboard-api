@@ -9,7 +9,7 @@ import (
 type TransactionType int
 
 const (
-	Buy TransactionType = iota
+	Buy TransactionType = iota + 1
 	Sell
 	Stake
 	DividendIncome
@@ -24,4 +24,8 @@ func (transactionType *TransactionType) Validate() error {
 	}
 
 	return fmt.Errorf("invalid value for TransactionType, expected %v, got %v", TransactionTypeValues(), transactionType.String())
+}
+
+func (transactionType TransactionType) Values() []string {
+	return TransactionTypeStrings()
 }
