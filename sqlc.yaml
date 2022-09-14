@@ -8,11 +8,12 @@ sql:
       package: "db"
       out: "db"
       sql_package: "pgx/v4"
+      emit_interface: true
       overrides:
         - db_type: "uuid"
           go_type:
-            import: "github.com/chenningg/hermitboard-api/hbtype"
-            package: "hbtype"
+            import: "github.com/oklog/ulid/v2"
+            package: "ulid"
             type: "ULID"
           nullable: false
         - db_type: "uuid"

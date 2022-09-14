@@ -6,10 +6,14 @@ INSERT INTO account (
 )
 RETURNING *;
 
--- name: GetAccount :one
+-- name: GetAccountById :one
 SELECT * FROM account
 WHERE id = @id
 LIMIT 1;
+
+-- name: GetAccountsByIds :many
+SELECT * FROM account
+WHERE id = ANY(@id::uuid[]);
 
 -- name: ListAccounts :many
 SELECT * FROM account
@@ -29,7 +33,7 @@ SET
 WHERE id = @id
 RETURNING *;
 
--- name: DeleteAccount :one
+-- name: DeleteAccountById :one
 DELETE FROM account
 WHERE id = @id
 RETURNING *;

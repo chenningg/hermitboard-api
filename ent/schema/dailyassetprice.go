@@ -18,7 +18,7 @@ type DailyAssetPrice struct {
 // Adds id, created_at and updated_at fields.
 func (DailyAssetPrice) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.IdMixin{},
+		mixin.PULIDMixinWithPrefix("DAP"),
 		mixin.TimeMixin{},
 	}
 }

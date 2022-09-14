@@ -4,6 +4,8 @@ package auth
 
 import (
 	"fmt"
+	"io"
+	"strconv"
 )
 
 type AuthRole int
@@ -29,4 +31,14 @@ func (authRole *AuthRole) Validate() error {
 
 func (authRole AuthRole) Values() []string {
 	return AuthRoleStrings()
+}
+
+// Marshals a AuthRole into a graphql scalar string.
+func (authRole AuthRole) MarshalGQL(w io.Writer) {
+	_, _ = io.WriteString(w, strconv.Quote(pulid.String()))
+}
+
+// Unmarshals a graphql scalar into a AuthRole Go type.
+func (authRole *AuthRole) UnmarshalGQL(v interface{}) error {
+	return pulid.Scan(v)
 }

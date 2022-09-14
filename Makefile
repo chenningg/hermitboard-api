@@ -23,18 +23,17 @@ sqlc: install-sqlc
 # Installs EntGo.
 .PHONY: install-ent
 install-ent:
-	go install entgo.io/ent/cmd/ent@latest
+	go install github.com/crossworth/ent/cmd/ent@v0.10.1-0.20220913165355-0c5e260f5c84
 
 # Creates a new Ent entity.
 .PHONY: ent-new
-ent-new: install-ent 
-	go run -mod=mod entgo.io/ent/cmd/ent init $(new)
+ent-new:
+	go run -mod=mod github.com/crossworth/ent/cmd/ent init $(new)
 
 # Runs Ent codegen.
 .PHONY: ent
-ent: install-ent 
+ent:
 	go generate ./ent
-
 
 # ===================================
 # GraphQL

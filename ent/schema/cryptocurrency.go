@@ -15,7 +15,7 @@ type Cryptocurrency struct {
 // Adds id, created_at and updated_at fields.
 func (Cryptocurrency) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.IdMixin{},
+		mixin.PULIDMixinWithPrefix("CRC"),
 		mixin.TimeMixin{},
 	}
 }

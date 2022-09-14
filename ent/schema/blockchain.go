@@ -15,7 +15,7 @@ type Blockchain struct {
 // Adds id, created_at and updated_at fields.
 func (Blockchain) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.IdMixin{},
+		mixin.PULIDMixinWithPrefix("BKC"),
 		mixin.TimeMixin{},
 	}
 }

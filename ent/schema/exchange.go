@@ -15,7 +15,7 @@ type Exchange struct {
 // Adds id, created_at and updated_at fields.
 func (Exchange) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.IdMixin{},
+		mixin.PULIDMixinWithPrefix("EXG"),
 		mixin.TimeMixin{},
 	}
 }

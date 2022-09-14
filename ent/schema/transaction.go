@@ -16,7 +16,7 @@ type Transaction struct {
 // Adds id, created_at and updated_at fields.
 func (Transaction) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.IdMixin{},
+		mixin.PULIDMixinWithPrefix("TRX"),
 		mixin.TimeMixin{},
 	}
 }

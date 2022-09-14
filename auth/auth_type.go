@@ -4,6 +4,8 @@ package auth
 
 import (
 	"fmt"
+	"io"
+	"strconv"
 )
 
 type AuthType int
@@ -23,4 +25,14 @@ func (authType *AuthType) Validate() error {
 
 func (authType AuthType) Values() []string {
 	return AuthTypeStrings()
+}
+
+// Marshals a AuthType into a graphql scalar string.
+func (authType AuthType) MarshalGQL(w io.Writer) {
+	_, _ = io.WriteString(w, strconv.Quote(pulid.String()))
+}
+
+// Unmarshals a graphql scalar into a AuthType Go type.
+func (authType *AuthType) UnmarshalGQL(v interface{}) error {
+	return pulid.Scan(v)
 }

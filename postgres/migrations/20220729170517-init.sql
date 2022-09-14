@@ -132,6 +132,7 @@ CREATE TABLE IF NOT EXISTS blockchain_cryptocurrency (
 CREATE TABLE IF NOT EXISTS exchange (
     id uuid,
     name TEXT NOT NULL,
+    icon TEXT,
     url TEXT,
 
     CONSTRAINT pk_exchange PRIMARY KEY (id)
