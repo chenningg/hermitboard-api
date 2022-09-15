@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
+	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
 )
 
 // Cryptocurrency holds the schema definition for the Cryptocurrency entity.
@@ -16,7 +17,9 @@ type Cryptocurrency struct {
 func (Cryptocurrency) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.PULIDMixinWithPrefix("CRC"),
-		mixin.TimeMixin{},
+		mixin.CreatedAtMixin{},
+		mixin.UpdatedAtMixin{},
+		mixin.DeletedAtMixin{},
 	}
 }
 
@@ -32,6 +35,8 @@ func (Cryptocurrency) Fields() []ent.Field {
 			Comment("A url to the image icon for this cryptocurrency."),
 		field.String("name").
 			NotEmpty(),
+		field.String("asset_id").
+			GoType(pulid.PULID("")),
 	}
 }
 
@@ -41,8 +46,10 @@ func (Cryptocurrency) Edges() []ent.Edge {
 		edge.From("asset", Asset.Type).
 			Ref("cryptocurrency").
 			Unique().
-			Required(),
+			Required().
+			Field("asset_id"),
 		edge.From("blockchains", Blockchain.Type).
-			Ref("cryptocurrencies"),
+			Ref("cryptocurrencies").
+			Through("blockchain_cryptocurrencies", BlockchainCryptocurrency.Type),
 	}
 }

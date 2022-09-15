@@ -14,7 +14,7 @@ type DbConfig struct {
 	Name                string `env:"NAME"`
 	PoolMaxConn         int32  `env:"POOL_MAX_CONN" envDefault:"10"`
 	PoolMinConn         int32  `env:"POOL_MIN_CONN" envDefault:"0"`
-	Migrations          string `env:"MIGRATIONS" envDefault:"postgres/migrations"`
+	MigrationsDir       string `env:"MIGRATIONS_DIR" envDefault:"migrations"`
 	MigrationsTableName string `env:"MIGRATIONS_TABLE_NAME" envDefault:"migration"`
 	AutoMigrate         bool   `env:"AUTO_MIGRATE" envDefault:"false"`
 }

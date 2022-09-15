@@ -1,5 +1,4 @@
 //go:build ignore
-// +build ignore
 
 package main
 
@@ -18,9 +17,7 @@ func main() {
 	}
 
 	err = entc.Generate("./schema", &gen.Config{
-		Schema:  "./schema",
-		Target:  "./generated",
-		Package: "github.com/chenningg/hermitboard-api/ent/generated",
+		Features: []gen.Feature{gen.FeatureVersionedMigration},
 	},
 		entc.Extensions(egql))
 	if err != nil {

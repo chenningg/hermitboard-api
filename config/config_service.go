@@ -53,9 +53,15 @@ func (configService *configService) loadEnv() error {
 
 	// Load any local env files
 	err := godotenv.Load(".env." + env + ".local")
+	if err == nil {
+		return nil
+	}
 
 	// Also try to load any .env files with appenv suffix.
 	err = godotenv.Load(".env." + env)
+	if err == nil {
+		return nil
+	}
 
 	// Finally, if all else fails load .env file.
 	err = godotenv.Load()

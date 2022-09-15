@@ -28,12 +28,17 @@ install-ent:
 # Creates a new Ent entity.
 .PHONY: ent-new
 ent-new:
-	go run -mod=mod github.com/crossworth/ent/cmd/ent init $(new)
+	go run -mod=mod entgo.io/ent/cmd/ent init $(new)
 
 # Runs Ent codegen.
 .PHONY: ent
 ent:
 	go generate ./ent
+
+# Runs Ent Atlas migration.
+.PHONY: atlas
+atlas:
+	go run -mod=mod ent/migrate/main.go $(name)
 
 # ===================================
 # GraphQL

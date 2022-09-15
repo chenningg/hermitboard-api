@@ -16,7 +16,9 @@ type Blockchain struct {
 func (Blockchain) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.PULIDMixinWithPrefix("BKC"),
-		mixin.TimeMixin{},
+		mixin.CreatedAtMixin{},
+		mixin.UpdatedAtMixin{},
+		mixin.DeletedAtMixin{},
 	}
 }
 
@@ -40,6 +42,7 @@ func (Blockchain) Fields() []ent.Field {
 // Edges of the Blockchain.
 func (Blockchain) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("cryptocurrencies", Cryptocurrency.Type),
+		edge.To("cryptocurrencies", Cryptocurrency.Type).
+			Through("blockchain_cryptocurrencies", BlockchainCryptocurrency.Type),
 	}
 }

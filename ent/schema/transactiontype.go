@@ -1,11 +1,11 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
-	"github.com/chenningg/hermitboard-api/hbtype"
 )
 
 // TransactionType holds the schema definition for the TransactionType entity.
@@ -17,15 +17,28 @@ type TransactionType struct {
 func (TransactionType) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.PULIDMixinWithPrefix("TRT"),
-		mixin.TimeMixin{},
+		mixin.CreatedAtMixin{},
+		mixin.UpdatedAtMixin{},
+		mixin.DeletedAtMixin{},
 	}
 }
 
 // Fields of the TransactionType.
 func (TransactionType) Fields() []ent.Field {
 	return []ent.Field{
-		field.Enum("type").
-			GoType(hbtype.TransactionType(1)),
+		field.Enum("transaction_type").
+			NamedValues(
+				"Buy", "BUY",
+				"Sell", "SELL",
+				"Stake", "STAKE",
+				"DividendIncome", "DIVIDEND_INCOME",
+				"RentPayment", "RENT_PAYMENT",
+				"RentIncome", "RENT_INCOME",
+				"StockDividend", "STOCK_DIVIDEND",
+			).
+			Annotations(
+				entgql.OrderField("TRANSACTION_TYPE"),
+			),
 		field.String("description").
 			Optional().
 			Nillable().

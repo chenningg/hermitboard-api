@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
+	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
 )
 
 // DailyAssetPrice holds the schema definition for the DailyAssetPrice entity.
@@ -19,7 +20,9 @@ type DailyAssetPrice struct {
 func (DailyAssetPrice) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.PULIDMixinWithPrefix("DAP"),
-		mixin.TimeMixin{},
+		mixin.CreatedAtMixin{},
+		mixin.UpdatedAtMixin{},
+		mixin.DeletedAtMixin{},
 	}
 }
 
@@ -41,6 +44,8 @@ func (DailyAssetPrice) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 		field.Float("adjusted_close"),
+		field.String("base_asset_id").
+			GoType(pulid.PULID("")),
 	}
 }
 
@@ -50,14 +55,14 @@ func (DailyAssetPrice) Edges() []ent.Edge {
 		edge.From("base_asset", Asset.Type).
 			Ref("daily_asset_price").
 			Unique().
-			Required(),
+			Required().
+			Field("base_asset_id"),
 	}
 }
 
 func (DailyAssetPrice) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("time").
-			Edges("base_asset").
+		index.Fields("base_asset_id", "time").
 			Unique(),
 	}
 }

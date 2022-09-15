@@ -9,11 +9,11 @@ import (
 	"strings"
 )
 
-const _TransactionTypeName = "BuySellStakeDividendIncomeRentPaymentRentIncomeStockDividend"
+const _TransactionTypeName = "BUYSELLSTAKEDIVIDEND_INCOMERENT_PAYMENTRENT_INCOMESTOCK_DIVIDEND"
 
-var _TransactionTypeIndex = [...]uint8{0, 3, 7, 12, 26, 37, 47, 60}
+var _TransactionTypeIndex = [...]uint8{0, 3, 7, 12, 27, 39, 50, 64}
 
-const _TransactionTypeLowerName = "buysellstakedividendincomerentpaymentrentincomestockdividend"
+const _TransactionTypeLowerName = "buysellstakedividend_incomerent_paymentrent_incomestock_dividend"
 
 func (i TransactionType) String() string {
 	i -= 1
@@ -27,42 +27,42 @@ func (i TransactionType) String() string {
 // Re-run the stringer command to generate them again.
 func _TransactionTypeNoOp() {
 	var x [1]struct{}
-	_ = x[Buy-(1)]
-	_ = x[Sell-(2)]
-	_ = x[Stake-(3)]
-	_ = x[DividendIncome-(4)]
-	_ = x[RentPayment-(5)]
-	_ = x[RentIncome-(6)]
-	_ = x[StockDividend-(7)]
+	_ = x[BUY-(1)]
+	_ = x[SELL-(2)]
+	_ = x[STAKE-(3)]
+	_ = x[DIVIDEND_INCOME-(4)]
+	_ = x[RENT_PAYMENT-(5)]
+	_ = x[RENT_INCOME-(6)]
+	_ = x[STOCK_DIVIDEND-(7)]
 }
 
-var _TransactionTypeValues = []TransactionType{Buy, Sell, Stake, DividendIncome, RentPayment, RentIncome, StockDividend}
+var _TransactionTypeValues = []TransactionType{BUY, SELL, STAKE, DIVIDEND_INCOME, RENT_PAYMENT, RENT_INCOME, STOCK_DIVIDEND}
 
 var _TransactionTypeNameToValueMap = map[string]TransactionType{
-	_TransactionTypeName[0:3]:        Buy,
-	_TransactionTypeLowerName[0:3]:   Buy,
-	_TransactionTypeName[3:7]:        Sell,
-	_TransactionTypeLowerName[3:7]:   Sell,
-	_TransactionTypeName[7:12]:       Stake,
-	_TransactionTypeLowerName[7:12]:  Stake,
-	_TransactionTypeName[12:26]:      DividendIncome,
-	_TransactionTypeLowerName[12:26]: DividendIncome,
-	_TransactionTypeName[26:37]:      RentPayment,
-	_TransactionTypeLowerName[26:37]: RentPayment,
-	_TransactionTypeName[37:47]:      RentIncome,
-	_TransactionTypeLowerName[37:47]: RentIncome,
-	_TransactionTypeName[47:60]:      StockDividend,
-	_TransactionTypeLowerName[47:60]: StockDividend,
+	_TransactionTypeName[0:3]:        BUY,
+	_TransactionTypeLowerName[0:3]:   BUY,
+	_TransactionTypeName[3:7]:        SELL,
+	_TransactionTypeLowerName[3:7]:   SELL,
+	_TransactionTypeName[7:12]:       STAKE,
+	_TransactionTypeLowerName[7:12]:  STAKE,
+	_TransactionTypeName[12:27]:      DIVIDEND_INCOME,
+	_TransactionTypeLowerName[12:27]: DIVIDEND_INCOME,
+	_TransactionTypeName[27:39]:      RENT_PAYMENT,
+	_TransactionTypeLowerName[27:39]: RENT_PAYMENT,
+	_TransactionTypeName[39:50]:      RENT_INCOME,
+	_TransactionTypeLowerName[39:50]: RENT_INCOME,
+	_TransactionTypeName[50:64]:      STOCK_DIVIDEND,
+	_TransactionTypeLowerName[50:64]: STOCK_DIVIDEND,
 }
 
 var _TransactionTypeNames = []string{
 	_TransactionTypeName[0:3],
 	_TransactionTypeName[3:7],
 	_TransactionTypeName[7:12],
-	_TransactionTypeName[12:26],
-	_TransactionTypeName[26:37],
-	_TransactionTypeName[37:47],
-	_TransactionTypeName[47:60],
+	_TransactionTypeName[12:27],
+	_TransactionTypeName[27:39],
+	_TransactionTypeName[39:50],
+	_TransactionTypeName[50:64],
 }
 
 // TransactionTypeString retrieves an enum value from the enum constants string name.

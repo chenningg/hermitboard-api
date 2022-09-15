@@ -11,8 +11,8 @@ import (
 type AuthType int
 
 const (
-	Local AuthType = iota + 1
-	Firebase
+	LOCAL AuthType = iota + 1
+	FIREBASE
 )
 
 func (authType *AuthType) Validate() error {
@@ -29,10 +29,10 @@ func (authType AuthType) Values() []string {
 
 // Marshals a AuthType into a graphql scalar string.
 func (authType AuthType) MarshalGQL(w io.Writer) {
-	_, _ = io.WriteString(w, strconv.Quote(pulid.String()))
+	_, _ = io.WriteString(w, strconv.Quote(authType.String()))
 }
 
 // Unmarshals a graphql scalar into a AuthType Go type.
 func (authType *AuthType) UnmarshalGQL(v interface{}) error {
-	return pulid.Scan(v)
+	return authType.Scan(v)
 }

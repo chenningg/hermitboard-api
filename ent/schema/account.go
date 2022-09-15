@@ -3,6 +3,7 @@ package schema
 import (
 	"time"
 
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
@@ -20,18 +21,26 @@ type Account struct {
 func (Account) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.PULIDMixinWithPrefix("ACC"),
-		mixin.TimeMixin{},
+		mixin.CreatedAtMixin{},
+		mixin.UpdatedAtMixin{},
+		mixin.DeletedAtMixin{},
 	}
 }
 
 // Fields of the Account.
 func (Account) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("auth_id").
-			Optional().
-			Nillable().
-			Unique().
-			NotEmpty(),
+		field.Enum("auth_type").
+			NamedValues(
+				"Local", "LOCAL",
+				"Google", "GOOGLE",
+				"Facebook", "FACEBOOK",
+				"Apple", "APPLE",
+			).
+			Default("LOCAL").
+			Annotations(
+				entgql.OrderField("AUTH_TYPE"),
+			),
 		field.String("nickname").
 			Unique().
 			NotEmpty(),
@@ -39,6 +48,8 @@ func (Account) Fields() []ent.Field {
 			Unique().
 			NotEmpty(),
 		field.String("password").
+			Sensitive().
+			Comment("Hashed and salted password using Bcrypt.").
 			Optional().
 			Nillable().
 			NotEmpty(),
@@ -52,7 +63,7 @@ func (Account) Fields() []ent.Field {
 func (Account) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_roles", AuthRole.Type).
-			Required(),
+			Through("account_auth_roles", AccountAuthRole.Type),
 		edge.To("portfolios", Portfolio.Type),
 	}
 }
@@ -62,7 +73,8 @@ func (Account) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		&entsql.Annotation{
 			Checks: map[string]string{
-				"account_chk_auth_id_password_not_null": "auth_id IS NOT NULL OR password IS NOT NULL",
+				// Checks that if auth_type is LOCAL, password field cannot be NULL.
+				"account_chk_if_auth_type_local_then_password_not_null": "(auth_type <> LOCAL) OR (password IS NOT NULL)",
 			},
 		},
 	}

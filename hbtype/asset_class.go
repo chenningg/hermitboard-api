@@ -4,18 +4,20 @@ package hbtype
 
 import (
 	"fmt"
+	"io"
+	"strconv"
 )
 
 type AssetClass int
 
 const (
-	CashOrCashEquivalent AssetClass = iota + 1
-	Commodity
-	Cryptocurrency
-	Equity
-	FixedIncome
-	Future
-	RealEstate
+	CASH_OR_CASH_EQUIVALENT AssetClass = iota + 1
+	COMMODITY
+	CRYPTOCURRENCY
+	EQUITY
+	FIXED_INCOME
+	FUTURE
+	REAL_ESTATE
 )
 
 func (assetClass *AssetClass) Validate() error {
@@ -28,4 +30,14 @@ func (assetClass *AssetClass) Validate() error {
 
 func (assetClass AssetClass) Values() []string {
 	return AssetClassStrings()
+}
+
+// Marshals an AssetClass into a graphql scalar string.
+func (assetClass AssetClass) MarshalGQL(w io.Writer) {
+	_, _ = io.WriteString(w, strconv.Quote(assetClass.String()))
+}
+
+// Unmarshals a graphql scalar into an AssetClass Go type.
+func (assetClass *AssetClass) UnmarshalGQL(v interface{}) error {
+	return assetClass.Scan(v)
 }

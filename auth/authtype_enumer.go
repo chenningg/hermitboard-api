@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-const _AuthTypeName = "LocalFirebase"
+const _AuthTypeName = "LOCALFIREBASE"
 
 var _AuthTypeIndex = [...]uint8{0, 5, 13}
 
@@ -27,17 +27,17 @@ func (i AuthType) String() string {
 // Re-run the stringer command to generate them again.
 func _AuthTypeNoOp() {
 	var x [1]struct{}
-	_ = x[Local-(1)]
-	_ = x[Firebase-(2)]
+	_ = x[LOCAL-(1)]
+	_ = x[FIREBASE-(2)]
 }
 
-var _AuthTypeValues = []AuthType{Local, Firebase}
+var _AuthTypeValues = []AuthType{LOCAL, FIREBASE}
 
 var _AuthTypeNameToValueMap = map[string]AuthType{
-	_AuthTypeName[0:5]:       Local,
-	_AuthTypeLowerName[0:5]:  Local,
-	_AuthTypeName[5:13]:      Firebase,
-	_AuthTypeLowerName[5:13]: Firebase,
+	_AuthTypeName[0:5]:       LOCAL,
+	_AuthTypeLowerName[0:5]:  LOCAL,
+	_AuthTypeName[5:13]:      FIREBASE,
+	_AuthTypeLowerName[5:13]: FIREBASE,
 }
 
 var _AuthTypeNames = []string{

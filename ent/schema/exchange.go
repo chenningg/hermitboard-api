@@ -16,7 +16,9 @@ type Exchange struct {
 func (Exchange) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.PULIDMixinWithPrefix("EXG"),
-		mixin.TimeMixin{},
+		mixin.CreatedAtMixin{},
+		mixin.UpdatedAtMixin{},
+		mixin.DeletedAtMixin{},
 	}
 }
 
@@ -40,7 +42,6 @@ func (Exchange) Fields() []ent.Field {
 // Edges of the Exchange.
 func (Exchange) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("transactions", Transaction.Type).
-			Ref("exchange"),
+		edge.To("transactions", Transaction.Type),
 	}
 }
