@@ -14,7 +14,7 @@ type DbConfig struct {
 	Name                string `env:"NAME"`
 	PoolMaxConn         int32  `env:"POOL_MAX_CONN" envDefault:"10"`
 	PoolMinConn         int32  `env:"POOL_MIN_CONN" envDefault:"0"`
-	MigrationsDir       string `env:"MIGRATIONS_DIR" envDefault:"migrations"`
+	MigrationsDir       string `env:"MIGRATIONS_DIR" envDefault:"ent/migrate/migrations"`
 	MigrationsTableName string `env:"MIGRATIONS_TABLE_NAME" envDefault:"migration"`
 	AutoMigrate         bool   `env:"AUTO_MIGRATE" envDefault:"false"`
 }
@@ -29,7 +29,7 @@ func (dbConfig DbConfig) Validate() error {
 		validation.Field(&dbConfig.Name, validation.Required),
 		validation.Field(&dbConfig.PoolMaxConn, validation.NotNil, validation.Min(dbConfig.PoolMaxConn), validation.Max(64)),
 		validation.Field(&dbConfig.PoolMinConn, validation.NotNil, validation.Min(0), validation.Max(dbConfig.PoolMaxConn)),
-		validation.Field(&dbConfig.Migrations, validation.Required),
+		validation.Field(&dbConfig.MigrationsDir, validation.Required),
 		validation.Field(&dbConfig.MigrationsTableName, validation.Required),
 		validation.Field(&dbConfig.AutoMigrate, validation.Required),
 	)

@@ -74,7 +74,7 @@ func (Account) Annotations() []schema.Annotation {
 		&entsql.Annotation{
 			Checks: map[string]string{
 				// Checks that if auth_type is LOCAL, password field cannot be NULL.
-				"account_chk_if_auth_type_local_then_password_not_null": "(auth_type <> LOCAL) OR (password IS NOT NULL)",
+				"account_chk_if_auth_type_local_then_password_not_null": "(auth_type <> 'LOCAL') OR (password IS NOT NULL)",
 			},
 		},
 	}

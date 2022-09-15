@@ -35,9 +35,14 @@ ent-new:
 ent:
 	go generate ./ent
 
+# Get database schema
+.PHONY: ent-schema
+ent-schema:
+	go run -mod=mod entgo.io/ent/cmd/ent describe ./ent/schema
+
 # Runs Ent Atlas migration.
-.PHONY: atlas
-atlas:
+.PHONY: migrate
+migrate:
 	go run -mod=mod ent/migrate/main.go $(name)
 
 # ===================================

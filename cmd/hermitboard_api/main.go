@@ -1,15 +1,11 @@
 package main
 
 import (
-	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/chenningg/hermitboard-api/config"
-	"github.com/chenningg/hermitboard-api/db"
-	"github.com/chenningg/hermitboard-api/hbtype"
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zerologr"
 	"github.com/rs/zerolog"
@@ -37,24 +33,13 @@ func main() {
 	}
 	config := configService.Config()
 
-	// Open database pool connection
-	dbService, err := db.NewDbService(config.Db, logger.WithName("db"))
-	if err != nil {
-		// Log database error and panic.
-		logger.Error(err, "database setup could not be completed")
-		os.Exit(1)
-	}
-
-	dbService.Queries().CreateAccount(
-		context.Background(),
-		db.CreateAccountParams{
-			ID:       hbtype.NewULID(),
-			AuthID:   sql.NullString{},
-			Nickname: "Test",
-			Email:    "test@gmail.com",
-			Password: sql.NullString{String: "HashedStringTest#$", Valid: true},
-		},
-	)
+	//// Open database pool connection
+	//dbService, err := db.NewDbService(config.Db, logger.WithName("db"))
+	//if err != nil {
+	//	// Log database error and panic.
+	//	logger.Error(err, "database setup could not be completed")
+	//	os.Exit(1)
+	//}
 
 	// Run the web server
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolver.Resolver{}}))

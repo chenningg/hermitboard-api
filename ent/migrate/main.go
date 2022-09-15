@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/chenningg/hermitboard-api/config"
@@ -15,7 +16,7 @@ import (
 	atlas "ariga.io/atlas/sql/migrate"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql/schema"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -30,7 +31,7 @@ func main() {
 	configService, err := config.NewConfigService(logger.WithName("config"))
 	if err != nil {
 		// Log configuration error and panic.
-		logger.Error(err, "config could not be loaded")
+		logger.Error(err, "migrate: config could not be loaded")
 		os.Exit(1)
 	}
 	config := configService.Config()
@@ -39,8 +40,8 @@ func main() {
 	// Create a local migration directory able to understand Atlas migration file format for replay.
 	dir, err := atlas.NewLocalDir(config.Db.MigrationsDir)
 	if err != nil {
-		// If there's an error creating the migrations directory, panic.
-		logger.Error(err, "failed creating atlas migration directory", "migrationsDir", config.Db.MigrationsDir)
+		// If there's an error creating the migrations' directory, panic.
+		logger.Error(err, "migrate: failed creating atlas migration directory", "migrationsDir", config.Db.MigrationsDir)
 		os.Exit(1)
 	}
 
@@ -53,7 +54,7 @@ func main() {
 	}
 
 	if len(os.Args) != 2 {
-		logger.Error(fmt.Errorf("migration name is required. Use: 'go run -mod=mod ent/migrate/main.go <name>'"))
+		logger.Error(fmt.Errorf("migration name is required. Use: 'go run -mod=mod ent/migrate/main.go <name>'"), "migrate: missing migration name")
 		os.Exit(1)
 	}
 

@@ -41,32 +41,19 @@ func NewConfigService(logger logr.Logger) (*configService, error) {
 	return configService, nil
 }
 
-func (configService *configService) loadEnv() error {
+func (configService configService) loadEnv() error {
 	configService.logger.V(2).Info("loading environment variables")
+
+	err := godotenv.Load()
+	if err != nil {
+		return err
+	}
 
 	// Load environment variable, defaults to development.
 	env := strings.ToLower(os.Getenv("HB_APP_ENV"))
 	if env == "" {
-		env = "development"
+		os.Setenv("HB_APP_ENV", "Development")
 		configService.logger.V(1).Info("no application environment specified, defaulting to development")
-	}
-
-	// Load any local env files
-	err := godotenv.Load(".env." + env + ".local")
-	if err == nil {
-		return nil
-	}
-
-	// Also try to load any .env files with appenv suffix.
-	err = godotenv.Load(".env." + env)
-	if err == nil {
-		return nil
-	}
-
-	// Finally, if all else fails load .env file.
-	err = godotenv.Load()
-	if err != nil {
-		return err
 	}
 
 	return nil

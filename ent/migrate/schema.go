@@ -365,7 +365,7 @@ var (
 func init() {
 	AccountsTable.Annotation = &entsql.Annotation{}
 	AccountsTable.Annotation.Checks = map[string]string{
-		"account_chk_if_auth_type_local_then_password_not_null": "(auth_type <> LOCAL) OR (password IS NOT NULL)",
+		"account_chk_if_auth_type_local_then_password_not_null": "(auth_type <> 'LOCAL') OR (password IS NOT NULL)",
 	}
 	AccountAuthRolesTable.ForeignKeys[0].RefTable = AccountsTable
 	AccountAuthRolesTable.ForeignKeys[1].RefTable = AuthRolesTable

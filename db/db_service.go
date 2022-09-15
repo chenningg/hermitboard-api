@@ -82,7 +82,7 @@ func (dbService *dbService) MigrateUp() (int, error) {
 
 	// Set migrations file source.
 	migrations := &migrate.FileMigrationSource{
-		Dir: dbService.config.Migrations,
+		Dir: dbService.config.MigrationsDir,
 	}
 
 	// Set migration table name.
