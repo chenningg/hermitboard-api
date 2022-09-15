@@ -1,3 +1,15 @@
+-- create "exchanges" table
+CREATE TABLE "exchanges"
+(
+    "id"         character varying NOT NULL,
+    "created_at" timestamptz       NOT NULL,
+    "updated_at" timestamptz       NOT NULL,
+    "deleted_at" timestamptz       NULL,
+    "name"       character varying NOT NULL,
+    "icon"       character varying NULL,
+    "url"        character varying NULL,
+    PRIMARY KEY ("id")
+);
 -- create "accounts" table
 CREATE TABLE "accounts"
 (
@@ -33,18 +45,6 @@ CREATE TABLE "portfolios"
 );
 -- create index "portfolio_account_id_name" to table: "portfolios"
 CREATE UNIQUE INDEX "portfolio_account_id_name" ON "portfolios" ("account_id", "name");
--- create "exchanges" table
-CREATE TABLE "exchanges"
-(
-    "id"         character varying NOT NULL,
-    "created_at" timestamptz       NOT NULL,
-    "updated_at" timestamptz       NOT NULL,
-    "deleted_at" timestamptz       NULL,
-    "name"       character varying NOT NULL,
-    "icon"       character varying NULL,
-    "url"        character varying NULL,
-    PRIMARY KEY ("id")
-);
 -- create "transaction_types" table
 CREATE TABLE "transaction_types"
 (
