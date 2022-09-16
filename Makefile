@@ -59,7 +59,7 @@ atlas-gen:
 .PHONY: atlas-lint
 atlas-lint: install-atlas
 	atlas migrate lint \
-	--dev-url=docker://postgres \
+	--dev-url=docker://postgres?search_path=public \
 	--dir=$(MIGRATIONS_DIR) \
 	--dir-format=atlas \
 	--latest=1

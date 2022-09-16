@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/chenningg/hermitboard-api/db"
 	"net/http"
 	"os"
 
@@ -33,13 +34,16 @@ func main() {
 	}
 	config := configService.Config()
 
-	//// Open database pool connection
-	//dbService, err := db.NewDbService(config.Db, logger.WithName("db"))
-	//if err != nil {
-	//	// Log database error and panic.
-	//	logger.Error(err, "database setup could not be completed")
-	//	os.Exit(1)
-	//}
+	// Open database connection
+	dbService, err := db.NewDbService(config.Db, logger.WithName("db"))
+	if err != nil {
+		// Log database error and panic.
+		logger.Error(err, "database setup could not be completed")
+		os.Exit(1)
+	}
+
+	// Defer closing of database connection till end of main function.
+	defer dbService.Close()
 
 	// Run the web server
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolver.Resolver{}}))
