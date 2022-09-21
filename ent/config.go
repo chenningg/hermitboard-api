@@ -35,6 +35,8 @@ type hooks struct {
 	DailyAssetPrice          []ent.Hook
 	Exchange                 []ent.Hook
 	Portfolio                []ent.Hook
+	StaffAccount             []ent.Hook
+	StaffAccountAuthRole     []ent.Hook
 	Transaction              []ent.Hook
 	TransactionType          []ent.Hook
 }

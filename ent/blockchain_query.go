@@ -15,7 +15,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // BlockchainQuery is the builder for querying Blockchain entities.

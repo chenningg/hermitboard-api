@@ -5,7 +5,7 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // Cryptocurrency holds the schema definition for the Cryptocurrency entity.

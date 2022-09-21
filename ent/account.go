@@ -9,7 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/chenningg/hermitboard-api/ent/account"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // Account is the model entity for the Account schema.

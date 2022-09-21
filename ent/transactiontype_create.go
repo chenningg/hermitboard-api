@@ -10,9 +10,9 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // TransactionTypeCreate is the builder for creating a TransactionType entity.

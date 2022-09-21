@@ -14,8 +14,8 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // AssetCreate is the builder for creating a Asset entity.

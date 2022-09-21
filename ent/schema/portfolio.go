@@ -6,7 +6,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // Portfolio holds the schema definition for the Portfolio entity.

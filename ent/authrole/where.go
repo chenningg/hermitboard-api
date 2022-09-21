@@ -8,7 +8,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // ID filters vertices based on their ID field.
@@ -493,6 +493,34 @@ func HasAccountsWith(preds ...predicate.Account) predicate.AuthRole {
 	})
 }
 
+// HasStaffAccounts applies the HasEdge predicate on the "staff_accounts" edge.
+func HasStaffAccounts() predicate.AuthRole {
+	return predicate.AuthRole(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StaffAccountsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, StaffAccountsTable, StaffAccountsPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStaffAccountsWith applies the HasEdge predicate on the "staff_accounts" edge with a given conditions (other predicates).
+func HasStaffAccountsWith(preds ...predicate.StaffAccount) predicate.AuthRole {
+	return predicate.AuthRole(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StaffAccountsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, StaffAccountsTable, StaffAccountsPrimaryKey...),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasAccountAuthRoles applies the HasEdge predicate on the "account_auth_roles" edge.
 func HasAccountAuthRoles() predicate.AuthRole {
 	return predicate.AuthRole(func(s *sql.Selector) {
@@ -512,6 +540,34 @@ func HasAccountAuthRolesWith(preds ...predicate.AccountAuthRole) predicate.AuthR
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(AccountAuthRolesInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, true, AccountAuthRolesTable, AccountAuthRolesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasStaffAccountAuthRoles applies the HasEdge predicate on the "staff_account_auth_roles" edge.
+func HasStaffAccountAuthRoles() predicate.AuthRole {
+	return predicate.AuthRole(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StaffAccountAuthRolesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, StaffAccountAuthRolesTable, StaffAccountAuthRolesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStaffAccountAuthRolesWith applies the HasEdge predicate on the "staff_account_auth_roles" edge with a given conditions (other predicates).
+func HasStaffAccountAuthRolesWith(preds ...predicate.StaffAccountAuthRole) predicate.AuthRole {
+	return predicate.AuthRole(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(StaffAccountAuthRolesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, StaffAccountAuthRolesTable, StaffAccountAuthRolesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

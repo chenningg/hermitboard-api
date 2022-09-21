@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"github.com/chenningg/hermitboard-api/pulid"
 	"time"
 
 	"entgo.io/ent"
@@ -8,7 +9,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
 )
 
 // DailyAssetPrice holds the schema definition for the DailyAssetPrice entity.

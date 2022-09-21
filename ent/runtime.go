@@ -17,9 +17,11 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/schema"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
+	"github.com/chenningg/hermitboard-api/ent/staffaccount"
+	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -423,6 +425,82 @@ func init() {
 	portfolioDescID := portfolioMixinFields0[0].Descriptor()
 	// portfolio.DefaultID holds the default value on creation for the id field.
 	portfolio.DefaultID = portfolioDescID.Default.(func() pulid.PULID)
+	staffaccountMixin := schema.StaffAccount{}.Mixin()
+	staffaccountMixinFields0 := staffaccountMixin[0].Fields()
+	_ = staffaccountMixinFields0
+	staffaccountMixinFields1 := staffaccountMixin[1].Fields()
+	_ = staffaccountMixinFields1
+	staffaccountMixinFields2 := staffaccountMixin[2].Fields()
+	_ = staffaccountMixinFields2
+	staffaccountMixinFields3 := staffaccountMixin[3].Fields()
+	_ = staffaccountMixinFields3
+	staffaccountFields := schema.StaffAccount{}.Fields()
+	_ = staffaccountFields
+	// staffaccountDescCreatedAt is the schema descriptor for created_at field.
+	staffaccountDescCreatedAt := staffaccountMixinFields1[0].Descriptor()
+	// staffaccount.DefaultCreatedAt holds the default value on creation for the created_at field.
+	staffaccount.DefaultCreatedAt = staffaccountDescCreatedAt.Default.(func() time.Time)
+	// staffaccountDescUpdatedAt is the schema descriptor for updated_at field.
+	staffaccountDescUpdatedAt := staffaccountMixinFields2[0].Descriptor()
+	// staffaccount.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	staffaccount.DefaultUpdatedAt = staffaccountDescUpdatedAt.Default.(func() time.Time)
+	// staffaccount.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	staffaccount.UpdateDefaultUpdatedAt = staffaccountDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// staffaccountDescDeletedAt is the schema descriptor for deleted_at field.
+	staffaccountDescDeletedAt := staffaccountMixinFields3[0].Descriptor()
+	// staffaccount.UpdateDefaultDeletedAt holds the default value on update for the deleted_at field.
+	staffaccount.UpdateDefaultDeletedAt = staffaccountDescDeletedAt.UpdateDefault.(func() time.Time)
+	// staffaccountDescNickname is the schema descriptor for nickname field.
+	staffaccountDescNickname := staffaccountFields[1].Descriptor()
+	// staffaccount.NicknameValidator is a validator for the "nickname" field. It is called by the builders before save.
+	staffaccount.NicknameValidator = staffaccountDescNickname.Validators[0].(func(string) error)
+	// staffaccountDescEmail is the schema descriptor for email field.
+	staffaccountDescEmail := staffaccountFields[2].Descriptor()
+	// staffaccount.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	staffaccount.EmailValidator = staffaccountDescEmail.Validators[0].(func(string) error)
+	// staffaccountDescPassword is the schema descriptor for password field.
+	staffaccountDescPassword := staffaccountFields[3].Descriptor()
+	// staffaccount.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
+	staffaccount.PasswordValidator = staffaccountDescPassword.Validators[0].(func(string) error)
+	// staffaccountDescPasswordUpdatedAt is the schema descriptor for password_updated_at field.
+	staffaccountDescPasswordUpdatedAt := staffaccountFields[4].Descriptor()
+	// staffaccount.DefaultPasswordUpdatedAt holds the default value on creation for the password_updated_at field.
+	staffaccount.DefaultPasswordUpdatedAt = staffaccountDescPasswordUpdatedAt.Default.(func() time.Time)
+	// staffaccount.UpdateDefaultPasswordUpdatedAt holds the default value on update for the password_updated_at field.
+	staffaccount.UpdateDefaultPasswordUpdatedAt = staffaccountDescPasswordUpdatedAt.UpdateDefault.(func() time.Time)
+	// staffaccountDescID is the schema descriptor for id field.
+	staffaccountDescID := staffaccountMixinFields0[0].Descriptor()
+	// staffaccount.DefaultID holds the default value on creation for the id field.
+	staffaccount.DefaultID = staffaccountDescID.Default.(func() pulid.PULID)
+	staffaccountauthroleMixin := schema.StaffAccountAuthRole{}.Mixin()
+	staffaccountauthroleMixinFields0 := staffaccountauthroleMixin[0].Fields()
+	_ = staffaccountauthroleMixinFields0
+	staffaccountauthroleMixinFields1 := staffaccountauthroleMixin[1].Fields()
+	_ = staffaccountauthroleMixinFields1
+	staffaccountauthroleMixinFields2 := staffaccountauthroleMixin[2].Fields()
+	_ = staffaccountauthroleMixinFields2
+	staffaccountauthroleMixinFields3 := staffaccountauthroleMixin[3].Fields()
+	_ = staffaccountauthroleMixinFields3
+	staffaccountauthroleFields := schema.StaffAccountAuthRole{}.Fields()
+	_ = staffaccountauthroleFields
+	// staffaccountauthroleDescCreatedAt is the schema descriptor for created_at field.
+	staffaccountauthroleDescCreatedAt := staffaccountauthroleMixinFields1[0].Descriptor()
+	// staffaccountauthrole.DefaultCreatedAt holds the default value on creation for the created_at field.
+	staffaccountauthrole.DefaultCreatedAt = staffaccountauthroleDescCreatedAt.Default.(func() time.Time)
+	// staffaccountauthroleDescUpdatedAt is the schema descriptor for updated_at field.
+	staffaccountauthroleDescUpdatedAt := staffaccountauthroleMixinFields2[0].Descriptor()
+	// staffaccountauthrole.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	staffaccountauthrole.DefaultUpdatedAt = staffaccountauthroleDescUpdatedAt.Default.(func() time.Time)
+	// staffaccountauthrole.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	staffaccountauthrole.UpdateDefaultUpdatedAt = staffaccountauthroleDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// staffaccountauthroleDescDeletedAt is the schema descriptor for deleted_at field.
+	staffaccountauthroleDescDeletedAt := staffaccountauthroleMixinFields3[0].Descriptor()
+	// staffaccountauthrole.UpdateDefaultDeletedAt holds the default value on update for the deleted_at field.
+	staffaccountauthrole.UpdateDefaultDeletedAt = staffaccountauthroleDescDeletedAt.UpdateDefault.(func() time.Time)
+	// staffaccountauthroleDescID is the schema descriptor for id field.
+	staffaccountauthroleDescID := staffaccountauthroleMixinFields0[0].Descriptor()
+	// staffaccountauthrole.DefaultID holds the default value on creation for the id field.
+	staffaccountauthrole.DefaultID = staffaccountauthroleDescID.Default.(func() pulid.PULID)
 	transactionMixin := schema.Transaction{}.Mixin()
 	transactionMixinFields0 := transactionMixin[0].Fields()
 	_ = transactionMixinFields0

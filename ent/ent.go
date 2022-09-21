@@ -21,6 +21,8 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
+	"github.com/chenningg/hermitboard-api/ent/staffaccount"
+	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
 )
@@ -54,6 +56,8 @@ func columnChecker(table string) func(string) error {
 		dailyassetprice.Table:          dailyassetprice.ValidColumn,
 		exchange.Table:                 exchange.ValidColumn,
 		portfolio.Table:                portfolio.ValidColumn,
+		staffaccount.Table:             staffaccount.ValidColumn,
+		staffaccountauthrole.Table:     staffaccountauthrole.ValidColumn,
 		transaction.Table:              transaction.ValidColumn,
 		transactiontype.Table:          transactiontype.ValidColumn,
 	}

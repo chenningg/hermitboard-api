@@ -15,24 +15,30 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/accountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
+	"github.com/chenningg/hermitboard-api/ent/staffaccount"
+	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // AuthRoleQuery is the builder for querying AuthRole entities.
 type AuthRoleQuery struct {
 	config
-	limit                     *int
-	offset                    *int
-	unique                    *bool
-	order                     []OrderFunc
-	fields                    []string
-	predicates                []predicate.AuthRole
-	withAccounts              *AccountQuery
-	withAccountAuthRoles      *AccountAuthRoleQuery
-	modifiers                 []func(*sql.Selector)
-	loadTotal                 []func(context.Context, []*AuthRole) error
-	withNamedAccounts         map[string]*AccountQuery
-	withNamedAccountAuthRoles map[string]*AccountAuthRoleQuery
+	limit                          *int
+	offset                         *int
+	unique                         *bool
+	order                          []OrderFunc
+	fields                         []string
+	predicates                     []predicate.AuthRole
+	withAccounts                   *AccountQuery
+	withStaffAccounts              *StaffAccountQuery
+	withAccountAuthRoles           *AccountAuthRoleQuery
+	withStaffAccountAuthRoles      *StaffAccountAuthRoleQuery
+	modifiers                      []func(*sql.Selector)
+	loadTotal                      []func(context.Context, []*AuthRole) error
+	withNamedAccounts              map[string]*AccountQuery
+	withNamedStaffAccounts         map[string]*StaffAccountQuery
+	withNamedAccountAuthRoles      map[string]*AccountAuthRoleQuery
+	withNamedStaffAccountAuthRoles map[string]*StaffAccountAuthRoleQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -91,6 +97,28 @@ func (arq *AuthRoleQuery) QueryAccounts() *AccountQuery {
 	return query
 }
 
+// QueryStaffAccounts chains the current query on the "staff_accounts" edge.
+func (arq *AuthRoleQuery) QueryStaffAccounts() *StaffAccountQuery {
+	query := &StaffAccountQuery{config: arq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := arq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := arq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(authrole.Table, authrole.FieldID, selector),
+			sqlgraph.To(staffaccount.Table, staffaccount.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, authrole.StaffAccountsTable, authrole.StaffAccountsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(arq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryAccountAuthRoles chains the current query on the "account_auth_roles" edge.
 func (arq *AuthRoleQuery) QueryAccountAuthRoles() *AccountAuthRoleQuery {
 	query := &AccountAuthRoleQuery{config: arq.config}
@@ -106,6 +134,28 @@ func (arq *AuthRoleQuery) QueryAccountAuthRoles() *AccountAuthRoleQuery {
 			sqlgraph.From(authrole.Table, authrole.FieldID, selector),
 			sqlgraph.To(accountauthrole.Table, accountauthrole.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, true, authrole.AccountAuthRolesTable, authrole.AccountAuthRolesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(arq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryStaffAccountAuthRoles chains the current query on the "staff_account_auth_roles" edge.
+func (arq *AuthRoleQuery) QueryStaffAccountAuthRoles() *StaffAccountAuthRoleQuery {
+	query := &StaffAccountAuthRoleQuery{config: arq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := arq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := arq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(authrole.Table, authrole.FieldID, selector),
+			sqlgraph.To(staffaccountauthrole.Table, staffaccountauthrole.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, authrole.StaffAccountAuthRolesTable, authrole.StaffAccountAuthRolesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(arq.driver.Dialect(), step)
 		return fromU, nil
@@ -289,13 +339,15 @@ func (arq *AuthRoleQuery) Clone() *AuthRoleQuery {
 		return nil
 	}
 	return &AuthRoleQuery{
-		config:               arq.config,
-		limit:                arq.limit,
-		offset:               arq.offset,
-		order:                append([]OrderFunc{}, arq.order...),
-		predicates:           append([]predicate.AuthRole{}, arq.predicates...),
-		withAccounts:         arq.withAccounts.Clone(),
-		withAccountAuthRoles: arq.withAccountAuthRoles.Clone(),
+		config:                    arq.config,
+		limit:                     arq.limit,
+		offset:                    arq.offset,
+		order:                     append([]OrderFunc{}, arq.order...),
+		predicates:                append([]predicate.AuthRole{}, arq.predicates...),
+		withAccounts:              arq.withAccounts.Clone(),
+		withStaffAccounts:         arq.withStaffAccounts.Clone(),
+		withAccountAuthRoles:      arq.withAccountAuthRoles.Clone(),
+		withStaffAccountAuthRoles: arq.withStaffAccountAuthRoles.Clone(),
 		// clone intermediate query.
 		sql:    arq.sql.Clone(),
 		path:   arq.path,
@@ -314,6 +366,17 @@ func (arq *AuthRoleQuery) WithAccounts(opts ...func(*AccountQuery)) *AuthRoleQue
 	return arq
 }
 
+// WithStaffAccounts tells the query-builder to eager-load the nodes that are connected to
+// the "staff_accounts" edge. The optional arguments are used to configure the query builder of the edge.
+func (arq *AuthRoleQuery) WithStaffAccounts(opts ...func(*StaffAccountQuery)) *AuthRoleQuery {
+	query := &StaffAccountQuery{config: arq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	arq.withStaffAccounts = query
+	return arq
+}
+
 // WithAccountAuthRoles tells the query-builder to eager-load the nodes that are connected to
 // the "account_auth_roles" edge. The optional arguments are used to configure the query builder of the edge.
 func (arq *AuthRoleQuery) WithAccountAuthRoles(opts ...func(*AccountAuthRoleQuery)) *AuthRoleQuery {
@@ -322,6 +385,17 @@ func (arq *AuthRoleQuery) WithAccountAuthRoles(opts ...func(*AccountAuthRoleQuer
 		opt(query)
 	}
 	arq.withAccountAuthRoles = query
+	return arq
+}
+
+// WithStaffAccountAuthRoles tells the query-builder to eager-load the nodes that are connected to
+// the "staff_account_auth_roles" edge. The optional arguments are used to configure the query builder of the edge.
+func (arq *AuthRoleQuery) WithStaffAccountAuthRoles(opts ...func(*StaffAccountAuthRoleQuery)) *AuthRoleQuery {
+	query := &StaffAccountAuthRoleQuery{config: arq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	arq.withStaffAccountAuthRoles = query
 	return arq
 }
 
@@ -393,9 +467,11 @@ func (arq *AuthRoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Au
 	var (
 		nodes       = []*AuthRole{}
 		_spec       = arq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [4]bool{
 			arq.withAccounts != nil,
+			arq.withStaffAccounts != nil,
 			arq.withAccountAuthRoles != nil,
+			arq.withStaffAccountAuthRoles != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -426,10 +502,26 @@ func (arq *AuthRoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Au
 			return nil, err
 		}
 	}
+	if query := arq.withStaffAccounts; query != nil {
+		if err := arq.loadStaffAccounts(ctx, query, nodes,
+			func(n *AuthRole) { n.Edges.StaffAccounts = []*StaffAccount{} },
+			func(n *AuthRole, e *StaffAccount) { n.Edges.StaffAccounts = append(n.Edges.StaffAccounts, e) }); err != nil {
+			return nil, err
+		}
+	}
 	if query := arq.withAccountAuthRoles; query != nil {
 		if err := arq.loadAccountAuthRoles(ctx, query, nodes,
 			func(n *AuthRole) { n.Edges.AccountAuthRoles = []*AccountAuthRole{} },
 			func(n *AuthRole, e *AccountAuthRole) { n.Edges.AccountAuthRoles = append(n.Edges.AccountAuthRoles, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := arq.withStaffAccountAuthRoles; query != nil {
+		if err := arq.loadStaffAccountAuthRoles(ctx, query, nodes,
+			func(n *AuthRole) { n.Edges.StaffAccountAuthRoles = []*StaffAccountAuthRole{} },
+			func(n *AuthRole, e *StaffAccountAuthRole) {
+				n.Edges.StaffAccountAuthRoles = append(n.Edges.StaffAccountAuthRoles, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -440,10 +532,24 @@ func (arq *AuthRoleQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Au
 			return nil, err
 		}
 	}
+	for name, query := range arq.withNamedStaffAccounts {
+		if err := arq.loadStaffAccounts(ctx, query, nodes,
+			func(n *AuthRole) { n.appendNamedStaffAccounts(name) },
+			func(n *AuthRole, e *StaffAccount) { n.appendNamedStaffAccounts(name, e) }); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range arq.withNamedAccountAuthRoles {
 		if err := arq.loadAccountAuthRoles(ctx, query, nodes,
 			func(n *AuthRole) { n.appendNamedAccountAuthRoles(name) },
 			func(n *AuthRole, e *AccountAuthRole) { n.appendNamedAccountAuthRoles(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range arq.withNamedStaffAccountAuthRoles {
+		if err := arq.loadStaffAccountAuthRoles(ctx, query, nodes,
+			func(n *AuthRole) { n.appendNamedStaffAccountAuthRoles(name) },
+			func(n *AuthRole, e *StaffAccountAuthRole) { n.appendNamedStaffAccountAuthRoles(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -513,6 +619,64 @@ func (arq *AuthRoleQuery) loadAccounts(ctx context.Context, query *AccountQuery,
 	}
 	return nil
 }
+func (arq *AuthRoleQuery) loadStaffAccounts(ctx context.Context, query *StaffAccountQuery, nodes []*AuthRole, init func(*AuthRole), assign func(*AuthRole, *StaffAccount)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[pulid.PULID]*AuthRole)
+	nids := make(map[pulid.PULID]map[*AuthRole]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(authrole.StaffAccountsTable)
+		s.Join(joinT).On(s.C(staffaccount.FieldID), joinT.C(authrole.StaffAccountsPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(authrole.StaffAccountsPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(authrole.StaffAccountsPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+		assign := spec.Assign
+		values := spec.ScanValues
+		spec.ScanValues = func(columns []string) ([]any, error) {
+			values, err := values(columns[1:])
+			if err != nil {
+				return nil, err
+			}
+			return append([]any{new(pulid.PULID)}, values...), nil
+		}
+		spec.Assign = func(columns []string, values []any) error {
+			outValue := *values[0].(*pulid.PULID)
+			inValue := *values[1].(*pulid.PULID)
+			if nids[inValue] == nil {
+				nids[inValue] = map[*AuthRole]struct{}{byID[outValue]: struct{}{}}
+				return assign(columns[1:], values[1:])
+			}
+			nids[inValue][byID[outValue]] = struct{}{}
+			return nil
+		}
+	})
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "staff_accounts" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
 func (arq *AuthRoleQuery) loadAccountAuthRoles(ctx context.Context, query *AccountAuthRoleQuery, nodes []*AuthRole, init func(*AuthRole), assign func(*AuthRole, *AccountAuthRole)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[pulid.PULID]*AuthRole)
@@ -525,6 +689,33 @@ func (arq *AuthRoleQuery) loadAccountAuthRoles(ctx context.Context, query *Accou
 	}
 	query.Where(predicate.AccountAuthRole(func(s *sql.Selector) {
 		s.Where(sql.InValues(authrole.AccountAuthRolesColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AuthRoleID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "auth_role_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (arq *AuthRoleQuery) loadStaffAccountAuthRoles(ctx context.Context, query *StaffAccountAuthRoleQuery, nodes []*AuthRole, init func(*AuthRole), assign func(*AuthRole, *StaffAccountAuthRole)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[pulid.PULID]*AuthRole)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.Where(predicate.StaffAccountAuthRole(func(s *sql.Selector) {
+		s.Where(sql.InValues(authrole.StaffAccountAuthRolesColumn, fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {
@@ -658,6 +849,20 @@ func (arq *AuthRoleQuery) WithNamedAccounts(name string, opts ...func(*AccountQu
 	return arq
 }
 
+// WithNamedStaffAccounts tells the query-builder to eager-load the nodes that are connected to the "staff_accounts"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (arq *AuthRoleQuery) WithNamedStaffAccounts(name string, opts ...func(*StaffAccountQuery)) *AuthRoleQuery {
+	query := &StaffAccountQuery{config: arq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	if arq.withNamedStaffAccounts == nil {
+		arq.withNamedStaffAccounts = make(map[string]*StaffAccountQuery)
+	}
+	arq.withNamedStaffAccounts[name] = query
+	return arq
+}
+
 // WithNamedAccountAuthRoles tells the query-builder to eager-load the nodes that are connected to the "account_auth_roles"
 // edge with the given name. The optional arguments are used to configure the query builder of the edge.
 func (arq *AuthRoleQuery) WithNamedAccountAuthRoles(name string, opts ...func(*AccountAuthRoleQuery)) *AuthRoleQuery {
@@ -669,6 +874,20 @@ func (arq *AuthRoleQuery) WithNamedAccountAuthRoles(name string, opts ...func(*A
 		arq.withNamedAccountAuthRoles = make(map[string]*AccountAuthRoleQuery)
 	}
 	arq.withNamedAccountAuthRoles[name] = query
+	return arq
+}
+
+// WithNamedStaffAccountAuthRoles tells the query-builder to eager-load the nodes that are connected to the "staff_account_auth_roles"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (arq *AuthRoleQuery) WithNamedStaffAccountAuthRoles(name string, opts ...func(*StaffAccountAuthRoleQuery)) *AuthRoleQuery {
+	query := &StaffAccountAuthRoleQuery{config: arq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	if arq.withNamedStaffAccountAuthRoles == nil {
+		arq.withNamedStaffAccountAuthRoles = make(map[string]*StaffAccountAuthRoleQuery)
+	}
+	arq.withNamedStaffAccountAuthRoles[name] = query
 	return arq
 }
 

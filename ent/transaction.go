@@ -11,9 +11,9 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // Transaction is the model entity for the Transaction schema.

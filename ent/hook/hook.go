@@ -152,6 +152,32 @@ func (f PortfolioFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return f(ctx, mv)
 }
 
+// The StaffAccountFunc type is an adapter to allow the use of ordinary
+// function as StaffAccount mutator.
+type StaffAccountFunc func(context.Context, *ent.StaffAccountMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f StaffAccountFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.StaffAccountMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StaffAccountMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The StaffAccountAuthRoleFunc type is an adapter to allow the use of ordinary
+// function as StaffAccountAuthRole mutator.
+type StaffAccountAuthRoleFunc func(context.Context, *ent.StaffAccountAuthRoleMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f StaffAccountAuthRoleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.StaffAccountAuthRoleMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StaffAccountAuthRoleMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TransactionFunc type is an adapter to allow the use of ordinary
 // function as Transaction mutator.
 type TransactionFunc func(context.Context, *ent.TransactionMutation) (ent.Value, error)

@@ -25,7 +25,7 @@ func main() {
 	zerologr.NameFieldName = "logger"
 	zerologr.NameSeparator = "/"
 	zl := zerolog.New(os.Stderr).With().Timestamp().Logger()
-	var logger logr.Logger = zerologr.New(&zl).WithName("hermitboard-api")
+	var logger logr.Logger = zerologr.New(&zl).WithName("hermitboard-api").WithName("migrate")
 
 	// Load in configuration.
 	configService, err := config.NewConfigService(logger.WithName("config"))
@@ -41,7 +41,9 @@ func main() {
 	dir, err := atlas.NewLocalDir(config.Db.MigrationsDir)
 	if err != nil {
 		// If there's an error creating the migrations' directory, panic.
-		logger.Error(err, "migrate: failed creating atlas migration directory", "migrationsDir", config.Db.MigrationsDir)
+		logger.Error(
+			err, "migrate: failed creating atlas migration directory", "migrationsDir", config.Db.MigrationsDir,
+		)
 		os.Exit(1)
 	}
 
@@ -54,7 +56,10 @@ func main() {
 	}
 
 	if len(os.Args) != 2 {
-		logger.Error(fmt.Errorf("migration name is required. Use: 'go run -mod=mod ent/migrate/main.go <name>'"), "migrate: missing migration name")
+		logger.Error(
+			fmt.Errorf("migration name is required. Use: 'go run -mod=mod ent/migrate/main.go <name>'"),
+			"migrate: missing migration name",
+		)
 		os.Exit(1)
 	}
 

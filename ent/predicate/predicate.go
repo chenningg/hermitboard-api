@@ -39,6 +39,12 @@ type Exchange func(*sql.Selector)
 // Portfolio is the predicate function for portfolio builders.
 type Portfolio func(*sql.Selector)
 
+// StaffAccount is the predicate function for staffaccount builders.
+type StaffAccount func(*sql.Selector)
+
+// StaffAccountAuthRole is the predicate function for staffaccountauthrole builders.
+type StaffAccountAuthRole func(*sql.Selector)
+
 // Transaction is the predicate function for transaction builders.
 type Transaction func(*sql.Selector)
 

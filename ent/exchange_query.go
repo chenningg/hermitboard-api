@@ -13,8 +13,8 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // ExchangeQuery is the builder for querying Exchange entities.

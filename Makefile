@@ -4,26 +4,8 @@
 MIGRATIONS_DIR = file://ent/migrate/migrations
 
 # ===================================
-# Utilities
-# ===================================
-
-.PHONY: go-tidy
-go-tidy:
-	go mod tidy
-
-# ===================================
 # Database development
 # ===================================
-
-# Installs SQLC.
-.PHONY: install-sqlc
-install-sqlc:
-	docker pull kjconroy/sqlc
-
-# Generates SQLC queries.
-.PHONY: sqlc-gen
-sqlc-gen: install-sqlc
-	docker run --rm -v "$(CURDIR):/src" -w /src kjconroy/sqlc generate
 
 # Installs EntGo.
 .PHONY: install-ent
@@ -33,7 +15,7 @@ install-ent:
 # Creates a new Ent entity.
 .PHONY: ent-new
 ent-new:
-	go run -mod=mod entgo.io/ent/cmd/ent init $(new)
+	go run -mod=mod entgo.io/ent/cmd/ent init $(name)
 
 # Runs Ent codegen.
 .PHONY: ent-gen
@@ -108,7 +90,7 @@ atlas-apply-dry:
 install-gqlgen:
 	go install github.com/99designs/gqlgen@latest
 
-.PHONY: gqlgen
+.PHONY: gqlgen-gen
 gqlgen: install-gqlgen
 	go run github.com/99designs/gqlgen generate
 
@@ -116,5 +98,5 @@ gqlgen: install-gqlgen
 # Server
 # ===================================
 .PHONY: dev
-dev: go-tidy
+dev:
 	go run ./cmd/hermitboard_api/main.go

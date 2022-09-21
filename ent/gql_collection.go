@@ -393,6 +393,18 @@ func (ar *AuthRoleQuery) collectField(ctx context.Context, op *graphql.Operation
 			ar.WithNamedAccounts(alias, func(wq *AccountQuery) {
 				*wq = *query
 			})
+		case "staffAccounts", "staff_accounts":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &StaffAccountQuery{config: ar.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			ar.WithNamedStaffAccounts(alias, func(wq *StaffAccountQuery) {
+				*wq = *query
+			})
 		case "accountAuthRoles", "account_auth_roles":
 			var (
 				alias = field.Alias
@@ -403,6 +415,18 @@ func (ar *AuthRoleQuery) collectField(ctx context.Context, op *graphql.Operation
 				return err
 			}
 			ar.WithNamedAccountAuthRoles(alias, func(wq *AccountAuthRoleQuery) {
+				*wq = *query
+			})
+		case "staffAccountAuthRoles", "staff_account_auth_roles":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &StaffAccountAuthRoleQuery{config: ar.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			ar.WithNamedStaffAccountAuthRoles(alias, func(wq *StaffAccountAuthRoleQuery) {
 				*wq = *query
 			})
 		}
@@ -844,6 +868,166 @@ type portfolioPaginateArgs struct {
 
 func newPortfolioPaginateArgs(rv map[string]interface{}) *portfolioPaginateArgs {
 	args := &portfolioPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (sa *StaffAccountQuery) CollectFields(ctx context.Context, satisfies ...string) (*StaffAccountQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return sa, nil
+	}
+	if err := sa.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return sa, nil
+}
+
+func (sa *StaffAccountQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
+		switch field.Name {
+		case "authRoles", "auth_roles":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &AuthRoleQuery{config: sa.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			sa.WithNamedAuthRoles(alias, func(wq *AuthRoleQuery) {
+				*wq = *query
+			})
+		case "staffAccountAuthRoles", "staff_account_auth_roles":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &StaffAccountAuthRoleQuery{config: sa.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			sa.WithNamedStaffAccountAuthRoles(alias, func(wq *StaffAccountAuthRoleQuery) {
+				*wq = *query
+			})
+		}
+	}
+	return nil
+}
+
+type staffaccountPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []StaffAccountPaginateOption
+}
+
+func newStaffAccountPaginateArgs(rv map[string]interface{}) *staffaccountPaginateArgs {
+	args := &staffaccountPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &StaffAccountOrder{Field: &StaffAccountOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithStaffAccountOrder(order))
+			}
+		case *StaffAccountOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithStaffAccountOrder(v))
+			}
+		}
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (saar *StaffAccountAuthRoleQuery) CollectFields(ctx context.Context, satisfies ...string) (*StaffAccountAuthRoleQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return saar, nil
+	}
+	if err := saar.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return saar, nil
+}
+
+func (saar *StaffAccountAuthRoleQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
+		switch field.Name {
+		case "staffAccount", "staff_account":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &StaffAccountQuery{config: saar.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			saar.withStaffAccount = query
+		case "authRole", "auth_role":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &AuthRoleQuery{config: saar.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			saar.withAuthRole = query
+		}
+	}
+	return nil
+}
+
+type staffaccountauthrolePaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []StaffAccountAuthRolePaginateOption
+}
+
+func newStaffAccountAuthRolePaginateArgs(rv map[string]interface{}) *staffaccountauthrolePaginateArgs {
+	args := &staffaccountauthrolePaginateArgs{}
 	if rv == nil {
 		return args
 	}

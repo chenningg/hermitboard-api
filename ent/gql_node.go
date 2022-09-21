@@ -20,9 +20,11 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
+	"github.com/chenningg/hermitboard-api/ent/staffaccount"
+	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
+	"github.com/chenningg/hermitboard-api/pulid"
 	"github.com/hashicorp/go-multierror"
 )
 
@@ -388,7 +390,7 @@ func (ar *AuthRole) Node(ctx context.Context) (node *Node, err error) {
 		ID:     ar.ID,
 		Type:   "AuthRole",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 2),
+		Edges:  make([]*Edge, 4),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(ar.CreatedAt); err != nil {
@@ -442,12 +444,32 @@ func (ar *AuthRole) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Edges[1] = &Edge{
+		Type: "StaffAccount",
+		Name: "staff_accounts",
+	}
+	err = ar.QueryStaffAccounts().
+		Select(staffaccount.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
 		Type: "AccountAuthRole",
 		Name: "account_auth_roles",
 	}
 	err = ar.QueryAccountAuthRoles().
 		Select(accountauthrole.FieldID).
-		Scan(ctx, &node.Edges[1].IDs)
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[3] = &Edge{
+		Type: "StaffAccountAuthRole",
+		Name: "staff_account_auth_roles",
+	}
+	err = ar.QueryStaffAccountAuthRoles().
+		Select(staffaccountauthrole.FieldID).
+		Scan(ctx, &node.Edges[3].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -966,6 +988,172 @@ func (po *Portfolio) Node(ctx context.Context) (node *Node, err error) {
 	return node, nil
 }
 
+func (sa *StaffAccount) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     sa.ID,
+		Type:   "StaffAccount",
+		Fields: make([]*Field, 8),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(sa.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(sa.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(sa.DeletedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "deleted_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(sa.AuthType); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "staffaccount.AuthType",
+		Name:  "auth_type",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(sa.Nickname); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "string",
+		Name:  "nickname",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(sa.Email); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "string",
+		Name:  "email",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(sa.Password); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
+		Type:  "string",
+		Name:  "password",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(sa.PasswordUpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[7] = &Field{
+		Type:  "time.Time",
+		Name:  "password_updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "AuthRole",
+		Name: "auth_roles",
+	}
+	err = sa.QueryAuthRoles().
+		Select(authrole.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "StaffAccountAuthRole",
+		Name: "staff_account_auth_roles",
+	}
+	err = sa.QueryStaffAccountAuthRoles().
+		Select(staffaccountauthrole.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (saar *StaffAccountAuthRole) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     saar.ID,
+		Type:   "StaffAccountAuthRole",
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(saar.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(saar.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(saar.DeletedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "deleted_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(saar.StaffAccountID); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "pulid.PULID",
+		Name:  "staff_account_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(saar.AuthRoleID); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "pulid.PULID",
+		Name:  "auth_role_id",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "StaffAccount",
+		Name: "staff_account",
+	}
+	err = saar.QueryStaffAccount().
+		Select(staffaccount.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "AuthRole",
+		Name: "auth_role",
+	}
+	err = saar.QueryAuthRole().
+		Select(authrole.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
 func (t *Transaction) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     t.ID,
@@ -1418,6 +1606,38 @@ func (c *Client) noder(ctx context.Context, table string, id pulid.PULID) (Noder
 			return nil, err
 		}
 		return n, nil
+	case staffaccount.Table:
+		var uid pulid.PULID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
+		query := c.StaffAccount.Query().
+			Where(staffaccount.ID(uid))
+		query, err := query.CollectFields(ctx, "StaffAccount")
+		if err != nil {
+			return nil, err
+		}
+		n, err := query.Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case staffaccountauthrole.Table:
+		var uid pulid.PULID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
+		query := c.StaffAccountAuthRole.Query().
+			Where(staffaccountauthrole.ID(uid))
+		query, err := query.CollectFields(ctx, "StaffAccountAuthRole")
+		if err != nil {
+			return nil, err
+		}
+		n, err := query.Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case transaction.Table:
 		var uid pulid.PULID
 		if err := uid.UnmarshalGQL(id); err != nil {
@@ -1687,6 +1907,38 @@ func (c *Client) noders(ctx context.Context, table string, ids []pulid.PULID) ([
 		query := c.Portfolio.Query().
 			Where(portfolio.IDIn(ids...))
 		query, err := query.CollectFields(ctx, "Portfolio")
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case staffaccount.Table:
+		query := c.StaffAccount.Query().
+			Where(staffaccount.IDIn(ids...))
+		query, err := query.CollectFields(ctx, "StaffAccount")
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case staffaccountauthrole.Table:
+		query := c.StaffAccountAuthRole.Query().
+			Where(staffaccountauthrole.IDIn(ids...))
+		query, err := query.CollectFields(ctx, "StaffAccountAuthRole")
 		if err != nil {
 			return nil, err
 		}

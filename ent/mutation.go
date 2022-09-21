@@ -21,9 +21,11 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
+	"github.com/chenningg/hermitboard-api/ent/staffaccount"
+	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
+	"github.com/chenningg/hermitboard-api/pulid"
 
 	"entgo.io/ent"
 )
@@ -48,6 +50,8 @@ const (
 	TypeDailyAssetPrice          = "DailyAssetPrice"
 	TypeExchange                 = "Exchange"
 	TypePortfolio                = "Portfolio"
+	TypeStaffAccount             = "StaffAccount"
+	TypeStaffAccountAuthRole     = "StaffAccountAuthRole"
 	TypeTransaction              = "Transaction"
 	TypeTransactionType          = "TransactionType"
 )
@@ -3234,24 +3238,30 @@ func (m *AssetClassMutation) ResetEdge(name string) error {
 // AuthRoleMutation represents an operation that mutates the AuthRole nodes in the graph.
 type AuthRoleMutation struct {
 	config
-	op                        Op
-	typ                       string
-	id                        *pulid.PULID
-	created_at                *time.Time
-	updated_at                *time.Time
-	deleted_at                *time.Time
-	auth_role                 *authrole.AuthRole
-	description               *string
-	clearedFields             map[string]struct{}
-	accounts                  map[pulid.PULID]struct{}
-	removedaccounts           map[pulid.PULID]struct{}
-	clearedaccounts           bool
-	account_auth_roles        map[pulid.PULID]struct{}
-	removedaccount_auth_roles map[pulid.PULID]struct{}
-	clearedaccount_auth_roles bool
-	done                      bool
-	oldValue                  func(context.Context) (*AuthRole, error)
-	predicates                []predicate.AuthRole
+	op                              Op
+	typ                             string
+	id                              *pulid.PULID
+	created_at                      *time.Time
+	updated_at                      *time.Time
+	deleted_at                      *time.Time
+	auth_role                       *authrole.AuthRole
+	description                     *string
+	clearedFields                   map[string]struct{}
+	accounts                        map[pulid.PULID]struct{}
+	removedaccounts                 map[pulid.PULID]struct{}
+	clearedaccounts                 bool
+	staff_accounts                  map[pulid.PULID]struct{}
+	removedstaff_accounts           map[pulid.PULID]struct{}
+	clearedstaff_accounts           bool
+	account_auth_roles              map[pulid.PULID]struct{}
+	removedaccount_auth_roles       map[pulid.PULID]struct{}
+	clearedaccount_auth_roles       bool
+	staff_account_auth_roles        map[pulid.PULID]struct{}
+	removedstaff_account_auth_roles map[pulid.PULID]struct{}
+	clearedstaff_account_auth_roles bool
+	done                            bool
+	oldValue                        func(context.Context) (*AuthRole, error)
+	predicates                      []predicate.AuthRole
 }
 
 var _ ent.Mutation = (*AuthRoleMutation)(nil)
@@ -3618,6 +3628,60 @@ func (m *AuthRoleMutation) ResetAccounts() {
 	m.removedaccounts = nil
 }
 
+// AddStaffAccountIDs adds the "staff_accounts" edge to the StaffAccount entity by ids.
+func (m *AuthRoleMutation) AddStaffAccountIDs(ids ...pulid.PULID) {
+	if m.staff_accounts == nil {
+		m.staff_accounts = make(map[pulid.PULID]struct{})
+	}
+	for i := range ids {
+		m.staff_accounts[ids[i]] = struct{}{}
+	}
+}
+
+// ClearStaffAccounts clears the "staff_accounts" edge to the StaffAccount entity.
+func (m *AuthRoleMutation) ClearStaffAccounts() {
+	m.clearedstaff_accounts = true
+}
+
+// StaffAccountsCleared reports if the "staff_accounts" edge to the StaffAccount entity was cleared.
+func (m *AuthRoleMutation) StaffAccountsCleared() bool {
+	return m.clearedstaff_accounts
+}
+
+// RemoveStaffAccountIDs removes the "staff_accounts" edge to the StaffAccount entity by IDs.
+func (m *AuthRoleMutation) RemoveStaffAccountIDs(ids ...pulid.PULID) {
+	if m.removedstaff_accounts == nil {
+		m.removedstaff_accounts = make(map[pulid.PULID]struct{})
+	}
+	for i := range ids {
+		delete(m.staff_accounts, ids[i])
+		m.removedstaff_accounts[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedStaffAccounts returns the removed IDs of the "staff_accounts" edge to the StaffAccount entity.
+func (m *AuthRoleMutation) RemovedStaffAccountsIDs() (ids []pulid.PULID) {
+	for id := range m.removedstaff_accounts {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// StaffAccountsIDs returns the "staff_accounts" edge IDs in the mutation.
+func (m *AuthRoleMutation) StaffAccountsIDs() (ids []pulid.PULID) {
+	for id := range m.staff_accounts {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetStaffAccounts resets all changes to the "staff_accounts" edge.
+func (m *AuthRoleMutation) ResetStaffAccounts() {
+	m.staff_accounts = nil
+	m.clearedstaff_accounts = false
+	m.removedstaff_accounts = nil
+}
+
 // AddAccountAuthRoleIDs adds the "account_auth_roles" edge to the AccountAuthRole entity by ids.
 func (m *AuthRoleMutation) AddAccountAuthRoleIDs(ids ...pulid.PULID) {
 	if m.account_auth_roles == nil {
@@ -3670,6 +3734,60 @@ func (m *AuthRoleMutation) ResetAccountAuthRoles() {
 	m.account_auth_roles = nil
 	m.clearedaccount_auth_roles = false
 	m.removedaccount_auth_roles = nil
+}
+
+// AddStaffAccountAuthRoleIDs adds the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity by ids.
+func (m *AuthRoleMutation) AddStaffAccountAuthRoleIDs(ids ...pulid.PULID) {
+	if m.staff_account_auth_roles == nil {
+		m.staff_account_auth_roles = make(map[pulid.PULID]struct{})
+	}
+	for i := range ids {
+		m.staff_account_auth_roles[ids[i]] = struct{}{}
+	}
+}
+
+// ClearStaffAccountAuthRoles clears the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity.
+func (m *AuthRoleMutation) ClearStaffAccountAuthRoles() {
+	m.clearedstaff_account_auth_roles = true
+}
+
+// StaffAccountAuthRolesCleared reports if the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity was cleared.
+func (m *AuthRoleMutation) StaffAccountAuthRolesCleared() bool {
+	return m.clearedstaff_account_auth_roles
+}
+
+// RemoveStaffAccountAuthRoleIDs removes the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity by IDs.
+func (m *AuthRoleMutation) RemoveStaffAccountAuthRoleIDs(ids ...pulid.PULID) {
+	if m.removedstaff_account_auth_roles == nil {
+		m.removedstaff_account_auth_roles = make(map[pulid.PULID]struct{})
+	}
+	for i := range ids {
+		delete(m.staff_account_auth_roles, ids[i])
+		m.removedstaff_account_auth_roles[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedStaffAccountAuthRoles returns the removed IDs of the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity.
+func (m *AuthRoleMutation) RemovedStaffAccountAuthRolesIDs() (ids []pulid.PULID) {
+	for id := range m.removedstaff_account_auth_roles {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// StaffAccountAuthRolesIDs returns the "staff_account_auth_roles" edge IDs in the mutation.
+func (m *AuthRoleMutation) StaffAccountAuthRolesIDs() (ids []pulid.PULID) {
+	for id := range m.staff_account_auth_roles {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetStaffAccountAuthRoles resets all changes to the "staff_account_auth_roles" edge.
+func (m *AuthRoleMutation) ResetStaffAccountAuthRoles() {
+	m.staff_account_auth_roles = nil
+	m.clearedstaff_account_auth_roles = false
+	m.removedstaff_account_auth_roles = nil
 }
 
 // Where appends a list predicates to the AuthRoleMutation builder.
@@ -3873,12 +3991,18 @@ func (m *AuthRoleMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *AuthRoleMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.accounts != nil {
 		edges = append(edges, authrole.EdgeAccounts)
 	}
+	if m.staff_accounts != nil {
+		edges = append(edges, authrole.EdgeStaffAccounts)
+	}
 	if m.account_auth_roles != nil {
 		edges = append(edges, authrole.EdgeAccountAuthRoles)
+	}
+	if m.staff_account_auth_roles != nil {
+		edges = append(edges, authrole.EdgeStaffAccountAuthRoles)
 	}
 	return edges
 }
@@ -3893,9 +4017,21 @@ func (m *AuthRoleMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case authrole.EdgeStaffAccounts:
+		ids := make([]ent.Value, 0, len(m.staff_accounts))
+		for id := range m.staff_accounts {
+			ids = append(ids, id)
+		}
+		return ids
 	case authrole.EdgeAccountAuthRoles:
 		ids := make([]ent.Value, 0, len(m.account_auth_roles))
 		for id := range m.account_auth_roles {
+			ids = append(ids, id)
+		}
+		return ids
+	case authrole.EdgeStaffAccountAuthRoles:
+		ids := make([]ent.Value, 0, len(m.staff_account_auth_roles))
+		for id := range m.staff_account_auth_roles {
 			ids = append(ids, id)
 		}
 		return ids
@@ -3905,12 +4041,18 @@ func (m *AuthRoleMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AuthRoleMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.removedaccounts != nil {
 		edges = append(edges, authrole.EdgeAccounts)
 	}
+	if m.removedstaff_accounts != nil {
+		edges = append(edges, authrole.EdgeStaffAccounts)
+	}
 	if m.removedaccount_auth_roles != nil {
 		edges = append(edges, authrole.EdgeAccountAuthRoles)
+	}
+	if m.removedstaff_account_auth_roles != nil {
+		edges = append(edges, authrole.EdgeStaffAccountAuthRoles)
 	}
 	return edges
 }
@@ -3925,9 +4067,21 @@ func (m *AuthRoleMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case authrole.EdgeStaffAccounts:
+		ids := make([]ent.Value, 0, len(m.removedstaff_accounts))
+		for id := range m.removedstaff_accounts {
+			ids = append(ids, id)
+		}
+		return ids
 	case authrole.EdgeAccountAuthRoles:
 		ids := make([]ent.Value, 0, len(m.removedaccount_auth_roles))
 		for id := range m.removedaccount_auth_roles {
+			ids = append(ids, id)
+		}
+		return ids
+	case authrole.EdgeStaffAccountAuthRoles:
+		ids := make([]ent.Value, 0, len(m.removedstaff_account_auth_roles))
+		for id := range m.removedstaff_account_auth_roles {
 			ids = append(ids, id)
 		}
 		return ids
@@ -3937,12 +4091,18 @@ func (m *AuthRoleMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *AuthRoleMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.clearedaccounts {
 		edges = append(edges, authrole.EdgeAccounts)
 	}
+	if m.clearedstaff_accounts {
+		edges = append(edges, authrole.EdgeStaffAccounts)
+	}
 	if m.clearedaccount_auth_roles {
 		edges = append(edges, authrole.EdgeAccountAuthRoles)
+	}
+	if m.clearedstaff_account_auth_roles {
+		edges = append(edges, authrole.EdgeStaffAccountAuthRoles)
 	}
 	return edges
 }
@@ -3953,8 +4113,12 @@ func (m *AuthRoleMutation) EdgeCleared(name string) bool {
 	switch name {
 	case authrole.EdgeAccounts:
 		return m.clearedaccounts
+	case authrole.EdgeStaffAccounts:
+		return m.clearedstaff_accounts
 	case authrole.EdgeAccountAuthRoles:
 		return m.clearedaccount_auth_roles
+	case authrole.EdgeStaffAccountAuthRoles:
+		return m.clearedstaff_account_auth_roles
 	}
 	return false
 }
@@ -3974,8 +4138,14 @@ func (m *AuthRoleMutation) ResetEdge(name string) error {
 	case authrole.EdgeAccounts:
 		m.ResetAccounts()
 		return nil
+	case authrole.EdgeStaffAccounts:
+		m.ResetStaffAccounts()
+		return nil
 	case authrole.EdgeAccountAuthRoles:
 		m.ResetAccountAuthRoles()
+		return nil
+	case authrole.EdgeStaffAccountAuthRoles:
+		m.ResetStaffAccountAuthRoles()
 		return nil
 	}
 	return fmt.Errorf("unknown AuthRole edge %s", name)
@@ -9116,6 +9286,1571 @@ func (m *PortfolioMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Portfolio edge %s", name)
+}
+
+// StaffAccountMutation represents an operation that mutates the StaffAccount nodes in the graph.
+type StaffAccountMutation struct {
+	config
+	op                              Op
+	typ                             string
+	id                              *pulid.PULID
+	created_at                      *time.Time
+	updated_at                      *time.Time
+	deleted_at                      *time.Time
+	auth_type                       *staffaccount.AuthType
+	nickname                        *string
+	email                           *string
+	password                        *string
+	password_updated_at             *time.Time
+	clearedFields                   map[string]struct{}
+	auth_roles                      map[pulid.PULID]struct{}
+	removedauth_roles               map[pulid.PULID]struct{}
+	clearedauth_roles               bool
+	staff_account_auth_roles        map[pulid.PULID]struct{}
+	removedstaff_account_auth_roles map[pulid.PULID]struct{}
+	clearedstaff_account_auth_roles bool
+	done                            bool
+	oldValue                        func(context.Context) (*StaffAccount, error)
+	predicates                      []predicate.StaffAccount
+}
+
+var _ ent.Mutation = (*StaffAccountMutation)(nil)
+
+// staffaccountOption allows management of the mutation configuration using functional options.
+type staffaccountOption func(*StaffAccountMutation)
+
+// newStaffAccountMutation creates new mutation for the StaffAccount entity.
+func newStaffAccountMutation(c config, op Op, opts ...staffaccountOption) *StaffAccountMutation {
+	m := &StaffAccountMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeStaffAccount,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withStaffAccountID sets the ID field of the mutation.
+func withStaffAccountID(id pulid.PULID) staffaccountOption {
+	return func(m *StaffAccountMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *StaffAccount
+		)
+		m.oldValue = func(ctx context.Context) (*StaffAccount, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().StaffAccount.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withStaffAccount sets the old StaffAccount of the mutation.
+func withStaffAccount(node *StaffAccount) staffaccountOption {
+	return func(m *StaffAccountMutation) {
+		m.oldValue = func(context.Context) (*StaffAccount, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m StaffAccountMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m StaffAccountMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of StaffAccount entities.
+func (m *StaffAccountMutation) SetID(id pulid.PULID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *StaffAccountMutation) ID() (id pulid.PULID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *StaffAccountMutation) IDs(ctx context.Context) ([]pulid.PULID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []pulid.PULID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().StaffAccount.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *StaffAccountMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *StaffAccountMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the StaffAccount entity.
+// If the StaffAccount object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *StaffAccountMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *StaffAccountMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *StaffAccountMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the StaffAccount entity.
+// If the StaffAccount object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *StaffAccountMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *StaffAccountMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *StaffAccountMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the StaffAccount entity.
+// If the StaffAccount object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *StaffAccountMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[staffaccount.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *StaffAccountMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[staffaccount.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *StaffAccountMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, staffaccount.FieldDeletedAt)
+}
+
+// SetAuthType sets the "auth_type" field.
+func (m *StaffAccountMutation) SetAuthType(st staffaccount.AuthType) {
+	m.auth_type = &st
+}
+
+// AuthType returns the value of the "auth_type" field in the mutation.
+func (m *StaffAccountMutation) AuthType() (r staffaccount.AuthType, exists bool) {
+	v := m.auth_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAuthType returns the old "auth_type" field's value of the StaffAccount entity.
+// If the StaffAccount object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountMutation) OldAuthType(ctx context.Context) (v staffaccount.AuthType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAuthType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAuthType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAuthType: %w", err)
+	}
+	return oldValue.AuthType, nil
+}
+
+// ResetAuthType resets all changes to the "auth_type" field.
+func (m *StaffAccountMutation) ResetAuthType() {
+	m.auth_type = nil
+}
+
+// SetNickname sets the "nickname" field.
+func (m *StaffAccountMutation) SetNickname(s string) {
+	m.nickname = &s
+}
+
+// Nickname returns the value of the "nickname" field in the mutation.
+func (m *StaffAccountMutation) Nickname() (r string, exists bool) {
+	v := m.nickname
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNickname returns the old "nickname" field's value of the StaffAccount entity.
+// If the StaffAccount object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountMutation) OldNickname(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNickname is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNickname requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNickname: %w", err)
+	}
+	return oldValue.Nickname, nil
+}
+
+// ResetNickname resets all changes to the "nickname" field.
+func (m *StaffAccountMutation) ResetNickname() {
+	m.nickname = nil
+}
+
+// SetEmail sets the "email" field.
+func (m *StaffAccountMutation) SetEmail(s string) {
+	m.email = &s
+}
+
+// Email returns the value of the "email" field in the mutation.
+func (m *StaffAccountMutation) Email() (r string, exists bool) {
+	v := m.email
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmail returns the old "email" field's value of the StaffAccount entity.
+// If the StaffAccount object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountMutation) OldEmail(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmail: %w", err)
+	}
+	return oldValue.Email, nil
+}
+
+// ResetEmail resets all changes to the "email" field.
+func (m *StaffAccountMutation) ResetEmail() {
+	m.email = nil
+}
+
+// SetPassword sets the "password" field.
+func (m *StaffAccountMutation) SetPassword(s string) {
+	m.password = &s
+}
+
+// Password returns the value of the "password" field in the mutation.
+func (m *StaffAccountMutation) Password() (r string, exists bool) {
+	v := m.password
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPassword returns the old "password" field's value of the StaffAccount entity.
+// If the StaffAccount object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountMutation) OldPassword(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPassword is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPassword requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPassword: %w", err)
+	}
+	return oldValue.Password, nil
+}
+
+// ClearPassword clears the value of the "password" field.
+func (m *StaffAccountMutation) ClearPassword() {
+	m.password = nil
+	m.clearedFields[staffaccount.FieldPassword] = struct{}{}
+}
+
+// PasswordCleared returns if the "password" field was cleared in this mutation.
+func (m *StaffAccountMutation) PasswordCleared() bool {
+	_, ok := m.clearedFields[staffaccount.FieldPassword]
+	return ok
+}
+
+// ResetPassword resets all changes to the "password" field.
+func (m *StaffAccountMutation) ResetPassword() {
+	m.password = nil
+	delete(m.clearedFields, staffaccount.FieldPassword)
+}
+
+// SetPasswordUpdatedAt sets the "password_updated_at" field.
+func (m *StaffAccountMutation) SetPasswordUpdatedAt(t time.Time) {
+	m.password_updated_at = &t
+}
+
+// PasswordUpdatedAt returns the value of the "password_updated_at" field in the mutation.
+func (m *StaffAccountMutation) PasswordUpdatedAt() (r time.Time, exists bool) {
+	v := m.password_updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPasswordUpdatedAt returns the old "password_updated_at" field's value of the StaffAccount entity.
+// If the StaffAccount object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountMutation) OldPasswordUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPasswordUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPasswordUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPasswordUpdatedAt: %w", err)
+	}
+	return oldValue.PasswordUpdatedAt, nil
+}
+
+// ResetPasswordUpdatedAt resets all changes to the "password_updated_at" field.
+func (m *StaffAccountMutation) ResetPasswordUpdatedAt() {
+	m.password_updated_at = nil
+}
+
+// AddAuthRoleIDs adds the "auth_roles" edge to the AuthRole entity by ids.
+func (m *StaffAccountMutation) AddAuthRoleIDs(ids ...pulid.PULID) {
+	if m.auth_roles == nil {
+		m.auth_roles = make(map[pulid.PULID]struct{})
+	}
+	for i := range ids {
+		m.auth_roles[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAuthRoles clears the "auth_roles" edge to the AuthRole entity.
+func (m *StaffAccountMutation) ClearAuthRoles() {
+	m.clearedauth_roles = true
+}
+
+// AuthRolesCleared reports if the "auth_roles" edge to the AuthRole entity was cleared.
+func (m *StaffAccountMutation) AuthRolesCleared() bool {
+	return m.clearedauth_roles
+}
+
+// RemoveAuthRoleIDs removes the "auth_roles" edge to the AuthRole entity by IDs.
+func (m *StaffAccountMutation) RemoveAuthRoleIDs(ids ...pulid.PULID) {
+	if m.removedauth_roles == nil {
+		m.removedauth_roles = make(map[pulid.PULID]struct{})
+	}
+	for i := range ids {
+		delete(m.auth_roles, ids[i])
+		m.removedauth_roles[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAuthRoles returns the removed IDs of the "auth_roles" edge to the AuthRole entity.
+func (m *StaffAccountMutation) RemovedAuthRolesIDs() (ids []pulid.PULID) {
+	for id := range m.removedauth_roles {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AuthRolesIDs returns the "auth_roles" edge IDs in the mutation.
+func (m *StaffAccountMutation) AuthRolesIDs() (ids []pulid.PULID) {
+	for id := range m.auth_roles {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAuthRoles resets all changes to the "auth_roles" edge.
+func (m *StaffAccountMutation) ResetAuthRoles() {
+	m.auth_roles = nil
+	m.clearedauth_roles = false
+	m.removedauth_roles = nil
+}
+
+// AddStaffAccountAuthRoleIDs adds the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity by ids.
+func (m *StaffAccountMutation) AddStaffAccountAuthRoleIDs(ids ...pulid.PULID) {
+	if m.staff_account_auth_roles == nil {
+		m.staff_account_auth_roles = make(map[pulid.PULID]struct{})
+	}
+	for i := range ids {
+		m.staff_account_auth_roles[ids[i]] = struct{}{}
+	}
+}
+
+// ClearStaffAccountAuthRoles clears the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity.
+func (m *StaffAccountMutation) ClearStaffAccountAuthRoles() {
+	m.clearedstaff_account_auth_roles = true
+}
+
+// StaffAccountAuthRolesCleared reports if the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity was cleared.
+func (m *StaffAccountMutation) StaffAccountAuthRolesCleared() bool {
+	return m.clearedstaff_account_auth_roles
+}
+
+// RemoveStaffAccountAuthRoleIDs removes the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity by IDs.
+func (m *StaffAccountMutation) RemoveStaffAccountAuthRoleIDs(ids ...pulid.PULID) {
+	if m.removedstaff_account_auth_roles == nil {
+		m.removedstaff_account_auth_roles = make(map[pulid.PULID]struct{})
+	}
+	for i := range ids {
+		delete(m.staff_account_auth_roles, ids[i])
+		m.removedstaff_account_auth_roles[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedStaffAccountAuthRoles returns the removed IDs of the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity.
+func (m *StaffAccountMutation) RemovedStaffAccountAuthRolesIDs() (ids []pulid.PULID) {
+	for id := range m.removedstaff_account_auth_roles {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// StaffAccountAuthRolesIDs returns the "staff_account_auth_roles" edge IDs in the mutation.
+func (m *StaffAccountMutation) StaffAccountAuthRolesIDs() (ids []pulid.PULID) {
+	for id := range m.staff_account_auth_roles {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetStaffAccountAuthRoles resets all changes to the "staff_account_auth_roles" edge.
+func (m *StaffAccountMutation) ResetStaffAccountAuthRoles() {
+	m.staff_account_auth_roles = nil
+	m.clearedstaff_account_auth_roles = false
+	m.removedstaff_account_auth_roles = nil
+}
+
+// Where appends a list predicates to the StaffAccountMutation builder.
+func (m *StaffAccountMutation) Where(ps ...predicate.StaffAccount) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *StaffAccountMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (StaffAccount).
+func (m *StaffAccountMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *StaffAccountMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.created_at != nil {
+		fields = append(fields, staffaccount.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, staffaccount.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, staffaccount.FieldDeletedAt)
+	}
+	if m.auth_type != nil {
+		fields = append(fields, staffaccount.FieldAuthType)
+	}
+	if m.nickname != nil {
+		fields = append(fields, staffaccount.FieldNickname)
+	}
+	if m.email != nil {
+		fields = append(fields, staffaccount.FieldEmail)
+	}
+	if m.password != nil {
+		fields = append(fields, staffaccount.FieldPassword)
+	}
+	if m.password_updated_at != nil {
+		fields = append(fields, staffaccount.FieldPasswordUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *StaffAccountMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case staffaccount.FieldCreatedAt:
+		return m.CreatedAt()
+	case staffaccount.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case staffaccount.FieldDeletedAt:
+		return m.DeletedAt()
+	case staffaccount.FieldAuthType:
+		return m.AuthType()
+	case staffaccount.FieldNickname:
+		return m.Nickname()
+	case staffaccount.FieldEmail:
+		return m.Email()
+	case staffaccount.FieldPassword:
+		return m.Password()
+	case staffaccount.FieldPasswordUpdatedAt:
+		return m.PasswordUpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *StaffAccountMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case staffaccount.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case staffaccount.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case staffaccount.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case staffaccount.FieldAuthType:
+		return m.OldAuthType(ctx)
+	case staffaccount.FieldNickname:
+		return m.OldNickname(ctx)
+	case staffaccount.FieldEmail:
+		return m.OldEmail(ctx)
+	case staffaccount.FieldPassword:
+		return m.OldPassword(ctx)
+	case staffaccount.FieldPasswordUpdatedAt:
+		return m.OldPasswordUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown StaffAccount field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *StaffAccountMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case staffaccount.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case staffaccount.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case staffaccount.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case staffaccount.FieldAuthType:
+		v, ok := value.(staffaccount.AuthType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAuthType(v)
+		return nil
+	case staffaccount.FieldNickname:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNickname(v)
+		return nil
+	case staffaccount.FieldEmail:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmail(v)
+		return nil
+	case staffaccount.FieldPassword:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPassword(v)
+		return nil
+	case staffaccount.FieldPasswordUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPasswordUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown StaffAccount field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *StaffAccountMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *StaffAccountMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *StaffAccountMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown StaffAccount numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *StaffAccountMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(staffaccount.FieldDeletedAt) {
+		fields = append(fields, staffaccount.FieldDeletedAt)
+	}
+	if m.FieldCleared(staffaccount.FieldPassword) {
+		fields = append(fields, staffaccount.FieldPassword)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *StaffAccountMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *StaffAccountMutation) ClearField(name string) error {
+	switch name {
+	case staffaccount.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case staffaccount.FieldPassword:
+		m.ClearPassword()
+		return nil
+	}
+	return fmt.Errorf("unknown StaffAccount nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *StaffAccountMutation) ResetField(name string) error {
+	switch name {
+	case staffaccount.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case staffaccount.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case staffaccount.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case staffaccount.FieldAuthType:
+		m.ResetAuthType()
+		return nil
+	case staffaccount.FieldNickname:
+		m.ResetNickname()
+		return nil
+	case staffaccount.FieldEmail:
+		m.ResetEmail()
+		return nil
+	case staffaccount.FieldPassword:
+		m.ResetPassword()
+		return nil
+	case staffaccount.FieldPasswordUpdatedAt:
+		m.ResetPasswordUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown StaffAccount field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *StaffAccountMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.auth_roles != nil {
+		edges = append(edges, staffaccount.EdgeAuthRoles)
+	}
+	if m.staff_account_auth_roles != nil {
+		edges = append(edges, staffaccount.EdgeStaffAccountAuthRoles)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *StaffAccountMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case staffaccount.EdgeAuthRoles:
+		ids := make([]ent.Value, 0, len(m.auth_roles))
+		for id := range m.auth_roles {
+			ids = append(ids, id)
+		}
+		return ids
+	case staffaccount.EdgeStaffAccountAuthRoles:
+		ids := make([]ent.Value, 0, len(m.staff_account_auth_roles))
+		for id := range m.staff_account_auth_roles {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *StaffAccountMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedauth_roles != nil {
+		edges = append(edges, staffaccount.EdgeAuthRoles)
+	}
+	if m.removedstaff_account_auth_roles != nil {
+		edges = append(edges, staffaccount.EdgeStaffAccountAuthRoles)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *StaffAccountMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case staffaccount.EdgeAuthRoles:
+		ids := make([]ent.Value, 0, len(m.removedauth_roles))
+		for id := range m.removedauth_roles {
+			ids = append(ids, id)
+		}
+		return ids
+	case staffaccount.EdgeStaffAccountAuthRoles:
+		ids := make([]ent.Value, 0, len(m.removedstaff_account_auth_roles))
+		for id := range m.removedstaff_account_auth_roles {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *StaffAccountMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedauth_roles {
+		edges = append(edges, staffaccount.EdgeAuthRoles)
+	}
+	if m.clearedstaff_account_auth_roles {
+		edges = append(edges, staffaccount.EdgeStaffAccountAuthRoles)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *StaffAccountMutation) EdgeCleared(name string) bool {
+	switch name {
+	case staffaccount.EdgeAuthRoles:
+		return m.clearedauth_roles
+	case staffaccount.EdgeStaffAccountAuthRoles:
+		return m.clearedstaff_account_auth_roles
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *StaffAccountMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown StaffAccount unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *StaffAccountMutation) ResetEdge(name string) error {
+	switch name {
+	case staffaccount.EdgeAuthRoles:
+		m.ResetAuthRoles()
+		return nil
+	case staffaccount.EdgeStaffAccountAuthRoles:
+		m.ResetStaffAccountAuthRoles()
+		return nil
+	}
+	return fmt.Errorf("unknown StaffAccount edge %s", name)
+}
+
+// StaffAccountAuthRoleMutation represents an operation that mutates the StaffAccountAuthRole nodes in the graph.
+type StaffAccountAuthRoleMutation struct {
+	config
+	op                   Op
+	typ                  string
+	id                   *pulid.PULID
+	created_at           *time.Time
+	updated_at           *time.Time
+	deleted_at           *time.Time
+	clearedFields        map[string]struct{}
+	staff_account        *pulid.PULID
+	clearedstaff_account bool
+	auth_role            *pulid.PULID
+	clearedauth_role     bool
+	done                 bool
+	oldValue             func(context.Context) (*StaffAccountAuthRole, error)
+	predicates           []predicate.StaffAccountAuthRole
+}
+
+var _ ent.Mutation = (*StaffAccountAuthRoleMutation)(nil)
+
+// staffaccountauthroleOption allows management of the mutation configuration using functional options.
+type staffaccountauthroleOption func(*StaffAccountAuthRoleMutation)
+
+// newStaffAccountAuthRoleMutation creates new mutation for the StaffAccountAuthRole entity.
+func newStaffAccountAuthRoleMutation(c config, op Op, opts ...staffaccountauthroleOption) *StaffAccountAuthRoleMutation {
+	m := &StaffAccountAuthRoleMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeStaffAccountAuthRole,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withStaffAccountAuthRoleID sets the ID field of the mutation.
+func withStaffAccountAuthRoleID(id pulid.PULID) staffaccountauthroleOption {
+	return func(m *StaffAccountAuthRoleMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *StaffAccountAuthRole
+		)
+		m.oldValue = func(ctx context.Context) (*StaffAccountAuthRole, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().StaffAccountAuthRole.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withStaffAccountAuthRole sets the old StaffAccountAuthRole of the mutation.
+func withStaffAccountAuthRole(node *StaffAccountAuthRole) staffaccountauthroleOption {
+	return func(m *StaffAccountAuthRoleMutation) {
+		m.oldValue = func(context.Context) (*StaffAccountAuthRole, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m StaffAccountAuthRoleMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m StaffAccountAuthRoleMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of StaffAccountAuthRole entities.
+func (m *StaffAccountAuthRoleMutation) SetID(id pulid.PULID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *StaffAccountAuthRoleMutation) ID() (id pulid.PULID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *StaffAccountAuthRoleMutation) IDs(ctx context.Context) ([]pulid.PULID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []pulid.PULID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().StaffAccountAuthRole.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *StaffAccountAuthRoleMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *StaffAccountAuthRoleMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the StaffAccountAuthRole entity.
+// If the StaffAccountAuthRole object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountAuthRoleMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *StaffAccountAuthRoleMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *StaffAccountAuthRoleMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *StaffAccountAuthRoleMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the StaffAccountAuthRole entity.
+// If the StaffAccountAuthRole object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountAuthRoleMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *StaffAccountAuthRoleMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *StaffAccountAuthRoleMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *StaffAccountAuthRoleMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the StaffAccountAuthRole entity.
+// If the StaffAccountAuthRole object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountAuthRoleMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *StaffAccountAuthRoleMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[staffaccountauthrole.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *StaffAccountAuthRoleMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[staffaccountauthrole.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *StaffAccountAuthRoleMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, staffaccountauthrole.FieldDeletedAt)
+}
+
+// SetStaffAccountID sets the "staff_account_id" field.
+func (m *StaffAccountAuthRoleMutation) SetStaffAccountID(pu pulid.PULID) {
+	m.staff_account = &pu
+}
+
+// StaffAccountID returns the value of the "staff_account_id" field in the mutation.
+func (m *StaffAccountAuthRoleMutation) StaffAccountID() (r pulid.PULID, exists bool) {
+	v := m.staff_account
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStaffAccountID returns the old "staff_account_id" field's value of the StaffAccountAuthRole entity.
+// If the StaffAccountAuthRole object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountAuthRoleMutation) OldStaffAccountID(ctx context.Context) (v pulid.PULID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStaffAccountID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStaffAccountID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStaffAccountID: %w", err)
+	}
+	return oldValue.StaffAccountID, nil
+}
+
+// ResetStaffAccountID resets all changes to the "staff_account_id" field.
+func (m *StaffAccountAuthRoleMutation) ResetStaffAccountID() {
+	m.staff_account = nil
+}
+
+// SetAuthRoleID sets the "auth_role_id" field.
+func (m *StaffAccountAuthRoleMutation) SetAuthRoleID(pu pulid.PULID) {
+	m.auth_role = &pu
+}
+
+// AuthRoleID returns the value of the "auth_role_id" field in the mutation.
+func (m *StaffAccountAuthRoleMutation) AuthRoleID() (r pulid.PULID, exists bool) {
+	v := m.auth_role
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAuthRoleID returns the old "auth_role_id" field's value of the StaffAccountAuthRole entity.
+// If the StaffAccountAuthRole object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountAuthRoleMutation) OldAuthRoleID(ctx context.Context) (v pulid.PULID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAuthRoleID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAuthRoleID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAuthRoleID: %w", err)
+	}
+	return oldValue.AuthRoleID, nil
+}
+
+// ResetAuthRoleID resets all changes to the "auth_role_id" field.
+func (m *StaffAccountAuthRoleMutation) ResetAuthRoleID() {
+	m.auth_role = nil
+}
+
+// ClearStaffAccount clears the "staff_account" edge to the StaffAccount entity.
+func (m *StaffAccountAuthRoleMutation) ClearStaffAccount() {
+	m.clearedstaff_account = true
+}
+
+// StaffAccountCleared reports if the "staff_account" edge to the StaffAccount entity was cleared.
+func (m *StaffAccountAuthRoleMutation) StaffAccountCleared() bool {
+	return m.clearedstaff_account
+}
+
+// StaffAccountIDs returns the "staff_account" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// StaffAccountID instead. It exists only for internal usage by the builders.
+func (m *StaffAccountAuthRoleMutation) StaffAccountIDs() (ids []pulid.PULID) {
+	if id := m.staff_account; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetStaffAccount resets all changes to the "staff_account" edge.
+func (m *StaffAccountAuthRoleMutation) ResetStaffAccount() {
+	m.staff_account = nil
+	m.clearedstaff_account = false
+}
+
+// ClearAuthRole clears the "auth_role" edge to the AuthRole entity.
+func (m *StaffAccountAuthRoleMutation) ClearAuthRole() {
+	m.clearedauth_role = true
+}
+
+// AuthRoleCleared reports if the "auth_role" edge to the AuthRole entity was cleared.
+func (m *StaffAccountAuthRoleMutation) AuthRoleCleared() bool {
+	return m.clearedauth_role
+}
+
+// AuthRoleIDs returns the "auth_role" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AuthRoleID instead. It exists only for internal usage by the builders.
+func (m *StaffAccountAuthRoleMutation) AuthRoleIDs() (ids []pulid.PULID) {
+	if id := m.auth_role; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetAuthRole resets all changes to the "auth_role" edge.
+func (m *StaffAccountAuthRoleMutation) ResetAuthRole() {
+	m.auth_role = nil
+	m.clearedauth_role = false
+}
+
+// Where appends a list predicates to the StaffAccountAuthRoleMutation builder.
+func (m *StaffAccountAuthRoleMutation) Where(ps ...predicate.StaffAccountAuthRole) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *StaffAccountAuthRoleMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (StaffAccountAuthRole).
+func (m *StaffAccountAuthRoleMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *StaffAccountAuthRoleMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.created_at != nil {
+		fields = append(fields, staffaccountauthrole.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, staffaccountauthrole.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, staffaccountauthrole.FieldDeletedAt)
+	}
+	if m.staff_account != nil {
+		fields = append(fields, staffaccountauthrole.FieldStaffAccountID)
+	}
+	if m.auth_role != nil {
+		fields = append(fields, staffaccountauthrole.FieldAuthRoleID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *StaffAccountAuthRoleMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case staffaccountauthrole.FieldCreatedAt:
+		return m.CreatedAt()
+	case staffaccountauthrole.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case staffaccountauthrole.FieldDeletedAt:
+		return m.DeletedAt()
+	case staffaccountauthrole.FieldStaffAccountID:
+		return m.StaffAccountID()
+	case staffaccountauthrole.FieldAuthRoleID:
+		return m.AuthRoleID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *StaffAccountAuthRoleMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case staffaccountauthrole.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case staffaccountauthrole.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case staffaccountauthrole.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case staffaccountauthrole.FieldStaffAccountID:
+		return m.OldStaffAccountID(ctx)
+	case staffaccountauthrole.FieldAuthRoleID:
+		return m.OldAuthRoleID(ctx)
+	}
+	return nil, fmt.Errorf("unknown StaffAccountAuthRole field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *StaffAccountAuthRoleMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case staffaccountauthrole.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case staffaccountauthrole.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case staffaccountauthrole.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case staffaccountauthrole.FieldStaffAccountID:
+		v, ok := value.(pulid.PULID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStaffAccountID(v)
+		return nil
+	case staffaccountauthrole.FieldAuthRoleID:
+		v, ok := value.(pulid.PULID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAuthRoleID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown StaffAccountAuthRole field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *StaffAccountAuthRoleMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *StaffAccountAuthRoleMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *StaffAccountAuthRoleMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown StaffAccountAuthRole numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *StaffAccountAuthRoleMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(staffaccountauthrole.FieldDeletedAt) {
+		fields = append(fields, staffaccountauthrole.FieldDeletedAt)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *StaffAccountAuthRoleMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *StaffAccountAuthRoleMutation) ClearField(name string) error {
+	switch name {
+	case staffaccountauthrole.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown StaffAccountAuthRole nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *StaffAccountAuthRoleMutation) ResetField(name string) error {
+	switch name {
+	case staffaccountauthrole.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case staffaccountauthrole.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case staffaccountauthrole.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case staffaccountauthrole.FieldStaffAccountID:
+		m.ResetStaffAccountID()
+		return nil
+	case staffaccountauthrole.FieldAuthRoleID:
+		m.ResetAuthRoleID()
+		return nil
+	}
+	return fmt.Errorf("unknown StaffAccountAuthRole field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *StaffAccountAuthRoleMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.staff_account != nil {
+		edges = append(edges, staffaccountauthrole.EdgeStaffAccount)
+	}
+	if m.auth_role != nil {
+		edges = append(edges, staffaccountauthrole.EdgeAuthRole)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *StaffAccountAuthRoleMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case staffaccountauthrole.EdgeStaffAccount:
+		if id := m.staff_account; id != nil {
+			return []ent.Value{*id}
+		}
+	case staffaccountauthrole.EdgeAuthRole:
+		if id := m.auth_role; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *StaffAccountAuthRoleMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *StaffAccountAuthRoleMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *StaffAccountAuthRoleMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedstaff_account {
+		edges = append(edges, staffaccountauthrole.EdgeStaffAccount)
+	}
+	if m.clearedauth_role {
+		edges = append(edges, staffaccountauthrole.EdgeAuthRole)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *StaffAccountAuthRoleMutation) EdgeCleared(name string) bool {
+	switch name {
+	case staffaccountauthrole.EdgeStaffAccount:
+		return m.clearedstaff_account
+	case staffaccountauthrole.EdgeAuthRole:
+		return m.clearedauth_role
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *StaffAccountAuthRoleMutation) ClearEdge(name string) error {
+	switch name {
+	case staffaccountauthrole.EdgeStaffAccount:
+		m.ClearStaffAccount()
+		return nil
+	case staffaccountauthrole.EdgeAuthRole:
+		m.ClearAuthRole()
+		return nil
+	}
+	return fmt.Errorf("unknown StaffAccountAuthRole unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *StaffAccountAuthRoleMutation) ResetEdge(name string) error {
+	switch name {
+	case staffaccountauthrole.EdgeStaffAccount:
+		m.ResetStaffAccount()
+		return nil
+	case staffaccountauthrole.EdgeAuthRole:
+		m.ResetAuthRole()
+		return nil
+	}
+	return fmt.Errorf("unknown StaffAccountAuthRole edge %s", name)
 }
 
 // TransactionMutation represents an operation that mutates the Transaction nodes in the graph.

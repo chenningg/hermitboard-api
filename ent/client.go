@@ -9,7 +9,7 @@ import (
 	"log"
 
 	"github.com/chenningg/hermitboard-api/ent/migrate"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
+	"github.com/chenningg/hermitboard-api/pulid"
 
 	"github.com/chenningg/hermitboard-api/ent/account"
 	"github.com/chenningg/hermitboard-api/ent/accountauthrole"
@@ -22,6 +22,8 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
+	"github.com/chenningg/hermitboard-api/ent/staffaccount"
+	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
 
@@ -57,6 +59,10 @@ type Client struct {
 	Exchange *ExchangeClient
 	// Portfolio is the client for interacting with the Portfolio builders.
 	Portfolio *PortfolioClient
+	// StaffAccount is the client for interacting with the StaffAccount builders.
+	StaffAccount *StaffAccountClient
+	// StaffAccountAuthRole is the client for interacting with the StaffAccountAuthRole builders.
+	StaffAccountAuthRole *StaffAccountAuthRoleClient
 	// Transaction is the client for interacting with the Transaction builders.
 	Transaction *TransactionClient
 	// TransactionType is the client for interacting with the TransactionType builders.
@@ -85,6 +91,8 @@ func (c *Client) init() {
 	c.DailyAssetPrice = NewDailyAssetPriceClient(c.config)
 	c.Exchange = NewExchangeClient(c.config)
 	c.Portfolio = NewPortfolioClient(c.config)
+	c.StaffAccount = NewStaffAccountClient(c.config)
+	c.StaffAccountAuthRole = NewStaffAccountAuthRoleClient(c.config)
 	c.Transaction = NewTransactionClient(c.config)
 	c.TransactionType = NewTransactionTypeClient(c.config)
 }
@@ -131,6 +139,8 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		DailyAssetPrice:          NewDailyAssetPriceClient(cfg),
 		Exchange:                 NewExchangeClient(cfg),
 		Portfolio:                NewPortfolioClient(cfg),
+		StaffAccount:             NewStaffAccountClient(cfg),
+		StaffAccountAuthRole:     NewStaffAccountAuthRoleClient(cfg),
 		Transaction:              NewTransactionClient(cfg),
 		TransactionType:          NewTransactionTypeClient(cfg),
 	}, nil
@@ -163,6 +173,8 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		DailyAssetPrice:          NewDailyAssetPriceClient(cfg),
 		Exchange:                 NewExchangeClient(cfg),
 		Portfolio:                NewPortfolioClient(cfg),
+		StaffAccount:             NewStaffAccountClient(cfg),
+		StaffAccountAuthRole:     NewStaffAccountAuthRoleClient(cfg),
 		Transaction:              NewTransactionClient(cfg),
 		TransactionType:          NewTransactionTypeClient(cfg),
 	}, nil
@@ -204,6 +216,8 @@ func (c *Client) Use(hooks ...Hook) {
 	c.DailyAssetPrice.Use(hooks...)
 	c.Exchange.Use(hooks...)
 	c.Portfolio.Use(hooks...)
+	c.StaffAccount.Use(hooks...)
+	c.StaffAccountAuthRole.Use(hooks...)
 	c.Transaction.Use(hooks...)
 	c.TransactionType.Use(hooks...)
 }
@@ -845,6 +859,22 @@ func (c *AuthRoleClient) QueryAccounts(ar *AuthRole) *AccountQuery {
 	return query
 }
 
+// QueryStaffAccounts queries the staff_accounts edge of a AuthRole.
+func (c *AuthRoleClient) QueryStaffAccounts(ar *AuthRole) *StaffAccountQuery {
+	query := &StaffAccountQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ar.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(authrole.Table, authrole.FieldID, id),
+			sqlgraph.To(staffaccount.Table, staffaccount.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, authrole.StaffAccountsTable, authrole.StaffAccountsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(ar.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryAccountAuthRoles queries the account_auth_roles edge of a AuthRole.
 func (c *AuthRoleClient) QueryAccountAuthRoles(ar *AuthRole) *AccountAuthRoleQuery {
 	query := &AccountAuthRoleQuery{config: c.config}
@@ -854,6 +884,22 @@ func (c *AuthRoleClient) QueryAccountAuthRoles(ar *AuthRole) *AccountAuthRoleQue
 			sqlgraph.From(authrole.Table, authrole.FieldID, id),
 			sqlgraph.To(accountauthrole.Table, accountauthrole.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, true, authrole.AccountAuthRolesTable, authrole.AccountAuthRolesColumn),
+		)
+		fromV = sqlgraph.Neighbors(ar.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStaffAccountAuthRoles queries the staff_account_auth_roles edge of a AuthRole.
+func (c *AuthRoleClient) QueryStaffAccountAuthRoles(ar *AuthRole) *StaffAccountAuthRoleQuery {
+	query := &StaffAccountAuthRoleQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ar.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(authrole.Table, authrole.FieldID, id),
+			sqlgraph.To(staffaccountauthrole.Table, staffaccountauthrole.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, authrole.StaffAccountAuthRolesTable, authrole.StaffAccountAuthRolesColumn),
 		)
 		fromV = sqlgraph.Neighbors(ar.driver.Dialect(), step)
 		return fromV, nil
@@ -1580,6 +1626,250 @@ func (c *PortfolioClient) QueryTransactions(po *Portfolio) *TransactionQuery {
 // Hooks returns the client hooks.
 func (c *PortfolioClient) Hooks() []Hook {
 	return c.hooks.Portfolio
+}
+
+// StaffAccountClient is a client for the StaffAccount schema.
+type StaffAccountClient struct {
+	config
+}
+
+// NewStaffAccountClient returns a client for the StaffAccount from the given config.
+func NewStaffAccountClient(c config) *StaffAccountClient {
+	return &StaffAccountClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `staffaccount.Hooks(f(g(h())))`.
+func (c *StaffAccountClient) Use(hooks ...Hook) {
+	c.hooks.StaffAccount = append(c.hooks.StaffAccount, hooks...)
+}
+
+// Create returns a builder for creating a StaffAccount entity.
+func (c *StaffAccountClient) Create() *StaffAccountCreate {
+	mutation := newStaffAccountMutation(c.config, OpCreate)
+	return &StaffAccountCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of StaffAccount entities.
+func (c *StaffAccountClient) CreateBulk(builders ...*StaffAccountCreate) *StaffAccountCreateBulk {
+	return &StaffAccountCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for StaffAccount.
+func (c *StaffAccountClient) Update() *StaffAccountUpdate {
+	mutation := newStaffAccountMutation(c.config, OpUpdate)
+	return &StaffAccountUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *StaffAccountClient) UpdateOne(sa *StaffAccount) *StaffAccountUpdateOne {
+	mutation := newStaffAccountMutation(c.config, OpUpdateOne, withStaffAccount(sa))
+	return &StaffAccountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *StaffAccountClient) UpdateOneID(id pulid.PULID) *StaffAccountUpdateOne {
+	mutation := newStaffAccountMutation(c.config, OpUpdateOne, withStaffAccountID(id))
+	return &StaffAccountUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for StaffAccount.
+func (c *StaffAccountClient) Delete() *StaffAccountDelete {
+	mutation := newStaffAccountMutation(c.config, OpDelete)
+	return &StaffAccountDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *StaffAccountClient) DeleteOne(sa *StaffAccount) *StaffAccountDeleteOne {
+	return c.DeleteOneID(sa.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *StaffAccountClient) DeleteOneID(id pulid.PULID) *StaffAccountDeleteOne {
+	builder := c.Delete().Where(staffaccount.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &StaffAccountDeleteOne{builder}
+}
+
+// Query returns a query builder for StaffAccount.
+func (c *StaffAccountClient) Query() *StaffAccountQuery {
+	return &StaffAccountQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a StaffAccount entity by its id.
+func (c *StaffAccountClient) Get(ctx context.Context, id pulid.PULID) (*StaffAccount, error) {
+	return c.Query().Where(staffaccount.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *StaffAccountClient) GetX(ctx context.Context, id pulid.PULID) *StaffAccount {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAuthRoles queries the auth_roles edge of a StaffAccount.
+func (c *StaffAccountClient) QueryAuthRoles(sa *StaffAccount) *AuthRoleQuery {
+	query := &AuthRoleQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(staffaccount.Table, staffaccount.FieldID, id),
+			sqlgraph.To(authrole.Table, authrole.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, staffaccount.AuthRolesTable, staffaccount.AuthRolesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStaffAccountAuthRoles queries the staff_account_auth_roles edge of a StaffAccount.
+func (c *StaffAccountClient) QueryStaffAccountAuthRoles(sa *StaffAccount) *StaffAccountAuthRoleQuery {
+	query := &StaffAccountAuthRoleQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(staffaccount.Table, staffaccount.FieldID, id),
+			sqlgraph.To(staffaccountauthrole.Table, staffaccountauthrole.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, staffaccount.StaffAccountAuthRolesTable, staffaccount.StaffAccountAuthRolesColumn),
+		)
+		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *StaffAccountClient) Hooks() []Hook {
+	return c.hooks.StaffAccount
+}
+
+// StaffAccountAuthRoleClient is a client for the StaffAccountAuthRole schema.
+type StaffAccountAuthRoleClient struct {
+	config
+}
+
+// NewStaffAccountAuthRoleClient returns a client for the StaffAccountAuthRole from the given config.
+func NewStaffAccountAuthRoleClient(c config) *StaffAccountAuthRoleClient {
+	return &StaffAccountAuthRoleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `staffaccountauthrole.Hooks(f(g(h())))`.
+func (c *StaffAccountAuthRoleClient) Use(hooks ...Hook) {
+	c.hooks.StaffAccountAuthRole = append(c.hooks.StaffAccountAuthRole, hooks...)
+}
+
+// Create returns a builder for creating a StaffAccountAuthRole entity.
+func (c *StaffAccountAuthRoleClient) Create() *StaffAccountAuthRoleCreate {
+	mutation := newStaffAccountAuthRoleMutation(c.config, OpCreate)
+	return &StaffAccountAuthRoleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of StaffAccountAuthRole entities.
+func (c *StaffAccountAuthRoleClient) CreateBulk(builders ...*StaffAccountAuthRoleCreate) *StaffAccountAuthRoleCreateBulk {
+	return &StaffAccountAuthRoleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for StaffAccountAuthRole.
+func (c *StaffAccountAuthRoleClient) Update() *StaffAccountAuthRoleUpdate {
+	mutation := newStaffAccountAuthRoleMutation(c.config, OpUpdate)
+	return &StaffAccountAuthRoleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *StaffAccountAuthRoleClient) UpdateOne(saar *StaffAccountAuthRole) *StaffAccountAuthRoleUpdateOne {
+	mutation := newStaffAccountAuthRoleMutation(c.config, OpUpdateOne, withStaffAccountAuthRole(saar))
+	return &StaffAccountAuthRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *StaffAccountAuthRoleClient) UpdateOneID(id pulid.PULID) *StaffAccountAuthRoleUpdateOne {
+	mutation := newStaffAccountAuthRoleMutation(c.config, OpUpdateOne, withStaffAccountAuthRoleID(id))
+	return &StaffAccountAuthRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for StaffAccountAuthRole.
+func (c *StaffAccountAuthRoleClient) Delete() *StaffAccountAuthRoleDelete {
+	mutation := newStaffAccountAuthRoleMutation(c.config, OpDelete)
+	return &StaffAccountAuthRoleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *StaffAccountAuthRoleClient) DeleteOne(saar *StaffAccountAuthRole) *StaffAccountAuthRoleDeleteOne {
+	return c.DeleteOneID(saar.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *StaffAccountAuthRoleClient) DeleteOneID(id pulid.PULID) *StaffAccountAuthRoleDeleteOne {
+	builder := c.Delete().Where(staffaccountauthrole.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &StaffAccountAuthRoleDeleteOne{builder}
+}
+
+// Query returns a query builder for StaffAccountAuthRole.
+func (c *StaffAccountAuthRoleClient) Query() *StaffAccountAuthRoleQuery {
+	return &StaffAccountAuthRoleQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a StaffAccountAuthRole entity by its id.
+func (c *StaffAccountAuthRoleClient) Get(ctx context.Context, id pulid.PULID) (*StaffAccountAuthRole, error) {
+	return c.Query().Where(staffaccountauthrole.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *StaffAccountAuthRoleClient) GetX(ctx context.Context, id pulid.PULID) *StaffAccountAuthRole {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryStaffAccount queries the staff_account edge of a StaffAccountAuthRole.
+func (c *StaffAccountAuthRoleClient) QueryStaffAccount(saar *StaffAccountAuthRole) *StaffAccountQuery {
+	query := &StaffAccountQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := saar.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(staffaccountauthrole.Table, staffaccountauthrole.FieldID, id),
+			sqlgraph.To(staffaccount.Table, staffaccount.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, staffaccountauthrole.StaffAccountTable, staffaccountauthrole.StaffAccountColumn),
+		)
+		fromV = sqlgraph.Neighbors(saar.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAuthRole queries the auth_role edge of a StaffAccountAuthRole.
+func (c *StaffAccountAuthRoleClient) QueryAuthRole(saar *StaffAccountAuthRole) *AuthRoleQuery {
+	query := &AuthRoleQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := saar.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(staffaccountauthrole.Table, staffaccountauthrole.FieldID, id),
+			sqlgraph.To(authrole.Table, authrole.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, staffaccountauthrole.AuthRoleTable, staffaccountauthrole.AuthRoleColumn),
+		)
+		fromV = sqlgraph.Neighbors(saar.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *StaffAccountAuthRoleClient) Hooks() []Hook {
+	return c.hooks.StaffAccountAuthRole
 }
 
 // TransactionClient is a client for the Transaction schema.

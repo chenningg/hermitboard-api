@@ -276,6 +276,60 @@ var (
 			},
 		},
 	}
+	// StaffAccountsColumns holds the columns for the "staff_accounts" table.
+	StaffAccountsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "auth_type", Type: field.TypeEnum, Enums: []string{"LOCAL", "GOOGLE", "FACEBOOK", "APPLE"}, Default: "LOCAL"},
+		{Name: "nickname", Type: field.TypeString, Unique: true},
+		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "password", Type: field.TypeString, Nullable: true},
+		{Name: "password_updated_at", Type: field.TypeTime},
+	}
+	// StaffAccountsTable holds the schema information for the "staff_accounts" table.
+	StaffAccountsTable = &schema.Table{
+		Name:       "staff_accounts",
+		Columns:    StaffAccountsColumns,
+		PrimaryKey: []*schema.Column{StaffAccountsColumns[0]},
+	}
+	// StaffAccountAuthRolesColumns holds the columns for the "staff_account_auth_roles" table.
+	StaffAccountAuthRolesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "staff_account_id", Type: field.TypeString},
+		{Name: "auth_role_id", Type: field.TypeString},
+	}
+	// StaffAccountAuthRolesTable holds the schema information for the "staff_account_auth_roles" table.
+	StaffAccountAuthRolesTable = &schema.Table{
+		Name:       "staff_account_auth_roles",
+		Columns:    StaffAccountAuthRolesColumns,
+		PrimaryKey: []*schema.Column{StaffAccountAuthRolesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "staff_account_auth_roles_staff_accounts_staff_account",
+				Columns:    []*schema.Column{StaffAccountAuthRolesColumns[4]},
+				RefColumns: []*schema.Column{StaffAccountsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "staff_account_auth_roles_auth_roles_auth_role",
+				Columns:    []*schema.Column{StaffAccountAuthRolesColumns[5]},
+				RefColumns: []*schema.Column{AuthRolesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "staffaccountauthrole_staff_account_id_auth_role_id",
+				Unique:  true,
+				Columns: []*schema.Column{StaffAccountAuthRolesColumns[4], StaffAccountAuthRolesColumns[5]},
+			},
+		},
+	}
 	// TransactionsColumns holds the columns for the "transactions" table.
 	TransactionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -357,6 +411,8 @@ var (
 		DailyAssetPricesTable,
 		ExchangesTable,
 		PortfoliosTable,
+		StaffAccountsTable,
+		StaffAccountAuthRolesTable,
 		TransactionsTable,
 		TransactionTypesTable,
 	}
@@ -375,6 +431,12 @@ func init() {
 	CryptocurrenciesTable.ForeignKeys[0].RefTable = AssetsTable
 	DailyAssetPricesTable.ForeignKeys[0].RefTable = AssetsTable
 	PortfoliosTable.ForeignKeys[0].RefTable = AccountsTable
+	StaffAccountsTable.Annotation = &entsql.Annotation{}
+	StaffAccountsTable.Annotation.Checks = map[string]string{
+		"staff_account_chk_if_auth_type_local_then_password_not_null": "(auth_type <> 'LOCAL') OR (password IS NOT NULL)",
+	}
+	StaffAccountAuthRolesTable.ForeignKeys[0].RefTable = StaffAccountsTable
+	StaffAccountAuthRolesTable.ForeignKeys[1].RefTable = AuthRolesTable
 	TransactionsTable.ForeignKeys[0].RefTable = ExchangesTable
 	TransactionsTable.ForeignKeys[1].RefTable = PortfoliosTable
 	TransactionsTable.ForeignKeys[2].RefTable = TransactionTypesTable

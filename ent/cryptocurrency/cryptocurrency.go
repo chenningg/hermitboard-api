@@ -5,7 +5,7 @@ package cryptocurrency
 import (
 	"time"
 
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 const (

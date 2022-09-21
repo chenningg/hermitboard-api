@@ -29,7 +29,7 @@ func main() {
 	configService, err := config.NewConfigService(logger.WithName("config"))
 	if err != nil {
 		// Log configuration error and panic.
-		logger.Error(err, "config could not be loaded")
+		logger.Error(err, "main(): config could not be loaded")
 		os.Exit(1)
 	}
 	config := configService.Config()
@@ -38,7 +38,7 @@ func main() {
 	dbService, err := db.NewDbService(config.Db, logger.WithName("db"))
 	if err != nil {
 		// Log database error and panic.
-		logger.Error(err, "database setup could not be completed")
+		logger.Error(err, "main(): database setup could not be completed")
 		os.Exit(1)
 	}
 
@@ -51,6 +51,12 @@ func main() {
 	http.Handle("/playground", playground.Handler("GraphQL playground", "/api"))
 	http.Handle("/api", srv)
 
-	logger.Info(fmt.Sprintf("connect to http://%s:%s/playground for GraphQL playground", config.Server.Host, config.Server.Port))
-	logger.Error(http.ListenAndServe(config.Server.Host+":"+config.Server.Port, nil), "server error")
+	logger.Info(
+		fmt.Sprintf(
+			"connect to http://%s:%s/playground for GraphQL playground", config.Server.Host, config.Server.Port,
+		),
+		"host", config.Server.Host,
+		"port", config.Server.Port,
+	)
+	logger.Error(http.ListenAndServe(config.Server.Host+":"+config.Server.Port, nil), "main(): server error")
 }

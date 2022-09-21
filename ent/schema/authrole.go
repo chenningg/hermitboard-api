@@ -53,5 +53,8 @@ func (AuthRole) Edges() []ent.Edge {
 		edge.From("accounts", Account.Type).
 			Ref("auth_roles").
 			Through("account_auth_roles", AccountAuthRole.Type),
+		edge.From("staff_accounts", StaffAccount.Type).
+			Ref("auth_roles").
+			Through("staff_account_auth_roles", StaffAccountAuthRole.Type),
 	}
 }

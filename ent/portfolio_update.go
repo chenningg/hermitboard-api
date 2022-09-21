@@ -14,8 +14,8 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/account"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // PortfolioUpdate is the builder for updating Portfolio entities.

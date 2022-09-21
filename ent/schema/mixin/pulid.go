@@ -1,13 +1,13 @@
 package mixin
 
 import (
+	"github.com/chenningg/hermitboard-api/pulid"
 	"strings"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/mixin"
-	"github.com/chenningg/hermitboard-api/ent/schema/pulid"
 )
 
 // MixinWithPrefix creates a Mixin that encodes the provided prefix.

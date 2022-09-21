@@ -104,10 +104,26 @@ func (ar *AuthRole) Accounts(ctx context.Context) ([]*Account, error) {
 	return result, err
 }
 
+func (ar *AuthRole) StaffAccounts(ctx context.Context) ([]*StaffAccount, error) {
+	result, err := ar.NamedStaffAccounts(graphql.GetFieldContext(ctx).Field.Alias)
+	if IsNotLoaded(err) {
+		result, err = ar.QueryStaffAccounts().All(ctx)
+	}
+	return result, err
+}
+
 func (ar *AuthRole) AccountAuthRoles(ctx context.Context) ([]*AccountAuthRole, error) {
 	result, err := ar.NamedAccountAuthRoles(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
 		result, err = ar.QueryAccountAuthRoles().All(ctx)
+	}
+	return result, err
+}
+
+func (ar *AuthRole) StaffAccountAuthRoles(ctx context.Context) ([]*StaffAccountAuthRole, error) {
+	result, err := ar.NamedStaffAccountAuthRoles(graphql.GetFieldContext(ctx).Field.Alias)
+	if IsNotLoaded(err) {
+		result, err = ar.QueryStaffAccountAuthRoles().All(ctx)
 	}
 	return result, err
 }
@@ -196,6 +212,38 @@ func (po *Portfolio) Transactions(ctx context.Context) ([]*Transaction, error) {
 	result, err := po.NamedTransactions(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
 		result, err = po.QueryTransactions().All(ctx)
+	}
+	return result, err
+}
+
+func (sa *StaffAccount) AuthRoles(ctx context.Context) ([]*AuthRole, error) {
+	result, err := sa.NamedAuthRoles(graphql.GetFieldContext(ctx).Field.Alias)
+	if IsNotLoaded(err) {
+		result, err = sa.QueryAuthRoles().All(ctx)
+	}
+	return result, err
+}
+
+func (sa *StaffAccount) StaffAccountAuthRoles(ctx context.Context) ([]*StaffAccountAuthRole, error) {
+	result, err := sa.NamedStaffAccountAuthRoles(graphql.GetFieldContext(ctx).Field.Alias)
+	if IsNotLoaded(err) {
+		result, err = sa.QueryStaffAccountAuthRoles().All(ctx)
+	}
+	return result, err
+}
+
+func (saar *StaffAccountAuthRole) StaffAccount(ctx context.Context) (*StaffAccount, error) {
+	result, err := saar.Edges.StaffAccountOrErr()
+	if IsNotLoaded(err) {
+		result, err = saar.QueryStaffAccount().Only(ctx)
+	}
+	return result, err
+}
+
+func (saar *StaffAccountAuthRole) AuthRole(ctx context.Context) (*AuthRole, error) {
+	result, err := saar.Edges.AuthRoleOrErr()
+	if IsNotLoaded(err) {
+		result, err = saar.QueryAuthRole().Only(ctx)
 	}
 	return result, err
 }
