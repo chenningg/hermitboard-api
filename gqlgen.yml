@@ -4,7 +4,8 @@ schema:
 
 # Where should the generated server code go?
 exec:
-  filename: graph/generated/generated.go
+  layout: follow-schema
+  dir: graph/generated
   package: generated
 
 # Uncomment to enable federation
@@ -20,8 +21,10 @@ model:
 # Where should the resolver implementations go?
 resolver:
   layout: follow-schema
-  dir: graph/resolver
-  package: resolver
+  dir: graph
+  package: graph
+  filename_template: "{name}.resolvers.go"
+
 
 # Optional: turn on use ` + "`" + `gqlgen:"fieldName"` + "`" + ` tags in your models
 # struct_tag: json
@@ -42,7 +45,7 @@ resolver:
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
- - "github.com/chenningg/hermitboard-api/graph/model"
+  - "github.com/chenningg/hermitboard-api/ent"
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -52,10 +55,7 @@ autobind:
 models:
   ID:
     model:
-      - github.com/99designs/gqlgen/graphql.ID
-      - github.com/99designs/gqlgen/graphql.Int
-      - github.com/99designs/gqlgen/graphql.Int64
-      - github.com/99designs/gqlgen/graphql.Int32
+      - github.com/chenningg/hermitboard-api/pulid.PULID
   Int:
     model:
       - github.com/99designs/gqlgen/graphql.Int
