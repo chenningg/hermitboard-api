@@ -30,11 +30,10 @@ type Cryptocurrency struct {
 	Icon *string `json:"icon,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
-	// AssetID holds the value of the "asset_id" field.
-	AssetID pulid.PULID `json:"asset_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CryptocurrencyQuery when eager-loading is set.
-	Edges CryptocurrencyEdges `json:"edges"`
+	Edges                CryptocurrencyEdges `json:"edges"`
+	asset_cryptocurrency *pulid.PULID
 }
 
 // CryptocurrencyEdges holds the relations/edges for other nodes in the graph.
@@ -43,16 +42,13 @@ type CryptocurrencyEdges struct {
 	Asset *Asset `json:"asset,omitempty"`
 	// Blockchains holds the value of the blockchains edge.
 	Blockchains []*Blockchain `json:"blockchains,omitempty"`
-	// BlockchainCryptocurrencies holds the value of the blockchain_cryptocurrencies edge.
-	BlockchainCryptocurrencies []*BlockchainCryptocurrency `json:"blockchain_cryptocurrencies,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [2]bool
 	// totalCount holds the count of the edges above.
-	totalCount [3]map[string]int
+	totalCount [2]map[string]int
 
-	namedBlockchains                map[string][]*Blockchain
-	namedBlockchainCryptocurrencies map[string][]*BlockchainCryptocurrency
+	namedBlockchains map[string][]*Blockchain
 }
 
 // AssetOrErr returns the Asset value or an error if the edge
@@ -77,26 +73,19 @@ func (e CryptocurrencyEdges) BlockchainsOrErr() ([]*Blockchain, error) {
 	return nil, &NotLoadedError{edge: "blockchains"}
 }
 
-// BlockchainCryptocurrenciesOrErr returns the BlockchainCryptocurrencies value or an error if the edge
-// was not loaded in eager-loading.
-func (e CryptocurrencyEdges) BlockchainCryptocurrenciesOrErr() ([]*BlockchainCryptocurrency, error) {
-	if e.loadedTypes[2] {
-		return e.BlockchainCryptocurrencies, nil
-	}
-	return nil, &NotLoadedError{edge: "blockchain_cryptocurrencies"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Cryptocurrency) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case cryptocurrency.FieldID, cryptocurrency.FieldAssetID:
+		case cryptocurrency.FieldID:
 			values[i] = new(pulid.PULID)
 		case cryptocurrency.FieldSymbol, cryptocurrency.FieldIcon, cryptocurrency.FieldName:
 			values[i] = new(sql.NullString)
 		case cryptocurrency.FieldCreatedAt, cryptocurrency.FieldUpdatedAt, cryptocurrency.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
+		case cryptocurrency.ForeignKeys[0]: // asset_cryptocurrency
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Cryptocurrency", columns[i])
 		}
@@ -156,11 +145,12 @@ func (c *Cryptocurrency) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Name = value.String
 			}
-		case cryptocurrency.FieldAssetID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field asset_id", values[i])
-			} else if value != nil {
-				c.AssetID = *value
+		case cryptocurrency.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field asset_cryptocurrency", values[i])
+			} else if value.Valid {
+				c.asset_cryptocurrency = new(pulid.PULID)
+				*c.asset_cryptocurrency = *value.S.(*pulid.PULID)
 			}
 		}
 	}
@@ -175,11 +165,6 @@ func (c *Cryptocurrency) QueryAsset() *AssetQuery {
 // QueryBlockchains queries the "blockchains" edge of the Cryptocurrency entity.
 func (c *Cryptocurrency) QueryBlockchains() *BlockchainQuery {
 	return (&CryptocurrencyClient{config: c.config}).QueryBlockchains(c)
-}
-
-// QueryBlockchainCryptocurrencies queries the "blockchain_cryptocurrencies" edge of the Cryptocurrency entity.
-func (c *Cryptocurrency) QueryBlockchainCryptocurrencies() *BlockchainCryptocurrencyQuery {
-	return (&CryptocurrencyClient{config: c.config}).QueryBlockchainCryptocurrencies(c)
 }
 
 // Update returns a builder for updating this Cryptocurrency.
@@ -226,9 +211,6 @@ func (c *Cryptocurrency) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(c.Name)
-	builder.WriteString(", ")
-	builder.WriteString("asset_id=")
-	builder.WriteString(fmt.Sprintf("%v", c.AssetID))
 	builder.WriteByte(')')
 	return builder.String()
 }
@@ -254,30 +236,6 @@ func (c *Cryptocurrency) appendNamedBlockchains(name string, edges ...*Blockchai
 		c.Edges.namedBlockchains[name] = []*Blockchain{}
 	} else {
 		c.Edges.namedBlockchains[name] = append(c.Edges.namedBlockchains[name], edges...)
-	}
-}
-
-// NamedBlockchainCryptocurrencies returns the BlockchainCryptocurrencies named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (c *Cryptocurrency) NamedBlockchainCryptocurrencies(name string) ([]*BlockchainCryptocurrency, error) {
-	if c.Edges.namedBlockchainCryptocurrencies == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := c.Edges.namedBlockchainCryptocurrencies[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (c *Cryptocurrency) appendNamedBlockchainCryptocurrencies(name string, edges ...*BlockchainCryptocurrency) {
-	if c.Edges.namedBlockchainCryptocurrencies == nil {
-		c.Edges.namedBlockchainCryptocurrencies = make(map[string][]*BlockchainCryptocurrency)
-	}
-	if len(edges) == 0 {
-		c.Edges.namedBlockchainCryptocurrencies[name] = []*BlockchainCryptocurrency{}
-	} else {
-		c.Edges.namedBlockchainCryptocurrencies[name] = append(c.Edges.namedBlockchainCryptocurrencies[name], edges...)
 	}
 }
 

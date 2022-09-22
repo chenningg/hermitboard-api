@@ -29,6 +29,7 @@ type PortfolioQuery struct {
 	predicates            []predicate.Portfolio
 	withAccount           *AccountQuery
 	withTransactions      *TransactionQuery
+	withFKs               bool
 	modifiers             []func(*sql.Selector)
 	loadTotal             []func(context.Context, []*Portfolio) error
 	withNamedTransactions map[string]*TransactionQuery
@@ -391,12 +392,19 @@ func (pq *PortfolioQuery) prepareQuery(ctx context.Context) error {
 func (pq *PortfolioQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Portfolio, error) {
 	var (
 		nodes       = []*Portfolio{}
+		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
 		loadedTypes = [2]bool{
 			pq.withAccount != nil,
 			pq.withTransactions != nil,
 		}
 	)
+	if pq.withAccount != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, portfolio.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Portfolio).scanValues(nil, columns)
 	}
@@ -450,7 +458,10 @@ func (pq *PortfolioQuery) loadAccount(ctx context.Context, query *AccountQuery, 
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Portfolio)
 	for i := range nodes {
-		fk := nodes[i].AccountID
+		if nodes[i].account_portfolios == nil {
+			continue
+		}
+		fk := *nodes[i].account_portfolios
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -464,7 +475,7 @@ func (pq *PortfolioQuery) loadAccount(ctx context.Context, query *AccountQuery, 
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "account_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "account_portfolios" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -482,6 +493,7 @@ func (pq *PortfolioQuery) loadTransactions(ctx context.Context, query *Transacti
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	query.Where(predicate.Transaction(func(s *sql.Selector) {
 		s.Where(sql.InValues(portfolio.TransactionsColumn, fks...))
 	}))
@@ -490,10 +502,13 @@ func (pq *PortfolioQuery) loadTransactions(ctx context.Context, query *Transacti
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.PortfolioID
-		node, ok := nodeids[fk]
+		fk := n.portfolio_transactions
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "portfolio_transactions" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "portfolio_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "portfolio_transactions" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

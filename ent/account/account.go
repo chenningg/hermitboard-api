@@ -19,8 +19,6 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldAuthTypeID holds the string denoting the auth_type_id field in the database.
-	FieldAuthTypeID = "auth_type_id"
 	// FieldNickname holds the string denoting the nickname field in the database.
 	FieldNickname = "nickname"
 	// FieldEmail holds the string denoting the email field in the database.
@@ -35,8 +33,6 @@ const (
 	EdgePortfolios = "portfolios"
 	// EdgeAuthType holds the string denoting the auth_type edge name in mutations.
 	EdgeAuthType = "auth_type"
-	// EdgeAccountAuthRoles holds the string denoting the account_auth_roles edge name in mutations.
-	EdgeAccountAuthRoles = "account_auth_roles"
 	// Table holds the table name of the account in the database.
 	Table = "accounts"
 	// AuthRolesTable is the table that holds the auth_roles relation/edge. The primary key declared below.
@@ -50,21 +46,14 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "portfolio" package.
 	PortfoliosInverseTable = "portfolios"
 	// PortfoliosColumn is the table column denoting the portfolios relation/edge.
-	PortfoliosColumn = "account_id"
+	PortfoliosColumn = "account_portfolios"
 	// AuthTypeTable is the table that holds the auth_type relation/edge.
 	AuthTypeTable = "accounts"
 	// AuthTypeInverseTable is the table name for the AuthType entity.
 	// It exists in this package in order to avoid circular dependency with the "authtype" package.
 	AuthTypeInverseTable = "auth_types"
 	// AuthTypeColumn is the table column denoting the auth_type relation/edge.
-	AuthTypeColumn = "auth_type_id"
-	// AccountAuthRolesTable is the table that holds the account_auth_roles relation/edge.
-	AccountAuthRolesTable = "account_auth_roles"
-	// AccountAuthRolesInverseTable is the table name for the AccountAuthRole entity.
-	// It exists in this package in order to avoid circular dependency with the "accountauthrole" package.
-	AccountAuthRolesInverseTable = "account_auth_roles"
-	// AccountAuthRolesColumn is the table column denoting the account_auth_roles relation/edge.
-	AccountAuthRolesColumn = "account_id"
+	AuthTypeColumn = "account_auth_type"
 )
 
 // Columns holds all SQL columns for account fields.
@@ -73,11 +62,16 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldAuthTypeID,
 	FieldNickname,
 	FieldEmail,
 	FieldPassword,
 	FieldPasswordUpdatedAt,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "accounts"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"account_auth_type",
 }
 
 var (
@@ -90,6 +84,11 @@ var (
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

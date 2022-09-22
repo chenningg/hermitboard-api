@@ -26,26 +26,26 @@ const (
 	FieldAuthType = "auth_type"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// EdgeAccount holds the string denoting the account edge name in mutations.
-	EdgeAccount = "account"
-	// EdgeStaffAccount holds the string denoting the staff_account edge name in mutations.
-	EdgeStaffAccount = "staff_account"
+	// EdgeAccounts holds the string denoting the accounts edge name in mutations.
+	EdgeAccounts = "accounts"
+	// EdgeStaffAccounts holds the string denoting the staff_accounts edge name in mutations.
+	EdgeStaffAccounts = "staff_accounts"
 	// Table holds the table name of the authtype in the database.
 	Table = "auth_types"
-	// AccountTable is the table that holds the account relation/edge.
-	AccountTable = "accounts"
-	// AccountInverseTable is the table name for the Account entity.
+	// AccountsTable is the table that holds the accounts relation/edge.
+	AccountsTable = "accounts"
+	// AccountsInverseTable is the table name for the Account entity.
 	// It exists in this package in order to avoid circular dependency with the "account" package.
-	AccountInverseTable = "accounts"
-	// AccountColumn is the table column denoting the account relation/edge.
-	AccountColumn = "auth_type_id"
-	// StaffAccountTable is the table that holds the staff_account relation/edge.
-	StaffAccountTable = "staff_accounts"
-	// StaffAccountInverseTable is the table name for the StaffAccount entity.
+	AccountsInverseTable = "accounts"
+	// AccountsColumn is the table column denoting the accounts relation/edge.
+	AccountsColumn = "account_auth_type"
+	// StaffAccountsTable is the table that holds the staff_accounts relation/edge.
+	StaffAccountsTable = "staff_accounts"
+	// StaffAccountsInverseTable is the table name for the StaffAccount entity.
 	// It exists in this package in order to avoid circular dependency with the "staffaccount" package.
-	StaffAccountInverseTable = "staff_accounts"
-	// StaffAccountColumn is the table column denoting the staff_account relation/edge.
-	StaffAccountColumn = "auth_type_id"
+	StaffAccountsInverseTable = "staff_accounts"
+	// StaffAccountsColumn is the table column denoting the staff_accounts relation/edge.
+	StaffAccountsColumn = "staff_account_auth_type"
 )
 
 // Columns holds all SQL columns for authtype fields.

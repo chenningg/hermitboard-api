@@ -145,13 +145,6 @@ func AdjustedClose(v float64) predicate.DailyAssetPrice {
 	})
 }
 
-// BaseAssetID applies equality check predicate on the "base_asset_id" field. It's identical to BaseAssetIDEQ.
-func BaseAssetID(v pulid.PULID) predicate.DailyAssetPrice {
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBaseAssetID), v))
-	})
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.DailyAssetPrice {
 	return predicate.DailyAssetPrice(func(s *sql.Selector) {
@@ -798,129 +791,25 @@ func AdjustedCloseLTE(v float64) predicate.DailyAssetPrice {
 	})
 }
 
-// BaseAssetIDEQ applies the EQ predicate on the "base_asset_id" field.
-func BaseAssetIDEQ(v pulid.PULID) predicate.DailyAssetPrice {
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldBaseAssetID), v))
-	})
-}
-
-// BaseAssetIDNEQ applies the NEQ predicate on the "base_asset_id" field.
-func BaseAssetIDNEQ(v pulid.PULID) predicate.DailyAssetPrice {
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldBaseAssetID), v))
-	})
-}
-
-// BaseAssetIDIn applies the In predicate on the "base_asset_id" field.
-func BaseAssetIDIn(vs ...pulid.PULID) predicate.DailyAssetPrice {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldBaseAssetID), v...))
-	})
-}
-
-// BaseAssetIDNotIn applies the NotIn predicate on the "base_asset_id" field.
-func BaseAssetIDNotIn(vs ...pulid.PULID) predicate.DailyAssetPrice {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldBaseAssetID), v...))
-	})
-}
-
-// BaseAssetIDGT applies the GT predicate on the "base_asset_id" field.
-func BaseAssetIDGT(v pulid.PULID) predicate.DailyAssetPrice {
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldBaseAssetID), v))
-	})
-}
-
-// BaseAssetIDGTE applies the GTE predicate on the "base_asset_id" field.
-func BaseAssetIDGTE(v pulid.PULID) predicate.DailyAssetPrice {
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldBaseAssetID), v))
-	})
-}
-
-// BaseAssetIDLT applies the LT predicate on the "base_asset_id" field.
-func BaseAssetIDLT(v pulid.PULID) predicate.DailyAssetPrice {
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldBaseAssetID), v))
-	})
-}
-
-// BaseAssetIDLTE applies the LTE predicate on the "base_asset_id" field.
-func BaseAssetIDLTE(v pulid.PULID) predicate.DailyAssetPrice {
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldBaseAssetID), v))
-	})
-}
-
-// BaseAssetIDContains applies the Contains predicate on the "base_asset_id" field.
-func BaseAssetIDContains(v pulid.PULID) predicate.DailyAssetPrice {
-	vc := string(v)
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldBaseAssetID), vc))
-	})
-}
-
-// BaseAssetIDHasPrefix applies the HasPrefix predicate on the "base_asset_id" field.
-func BaseAssetIDHasPrefix(v pulid.PULID) predicate.DailyAssetPrice {
-	vc := string(v)
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldBaseAssetID), vc))
-	})
-}
-
-// BaseAssetIDHasSuffix applies the HasSuffix predicate on the "base_asset_id" field.
-func BaseAssetIDHasSuffix(v pulid.PULID) predicate.DailyAssetPrice {
-	vc := string(v)
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldBaseAssetID), vc))
-	})
-}
-
-// BaseAssetIDEqualFold applies the EqualFold predicate on the "base_asset_id" field.
-func BaseAssetIDEqualFold(v pulid.PULID) predicate.DailyAssetPrice {
-	vc := string(v)
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldBaseAssetID), vc))
-	})
-}
-
-// BaseAssetIDContainsFold applies the ContainsFold predicate on the "base_asset_id" field.
-func BaseAssetIDContainsFold(v pulid.PULID) predicate.DailyAssetPrice {
-	vc := string(v)
-	return predicate.DailyAssetPrice(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldBaseAssetID), vc))
-	})
-}
-
-// HasBaseAsset applies the HasEdge predicate on the "base_asset" edge.
-func HasBaseAsset() predicate.DailyAssetPrice {
+// HasAsset applies the HasEdge predicate on the "asset" edge.
+func HasAsset() predicate.DailyAssetPrice {
 	return predicate.DailyAssetPrice(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BaseAssetTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, BaseAssetTable, BaseAssetColumn),
+			sqlgraph.To(AssetTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, AssetTable, AssetColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasBaseAssetWith applies the HasEdge predicate on the "base_asset" edge with a given conditions (other predicates).
-func HasBaseAssetWith(preds ...predicate.Asset) predicate.DailyAssetPrice {
+// HasAssetWith applies the HasEdge predicate on the "asset" edge with a given conditions (other predicates).
+func HasAssetWith(preds ...predicate.Asset) predicate.DailyAssetPrice {
 	return predicate.DailyAssetPrice(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(BaseAssetInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, BaseAssetTable, BaseAssetColumn),
+			sqlgraph.To(AssetInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, AssetTable, AssetColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

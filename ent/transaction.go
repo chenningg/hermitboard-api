@@ -33,19 +33,14 @@ type Transaction struct {
 	Units int `json:"units,omitempty"`
 	// PricePerUnit holds the value of the "price_per_unit" field.
 	PricePerUnit float64 `json:"price_per_unit,omitempty"`
-	// TransactionTypeID holds the value of the "transaction_type_id" field.
-	TransactionTypeID pulid.PULID `json:"transaction_type_id,omitempty"`
-	// BaseAssetID holds the value of the "base_asset_id" field.
-	BaseAssetID pulid.PULID `json:"base_asset_id,omitempty"`
-	// QuoteAssetID holds the value of the "quote_asset_id" field.
-	QuoteAssetID *pulid.PULID `json:"quote_asset_id,omitempty"`
-	// PortfolioID holds the value of the "portfolio_id" field.
-	PortfolioID pulid.PULID `json:"portfolio_id,omitempty"`
-	// ExchangeID holds the value of the "exchange_id" field.
-	ExchangeID pulid.PULID `json:"exchange_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TransactionQuery when eager-loading is set.
-	Edges TransactionEdges `json:"edges"`
+	Edges                        TransactionEdges `json:"edges"`
+	exchange_transactions        *pulid.PULID
+	portfolio_transactions       *pulid.PULID
+	transaction_transaction_type *pulid.PULID
+	transaction_base_asset       *pulid.PULID
+	transaction_quote_asset      *pulid.PULID
 }
 
 // TransactionEdges holds the relations/edges for other nodes in the graph.
@@ -137,9 +132,7 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case transaction.FieldQuoteAssetID:
-			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
-		case transaction.FieldID, transaction.FieldTransactionTypeID, transaction.FieldBaseAssetID, transaction.FieldPortfolioID, transaction.FieldExchangeID:
+		case transaction.FieldID:
 			values[i] = new(pulid.PULID)
 		case transaction.FieldPricePerUnit:
 			values[i] = new(sql.NullFloat64)
@@ -147,6 +140,16 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case transaction.FieldCreatedAt, transaction.FieldUpdatedAt, transaction.FieldDeletedAt, transaction.FieldTime:
 			values[i] = new(sql.NullTime)
+		case transaction.ForeignKeys[0]: // exchange_transactions
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
+		case transaction.ForeignKeys[1]: // portfolio_transactions
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
+		case transaction.ForeignKeys[2]: // transaction_transaction_type
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
+		case transaction.ForeignKeys[3]: // transaction_base_asset
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
+		case transaction.ForeignKeys[4]: // transaction_quote_asset
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Transaction", columns[i])
 		}
@@ -205,36 +208,40 @@ func (t *Transaction) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				t.PricePerUnit = value.Float64
 			}
-		case transaction.FieldTransactionTypeID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field transaction_type_id", values[i])
-			} else if value != nil {
-				t.TransactionTypeID = *value
-			}
-		case transaction.FieldBaseAssetID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field base_asset_id", values[i])
-			} else if value != nil {
-				t.BaseAssetID = *value
-			}
-		case transaction.FieldQuoteAssetID:
+		case transaction.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field quote_asset_id", values[i])
+				return fmt.Errorf("unexpected type %T for field exchange_transactions", values[i])
 			} else if value.Valid {
-				t.QuoteAssetID = new(pulid.PULID)
-				*t.QuoteAssetID = *value.S.(*pulid.PULID)
+				t.exchange_transactions = new(pulid.PULID)
+				*t.exchange_transactions = *value.S.(*pulid.PULID)
 			}
-		case transaction.FieldPortfolioID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field portfolio_id", values[i])
-			} else if value != nil {
-				t.PortfolioID = *value
+		case transaction.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field portfolio_transactions", values[i])
+			} else if value.Valid {
+				t.portfolio_transactions = new(pulid.PULID)
+				*t.portfolio_transactions = *value.S.(*pulid.PULID)
 			}
-		case transaction.FieldExchangeID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field exchange_id", values[i])
-			} else if value != nil {
-				t.ExchangeID = *value
+		case transaction.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field transaction_transaction_type", values[i])
+			} else if value.Valid {
+				t.transaction_transaction_type = new(pulid.PULID)
+				*t.transaction_transaction_type = *value.S.(*pulid.PULID)
+			}
+		case transaction.ForeignKeys[3]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field transaction_base_asset", values[i])
+			} else if value.Valid {
+				t.transaction_base_asset = new(pulid.PULID)
+				*t.transaction_base_asset = *value.S.(*pulid.PULID)
+			}
+		case transaction.ForeignKeys[4]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field transaction_quote_asset", values[i])
+			} else if value.Valid {
+				t.transaction_quote_asset = new(pulid.PULID)
+				*t.transaction_quote_asset = *value.S.(*pulid.PULID)
 			}
 		}
 	}
@@ -308,23 +315,6 @@ func (t *Transaction) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("price_per_unit=")
 	builder.WriteString(fmt.Sprintf("%v", t.PricePerUnit))
-	builder.WriteString(", ")
-	builder.WriteString("transaction_type_id=")
-	builder.WriteString(fmt.Sprintf("%v", t.TransactionTypeID))
-	builder.WriteString(", ")
-	builder.WriteString("base_asset_id=")
-	builder.WriteString(fmt.Sprintf("%v", t.BaseAssetID))
-	builder.WriteString(", ")
-	if v := t.QuoteAssetID; v != nil {
-		builder.WriteString("quote_asset_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	builder.WriteString("portfolio_id=")
-	builder.WriteString(fmt.Sprintf("%v", t.PortfolioID))
-	builder.WriteString(", ")
-	builder.WriteString("exchange_id=")
-	builder.WriteString(fmt.Sprintf("%v", t.ExchangeID))
 	builder.WriteByte(')')
 	return builder.String()
 }

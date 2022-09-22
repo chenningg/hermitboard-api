@@ -11,13 +11,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/chenningg/hermitboard-api/ent/account"
-	"github.com/chenningg/hermitboard-api/ent/accountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
-	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
@@ -46,22 +44,20 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		account.Table:                  account.ValidColumn,
-		accountauthrole.Table:          accountauthrole.ValidColumn,
-		asset.Table:                    asset.ValidColumn,
-		assetclass.Table:               assetclass.ValidColumn,
-		authrole.Table:                 authrole.ValidColumn,
-		authtype.Table:                 authtype.ValidColumn,
-		blockchain.Table:               blockchain.ValidColumn,
-		blockchaincryptocurrency.Table: blockchaincryptocurrency.ValidColumn,
-		cryptocurrency.Table:           cryptocurrency.ValidColumn,
-		dailyassetprice.Table:          dailyassetprice.ValidColumn,
-		exchange.Table:                 exchange.ValidColumn,
-		portfolio.Table:                portfolio.ValidColumn,
-		staffaccount.Table:             staffaccount.ValidColumn,
-		staffaccountauthrole.Table:     staffaccountauthrole.ValidColumn,
-		transaction.Table:              transaction.ValidColumn,
-		transactiontype.Table:          transactiontype.ValidColumn,
+		account.Table:              account.ValidColumn,
+		asset.Table:                asset.ValidColumn,
+		assetclass.Table:           assetclass.ValidColumn,
+		authrole.Table:             authrole.ValidColumn,
+		authtype.Table:             authtype.ValidColumn,
+		blockchain.Table:           blockchain.ValidColumn,
+		cryptocurrency.Table:       cryptocurrency.ValidColumn,
+		dailyassetprice.Table:      dailyassetprice.ValidColumn,
+		exchange.Table:             exchange.ValidColumn,
+		portfolio.Table:            portfolio.ValidColumn,
+		staffaccount.Table:         staffaccount.ValidColumn,
+		staffaccountauthrole.Table: staffaccountauthrole.ValidColumn,
+		transaction.Table:          transaction.ValidColumn,
+		transactiontype.Table:      transactiontype.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

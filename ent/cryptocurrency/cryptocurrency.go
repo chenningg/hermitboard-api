@@ -25,14 +25,10 @@ const (
 	FieldIcon = "icon"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldAssetID holds the string denoting the asset_id field in the database.
-	FieldAssetID = "asset_id"
 	// EdgeAsset holds the string denoting the asset edge name in mutations.
 	EdgeAsset = "asset"
 	// EdgeBlockchains holds the string denoting the blockchains edge name in mutations.
 	EdgeBlockchains = "blockchains"
-	// EdgeBlockchainCryptocurrencies holds the string denoting the blockchain_cryptocurrencies edge name in mutations.
-	EdgeBlockchainCryptocurrencies = "blockchain_cryptocurrencies"
 	// Table holds the table name of the cryptocurrency in the database.
 	Table = "cryptocurrencies"
 	// AssetTable is the table that holds the asset relation/edge.
@@ -41,19 +37,12 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "asset" package.
 	AssetInverseTable = "assets"
 	// AssetColumn is the table column denoting the asset relation/edge.
-	AssetColumn = "asset_id"
+	AssetColumn = "asset_cryptocurrency"
 	// BlockchainsTable is the table that holds the blockchains relation/edge. The primary key declared below.
 	BlockchainsTable = "blockchain_cryptocurrencies"
 	// BlockchainsInverseTable is the table name for the Blockchain entity.
 	// It exists in this package in order to avoid circular dependency with the "blockchain" package.
 	BlockchainsInverseTable = "blockchains"
-	// BlockchainCryptocurrenciesTable is the table that holds the blockchain_cryptocurrencies relation/edge.
-	BlockchainCryptocurrenciesTable = "blockchain_cryptocurrencies"
-	// BlockchainCryptocurrenciesInverseTable is the table name for the BlockchainCryptocurrency entity.
-	// It exists in this package in order to avoid circular dependency with the "blockchaincryptocurrency" package.
-	BlockchainCryptocurrenciesInverseTable = "blockchain_cryptocurrencies"
-	// BlockchainCryptocurrenciesColumn is the table column denoting the blockchain_cryptocurrencies relation/edge.
-	BlockchainCryptocurrenciesColumn = "cryptocurrency_id"
 )
 
 // Columns holds all SQL columns for cryptocurrency fields.
@@ -65,7 +54,12 @@ var Columns = []string{
 	FieldSymbol,
 	FieldIcon,
 	FieldName,
-	FieldAssetID,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "cryptocurrencies"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"asset_cryptocurrency",
 }
 
 var (
@@ -78,6 +72,11 @@ var (
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

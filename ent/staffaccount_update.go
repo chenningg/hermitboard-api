@@ -15,7 +15,6 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
-	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -47,12 +46,6 @@ func (sau *StaffAccountUpdate) SetDeletedAt(t time.Time) *StaffAccountUpdate {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (sau *StaffAccountUpdate) ClearDeletedAt() *StaffAccountUpdate {
 	sau.mutation.ClearDeletedAt()
-	return sau
-}
-
-// SetAuthTypeID sets the "auth_type_id" field.
-func (sau *StaffAccountUpdate) SetAuthTypeID(pu pulid.PULID) *StaffAccountUpdate {
-	sau.mutation.SetAuthTypeID(pu)
 	return sau
 }
 
@@ -109,24 +102,15 @@ func (sau *StaffAccountUpdate) AddAuthRoles(a ...*AuthRole) *StaffAccountUpdate 
 	return sau.AddAuthRoleIDs(ids...)
 }
 
-// SetAuthType sets the "auth_type" edge to the AuthType entity.
-func (sau *StaffAccountUpdate) SetAuthType(a *AuthType) *StaffAccountUpdate {
-	return sau.SetAuthTypeID(a.ID)
-}
-
-// AddStaffAccountAuthRoleIDs adds the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity by IDs.
-func (sau *StaffAccountUpdate) AddStaffAccountAuthRoleIDs(ids ...pulid.PULID) *StaffAccountUpdate {
-	sau.mutation.AddStaffAccountAuthRoleIDs(ids...)
+// SetAuthTypeID sets the "auth_type" edge to the AuthType entity by ID.
+func (sau *StaffAccountUpdate) SetAuthTypeID(id pulid.PULID) *StaffAccountUpdate {
+	sau.mutation.SetAuthTypeID(id)
 	return sau
 }
 
-// AddStaffAccountAuthRoles adds the "staff_account_auth_roles" edges to the StaffAccountAuthRole entity.
-func (sau *StaffAccountUpdate) AddStaffAccountAuthRoles(s ...*StaffAccountAuthRole) *StaffAccountUpdate {
-	ids := make([]pulid.PULID, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return sau.AddStaffAccountAuthRoleIDs(ids...)
+// SetAuthType sets the "auth_type" edge to the AuthType entity.
+func (sau *StaffAccountUpdate) SetAuthType(a *AuthType) *StaffAccountUpdate {
+	return sau.SetAuthTypeID(a.ID)
 }
 
 // Mutation returns the StaffAccountMutation object of the builder.
@@ -159,27 +143,6 @@ func (sau *StaffAccountUpdate) RemoveAuthRoles(a ...*AuthRole) *StaffAccountUpda
 func (sau *StaffAccountUpdate) ClearAuthType() *StaffAccountUpdate {
 	sau.mutation.ClearAuthType()
 	return sau
-}
-
-// ClearStaffAccountAuthRoles clears all "staff_account_auth_roles" edges to the StaffAccountAuthRole entity.
-func (sau *StaffAccountUpdate) ClearStaffAccountAuthRoles() *StaffAccountUpdate {
-	sau.mutation.ClearStaffAccountAuthRoles()
-	return sau
-}
-
-// RemoveStaffAccountAuthRoleIDs removes the "staff_account_auth_roles" edge to StaffAccountAuthRole entities by IDs.
-func (sau *StaffAccountUpdate) RemoveStaffAccountAuthRoleIDs(ids ...pulid.PULID) *StaffAccountUpdate {
-	sau.mutation.RemoveStaffAccountAuthRoleIDs(ids...)
-	return sau
-}
-
-// RemoveStaffAccountAuthRoles removes "staff_account_auth_roles" edges to StaffAccountAuthRole entities.
-func (sau *StaffAccountUpdate) RemoveStaffAccountAuthRoles(s ...*StaffAccountAuthRole) *StaffAccountUpdate {
-	ids := make([]pulid.PULID, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return sau.RemoveStaffAccountAuthRoleIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -368,13 +331,6 @@ func (sau *StaffAccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
-		createE := &StaffAccountAuthRoleCreate{config: sau.config, mutation: newStaffAccountAuthRoleMutation(sau.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := sau.mutation.RemovedAuthRolesIDs(); len(nodes) > 0 && !sau.mutation.AuthRolesCleared() {
@@ -393,13 +349,6 @@ func (sau *StaffAccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		createE := &StaffAccountAuthRoleCreate{config: sau.config, mutation: newStaffAccountAuthRoleMutation(sau.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
@@ -420,19 +369,12 @@ func (sau *StaffAccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &StaffAccountAuthRoleCreate{config: sau.config, mutation: newStaffAccountAuthRoleMutation(sau.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if sau.mutation.AuthTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
 			Table:   staffaccount.AuthTypeTable,
 			Columns: []string{staffaccount.AuthTypeColumn},
 			Bidi:    false,
@@ -447,8 +389,8 @@ func (sau *StaffAccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := sau.mutation.AuthTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
 			Table:   staffaccount.AuthTypeTable,
 			Columns: []string{staffaccount.AuthTypeColumn},
 			Bidi:    false,
@@ -456,60 +398,6 @@ func (sau *StaffAccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: authtype.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if sau.mutation.StaffAccountAuthRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   staffaccount.StaffAccountAuthRolesTable,
-			Columns: []string{staffaccount.StaffAccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: staffaccountauthrole.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := sau.mutation.RemovedStaffAccountAuthRolesIDs(); len(nodes) > 0 && !sau.mutation.StaffAccountAuthRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   staffaccount.StaffAccountAuthRolesTable,
-			Columns: []string{staffaccount.StaffAccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: staffaccountauthrole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := sau.mutation.StaffAccountAuthRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   staffaccount.StaffAccountAuthRolesTable,
-			Columns: []string{staffaccount.StaffAccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: staffaccountauthrole.FieldID,
 				},
 			},
 		}
@@ -552,12 +440,6 @@ func (sauo *StaffAccountUpdateOne) SetDeletedAt(t time.Time) *StaffAccountUpdate
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (sauo *StaffAccountUpdateOne) ClearDeletedAt() *StaffAccountUpdateOne {
 	sauo.mutation.ClearDeletedAt()
-	return sauo
-}
-
-// SetAuthTypeID sets the "auth_type_id" field.
-func (sauo *StaffAccountUpdateOne) SetAuthTypeID(pu pulid.PULID) *StaffAccountUpdateOne {
-	sauo.mutation.SetAuthTypeID(pu)
 	return sauo
 }
 
@@ -614,24 +496,15 @@ func (sauo *StaffAccountUpdateOne) AddAuthRoles(a ...*AuthRole) *StaffAccountUpd
 	return sauo.AddAuthRoleIDs(ids...)
 }
 
-// SetAuthType sets the "auth_type" edge to the AuthType entity.
-func (sauo *StaffAccountUpdateOne) SetAuthType(a *AuthType) *StaffAccountUpdateOne {
-	return sauo.SetAuthTypeID(a.ID)
-}
-
-// AddStaffAccountAuthRoleIDs adds the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity by IDs.
-func (sauo *StaffAccountUpdateOne) AddStaffAccountAuthRoleIDs(ids ...pulid.PULID) *StaffAccountUpdateOne {
-	sauo.mutation.AddStaffAccountAuthRoleIDs(ids...)
+// SetAuthTypeID sets the "auth_type" edge to the AuthType entity by ID.
+func (sauo *StaffAccountUpdateOne) SetAuthTypeID(id pulid.PULID) *StaffAccountUpdateOne {
+	sauo.mutation.SetAuthTypeID(id)
 	return sauo
 }
 
-// AddStaffAccountAuthRoles adds the "staff_account_auth_roles" edges to the StaffAccountAuthRole entity.
-func (sauo *StaffAccountUpdateOne) AddStaffAccountAuthRoles(s ...*StaffAccountAuthRole) *StaffAccountUpdateOne {
-	ids := make([]pulid.PULID, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return sauo.AddStaffAccountAuthRoleIDs(ids...)
+// SetAuthType sets the "auth_type" edge to the AuthType entity.
+func (sauo *StaffAccountUpdateOne) SetAuthType(a *AuthType) *StaffAccountUpdateOne {
+	return sauo.SetAuthTypeID(a.ID)
 }
 
 // Mutation returns the StaffAccountMutation object of the builder.
@@ -664,27 +537,6 @@ func (sauo *StaffAccountUpdateOne) RemoveAuthRoles(a ...*AuthRole) *StaffAccount
 func (sauo *StaffAccountUpdateOne) ClearAuthType() *StaffAccountUpdateOne {
 	sauo.mutation.ClearAuthType()
 	return sauo
-}
-
-// ClearStaffAccountAuthRoles clears all "staff_account_auth_roles" edges to the StaffAccountAuthRole entity.
-func (sauo *StaffAccountUpdateOne) ClearStaffAccountAuthRoles() *StaffAccountUpdateOne {
-	sauo.mutation.ClearStaffAccountAuthRoles()
-	return sauo
-}
-
-// RemoveStaffAccountAuthRoleIDs removes the "staff_account_auth_roles" edge to StaffAccountAuthRole entities by IDs.
-func (sauo *StaffAccountUpdateOne) RemoveStaffAccountAuthRoleIDs(ids ...pulid.PULID) *StaffAccountUpdateOne {
-	sauo.mutation.RemoveStaffAccountAuthRoleIDs(ids...)
-	return sauo
-}
-
-// RemoveStaffAccountAuthRoles removes "staff_account_auth_roles" edges to StaffAccountAuthRole entities.
-func (sauo *StaffAccountUpdateOne) RemoveStaffAccountAuthRoles(s ...*StaffAccountAuthRole) *StaffAccountUpdateOne {
-	ids := make([]pulid.PULID, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return sauo.RemoveStaffAccountAuthRoleIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -903,13 +755,6 @@ func (sauo *StaffAccountUpdateOne) sqlSave(ctx context.Context) (_node *StaffAcc
 				},
 			},
 		}
-		createE := &StaffAccountAuthRoleCreate{config: sauo.config, mutation: newStaffAccountAuthRoleMutation(sauo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := sauo.mutation.RemovedAuthRolesIDs(); len(nodes) > 0 && !sauo.mutation.AuthRolesCleared() {
@@ -928,13 +773,6 @@ func (sauo *StaffAccountUpdateOne) sqlSave(ctx context.Context) (_node *StaffAcc
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		createE := &StaffAccountAuthRoleCreate{config: sauo.config, mutation: newStaffAccountAuthRoleMutation(sauo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
@@ -955,19 +793,12 @@ func (sauo *StaffAccountUpdateOne) sqlSave(ctx context.Context) (_node *StaffAcc
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &StaffAccountAuthRoleCreate{config: sauo.config, mutation: newStaffAccountAuthRoleMutation(sauo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if sauo.mutation.AuthTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
 			Table:   staffaccount.AuthTypeTable,
 			Columns: []string{staffaccount.AuthTypeColumn},
 			Bidi:    false,
@@ -982,8 +813,8 @@ func (sauo *StaffAccountUpdateOne) sqlSave(ctx context.Context) (_node *StaffAcc
 	}
 	if nodes := sauo.mutation.AuthTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
 			Table:   staffaccount.AuthTypeTable,
 			Columns: []string{staffaccount.AuthTypeColumn},
 			Bidi:    false,
@@ -991,60 +822,6 @@ func (sauo *StaffAccountUpdateOne) sqlSave(ctx context.Context) (_node *StaffAcc
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: authtype.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if sauo.mutation.StaffAccountAuthRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   staffaccount.StaffAccountAuthRolesTable,
-			Columns: []string{staffaccount.StaffAccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: staffaccountauthrole.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := sauo.mutation.RemovedStaffAccountAuthRolesIDs(); len(nodes) > 0 && !sauo.mutation.StaffAccountAuthRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   staffaccount.StaffAccountAuthRolesTable,
-			Columns: []string{staffaccount.StaffAccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: staffaccountauthrole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := sauo.mutation.StaffAccountAuthRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   staffaccount.StaffAccountAuthRolesTable,
-			Columns: []string{staffaccount.StaffAccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: staffaccountauthrole.FieldID,
 				},
 			},
 		}

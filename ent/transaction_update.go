@@ -83,47 +83,9 @@ func (tu *TransactionUpdate) AddPricePerUnit(f float64) *TransactionUpdate {
 	return tu
 }
 
-// SetTransactionTypeID sets the "transaction_type_id" field.
-func (tu *TransactionUpdate) SetTransactionTypeID(pu pulid.PULID) *TransactionUpdate {
-	tu.mutation.SetTransactionTypeID(pu)
-	return tu
-}
-
-// SetBaseAssetID sets the "base_asset_id" field.
-func (tu *TransactionUpdate) SetBaseAssetID(pu pulid.PULID) *TransactionUpdate {
-	tu.mutation.SetBaseAssetID(pu)
-	return tu
-}
-
-// SetQuoteAssetID sets the "quote_asset_id" field.
-func (tu *TransactionUpdate) SetQuoteAssetID(pu pulid.PULID) *TransactionUpdate {
-	tu.mutation.SetQuoteAssetID(pu)
-	return tu
-}
-
-// SetNillableQuoteAssetID sets the "quote_asset_id" field if the given value is not nil.
-func (tu *TransactionUpdate) SetNillableQuoteAssetID(pu *pulid.PULID) *TransactionUpdate {
-	if pu != nil {
-		tu.SetQuoteAssetID(*pu)
-	}
-	return tu
-}
-
-// ClearQuoteAssetID clears the value of the "quote_asset_id" field.
-func (tu *TransactionUpdate) ClearQuoteAssetID() *TransactionUpdate {
-	tu.mutation.ClearQuoteAssetID()
-	return tu
-}
-
-// SetPortfolioID sets the "portfolio_id" field.
-func (tu *TransactionUpdate) SetPortfolioID(pu pulid.PULID) *TransactionUpdate {
-	tu.mutation.SetPortfolioID(pu)
-	return tu
-}
-
-// SetExchangeID sets the "exchange_id" field.
-func (tu *TransactionUpdate) SetExchangeID(pu pulid.PULID) *TransactionUpdate {
-	tu.mutation.SetExchangeID(pu)
+// SetTransactionTypeID sets the "transaction_type" edge to the TransactionType entity by ID.
+func (tu *TransactionUpdate) SetTransactionTypeID(id pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetTransactionTypeID(id)
 	return tu
 }
 
@@ -132,9 +94,29 @@ func (tu *TransactionUpdate) SetTransactionType(t *TransactionType) *Transaction
 	return tu.SetTransactionTypeID(t.ID)
 }
 
+// SetBaseAssetID sets the "base_asset" edge to the Asset entity by ID.
+func (tu *TransactionUpdate) SetBaseAssetID(id pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetBaseAssetID(id)
+	return tu
+}
+
 // SetBaseAsset sets the "base_asset" edge to the Asset entity.
 func (tu *TransactionUpdate) SetBaseAsset(a *Asset) *TransactionUpdate {
 	return tu.SetBaseAssetID(a.ID)
+}
+
+// SetQuoteAssetID sets the "quote_asset" edge to the Asset entity by ID.
+func (tu *TransactionUpdate) SetQuoteAssetID(id pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetQuoteAssetID(id)
+	return tu
+}
+
+// SetNillableQuoteAssetID sets the "quote_asset" edge to the Asset entity by ID if the given value is not nil.
+func (tu *TransactionUpdate) SetNillableQuoteAssetID(id *pulid.PULID) *TransactionUpdate {
+	if id != nil {
+		tu = tu.SetQuoteAssetID(*id)
+	}
+	return tu
 }
 
 // SetQuoteAsset sets the "quote_asset" edge to the Asset entity.
@@ -142,9 +124,21 @@ func (tu *TransactionUpdate) SetQuoteAsset(a *Asset) *TransactionUpdate {
 	return tu.SetQuoteAssetID(a.ID)
 }
 
+// SetPortfolioID sets the "portfolio" edge to the Portfolio entity by ID.
+func (tu *TransactionUpdate) SetPortfolioID(id pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetPortfolioID(id)
+	return tu
+}
+
 // SetPortfolio sets the "portfolio" edge to the Portfolio entity.
 func (tu *TransactionUpdate) SetPortfolio(p *Portfolio) *TransactionUpdate {
 	return tu.SetPortfolioID(p.ID)
+}
+
+// SetExchangeID sets the "exchange" edge to the Exchange entity by ID.
+func (tu *TransactionUpdate) SetExchangeID(id pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetExchangeID(id)
+	return tu
 }
 
 // SetExchange sets the "exchange" edge to the Exchange entity.
@@ -594,47 +588,9 @@ func (tuo *TransactionUpdateOne) AddPricePerUnit(f float64) *TransactionUpdateOn
 	return tuo
 }
 
-// SetTransactionTypeID sets the "transaction_type_id" field.
-func (tuo *TransactionUpdateOne) SetTransactionTypeID(pu pulid.PULID) *TransactionUpdateOne {
-	tuo.mutation.SetTransactionTypeID(pu)
-	return tuo
-}
-
-// SetBaseAssetID sets the "base_asset_id" field.
-func (tuo *TransactionUpdateOne) SetBaseAssetID(pu pulid.PULID) *TransactionUpdateOne {
-	tuo.mutation.SetBaseAssetID(pu)
-	return tuo
-}
-
-// SetQuoteAssetID sets the "quote_asset_id" field.
-func (tuo *TransactionUpdateOne) SetQuoteAssetID(pu pulid.PULID) *TransactionUpdateOne {
-	tuo.mutation.SetQuoteAssetID(pu)
-	return tuo
-}
-
-// SetNillableQuoteAssetID sets the "quote_asset_id" field if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillableQuoteAssetID(pu *pulid.PULID) *TransactionUpdateOne {
-	if pu != nil {
-		tuo.SetQuoteAssetID(*pu)
-	}
-	return tuo
-}
-
-// ClearQuoteAssetID clears the value of the "quote_asset_id" field.
-func (tuo *TransactionUpdateOne) ClearQuoteAssetID() *TransactionUpdateOne {
-	tuo.mutation.ClearQuoteAssetID()
-	return tuo
-}
-
-// SetPortfolioID sets the "portfolio_id" field.
-func (tuo *TransactionUpdateOne) SetPortfolioID(pu pulid.PULID) *TransactionUpdateOne {
-	tuo.mutation.SetPortfolioID(pu)
-	return tuo
-}
-
-// SetExchangeID sets the "exchange_id" field.
-func (tuo *TransactionUpdateOne) SetExchangeID(pu pulid.PULID) *TransactionUpdateOne {
-	tuo.mutation.SetExchangeID(pu)
+// SetTransactionTypeID sets the "transaction_type" edge to the TransactionType entity by ID.
+func (tuo *TransactionUpdateOne) SetTransactionTypeID(id pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetTransactionTypeID(id)
 	return tuo
 }
 
@@ -643,9 +599,29 @@ func (tuo *TransactionUpdateOne) SetTransactionType(t *TransactionType) *Transac
 	return tuo.SetTransactionTypeID(t.ID)
 }
 
+// SetBaseAssetID sets the "base_asset" edge to the Asset entity by ID.
+func (tuo *TransactionUpdateOne) SetBaseAssetID(id pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetBaseAssetID(id)
+	return tuo
+}
+
 // SetBaseAsset sets the "base_asset" edge to the Asset entity.
 func (tuo *TransactionUpdateOne) SetBaseAsset(a *Asset) *TransactionUpdateOne {
 	return tuo.SetBaseAssetID(a.ID)
+}
+
+// SetQuoteAssetID sets the "quote_asset" edge to the Asset entity by ID.
+func (tuo *TransactionUpdateOne) SetQuoteAssetID(id pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetQuoteAssetID(id)
+	return tuo
+}
+
+// SetNillableQuoteAssetID sets the "quote_asset" edge to the Asset entity by ID if the given value is not nil.
+func (tuo *TransactionUpdateOne) SetNillableQuoteAssetID(id *pulid.PULID) *TransactionUpdateOne {
+	if id != nil {
+		tuo = tuo.SetQuoteAssetID(*id)
+	}
+	return tuo
 }
 
 // SetQuoteAsset sets the "quote_asset" edge to the Asset entity.
@@ -653,9 +629,21 @@ func (tuo *TransactionUpdateOne) SetQuoteAsset(a *Asset) *TransactionUpdateOne {
 	return tuo.SetQuoteAssetID(a.ID)
 }
 
+// SetPortfolioID sets the "portfolio" edge to the Portfolio entity by ID.
+func (tuo *TransactionUpdateOne) SetPortfolioID(id pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetPortfolioID(id)
+	return tuo
+}
+
 // SetPortfolio sets the "portfolio" edge to the Portfolio entity.
 func (tuo *TransactionUpdateOne) SetPortfolio(p *Portfolio) *TransactionUpdateOne {
 	return tuo.SetPortfolioID(p.ID)
+}
+
+// SetExchangeID sets the "exchange" edge to the Exchange entity by ID.
+func (tuo *TransactionUpdateOne) SetExchangeID(id pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetExchangeID(id)
+	return tuo
 }
 
 // SetExchange sets the "exchange" edge to the Exchange entity.

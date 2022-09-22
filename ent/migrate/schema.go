@@ -19,7 +19,7 @@ var (
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "password_updated_at", Type: field.TypeTime},
-		{Name: "auth_type_id", Type: field.TypeString, Unique: true},
+		{Name: "account_auth_type", Type: field.TypeString},
 	}
 	// AccountsTable holds the schema information for the "accounts" table.
 	AccountsTable = &schema.Table{
@@ -28,46 +28,10 @@ var (
 		PrimaryKey: []*schema.Column{AccountsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "accounts_auth_types_account",
+				Symbol:     "accounts_auth_types_auth_type",
 				Columns:    []*schema.Column{AccountsColumns[8]},
 				RefColumns: []*schema.Column{AuthTypesColumns[0]},
 				OnDelete:   schema.NoAction,
-			},
-		},
-	}
-	// AccountAuthRolesColumns holds the columns for the "account_auth_roles" table.
-	AccountAuthRolesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "account_id", Type: field.TypeString},
-		{Name: "auth_role_id", Type: field.TypeString},
-	}
-	// AccountAuthRolesTable holds the schema information for the "account_auth_roles" table.
-	AccountAuthRolesTable = &schema.Table{
-		Name:       "account_auth_roles",
-		Columns:    AccountAuthRolesColumns,
-		PrimaryKey: []*schema.Column{AccountAuthRolesColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "account_auth_roles_accounts_account",
-				Columns:    []*schema.Column{AccountAuthRolesColumns[4]},
-				RefColumns: []*schema.Column{AccountsColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "account_auth_roles_auth_roles_auth_role",
-				Columns:    []*schema.Column{AccountAuthRolesColumns[5]},
-				RefColumns: []*schema.Column{AuthRolesColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "accountauthrole_account_id_auth_role_id",
-				Unique:  true,
-				Columns: []*schema.Column{AccountAuthRolesColumns[4], AccountAuthRolesColumns[5]},
 			},
 		},
 	}
@@ -77,7 +41,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "asset_class_id", Type: field.TypeString},
+		{Name: "asset_asset_class", Type: field.TypeString},
 	}
 	// AssetsTable holds the schema information for the "assets" table.
 	AssetsTable = &schema.Table{
@@ -155,42 +119,6 @@ var (
 		Columns:    BlockchainsColumns,
 		PrimaryKey: []*schema.Column{BlockchainsColumns[0]},
 	}
-	// BlockchainCryptocurrenciesColumns holds the columns for the "blockchain_cryptocurrencies" table.
-	BlockchainCryptocurrenciesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "blockchain_id", Type: field.TypeString},
-		{Name: "cryptocurrency_id", Type: field.TypeString},
-	}
-	// BlockchainCryptocurrenciesTable holds the schema information for the "blockchain_cryptocurrencies" table.
-	BlockchainCryptocurrenciesTable = &schema.Table{
-		Name:       "blockchain_cryptocurrencies",
-		Columns:    BlockchainCryptocurrenciesColumns,
-		PrimaryKey: []*schema.Column{BlockchainCryptocurrenciesColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "blockchain_cryptocurrencies_blockchains_blockchain",
-				Columns:    []*schema.Column{BlockchainCryptocurrenciesColumns[4]},
-				RefColumns: []*schema.Column{BlockchainsColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "blockchain_cryptocurrencies_cryptocurrencies_cryptocurrency",
-				Columns:    []*schema.Column{BlockchainCryptocurrenciesColumns[5]},
-				RefColumns: []*schema.Column{CryptocurrenciesColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "blockchaincryptocurrency_blockchain_id_cryptocurrency_id",
-				Unique:  true,
-				Columns: []*schema.Column{BlockchainCryptocurrenciesColumns[4], BlockchainCryptocurrenciesColumns[5]},
-			},
-		},
-	}
 	// CryptocurrenciesColumns holds the columns for the "cryptocurrencies" table.
 	CryptocurrenciesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -200,7 +128,7 @@ var (
 		{Name: "symbol", Type: field.TypeString},
 		{Name: "icon", Type: field.TypeString, Nullable: true},
 		{Name: "name", Type: field.TypeString},
-		{Name: "asset_id", Type: field.TypeString, Unique: true},
+		{Name: "asset_cryptocurrency", Type: field.TypeString, Unique: true},
 	}
 	// CryptocurrenciesTable holds the schema information for the "cryptocurrencies" table.
 	CryptocurrenciesTable = &schema.Table{
@@ -228,7 +156,7 @@ var (
 		{Name: "low", Type: field.TypeFloat64, Nullable: true},
 		{Name: "close", Type: field.TypeFloat64, Nullable: true},
 		{Name: "adjusted_close", Type: field.TypeFloat64},
-		{Name: "base_asset_id", Type: field.TypeString},
+		{Name: "asset_daily_asset_prices", Type: field.TypeString, Nullable: true},
 	}
 	// DailyAssetPricesTable holds the schema information for the "daily_asset_prices" table.
 	DailyAssetPricesTable = &schema.Table{
@@ -237,17 +165,10 @@ var (
 		PrimaryKey: []*schema.Column{DailyAssetPricesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "daily_asset_prices_assets_daily_asset_price",
+				Symbol:     "daily_asset_prices_assets_daily_asset_prices",
 				Columns:    []*schema.Column{DailyAssetPricesColumns[10]},
 				RefColumns: []*schema.Column{AssetsColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "dailyassetprice_base_asset_id_time",
-				Unique:  true,
-				Columns: []*schema.Column{DailyAssetPricesColumns[10], DailyAssetPricesColumns[4]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 	}
@@ -276,7 +197,7 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "is_public", Type: field.TypeBool, Default: false},
 		{Name: "is_visible", Type: field.TypeBool, Default: true},
-		{Name: "account_id", Type: field.TypeString},
+		{Name: "account_portfolios", Type: field.TypeString},
 	}
 	// PortfoliosTable holds the schema information for the "portfolios" table.
 	PortfoliosTable = &schema.Table{
@@ -291,13 +212,6 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "portfolio_account_id_name",
-				Unique:  true,
-				Columns: []*schema.Column{PortfoliosColumns[7], PortfoliosColumns[4]},
-			},
-		},
 	}
 	// StaffAccountsColumns holds the columns for the "staff_accounts" table.
 	StaffAccountsColumns = []*schema.Column{
@@ -309,7 +223,7 @@ var (
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "password_updated_at", Type: field.TypeTime},
-		{Name: "auth_type_id", Type: field.TypeString, Unique: true},
+		{Name: "staff_account_auth_type", Type: field.TypeString},
 	}
 	// StaffAccountsTable holds the schema information for the "staff_accounts" table.
 	StaffAccountsTable = &schema.Table{
@@ -318,7 +232,7 @@ var (
 		PrimaryKey: []*schema.Column{StaffAccountsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "staff_accounts_auth_types_staff_account",
+				Symbol:     "staff_accounts_auth_types_auth_type",
 				Columns:    []*schema.Column{StaffAccountsColumns[8]},
 				RefColumns: []*schema.Column{AuthTypesColumns[0]},
 				OnDelete:   schema.NoAction,
@@ -353,13 +267,6 @@ var (
 				OnDelete:   schema.NoAction,
 			},
 		},
-		Indexes: []*schema.Index{
-			{
-				Name:    "staffaccountauthrole_staff_account_id_auth_role_id",
-				Unique:  true,
-				Columns: []*schema.Column{StaffAccountAuthRolesColumns[4], StaffAccountAuthRolesColumns[5]},
-			},
-		},
 	}
 	// TransactionsColumns holds the columns for the "transactions" table.
 	TransactionsColumns = []*schema.Column{
@@ -370,11 +277,11 @@ var (
 		{Name: "time", Type: field.TypeTime},
 		{Name: "units", Type: field.TypeInt},
 		{Name: "price_per_unit", Type: field.TypeFloat64},
-		{Name: "exchange_id", Type: field.TypeString},
-		{Name: "portfolio_id", Type: field.TypeString},
-		{Name: "transaction_type_id", Type: field.TypeString},
-		{Name: "base_asset_id", Type: field.TypeString},
-		{Name: "quote_asset_id", Type: field.TypeString, Nullable: true},
+		{Name: "exchange_transactions", Type: field.TypeString},
+		{Name: "portfolio_transactions", Type: field.TypeString},
+		{Name: "transaction_transaction_type", Type: field.TypeString},
+		{Name: "transaction_base_asset", Type: field.TypeString},
+		{Name: "transaction_quote_asset", Type: field.TypeString, Nullable: true},
 	}
 	// TransactionsTable holds the schema information for the "transactions" table.
 	TransactionsTable = &schema.Table{
@@ -429,16 +336,89 @@ var (
 		Columns:    TransactionTypesColumns,
 		PrimaryKey: []*schema.Column{TransactionTypesColumns[0]},
 	}
+	// AccountAuthRolesColumns holds the columns for the "account_auth_roles" table.
+	AccountAuthRolesColumns = []*schema.Column{
+		{Name: "account_id", Type: field.TypeString},
+		{Name: "auth_role_id", Type: field.TypeString},
+	}
+	// AccountAuthRolesTable holds the schema information for the "account_auth_roles" table.
+	AccountAuthRolesTable = &schema.Table{
+		Name:       "account_auth_roles",
+		Columns:    AccountAuthRolesColumns,
+		PrimaryKey: []*schema.Column{AccountAuthRolesColumns[0], AccountAuthRolesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "account_auth_roles_account_id",
+				Columns:    []*schema.Column{AccountAuthRolesColumns[0]},
+				RefColumns: []*schema.Column{AccountsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "account_auth_roles_auth_role_id",
+				Columns:    []*schema.Column{AccountAuthRolesColumns[1]},
+				RefColumns: []*schema.Column{AuthRolesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// BlockchainCryptocurrenciesColumns holds the columns for the "blockchain_cryptocurrencies" table.
+	BlockchainCryptocurrenciesColumns = []*schema.Column{
+		{Name: "blockchain_id", Type: field.TypeString},
+		{Name: "cryptocurrency_id", Type: field.TypeString},
+	}
+	// BlockchainCryptocurrenciesTable holds the schema information for the "blockchain_cryptocurrencies" table.
+	BlockchainCryptocurrenciesTable = &schema.Table{
+		Name:       "blockchain_cryptocurrencies",
+		Columns:    BlockchainCryptocurrenciesColumns,
+		PrimaryKey: []*schema.Column{BlockchainCryptocurrenciesColumns[0], BlockchainCryptocurrenciesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "blockchain_cryptocurrencies_blockchain_id",
+				Columns:    []*schema.Column{BlockchainCryptocurrenciesColumns[0]},
+				RefColumns: []*schema.Column{BlockchainsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "blockchain_cryptocurrencies_cryptocurrency_id",
+				Columns:    []*schema.Column{BlockchainCryptocurrenciesColumns[1]},
+				RefColumns: []*schema.Column{CryptocurrenciesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// StaffAccountAuthRolesColumns holds the columns for the "staff_account_auth_roles" table.
+	StaffAccountAuthRolesColumns = []*schema.Column{
+		{Name: "staff_account_id", Type: field.TypeString},
+		{Name: "auth_role_id", Type: field.TypeString},
+	}
+	// StaffAccountAuthRolesTable holds the schema information for the "staff_account_auth_roles" table.
+	StaffAccountAuthRolesTable = &schema.Table{
+		Name:       "staff_account_auth_roles",
+		Columns:    StaffAccountAuthRolesColumns,
+		PrimaryKey: []*schema.Column{StaffAccountAuthRolesColumns[0], StaffAccountAuthRolesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "staff_account_auth_roles_staff_account_id",
+				Columns:    []*schema.Column{StaffAccountAuthRolesColumns[0]},
+				RefColumns: []*schema.Column{StaffAccountsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "staff_account_auth_roles_auth_role_id",
+				Columns:    []*schema.Column{StaffAccountAuthRolesColumns[1]},
+				RefColumns: []*schema.Column{AuthRolesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountsTable,
-		AccountAuthRolesTable,
 		AssetsTable,
 		AssetClassesTable,
 		AuthRolesTable,
 		AuthTypesTable,
 		BlockchainsTable,
-		BlockchainCryptocurrenciesTable,
 		CryptocurrenciesTable,
 		DailyAssetPricesTable,
 		ExchangesTable,
@@ -447,6 +427,9 @@ var (
 		StaffAccountAuthRolesTable,
 		TransactionsTable,
 		TransactionTypesTable,
+		AccountAuthRolesTable,
+		BlockchainCryptocurrenciesTable,
+		StaffAccountAuthRolesTable,
 	}
 )
 
@@ -456,11 +439,7 @@ func init() {
 	AccountsTable.Annotation.Checks = map[string]string{
 		"account_chk_if_auth_type_local_then_password_not_null": "(auth_type <> 'LOCAL') OR (password IS NOT NULL)",
 	}
-	AccountAuthRolesTable.ForeignKeys[0].RefTable = AccountsTable
-	AccountAuthRolesTable.ForeignKeys[1].RefTable = AuthRolesTable
 	AssetsTable.ForeignKeys[0].RefTable = AssetClassesTable
-	BlockchainCryptocurrenciesTable.ForeignKeys[0].RefTable = BlockchainsTable
-	BlockchainCryptocurrenciesTable.ForeignKeys[1].RefTable = CryptocurrenciesTable
 	CryptocurrenciesTable.ForeignKeys[0].RefTable = AssetsTable
 	DailyAssetPricesTable.ForeignKeys[0].RefTable = AssetsTable
 	PortfoliosTable.ForeignKeys[0].RefTable = AccountsTable
@@ -476,4 +455,10 @@ func init() {
 	TransactionsTable.ForeignKeys[2].RefTable = TransactionTypesTable
 	TransactionsTable.ForeignKeys[3].RefTable = AssetsTable
 	TransactionsTable.ForeignKeys[4].RefTable = AssetsTable
+	AccountAuthRolesTable.ForeignKeys[0].RefTable = AccountsTable
+	AccountAuthRolesTable.ForeignKeys[1].RefTable = AuthRolesTable
+	BlockchainCryptocurrenciesTable.ForeignKeys[0].RefTable = BlockchainsTable
+	BlockchainCryptocurrenciesTable.ForeignKeys[1].RefTable = CryptocurrenciesTable
+	StaffAccountAuthRolesTable.ForeignKeys[0].RefTable = StaffAccountsTable
+	StaffAccountAuthRolesTable.ForeignKeys[1].RefTable = AuthRolesTable
 }

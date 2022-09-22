@@ -19,8 +19,6 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldAuthTypeID holds the string denoting the auth_type_id field in the database.
-	FieldAuthTypeID = "auth_type_id"
 	// FieldNickname holds the string denoting the nickname field in the database.
 	FieldNickname = "nickname"
 	// FieldEmail holds the string denoting the email field in the database.
@@ -33,8 +31,6 @@ const (
 	EdgeAuthRoles = "auth_roles"
 	// EdgeAuthType holds the string denoting the auth_type edge name in mutations.
 	EdgeAuthType = "auth_type"
-	// EdgeStaffAccountAuthRoles holds the string denoting the staff_account_auth_roles edge name in mutations.
-	EdgeStaffAccountAuthRoles = "staff_account_auth_roles"
 	// Table holds the table name of the staffaccount in the database.
 	Table = "staff_accounts"
 	// AuthRolesTable is the table that holds the auth_roles relation/edge. The primary key declared below.
@@ -48,14 +44,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "authtype" package.
 	AuthTypeInverseTable = "auth_types"
 	// AuthTypeColumn is the table column denoting the auth_type relation/edge.
-	AuthTypeColumn = "auth_type_id"
-	// StaffAccountAuthRolesTable is the table that holds the staff_account_auth_roles relation/edge.
-	StaffAccountAuthRolesTable = "staff_account_auth_roles"
-	// StaffAccountAuthRolesInverseTable is the table name for the StaffAccountAuthRole entity.
-	// It exists in this package in order to avoid circular dependency with the "staffaccountauthrole" package.
-	StaffAccountAuthRolesInverseTable = "staff_account_auth_roles"
-	// StaffAccountAuthRolesColumn is the table column denoting the staff_account_auth_roles relation/edge.
-	StaffAccountAuthRolesColumn = "staff_account_id"
+	AuthTypeColumn = "staff_account_auth_type"
 )
 
 // Columns holds all SQL columns for staffaccount fields.
@@ -64,11 +53,16 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldAuthTypeID,
 	FieldNickname,
 	FieldEmail,
 	FieldPassword,
 	FieldPasswordUpdatedAt,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "staff_accounts"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"staff_account_auth_type",
 }
 
 var (
@@ -81,6 +75,11 @@ var (
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

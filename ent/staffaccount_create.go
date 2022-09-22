@@ -13,7 +13,6 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
-	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -63,12 +62,6 @@ func (sac *StaffAccountCreate) SetNillableDeletedAt(t *time.Time) *StaffAccountC
 	if t != nil {
 		sac.SetDeletedAt(*t)
 	}
-	return sac
-}
-
-// SetAuthTypeID sets the "auth_type_id" field.
-func (sac *StaffAccountCreate) SetAuthTypeID(pu pulid.PULID) *StaffAccountCreate {
-	sac.mutation.SetAuthTypeID(pu)
 	return sac
 }
 
@@ -141,24 +134,15 @@ func (sac *StaffAccountCreate) AddAuthRoles(a ...*AuthRole) *StaffAccountCreate 
 	return sac.AddAuthRoleIDs(ids...)
 }
 
-// SetAuthType sets the "auth_type" edge to the AuthType entity.
-func (sac *StaffAccountCreate) SetAuthType(a *AuthType) *StaffAccountCreate {
-	return sac.SetAuthTypeID(a.ID)
-}
-
-// AddStaffAccountAuthRoleIDs adds the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity by IDs.
-func (sac *StaffAccountCreate) AddStaffAccountAuthRoleIDs(ids ...pulid.PULID) *StaffAccountCreate {
-	sac.mutation.AddStaffAccountAuthRoleIDs(ids...)
+// SetAuthTypeID sets the "auth_type" edge to the AuthType entity by ID.
+func (sac *StaffAccountCreate) SetAuthTypeID(id pulid.PULID) *StaffAccountCreate {
+	sac.mutation.SetAuthTypeID(id)
 	return sac
 }
 
-// AddStaffAccountAuthRoles adds the "staff_account_auth_roles" edges to the StaffAccountAuthRole entity.
-func (sac *StaffAccountCreate) AddStaffAccountAuthRoles(s ...*StaffAccountAuthRole) *StaffAccountCreate {
-	ids := make([]pulid.PULID, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return sac.AddStaffAccountAuthRoleIDs(ids...)
+// SetAuthType sets the "auth_type" edge to the AuthType entity.
+func (sac *StaffAccountCreate) SetAuthType(a *AuthType) *StaffAccountCreate {
+	return sac.SetAuthTypeID(a.ID)
 }
 
 // Mutation returns the StaffAccountMutation object of the builder.
@@ -263,9 +247,6 @@ func (sac *StaffAccountCreate) check() error {
 	}
 	if _, ok := sac.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "StaffAccount.updated_at"`)}
-	}
-	if _, ok := sac.mutation.AuthTypeID(); !ok {
-		return &ValidationError{Name: "auth_type_id", err: errors.New(`ent: missing required field "StaffAccount.auth_type_id"`)}
 	}
 	if _, ok := sac.mutation.Nickname(); !ok {
 		return &ValidationError{Name: "nickname", err: errors.New(`ent: missing required field "StaffAccount.nickname"`)}
@@ -403,19 +384,12 @@ func (sac *StaffAccountCreate) createSpec() (*StaffAccount, *sqlgraph.CreateSpec
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &StaffAccountAuthRoleCreate{config: sac.config, mutation: newStaffAccountAuthRoleMutation(sac.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sac.mutation.AuthTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
 			Table:   staffaccount.AuthTypeTable,
 			Columns: []string{staffaccount.AuthTypeColumn},
 			Bidi:    false,
@@ -429,26 +403,7 @@ func (sac *StaffAccountCreate) createSpec() (*StaffAccount, *sqlgraph.CreateSpec
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.AuthTypeID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := sac.mutation.StaffAccountAuthRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   staffaccount.StaffAccountAuthRolesTable,
-			Columns: []string{staffaccount.StaffAccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: staffaccountauthrole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
+		_node.staff_account_auth_type = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

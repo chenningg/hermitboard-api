@@ -25,11 +25,10 @@ type Asset struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// AssetClassID holds the value of the "asset_class_id" field.
-	AssetClassID pulid.PULID `json:"asset_class_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetQuery when eager-loading is set.
-	Edges AssetEdges `json:"edges"`
+	Edges             AssetEdges `json:"edges"`
+	asset_asset_class *pulid.PULID
 }
 
 // AssetEdges holds the relations/edges for other nodes in the graph.
@@ -42,8 +41,8 @@ type AssetEdges struct {
 	TransactionBase []*Transaction `json:"transaction_base,omitempty"`
 	// TransactionQuote holds the value of the transaction_quote edge.
 	TransactionQuote []*Transaction `json:"transaction_quote,omitempty"`
-	// DailyAssetPrice holds the value of the daily_asset_price edge.
-	DailyAssetPrice []*DailyAssetPrice `json:"daily_asset_price,omitempty"`
+	// DailyAssetPrices holds the value of the daily_asset_prices edge.
+	DailyAssetPrices []*DailyAssetPrice `json:"daily_asset_prices,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [5]bool
@@ -52,7 +51,7 @@ type AssetEdges struct {
 
 	namedTransactionBase  map[string][]*Transaction
 	namedTransactionQuote map[string][]*Transaction
-	namedDailyAssetPrice  map[string][]*DailyAssetPrice
+	namedDailyAssetPrices map[string][]*DailyAssetPrice
 }
 
 // AssetClassOrErr returns the AssetClass value or an error if the edge
@@ -99,13 +98,13 @@ func (e AssetEdges) TransactionQuoteOrErr() ([]*Transaction, error) {
 	return nil, &NotLoadedError{edge: "transaction_quote"}
 }
 
-// DailyAssetPriceOrErr returns the DailyAssetPrice value or an error if the edge
+// DailyAssetPricesOrErr returns the DailyAssetPrices value or an error if the edge
 // was not loaded in eager-loading.
-func (e AssetEdges) DailyAssetPriceOrErr() ([]*DailyAssetPrice, error) {
+func (e AssetEdges) DailyAssetPricesOrErr() ([]*DailyAssetPrice, error) {
 	if e.loadedTypes[4] {
-		return e.DailyAssetPrice, nil
+		return e.DailyAssetPrices, nil
 	}
-	return nil, &NotLoadedError{edge: "daily_asset_price"}
+	return nil, &NotLoadedError{edge: "daily_asset_prices"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -113,10 +112,12 @@ func (*Asset) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case asset.FieldID, asset.FieldAssetClassID:
+		case asset.FieldID:
 			values[i] = new(pulid.PULID)
 		case asset.FieldCreatedAt, asset.FieldUpdatedAt, asset.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
+		case asset.ForeignKeys[0]: // asset_asset_class
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Asset", columns[i])
 		}
@@ -157,11 +158,12 @@ func (a *Asset) assignValues(columns []string, values []any) error {
 				a.DeletedAt = new(time.Time)
 				*a.DeletedAt = value.Time
 			}
-		case asset.FieldAssetClassID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field asset_class_id", values[i])
-			} else if value != nil {
-				a.AssetClassID = *value
+		case asset.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field asset_asset_class", values[i])
+			} else if value.Valid {
+				a.asset_asset_class = new(pulid.PULID)
+				*a.asset_asset_class = *value.S.(*pulid.PULID)
 			}
 		}
 	}
@@ -188,9 +190,9 @@ func (a *Asset) QueryTransactionQuote() *TransactionQuery {
 	return (&AssetClient{config: a.config}).QueryTransactionQuote(a)
 }
 
-// QueryDailyAssetPrice queries the "daily_asset_price" edge of the Asset entity.
-func (a *Asset) QueryDailyAssetPrice() *DailyAssetPriceQuery {
-	return (&AssetClient{config: a.config}).QueryDailyAssetPrice(a)
+// QueryDailyAssetPrices queries the "daily_asset_prices" edge of the Asset entity.
+func (a *Asset) QueryDailyAssetPrices() *DailyAssetPriceQuery {
+	return (&AssetClient{config: a.config}).QueryDailyAssetPrices(a)
 }
 
 // Update returns a builder for updating this Asset.
@@ -226,9 +228,6 @@ func (a *Asset) String() string {
 		builder.WriteString("deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", ")
-	builder.WriteString("asset_class_id=")
-	builder.WriteString(fmt.Sprintf("%v", a.AssetClassID))
 	builder.WriteByte(')')
 	return builder.String()
 }
@@ -281,27 +280,27 @@ func (a *Asset) appendNamedTransactionQuote(name string, edges ...*Transaction) 
 	}
 }
 
-// NamedDailyAssetPrice returns the DailyAssetPrice named value or an error if the edge was not
+// NamedDailyAssetPrices returns the DailyAssetPrices named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (a *Asset) NamedDailyAssetPrice(name string) ([]*DailyAssetPrice, error) {
-	if a.Edges.namedDailyAssetPrice == nil {
+func (a *Asset) NamedDailyAssetPrices(name string) ([]*DailyAssetPrice, error) {
+	if a.Edges.namedDailyAssetPrices == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := a.Edges.namedDailyAssetPrice[name]
+	nodes, ok := a.Edges.namedDailyAssetPrices[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (a *Asset) appendNamedDailyAssetPrice(name string, edges ...*DailyAssetPrice) {
-	if a.Edges.namedDailyAssetPrice == nil {
-		a.Edges.namedDailyAssetPrice = make(map[string][]*DailyAssetPrice)
+func (a *Asset) appendNamedDailyAssetPrices(name string, edges ...*DailyAssetPrice) {
+	if a.Edges.namedDailyAssetPrices == nil {
+		a.Edges.namedDailyAssetPrices = make(map[string][]*DailyAssetPrice)
 	}
 	if len(edges) == 0 {
-		a.Edges.namedDailyAssetPrice[name] = []*DailyAssetPrice{}
+		a.Edges.namedDailyAssetPrices[name] = []*DailyAssetPrice{}
 	} else {
-		a.Edges.namedDailyAssetPrice[name] = append(a.Edges.namedDailyAssetPrice[name], edges...)
+		a.Edges.namedDailyAssetPrices[name] = append(a.Edges.namedDailyAssetPrices[name], edges...)
 	}
 }
 

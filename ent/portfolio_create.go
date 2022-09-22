@@ -99,12 +99,6 @@ func (pc *PortfolioCreate) SetNillableIsVisible(b *bool) *PortfolioCreate {
 	return pc
 }
 
-// SetAccountID sets the "account_id" field.
-func (pc *PortfolioCreate) SetAccountID(pu pulid.PULID) *PortfolioCreate {
-	pc.mutation.SetAccountID(pu)
-	return pc
-}
-
 // SetID sets the "id" field.
 func (pc *PortfolioCreate) SetID(pu pulid.PULID) *PortfolioCreate {
 	pc.mutation.SetID(pu)
@@ -116,6 +110,12 @@ func (pc *PortfolioCreate) SetNillableID(pu *pulid.PULID) *PortfolioCreate {
 	if pu != nil {
 		pc.SetID(*pu)
 	}
+	return pc
+}
+
+// SetAccountID sets the "account" edge to the Account entity by ID.
+func (pc *PortfolioCreate) SetAccountID(id pulid.PULID) *PortfolioCreate {
+	pc.mutation.SetAccountID(id)
 	return pc
 }
 
@@ -261,9 +261,6 @@ func (pc *PortfolioCreate) check() error {
 		return &ValidationError{Name: "is_visible", err: errors.New(`ent: missing required field "Portfolio.is_visible"`)}
 	}
 	if _, ok := pc.mutation.AccountID(); !ok {
-		return &ValidationError{Name: "account_id", err: errors.New(`ent: missing required field "Portfolio.account_id"`)}
-	}
-	if _, ok := pc.mutation.AccountID(); !ok {
 		return &ValidationError{Name: "account", err: errors.New(`ent: missing required edge "Portfolio.account"`)}
 	}
 	return nil
@@ -367,7 +364,7 @@ func (pc *PortfolioCreate) createSpec() (*Portfolio, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.AccountID = nodes[0]
+		_node.account_portfolios = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pc.mutation.TransactionsIDs(); len(nodes) > 0 {

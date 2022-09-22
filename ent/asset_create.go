@@ -67,12 +67,6 @@ func (ac *AssetCreate) SetNillableDeletedAt(t *time.Time) *AssetCreate {
 	return ac
 }
 
-// SetAssetClassID sets the "asset_class_id" field.
-func (ac *AssetCreate) SetAssetClassID(pu pulid.PULID) *AssetCreate {
-	ac.mutation.SetAssetClassID(pu)
-	return ac
-}
-
 // SetID sets the "id" field.
 func (ac *AssetCreate) SetID(pu pulid.PULID) *AssetCreate {
 	ac.mutation.SetID(pu)
@@ -84,6 +78,12 @@ func (ac *AssetCreate) SetNillableID(pu *pulid.PULID) *AssetCreate {
 	if pu != nil {
 		ac.SetID(*pu)
 	}
+	return ac
+}
+
+// SetAssetClassID sets the "asset_class" edge to the AssetClass entity by ID.
+func (ac *AssetCreate) SetAssetClassID(id pulid.PULID) *AssetCreate {
+	ac.mutation.SetAssetClassID(id)
 	return ac
 }
 
@@ -141,14 +141,14 @@ func (ac *AssetCreate) AddTransactionQuote(t ...*Transaction) *AssetCreate {
 	return ac.AddTransactionQuoteIDs(ids...)
 }
 
-// AddDailyAssetPriceIDs adds the "daily_asset_price" edge to the DailyAssetPrice entity by IDs.
+// AddDailyAssetPriceIDs adds the "daily_asset_prices" edge to the DailyAssetPrice entity by IDs.
 func (ac *AssetCreate) AddDailyAssetPriceIDs(ids ...pulid.PULID) *AssetCreate {
 	ac.mutation.AddDailyAssetPriceIDs(ids...)
 	return ac
 }
 
-// AddDailyAssetPrice adds the "daily_asset_price" edges to the DailyAssetPrice entity.
-func (ac *AssetCreate) AddDailyAssetPrice(d ...*DailyAssetPrice) *AssetCreate {
+// AddDailyAssetPrices adds the "daily_asset_prices" edges to the DailyAssetPrice entity.
+func (ac *AssetCreate) AddDailyAssetPrices(d ...*DailyAssetPrice) *AssetCreate {
 	ids := make([]pulid.PULID, len(d))
 	for i := range d {
 		ids[i] = d[i].ID
@@ -256,9 +256,6 @@ func (ac *AssetCreate) check() error {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Asset.updated_at"`)}
 	}
 	if _, ok := ac.mutation.AssetClassID(); !ok {
-		return &ValidationError{Name: "asset_class_id", err: errors.New(`ent: missing required field "Asset.asset_class_id"`)}
-	}
-	if _, ok := ac.mutation.AssetClassID(); !ok {
 		return &ValidationError{Name: "asset_class", err: errors.New(`ent: missing required edge "Asset.asset_class"`)}
 	}
 	return nil
@@ -338,7 +335,7 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.AssetClassID = nodes[0]
+		_node.asset_asset_class = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ac.mutation.CryptocurrencyIDs(); len(nodes) > 0 {
@@ -398,12 +395,12 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.DailyAssetPriceIDs(); len(nodes) > 0 {
+	if nodes := ac.mutation.DailyAssetPricesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.DailyAssetPriceTable,
-			Columns: []string{asset.DailyAssetPriceColumn},
+			Table:   asset.DailyAssetPricesTable,
+			Columns: []string{asset.DailyAssetPricesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

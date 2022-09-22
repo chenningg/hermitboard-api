@@ -59,18 +59,6 @@ func (a *AccountQuery) collectField(ctx context.Context, op *graphql.OperationCo
 				return err
 			}
 			a.withAuthType = query
-		case "accountAuthRoles", "account_auth_roles":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &AccountAuthRoleQuery{config: a.config}
-			)
-			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
-				return err
-			}
-			a.WithNamedAccountAuthRoles(alias, func(wq *AccountAuthRoleQuery) {
-				*wq = *query
-			})
 		}
 	}
 	return nil
@@ -84,73 +72,6 @@ type accountPaginateArgs struct {
 
 func newAccountPaginateArgs(rv map[string]interface{}) *accountPaginateArgs {
 	args := &accountPaginateArgs{}
-	if rv == nil {
-		return args
-	}
-	if v := rv[firstField]; v != nil {
-		args.first = v.(*int)
-	}
-	if v := rv[lastField]; v != nil {
-		args.last = v.(*int)
-	}
-	if v := rv[afterField]; v != nil {
-		args.after = v.(*Cursor)
-	}
-	if v := rv[beforeField]; v != nil {
-		args.before = v.(*Cursor)
-	}
-	return args
-}
-
-// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (aar *AccountAuthRoleQuery) CollectFields(ctx context.Context, satisfies ...string) (*AccountAuthRoleQuery, error) {
-	fc := graphql.GetFieldContext(ctx)
-	if fc == nil {
-		return aar, nil
-	}
-	if err := aar.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
-		return nil, err
-	}
-	return aar, nil
-}
-
-func (aar *AccountAuthRoleQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
-	path = append([]string(nil), path...)
-	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
-		switch field.Name {
-		case "account":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &AccountQuery{config: aar.config}
-			)
-			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
-				return err
-			}
-			aar.withAccount = query
-		case "authRole", "auth_role":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &AuthRoleQuery{config: aar.config}
-			)
-			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
-				return err
-			}
-			aar.withAuthRole = query
-		}
-	}
-	return nil
-}
-
-type accountauthrolePaginateArgs struct {
-	first, last   *int
-	after, before *Cursor
-	opts          []AccountAuthRolePaginateOption
-}
-
-func newAccountAuthRolePaginateArgs(rv map[string]interface{}) *accountauthrolePaginateArgs {
-	args := &accountauthrolePaginateArgs{}
 	if rv == nil {
 		return args
 	}
@@ -229,7 +150,7 @@ func (a *AssetQuery) collectField(ctx context.Context, op *graphql.OperationCont
 			a.WithNamedTransactionQuote(alias, func(wq *TransactionQuery) {
 				*wq = *query
 			})
-		case "dailyAssetPrice", "daily_asset_price":
+		case "dailyAssetPrices", "daily_asset_prices":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -238,7 +159,7 @@ func (a *AssetQuery) collectField(ctx context.Context, op *graphql.OperationCont
 			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
 				return err
 			}
-			a.WithNamedDailyAssetPrice(alias, func(wq *DailyAssetPriceQuery) {
+			a.WithNamedDailyAssetPrices(alias, func(wq *DailyAssetPriceQuery) {
 				*wq = *query
 			})
 		}
@@ -393,30 +314,6 @@ func (ar *AuthRoleQuery) collectField(ctx context.Context, op *graphql.Operation
 			ar.WithNamedStaffAccounts(alias, func(wq *StaffAccountQuery) {
 				*wq = *query
 			})
-		case "accountAuthRoles", "account_auth_roles":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &AccountAuthRoleQuery{config: ar.config}
-			)
-			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
-				return err
-			}
-			ar.WithNamedAccountAuthRoles(alias, func(wq *AccountAuthRoleQuery) {
-				*wq = *query
-			})
-		case "staffAccountAuthRoles", "staff_account_auth_roles":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &StaffAccountAuthRoleQuery{config: ar.config}
-			)
-			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
-				return err
-			}
-			ar.WithNamedStaffAccountAuthRoles(alias, func(wq *StaffAccountAuthRoleQuery) {
-				*wq = *query
-			})
 		}
 	}
 	return nil
@@ -486,7 +383,7 @@ func (at *AuthTypeQuery) collectField(ctx context.Context, op *graphql.Operation
 	path = append([]string(nil), path...)
 	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
 		switch field.Name {
-		case "account":
+		case "accounts":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -495,8 +392,10 @@ func (at *AuthTypeQuery) collectField(ctx context.Context, op *graphql.Operation
 			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
 				return err
 			}
-			at.withAccount = query
-		case "staffAccount", "staff_account":
+			at.WithNamedAccounts(alias, func(wq *AccountQuery) {
+				*wq = *query
+			})
+		case "staffAccounts", "staff_accounts":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -505,7 +404,9 @@ func (at *AuthTypeQuery) collectField(ctx context.Context, op *graphql.Operation
 			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
 				return err
 			}
-			at.withStaffAccount = query
+			at.WithNamedStaffAccounts(alias, func(wq *StaffAccountQuery) {
+				*wq = *query
+			})
 		}
 	}
 	return nil
@@ -587,18 +488,6 @@ func (b *BlockchainQuery) collectField(ctx context.Context, op *graphql.Operatio
 			b.WithNamedCryptocurrencies(alias, func(wq *CryptocurrencyQuery) {
 				*wq = *query
 			})
-		case "blockchainCryptocurrencies", "blockchain_cryptocurrencies":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &BlockchainCryptocurrencyQuery{config: b.config}
-			)
-			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
-				return err
-			}
-			b.WithNamedBlockchainCryptocurrencies(alias, func(wq *BlockchainCryptocurrencyQuery) {
-				*wq = *query
-			})
 		}
 	}
 	return nil
@@ -612,73 +501,6 @@ type blockchainPaginateArgs struct {
 
 func newBlockchainPaginateArgs(rv map[string]interface{}) *blockchainPaginateArgs {
 	args := &blockchainPaginateArgs{}
-	if rv == nil {
-		return args
-	}
-	if v := rv[firstField]; v != nil {
-		args.first = v.(*int)
-	}
-	if v := rv[lastField]; v != nil {
-		args.last = v.(*int)
-	}
-	if v := rv[afterField]; v != nil {
-		args.after = v.(*Cursor)
-	}
-	if v := rv[beforeField]; v != nil {
-		args.before = v.(*Cursor)
-	}
-	return args
-}
-
-// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (bc *BlockchainCryptocurrencyQuery) CollectFields(ctx context.Context, satisfies ...string) (*BlockchainCryptocurrencyQuery, error) {
-	fc := graphql.GetFieldContext(ctx)
-	if fc == nil {
-		return bc, nil
-	}
-	if err := bc.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
-		return nil, err
-	}
-	return bc, nil
-}
-
-func (bc *BlockchainCryptocurrencyQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
-	path = append([]string(nil), path...)
-	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
-		switch field.Name {
-		case "blockchain":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &BlockchainQuery{config: bc.config}
-			)
-			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
-				return err
-			}
-			bc.withBlockchain = query
-		case "cryptocurrency":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &CryptocurrencyQuery{config: bc.config}
-			)
-			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
-				return err
-			}
-			bc.withCryptocurrency = query
-		}
-	}
-	return nil
-}
-
-type blockchaincryptocurrencyPaginateArgs struct {
-	first, last   *int
-	after, before *Cursor
-	opts          []BlockchainCryptocurrencyPaginateOption
-}
-
-func newBlockchainCryptocurrencyPaginateArgs(rv map[string]interface{}) *blockchaincryptocurrencyPaginateArgs {
-	args := &blockchaincryptocurrencyPaginateArgs{}
 	if rv == nil {
 		return args
 	}
@@ -735,18 +557,6 @@ func (c *CryptocurrencyQuery) collectField(ctx context.Context, op *graphql.Oper
 			c.WithNamedBlockchains(alias, func(wq *BlockchainQuery) {
 				*wq = *query
 			})
-		case "blockchainCryptocurrencies", "blockchain_cryptocurrencies":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &BlockchainCryptocurrencyQuery{config: c.config}
-			)
-			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
-				return err
-			}
-			c.WithNamedBlockchainCryptocurrencies(alias, func(wq *BlockchainCryptocurrencyQuery) {
-				*wq = *query
-			})
 		}
 	}
 	return nil
@@ -794,7 +604,7 @@ func (dap *DailyAssetPriceQuery) collectField(ctx context.Context, op *graphql.O
 	path = append([]string(nil), path...)
 	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
 		switch field.Name {
-		case "baseAsset", "base_asset":
+		case "asset":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -803,7 +613,7 @@ func (dap *DailyAssetPriceQuery) collectField(ctx context.Context, op *graphql.O
 			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
 				return err
 			}
-			dap.withBaseAsset = query
+			dap.withAsset = query
 		}
 	}
 	return nil
@@ -1001,18 +811,6 @@ func (sa *StaffAccountQuery) collectField(ctx context.Context, op *graphql.Opera
 				return err
 			}
 			sa.withAuthType = query
-		case "staffAccountAuthRoles", "staff_account_auth_roles":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &StaffAccountAuthRoleQuery{config: sa.config}
-			)
-			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
-				return err
-			}
-			sa.WithNamedStaffAccountAuthRoles(alias, func(wq *StaffAccountAuthRoleQuery) {
-				*wq = *query
-			})
 		}
 	}
 	return nil

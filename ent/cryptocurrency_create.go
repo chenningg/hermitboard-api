@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
-	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
@@ -92,12 +91,6 @@ func (cc *CryptocurrencyCreate) SetName(s string) *CryptocurrencyCreate {
 	return cc
 }
 
-// SetAssetID sets the "asset_id" field.
-func (cc *CryptocurrencyCreate) SetAssetID(pu pulid.PULID) *CryptocurrencyCreate {
-	cc.mutation.SetAssetID(pu)
-	return cc
-}
-
 // SetID sets the "id" field.
 func (cc *CryptocurrencyCreate) SetID(pu pulid.PULID) *CryptocurrencyCreate {
 	cc.mutation.SetID(pu)
@@ -109,6 +102,12 @@ func (cc *CryptocurrencyCreate) SetNillableID(pu *pulid.PULID) *CryptocurrencyCr
 	if pu != nil {
 		cc.SetID(*pu)
 	}
+	return cc
+}
+
+// SetAssetID sets the "asset" edge to the Asset entity by ID.
+func (cc *CryptocurrencyCreate) SetAssetID(id pulid.PULID) *CryptocurrencyCreate {
+	cc.mutation.SetAssetID(id)
 	return cc
 }
 
@@ -130,21 +129,6 @@ func (cc *CryptocurrencyCreate) AddBlockchains(b ...*Blockchain) *Cryptocurrency
 		ids[i] = b[i].ID
 	}
 	return cc.AddBlockchainIDs(ids...)
-}
-
-// AddBlockchainCryptocurrencyIDs adds the "blockchain_cryptocurrencies" edge to the BlockchainCryptocurrency entity by IDs.
-func (cc *CryptocurrencyCreate) AddBlockchainCryptocurrencyIDs(ids ...pulid.PULID) *CryptocurrencyCreate {
-	cc.mutation.AddBlockchainCryptocurrencyIDs(ids...)
-	return cc
-}
-
-// AddBlockchainCryptocurrencies adds the "blockchain_cryptocurrencies" edges to the BlockchainCryptocurrency entity.
-func (cc *CryptocurrencyCreate) AddBlockchainCryptocurrencies(b ...*BlockchainCryptocurrency) *CryptocurrencyCreate {
-	ids := make([]pulid.PULID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return cc.AddBlockchainCryptocurrencyIDs(ids...)
 }
 
 // Mutation returns the CryptocurrencyMutation object of the builder.
@@ -268,10 +252,10 @@ func (cc *CryptocurrencyCreate) check() error {
 		}
 	}
 	if _, ok := cc.mutation.AssetID(); !ok {
-		return &ValidationError{Name: "asset_id", err: errors.New(`ent: missing required field "Cryptocurrency.asset_id"`)}
-	}
-	if _, ok := cc.mutation.AssetID(); !ok {
 		return &ValidationError{Name: "asset", err: errors.New(`ent: missing required edge "Cryptocurrency.asset"`)}
+	}
+	if len(cc.mutation.BlockchainsIDs()) == 0 {
+		return &ValidationError{Name: "blockchains", err: errors.New(`ent: missing required edge "Cryptocurrency.blockchains"`)}
 	}
 	return nil
 }
@@ -374,7 +358,7 @@ func (cc *CryptocurrencyCreate) createSpec() (*Cryptocurrency, *sqlgraph.CreateS
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.AssetID = nodes[0]
+		_node.asset_cryptocurrency = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := cc.mutation.BlockchainsIDs(); len(nodes) > 0 {
@@ -388,32 +372,6 @@ func (cc *CryptocurrencyCreate) createSpec() (*Cryptocurrency, *sqlgraph.CreateS
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: blockchain.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		createE := &BlockchainCryptocurrencyCreate{config: cc.config, mutation: newBlockchainCryptocurrencyMutation(cc.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := cc.mutation.BlockchainCryptocurrenciesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   cryptocurrency.BlockchainCryptocurrenciesTable,
-			Columns: []string{cryptocurrency.BlockchainCryptocurrenciesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: blockchaincryptocurrency.FieldID,
 				},
 			},
 		}

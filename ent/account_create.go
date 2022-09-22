@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/account"
-	"github.com/chenningg/hermitboard-api/ent/accountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
@@ -64,12 +63,6 @@ func (ac *AccountCreate) SetNillableDeletedAt(t *time.Time) *AccountCreate {
 	if t != nil {
 		ac.SetDeletedAt(*t)
 	}
-	return ac
-}
-
-// SetAuthTypeID sets the "auth_type_id" field.
-func (ac *AccountCreate) SetAuthTypeID(pu pulid.PULID) *AccountCreate {
-	ac.mutation.SetAuthTypeID(pu)
 	return ac
 }
 
@@ -157,24 +150,15 @@ func (ac *AccountCreate) AddPortfolios(p ...*Portfolio) *AccountCreate {
 	return ac.AddPortfolioIDs(ids...)
 }
 
-// SetAuthType sets the "auth_type" edge to the AuthType entity.
-func (ac *AccountCreate) SetAuthType(a *AuthType) *AccountCreate {
-	return ac.SetAuthTypeID(a.ID)
-}
-
-// AddAccountAuthRoleIDs adds the "account_auth_roles" edge to the AccountAuthRole entity by IDs.
-func (ac *AccountCreate) AddAccountAuthRoleIDs(ids ...pulid.PULID) *AccountCreate {
-	ac.mutation.AddAccountAuthRoleIDs(ids...)
+// SetAuthTypeID sets the "auth_type" edge to the AuthType entity by ID.
+func (ac *AccountCreate) SetAuthTypeID(id pulid.PULID) *AccountCreate {
+	ac.mutation.SetAuthTypeID(id)
 	return ac
 }
 
-// AddAccountAuthRoles adds the "account_auth_roles" edges to the AccountAuthRole entity.
-func (ac *AccountCreate) AddAccountAuthRoles(a ...*AccountAuthRole) *AccountCreate {
-	ids := make([]pulid.PULID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return ac.AddAccountAuthRoleIDs(ids...)
+// SetAuthType sets the "auth_type" edge to the AuthType entity.
+func (ac *AccountCreate) SetAuthType(a *AuthType) *AccountCreate {
+	return ac.SetAuthTypeID(a.ID)
 }
 
 // Mutation returns the AccountMutation object of the builder.
@@ -280,9 +264,6 @@ func (ac *AccountCreate) check() error {
 	if _, ok := ac.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Account.updated_at"`)}
 	}
-	if _, ok := ac.mutation.AuthTypeID(); !ok {
-		return &ValidationError{Name: "auth_type_id", err: errors.New(`ent: missing required field "Account.auth_type_id"`)}
-	}
 	if _, ok := ac.mutation.Nickname(); !ok {
 		return &ValidationError{Name: "nickname", err: errors.New(`ent: missing required field "Account.nickname"`)}
 	}
@@ -306,6 +287,9 @@ func (ac *AccountCreate) check() error {
 	}
 	if _, ok := ac.mutation.PasswordUpdatedAt(); !ok {
 		return &ValidationError{Name: "password_updated_at", err: errors.New(`ent: missing required field "Account.password_updated_at"`)}
+	}
+	if len(ac.mutation.AuthRolesIDs()) == 0 {
+		return &ValidationError{Name: "auth_roles", err: errors.New(`ent: missing required edge "Account.auth_roles"`)}
 	}
 	if _, ok := ac.mutation.AuthTypeID(); !ok {
 		return &ValidationError{Name: "auth_type", err: errors.New(`ent: missing required edge "Account.auth_type"`)}
@@ -419,13 +403,6 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AccountAuthRoleCreate{config: ac.config, mutation: newAccountAuthRoleMutation(ac.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ac.mutation.PortfoliosIDs(); len(nodes) > 0 {
@@ -449,8 +426,8 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	}
 	if nodes := ac.mutation.AuthTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -464,26 +441,7 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.AuthTypeID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.AccountAuthRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   account.AccountAuthRolesTable,
-			Columns: []string{account.AccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: accountauthrole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
+		_node.account_auth_type = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

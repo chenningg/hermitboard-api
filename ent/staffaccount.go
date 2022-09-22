@@ -24,8 +24,6 @@ type StaffAccount struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// AuthTypeID holds the value of the "auth_type_id" field.
-	AuthTypeID pulid.PULID `json:"auth_type_id,omitempty"`
 	// Nickname holds the value of the "nickname" field.
 	Nickname string `json:"nickname,omitempty"`
 	// Email holds the value of the "email" field.
@@ -36,7 +34,8 @@ type StaffAccount struct {
 	PasswordUpdatedAt time.Time `json:"password_updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StaffAccountQuery when eager-loading is set.
-	Edges StaffAccountEdges `json:"edges"`
+	Edges                   StaffAccountEdges `json:"edges"`
+	staff_account_auth_type *pulid.PULID
 }
 
 // StaffAccountEdges holds the relations/edges for other nodes in the graph.
@@ -45,16 +44,13 @@ type StaffAccountEdges struct {
 	AuthRoles []*AuthRole `json:"auth_roles,omitempty"`
 	// AuthType holds the value of the auth_type edge.
 	AuthType *AuthType `json:"auth_type,omitempty"`
-	// StaffAccountAuthRoles holds the value of the staff_account_auth_roles edge.
-	StaffAccountAuthRoles []*StaffAccountAuthRole `json:"staff_account_auth_roles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [2]bool
 	// totalCount holds the count of the edges above.
-	totalCount [3]map[string]int
+	totalCount [2]map[string]int
 
-	namedAuthRoles             map[string][]*AuthRole
-	namedStaffAccountAuthRoles map[string][]*StaffAccountAuthRole
+	namedAuthRoles map[string][]*AuthRole
 }
 
 // AuthRolesOrErr returns the AuthRoles value or an error if the edge
@@ -79,26 +75,19 @@ func (e StaffAccountEdges) AuthTypeOrErr() (*AuthType, error) {
 	return nil, &NotLoadedError{edge: "auth_type"}
 }
 
-// StaffAccountAuthRolesOrErr returns the StaffAccountAuthRoles value or an error if the edge
-// was not loaded in eager-loading.
-func (e StaffAccountEdges) StaffAccountAuthRolesOrErr() ([]*StaffAccountAuthRole, error) {
-	if e.loadedTypes[2] {
-		return e.StaffAccountAuthRoles, nil
-	}
-	return nil, &NotLoadedError{edge: "staff_account_auth_roles"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*StaffAccount) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case staffaccount.FieldID, staffaccount.FieldAuthTypeID:
+		case staffaccount.FieldID:
 			values[i] = new(pulid.PULID)
 		case staffaccount.FieldNickname, staffaccount.FieldEmail, staffaccount.FieldPassword:
 			values[i] = new(sql.NullString)
 		case staffaccount.FieldCreatedAt, staffaccount.FieldUpdatedAt, staffaccount.FieldDeletedAt, staffaccount.FieldPasswordUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case staffaccount.ForeignKeys[0]: // staff_account_auth_type
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type StaffAccount", columns[i])
 		}
@@ -139,12 +128,6 @@ func (sa *StaffAccount) assignValues(columns []string, values []any) error {
 				sa.DeletedAt = new(time.Time)
 				*sa.DeletedAt = value.Time
 			}
-		case staffaccount.FieldAuthTypeID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field auth_type_id", values[i])
-			} else if value != nil {
-				sa.AuthTypeID = *value
-			}
 		case staffaccount.FieldNickname:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field nickname", values[i])
@@ -170,6 +153,13 @@ func (sa *StaffAccount) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				sa.PasswordUpdatedAt = value.Time
 			}
+		case staffaccount.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field staff_account_auth_type", values[i])
+			} else if value.Valid {
+				sa.staff_account_auth_type = new(pulid.PULID)
+				*sa.staff_account_auth_type = *value.S.(*pulid.PULID)
+			}
 		}
 	}
 	return nil
@@ -183,11 +173,6 @@ func (sa *StaffAccount) QueryAuthRoles() *AuthRoleQuery {
 // QueryAuthType queries the "auth_type" edge of the StaffAccount entity.
 func (sa *StaffAccount) QueryAuthType() *AuthTypeQuery {
 	return (&StaffAccountClient{config: sa.config}).QueryAuthType(sa)
-}
-
-// QueryStaffAccountAuthRoles queries the "staff_account_auth_roles" edge of the StaffAccount entity.
-func (sa *StaffAccount) QueryStaffAccountAuthRoles() *StaffAccountAuthRoleQuery {
-	return (&StaffAccountClient{config: sa.config}).QueryStaffAccountAuthRoles(sa)
 }
 
 // Update returns a builder for updating this StaffAccount.
@@ -224,9 +209,6 @@ func (sa *StaffAccount) String() string {
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("auth_type_id=")
-	builder.WriteString(fmt.Sprintf("%v", sa.AuthTypeID))
-	builder.WriteString(", ")
 	builder.WriteString("nickname=")
 	builder.WriteString(sa.Nickname)
 	builder.WriteString(", ")
@@ -262,30 +244,6 @@ func (sa *StaffAccount) appendNamedAuthRoles(name string, edges ...*AuthRole) {
 		sa.Edges.namedAuthRoles[name] = []*AuthRole{}
 	} else {
 		sa.Edges.namedAuthRoles[name] = append(sa.Edges.namedAuthRoles[name], edges...)
-	}
-}
-
-// NamedStaffAccountAuthRoles returns the StaffAccountAuthRoles named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (sa *StaffAccount) NamedStaffAccountAuthRoles(name string) ([]*StaffAccountAuthRole, error) {
-	if sa.Edges.namedStaffAccountAuthRoles == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := sa.Edges.namedStaffAccountAuthRoles[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (sa *StaffAccount) appendNamedStaffAccountAuthRoles(name string, edges ...*StaffAccountAuthRole) {
-	if sa.Edges.namedStaffAccountAuthRoles == nil {
-		sa.Edges.namedStaffAccountAuthRoles = make(map[string][]*StaffAccountAuthRole)
-	}
-	if len(edges) == 0 {
-		sa.Edges.namedStaffAccountAuthRoles[name] = []*StaffAccountAuthRole{}
-	} else {
-		sa.Edges.namedStaffAccountAuthRoles[name] = append(sa.Edges.namedStaffAccountAuthRoles[name], edges...)
 	}
 }
 

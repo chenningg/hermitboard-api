@@ -11,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
-	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
@@ -132,21 +131,6 @@ func (bc *BlockchainCreate) AddCryptocurrencies(c ...*Cryptocurrency) *Blockchai
 		ids[i] = c[i].ID
 	}
 	return bc.AddCryptocurrencyIDs(ids...)
-}
-
-// AddBlockchainCryptocurrencyIDs adds the "blockchain_cryptocurrencies" edge to the BlockchainCryptocurrency entity by IDs.
-func (bc *BlockchainCreate) AddBlockchainCryptocurrencyIDs(ids ...pulid.PULID) *BlockchainCreate {
-	bc.mutation.AddBlockchainCryptocurrencyIDs(ids...)
-	return bc
-}
-
-// AddBlockchainCryptocurrencies adds the "blockchain_cryptocurrencies" edges to the BlockchainCryptocurrency entity.
-func (bc *BlockchainCreate) AddBlockchainCryptocurrencies(b ...*BlockchainCryptocurrency) *BlockchainCreate {
-	ids := make([]pulid.PULID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return bc.AddBlockchainCryptocurrencyIDs(ids...)
 }
 
 // Mutation returns the BlockchainMutation object of the builder.
@@ -372,32 +356,6 @@ func (bc *BlockchainCreate) createSpec() (*Blockchain, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: cryptocurrency.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		createE := &BlockchainCryptocurrencyCreate{config: bc.config, mutation: newBlockchainCryptocurrencyMutation(bc.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := bc.mutation.BlockchainCryptocurrenciesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   blockchain.BlockchainCryptocurrenciesTable,
-			Columns: []string{blockchain.BlockchainCryptocurrenciesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: blockchaincryptocurrency.FieldID,
 				},
 			},
 		}

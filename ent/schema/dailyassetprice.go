@@ -1,13 +1,11 @@
 package schema
 
 import (
-	"github.com/chenningg/hermitboard-api/pulid"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"entgo.io/ent/schema/index"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
 )
 
@@ -44,25 +42,14 @@ func (DailyAssetPrice) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 		field.Float("adjusted_close"),
-		field.String("base_asset_id").
-			GoType(pulid.PULID("")),
 	}
 }
 
 // Edges of the DailyAssetPrice.
 func (DailyAssetPrice) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("base_asset", Asset.Type).
-			Ref("daily_asset_price").
+		edge.From("asset", Asset.Type).
 			Unique().
-			Required().
-			Field("base_asset_id"),
-	}
-}
-
-func (DailyAssetPrice) Indexes() []ent.Index {
-	return []ent.Index{
-		index.Fields("base_asset_id", "time").
-			Unique(),
+			Ref("daily_asset_prices"),
 	}
 }

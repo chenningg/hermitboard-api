@@ -9,9 +9,6 @@ import (
 // Account is the predicate function for account builders.
 type Account func(*sql.Selector)
 
-// AccountAuthRole is the predicate function for accountauthrole builders.
-type AccountAuthRole func(*sql.Selector)
-
 // Asset is the predicate function for asset builders.
 type Asset func(*sql.Selector)
 
@@ -26,9 +23,6 @@ type AuthType func(*sql.Selector)
 
 // Blockchain is the predicate function for blockchain builders.
 type Blockchain func(*sql.Selector)
-
-// BlockchainCryptocurrency is the predicate function for blockchaincryptocurrency builders.
-type BlockchainCryptocurrency func(*sql.Selector)
 
 // Cryptocurrency is the predicate function for cryptocurrency builders.
 type Cryptocurrency func(*sql.Selector)

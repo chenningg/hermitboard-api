@@ -19,15 +19,16 @@ import (
 // DailyAssetPriceQuery is the builder for querying DailyAssetPrice entities.
 type DailyAssetPriceQuery struct {
 	config
-	limit         *int
-	offset        *int
-	unique        *bool
-	order         []OrderFunc
-	fields        []string
-	predicates    []predicate.DailyAssetPrice
-	withBaseAsset *AssetQuery
-	modifiers     []func(*sql.Selector)
-	loadTotal     []func(context.Context, []*DailyAssetPrice) error
+	limit      *int
+	offset     *int
+	unique     *bool
+	order      []OrderFunc
+	fields     []string
+	predicates []predicate.DailyAssetPrice
+	withAsset  *AssetQuery
+	withFKs    bool
+	modifiers  []func(*sql.Selector)
+	loadTotal  []func(context.Context, []*DailyAssetPrice) error
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -64,8 +65,8 @@ func (dapq *DailyAssetPriceQuery) Order(o ...OrderFunc) *DailyAssetPriceQuery {
 	return dapq
 }
 
-// QueryBaseAsset chains the current query on the "base_asset" edge.
-func (dapq *DailyAssetPriceQuery) QueryBaseAsset() *AssetQuery {
+// QueryAsset chains the current query on the "asset" edge.
+func (dapq *DailyAssetPriceQuery) QueryAsset() *AssetQuery {
 	query := &AssetQuery{config: dapq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := dapq.prepareQuery(ctx); err != nil {
@@ -78,7 +79,7 @@ func (dapq *DailyAssetPriceQuery) QueryBaseAsset() *AssetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(dailyassetprice.Table, dailyassetprice.FieldID, selector),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, dailyassetprice.BaseAssetTable, dailyassetprice.BaseAssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, dailyassetprice.AssetTable, dailyassetprice.AssetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(dapq.driver.Dialect(), step)
 		return fromU, nil
@@ -262,12 +263,12 @@ func (dapq *DailyAssetPriceQuery) Clone() *DailyAssetPriceQuery {
 		return nil
 	}
 	return &DailyAssetPriceQuery{
-		config:        dapq.config,
-		limit:         dapq.limit,
-		offset:        dapq.offset,
-		order:         append([]OrderFunc{}, dapq.order...),
-		predicates:    append([]predicate.DailyAssetPrice{}, dapq.predicates...),
-		withBaseAsset: dapq.withBaseAsset.Clone(),
+		config:     dapq.config,
+		limit:      dapq.limit,
+		offset:     dapq.offset,
+		order:      append([]OrderFunc{}, dapq.order...),
+		predicates: append([]predicate.DailyAssetPrice{}, dapq.predicates...),
+		withAsset:  dapq.withAsset.Clone(),
 		// clone intermediate query.
 		sql:    dapq.sql.Clone(),
 		path:   dapq.path,
@@ -275,14 +276,14 @@ func (dapq *DailyAssetPriceQuery) Clone() *DailyAssetPriceQuery {
 	}
 }
 
-// WithBaseAsset tells the query-builder to eager-load the nodes that are connected to
-// the "base_asset" edge. The optional arguments are used to configure the query builder of the edge.
-func (dapq *DailyAssetPriceQuery) WithBaseAsset(opts ...func(*AssetQuery)) *DailyAssetPriceQuery {
+// WithAsset tells the query-builder to eager-load the nodes that are connected to
+// the "asset" edge. The optional arguments are used to configure the query builder of the edge.
+func (dapq *DailyAssetPriceQuery) WithAsset(opts ...func(*AssetQuery)) *DailyAssetPriceQuery {
 	query := &AssetQuery{config: dapq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	dapq.withBaseAsset = query
+	dapq.withAsset = query
 	return dapq
 }
 
@@ -353,11 +354,18 @@ func (dapq *DailyAssetPriceQuery) prepareQuery(ctx context.Context) error {
 func (dapq *DailyAssetPriceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*DailyAssetPrice, error) {
 	var (
 		nodes       = []*DailyAssetPrice{}
+		withFKs     = dapq.withFKs
 		_spec       = dapq.querySpec()
 		loadedTypes = [1]bool{
-			dapq.withBaseAsset != nil,
+			dapq.withAsset != nil,
 		}
 	)
+	if dapq.withAsset != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, dailyassetprice.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*DailyAssetPrice).scanValues(nil, columns)
 	}
@@ -379,9 +387,9 @@ func (dapq *DailyAssetPriceQuery) sqlAll(ctx context.Context, hooks ...queryHook
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := dapq.withBaseAsset; query != nil {
-		if err := dapq.loadBaseAsset(ctx, query, nodes, nil,
-			func(n *DailyAssetPrice, e *Asset) { n.Edges.BaseAsset = e }); err != nil {
+	if query := dapq.withAsset; query != nil {
+		if err := dapq.loadAsset(ctx, query, nodes, nil,
+			func(n *DailyAssetPrice, e *Asset) { n.Edges.Asset = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -393,11 +401,14 @@ func (dapq *DailyAssetPriceQuery) sqlAll(ctx context.Context, hooks ...queryHook
 	return nodes, nil
 }
 
-func (dapq *DailyAssetPriceQuery) loadBaseAsset(ctx context.Context, query *AssetQuery, nodes []*DailyAssetPrice, init func(*DailyAssetPrice), assign func(*DailyAssetPrice, *Asset)) error {
+func (dapq *DailyAssetPriceQuery) loadAsset(ctx context.Context, query *AssetQuery, nodes []*DailyAssetPrice, init func(*DailyAssetPrice), assign func(*DailyAssetPrice, *Asset)) error {
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*DailyAssetPrice)
 	for i := range nodes {
-		fk := nodes[i].BaseAssetID
+		if nodes[i].asset_daily_asset_prices == nil {
+			continue
+		}
+		fk := *nodes[i].asset_daily_asset_prices
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -411,7 +422,7 @@ func (dapq *DailyAssetPriceQuery) loadBaseAsset(ctx context.Context, query *Asse
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "base_asset_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "asset_daily_asset_prices" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

@@ -42,7 +42,6 @@ func (Blockchain) Fields() []ent.Field {
 // Edges of the Blockchain.
 func (Blockchain) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("cryptocurrencies", Cryptocurrency.Type).
-			Through("blockchain_cryptocurrencies", BlockchainCryptocurrency.Type),
+		edge.To("cryptocurrencies", Cryptocurrency.Type),
 	}
 }

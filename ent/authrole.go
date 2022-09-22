@@ -38,20 +38,14 @@ type AuthRoleEdges struct {
 	Accounts []*Account `json:"accounts,omitempty"`
 	// StaffAccounts holds the value of the staff_accounts edge.
 	StaffAccounts []*StaffAccount `json:"staff_accounts,omitempty"`
-	// AccountAuthRoles holds the value of the account_auth_roles edge.
-	AccountAuthRoles []*AccountAuthRole `json:"account_auth_roles,omitempty"`
-	// StaffAccountAuthRoles holds the value of the staff_account_auth_roles edge.
-	StaffAccountAuthRoles []*StaffAccountAuthRole `json:"staff_account_auth_roles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [2]bool
 	// totalCount holds the count of the edges above.
-	totalCount [4]map[string]int
+	totalCount [2]map[string]int
 
-	namedAccounts              map[string][]*Account
-	namedStaffAccounts         map[string][]*StaffAccount
-	namedAccountAuthRoles      map[string][]*AccountAuthRole
-	namedStaffAccountAuthRoles map[string][]*StaffAccountAuthRole
+	namedAccounts      map[string][]*Account
+	namedStaffAccounts map[string][]*StaffAccount
 }
 
 // AccountsOrErr returns the Accounts value or an error if the edge
@@ -70,24 +64,6 @@ func (e AuthRoleEdges) StaffAccountsOrErr() ([]*StaffAccount, error) {
 		return e.StaffAccounts, nil
 	}
 	return nil, &NotLoadedError{edge: "staff_accounts"}
-}
-
-// AccountAuthRolesOrErr returns the AccountAuthRoles value or an error if the edge
-// was not loaded in eager-loading.
-func (e AuthRoleEdges) AccountAuthRolesOrErr() ([]*AccountAuthRole, error) {
-	if e.loadedTypes[2] {
-		return e.AccountAuthRoles, nil
-	}
-	return nil, &NotLoadedError{edge: "account_auth_roles"}
-}
-
-// StaffAccountAuthRolesOrErr returns the StaffAccountAuthRoles value or an error if the edge
-// was not loaded in eager-loading.
-func (e AuthRoleEdges) StaffAccountAuthRolesOrErr() ([]*StaffAccountAuthRole, error) {
-	if e.loadedTypes[3] {
-		return e.StaffAccountAuthRoles, nil
-	}
-	return nil, &NotLoadedError{edge: "staff_account_auth_roles"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -167,16 +143,6 @@ func (ar *AuthRole) QueryAccounts() *AccountQuery {
 // QueryStaffAccounts queries the "staff_accounts" edge of the AuthRole entity.
 func (ar *AuthRole) QueryStaffAccounts() *StaffAccountQuery {
 	return (&AuthRoleClient{config: ar.config}).QueryStaffAccounts(ar)
-}
-
-// QueryAccountAuthRoles queries the "account_auth_roles" edge of the AuthRole entity.
-func (ar *AuthRole) QueryAccountAuthRoles() *AccountAuthRoleQuery {
-	return (&AuthRoleClient{config: ar.config}).QueryAccountAuthRoles(ar)
-}
-
-// QueryStaffAccountAuthRoles queries the "staff_account_auth_roles" edge of the AuthRole entity.
-func (ar *AuthRole) QueryStaffAccountAuthRoles() *StaffAccountAuthRoleQuery {
-	return (&AuthRoleClient{config: ar.config}).QueryStaffAccountAuthRoles(ar)
 }
 
 // Update returns a builder for updating this AuthRole.
@@ -269,54 +235,6 @@ func (ar *AuthRole) appendNamedStaffAccounts(name string, edges ...*StaffAccount
 		ar.Edges.namedStaffAccounts[name] = []*StaffAccount{}
 	} else {
 		ar.Edges.namedStaffAccounts[name] = append(ar.Edges.namedStaffAccounts[name], edges...)
-	}
-}
-
-// NamedAccountAuthRoles returns the AccountAuthRoles named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (ar *AuthRole) NamedAccountAuthRoles(name string) ([]*AccountAuthRole, error) {
-	if ar.Edges.namedAccountAuthRoles == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := ar.Edges.namedAccountAuthRoles[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (ar *AuthRole) appendNamedAccountAuthRoles(name string, edges ...*AccountAuthRole) {
-	if ar.Edges.namedAccountAuthRoles == nil {
-		ar.Edges.namedAccountAuthRoles = make(map[string][]*AccountAuthRole)
-	}
-	if len(edges) == 0 {
-		ar.Edges.namedAccountAuthRoles[name] = []*AccountAuthRole{}
-	} else {
-		ar.Edges.namedAccountAuthRoles[name] = append(ar.Edges.namedAccountAuthRoles[name], edges...)
-	}
-}
-
-// NamedStaffAccountAuthRoles returns the StaffAccountAuthRoles named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (ar *AuthRole) NamedStaffAccountAuthRoles(name string) ([]*StaffAccountAuthRole, error) {
-	if ar.Edges.namedStaffAccountAuthRoles == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := ar.Edges.namedStaffAccountAuthRoles[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (ar *AuthRole) appendNamedStaffAccountAuthRoles(name string, edges ...*StaffAccountAuthRole) {
-	if ar.Edges.namedStaffAccountAuthRoles == nil {
-		ar.Edges.namedStaffAccountAuthRoles = make(map[string][]*StaffAccountAuthRole)
-	}
-	if len(edges) == 0 {
-		ar.Edges.namedStaffAccountAuthRoles[name] = []*StaffAccountAuthRole{}
-	} else {
-		ar.Edges.namedStaffAccountAuthRoles[name] = append(ar.Edges.namedStaffAccountAuthRoles[name], edges...)
 	}
 }
 

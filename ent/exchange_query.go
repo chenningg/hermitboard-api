@@ -413,6 +413,7 @@ func (eq *ExchangeQuery) loadTransactions(ctx context.Context, query *Transactio
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	query.Where(predicate.Transaction(func(s *sql.Selector) {
 		s.Where(sql.InValues(exchange.TransactionsColumn, fks...))
 	}))
@@ -421,10 +422,13 @@ func (eq *ExchangeQuery) loadTransactions(ctx context.Context, query *Transactio
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.ExchangeID
-		node, ok := nodeids[fk]
+		fk := n.exchange_transactions
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "exchange_transactions" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "exchange_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "exchange_transactions" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

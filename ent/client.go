@@ -12,13 +12,11 @@ import (
 	"github.com/chenningg/hermitboard-api/pulid"
 
 	"github.com/chenningg/hermitboard-api/ent/account"
-	"github.com/chenningg/hermitboard-api/ent/accountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
-	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
@@ -40,8 +38,6 @@ type Client struct {
 	Schema *migrate.Schema
 	// Account is the client for interacting with the Account builders.
 	Account *AccountClient
-	// AccountAuthRole is the client for interacting with the AccountAuthRole builders.
-	AccountAuthRole *AccountAuthRoleClient
 	// Asset is the client for interacting with the Asset builders.
 	Asset *AssetClient
 	// AssetClass is the client for interacting with the AssetClass builders.
@@ -52,8 +48,6 @@ type Client struct {
 	AuthType *AuthTypeClient
 	// Blockchain is the client for interacting with the Blockchain builders.
 	Blockchain *BlockchainClient
-	// BlockchainCryptocurrency is the client for interacting with the BlockchainCryptocurrency builders.
-	BlockchainCryptocurrency *BlockchainCryptocurrencyClient
 	// Cryptocurrency is the client for interacting with the Cryptocurrency builders.
 	Cryptocurrency *CryptocurrencyClient
 	// DailyAssetPrice is the client for interacting with the DailyAssetPrice builders.
@@ -84,13 +78,11 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Account = NewAccountClient(c.config)
-	c.AccountAuthRole = NewAccountAuthRoleClient(c.config)
 	c.Asset = NewAssetClient(c.config)
 	c.AssetClass = NewAssetClassClient(c.config)
 	c.AuthRole = NewAuthRoleClient(c.config)
 	c.AuthType = NewAuthTypeClient(c.config)
 	c.Blockchain = NewBlockchainClient(c.config)
-	c.BlockchainCryptocurrency = NewBlockchainCryptocurrencyClient(c.config)
 	c.Cryptocurrency = NewCryptocurrencyClient(c.config)
 	c.DailyAssetPrice = NewDailyAssetPriceClient(c.config)
 	c.Exchange = NewExchangeClient(c.config)
@@ -130,24 +122,22 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                      ctx,
-		config:                   cfg,
-		Account:                  NewAccountClient(cfg),
-		AccountAuthRole:          NewAccountAuthRoleClient(cfg),
-		Asset:                    NewAssetClient(cfg),
-		AssetClass:               NewAssetClassClient(cfg),
-		AuthRole:                 NewAuthRoleClient(cfg),
-		AuthType:                 NewAuthTypeClient(cfg),
-		Blockchain:               NewBlockchainClient(cfg),
-		BlockchainCryptocurrency: NewBlockchainCryptocurrencyClient(cfg),
-		Cryptocurrency:           NewCryptocurrencyClient(cfg),
-		DailyAssetPrice:          NewDailyAssetPriceClient(cfg),
-		Exchange:                 NewExchangeClient(cfg),
-		Portfolio:                NewPortfolioClient(cfg),
-		StaffAccount:             NewStaffAccountClient(cfg),
-		StaffAccountAuthRole:     NewStaffAccountAuthRoleClient(cfg),
-		Transaction:              NewTransactionClient(cfg),
-		TransactionType:          NewTransactionTypeClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		Account:              NewAccountClient(cfg),
+		Asset:                NewAssetClient(cfg),
+		AssetClass:           NewAssetClassClient(cfg),
+		AuthRole:             NewAuthRoleClient(cfg),
+		AuthType:             NewAuthTypeClient(cfg),
+		Blockchain:           NewBlockchainClient(cfg),
+		Cryptocurrency:       NewCryptocurrencyClient(cfg),
+		DailyAssetPrice:      NewDailyAssetPriceClient(cfg),
+		Exchange:             NewExchangeClient(cfg),
+		Portfolio:            NewPortfolioClient(cfg),
+		StaffAccount:         NewStaffAccountClient(cfg),
+		StaffAccountAuthRole: NewStaffAccountAuthRoleClient(cfg),
+		Transaction:          NewTransactionClient(cfg),
+		TransactionType:      NewTransactionTypeClient(cfg),
 	}, nil
 }
 
@@ -165,24 +155,22 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                      ctx,
-		config:                   cfg,
-		Account:                  NewAccountClient(cfg),
-		AccountAuthRole:          NewAccountAuthRoleClient(cfg),
-		Asset:                    NewAssetClient(cfg),
-		AssetClass:               NewAssetClassClient(cfg),
-		AuthRole:                 NewAuthRoleClient(cfg),
-		AuthType:                 NewAuthTypeClient(cfg),
-		Blockchain:               NewBlockchainClient(cfg),
-		BlockchainCryptocurrency: NewBlockchainCryptocurrencyClient(cfg),
-		Cryptocurrency:           NewCryptocurrencyClient(cfg),
-		DailyAssetPrice:          NewDailyAssetPriceClient(cfg),
-		Exchange:                 NewExchangeClient(cfg),
-		Portfolio:                NewPortfolioClient(cfg),
-		StaffAccount:             NewStaffAccountClient(cfg),
-		StaffAccountAuthRole:     NewStaffAccountAuthRoleClient(cfg),
-		Transaction:              NewTransactionClient(cfg),
-		TransactionType:          NewTransactionTypeClient(cfg),
+		ctx:                  ctx,
+		config:               cfg,
+		Account:              NewAccountClient(cfg),
+		Asset:                NewAssetClient(cfg),
+		AssetClass:           NewAssetClassClient(cfg),
+		AuthRole:             NewAuthRoleClient(cfg),
+		AuthType:             NewAuthTypeClient(cfg),
+		Blockchain:           NewBlockchainClient(cfg),
+		Cryptocurrency:       NewCryptocurrencyClient(cfg),
+		DailyAssetPrice:      NewDailyAssetPriceClient(cfg),
+		Exchange:             NewExchangeClient(cfg),
+		Portfolio:            NewPortfolioClient(cfg),
+		StaffAccount:         NewStaffAccountClient(cfg),
+		StaffAccountAuthRole: NewStaffAccountAuthRoleClient(cfg),
+		Transaction:          NewTransactionClient(cfg),
+		TransactionType:      NewTransactionTypeClient(cfg),
 	}, nil
 }
 
@@ -212,13 +200,11 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Account.Use(hooks...)
-	c.AccountAuthRole.Use(hooks...)
 	c.Asset.Use(hooks...)
 	c.AssetClass.Use(hooks...)
 	c.AuthRole.Use(hooks...)
 	c.AuthType.Use(hooks...)
 	c.Blockchain.Use(hooks...)
-	c.BlockchainCryptocurrency.Use(hooks...)
 	c.Cryptocurrency.Use(hooks...)
 	c.DailyAssetPrice.Use(hooks...)
 	c.Exchange.Use(hooks...)
@@ -354,23 +340,7 @@ func (c *AccountClient) QueryAuthType(a *Account) *AuthTypeQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(account.Table, account.FieldID, id),
 			sqlgraph.To(authtype.Table, authtype.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, account.AuthTypeTable, account.AuthTypeColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryAccountAuthRoles queries the account_auth_roles edge of a Account.
-func (c *AccountClient) QueryAccountAuthRoles(a *Account) *AccountAuthRoleQuery {
-	query := &AccountAuthRoleQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(account.Table, account.FieldID, id),
-			sqlgraph.To(accountauthrole.Table, accountauthrole.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, account.AccountAuthRolesTable, account.AccountAuthRolesColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, account.AuthTypeTable, account.AuthTypeColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -381,128 +351,6 @@ func (c *AccountClient) QueryAccountAuthRoles(a *Account) *AccountAuthRoleQuery 
 // Hooks returns the client hooks.
 func (c *AccountClient) Hooks() []Hook {
 	return c.hooks.Account
-}
-
-// AccountAuthRoleClient is a client for the AccountAuthRole schema.
-type AccountAuthRoleClient struct {
-	config
-}
-
-// NewAccountAuthRoleClient returns a client for the AccountAuthRole from the given config.
-func NewAccountAuthRoleClient(c config) *AccountAuthRoleClient {
-	return &AccountAuthRoleClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `accountauthrole.Hooks(f(g(h())))`.
-func (c *AccountAuthRoleClient) Use(hooks ...Hook) {
-	c.hooks.AccountAuthRole = append(c.hooks.AccountAuthRole, hooks...)
-}
-
-// Create returns a builder for creating a AccountAuthRole entity.
-func (c *AccountAuthRoleClient) Create() *AccountAuthRoleCreate {
-	mutation := newAccountAuthRoleMutation(c.config, OpCreate)
-	return &AccountAuthRoleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of AccountAuthRole entities.
-func (c *AccountAuthRoleClient) CreateBulk(builders ...*AccountAuthRoleCreate) *AccountAuthRoleCreateBulk {
-	return &AccountAuthRoleCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for AccountAuthRole.
-func (c *AccountAuthRoleClient) Update() *AccountAuthRoleUpdate {
-	mutation := newAccountAuthRoleMutation(c.config, OpUpdate)
-	return &AccountAuthRoleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *AccountAuthRoleClient) UpdateOne(aar *AccountAuthRole) *AccountAuthRoleUpdateOne {
-	mutation := newAccountAuthRoleMutation(c.config, OpUpdateOne, withAccountAuthRole(aar))
-	return &AccountAuthRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *AccountAuthRoleClient) UpdateOneID(id pulid.PULID) *AccountAuthRoleUpdateOne {
-	mutation := newAccountAuthRoleMutation(c.config, OpUpdateOne, withAccountAuthRoleID(id))
-	return &AccountAuthRoleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for AccountAuthRole.
-func (c *AccountAuthRoleClient) Delete() *AccountAuthRoleDelete {
-	mutation := newAccountAuthRoleMutation(c.config, OpDelete)
-	return &AccountAuthRoleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *AccountAuthRoleClient) DeleteOne(aar *AccountAuthRole) *AccountAuthRoleDeleteOne {
-	return c.DeleteOneID(aar.ID)
-}
-
-// DeleteOne returns a builder for deleting the given entity by its id.
-func (c *AccountAuthRoleClient) DeleteOneID(id pulid.PULID) *AccountAuthRoleDeleteOne {
-	builder := c.Delete().Where(accountauthrole.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &AccountAuthRoleDeleteOne{builder}
-}
-
-// Query returns a query builder for AccountAuthRole.
-func (c *AccountAuthRoleClient) Query() *AccountAuthRoleQuery {
-	return &AccountAuthRoleQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a AccountAuthRole entity by its id.
-func (c *AccountAuthRoleClient) Get(ctx context.Context, id pulid.PULID) (*AccountAuthRole, error) {
-	return c.Query().Where(accountauthrole.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *AccountAuthRoleClient) GetX(ctx context.Context, id pulid.PULID) *AccountAuthRole {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryAccount queries the account edge of a AccountAuthRole.
-func (c *AccountAuthRoleClient) QueryAccount(aar *AccountAuthRole) *AccountQuery {
-	query := &AccountQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := aar.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(accountauthrole.Table, accountauthrole.FieldID, id),
-			sqlgraph.To(account.Table, account.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, accountauthrole.AccountTable, accountauthrole.AccountColumn),
-		)
-		fromV = sqlgraph.Neighbors(aar.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryAuthRole queries the auth_role edge of a AccountAuthRole.
-func (c *AccountAuthRoleClient) QueryAuthRole(aar *AccountAuthRole) *AuthRoleQuery {
-	query := &AuthRoleQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := aar.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(accountauthrole.Table, accountauthrole.FieldID, id),
-			sqlgraph.To(authrole.Table, authrole.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, accountauthrole.AuthRoleTable, accountauthrole.AuthRoleColumn),
-		)
-		fromV = sqlgraph.Neighbors(aar.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *AccountAuthRoleClient) Hooks() []Hook {
-	return c.hooks.AccountAuthRole
 }
 
 // AssetClient is a client for the Asset schema.
@@ -654,15 +502,15 @@ func (c *AssetClient) QueryTransactionQuote(a *Asset) *TransactionQuery {
 	return query
 }
 
-// QueryDailyAssetPrice queries the daily_asset_price edge of a Asset.
-func (c *AssetClient) QueryDailyAssetPrice(a *Asset) *DailyAssetPriceQuery {
+// QueryDailyAssetPrices queries the daily_asset_prices edge of a Asset.
+func (c *AssetClient) QueryDailyAssetPrices(a *Asset) *DailyAssetPriceQuery {
 	query := &DailyAssetPriceQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := a.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(asset.Table, asset.FieldID, id),
 			sqlgraph.To(dailyassetprice.Table, dailyassetprice.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, asset.DailyAssetPriceTable, asset.DailyAssetPriceColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.DailyAssetPricesTable, asset.DailyAssetPricesColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -898,38 +746,6 @@ func (c *AuthRoleClient) QueryStaffAccounts(ar *AuthRole) *StaffAccountQuery {
 	return query
 }
 
-// QueryAccountAuthRoles queries the account_auth_roles edge of a AuthRole.
-func (c *AuthRoleClient) QueryAccountAuthRoles(ar *AuthRole) *AccountAuthRoleQuery {
-	query := &AccountAuthRoleQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ar.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(authrole.Table, authrole.FieldID, id),
-			sqlgraph.To(accountauthrole.Table, accountauthrole.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, authrole.AccountAuthRolesTable, authrole.AccountAuthRolesColumn),
-		)
-		fromV = sqlgraph.Neighbors(ar.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryStaffAccountAuthRoles queries the staff_account_auth_roles edge of a AuthRole.
-func (c *AuthRoleClient) QueryStaffAccountAuthRoles(ar *AuthRole) *StaffAccountAuthRoleQuery {
-	query := &StaffAccountAuthRoleQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ar.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(authrole.Table, authrole.FieldID, id),
-			sqlgraph.To(staffaccountauthrole.Table, staffaccountauthrole.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, authrole.StaffAccountAuthRolesTable, authrole.StaffAccountAuthRolesColumn),
-		)
-		fromV = sqlgraph.Neighbors(ar.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *AuthRoleClient) Hooks() []Hook {
 	return c.hooks.AuthRole
@@ -1020,15 +836,15 @@ func (c *AuthTypeClient) GetX(ctx context.Context, id pulid.PULID) *AuthType {
 	return obj
 }
 
-// QueryAccount queries the account edge of a AuthType.
-func (c *AuthTypeClient) QueryAccount(at *AuthType) *AccountQuery {
+// QueryAccounts queries the accounts edge of a AuthType.
+func (c *AuthTypeClient) QueryAccounts(at *AuthType) *AccountQuery {
 	query := &AccountQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := at.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(authtype.Table, authtype.FieldID, id),
 			sqlgraph.To(account.Table, account.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, authtype.AccountTable, authtype.AccountColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, authtype.AccountsTable, authtype.AccountsColumn),
 		)
 		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
 		return fromV, nil
@@ -1036,15 +852,15 @@ func (c *AuthTypeClient) QueryAccount(at *AuthType) *AccountQuery {
 	return query
 }
 
-// QueryStaffAccount queries the staff_account edge of a AuthType.
-func (c *AuthTypeClient) QueryStaffAccount(at *AuthType) *StaffAccountQuery {
+// QueryStaffAccounts queries the staff_accounts edge of a AuthType.
+func (c *AuthTypeClient) QueryStaffAccounts(at *AuthType) *StaffAccountQuery {
 	query := &StaffAccountQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := at.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(authtype.Table, authtype.FieldID, id),
 			sqlgraph.To(staffaccount.Table, staffaccount.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, authtype.StaffAccountTable, authtype.StaffAccountColumn),
+			sqlgraph.Edge(sqlgraph.O2M, true, authtype.StaffAccountsTable, authtype.StaffAccountsColumn),
 		)
 		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
 		return fromV, nil
@@ -1158,147 +974,9 @@ func (c *BlockchainClient) QueryCryptocurrencies(b *Blockchain) *CryptocurrencyQ
 	return query
 }
 
-// QueryBlockchainCryptocurrencies queries the blockchain_cryptocurrencies edge of a Blockchain.
-func (c *BlockchainClient) QueryBlockchainCryptocurrencies(b *Blockchain) *BlockchainCryptocurrencyQuery {
-	query := &BlockchainCryptocurrencyQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := b.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(blockchain.Table, blockchain.FieldID, id),
-			sqlgraph.To(blockchaincryptocurrency.Table, blockchaincryptocurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, blockchain.BlockchainCryptocurrenciesTable, blockchain.BlockchainCryptocurrenciesColumn),
-		)
-		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *BlockchainClient) Hooks() []Hook {
 	return c.hooks.Blockchain
-}
-
-// BlockchainCryptocurrencyClient is a client for the BlockchainCryptocurrency schema.
-type BlockchainCryptocurrencyClient struct {
-	config
-}
-
-// NewBlockchainCryptocurrencyClient returns a client for the BlockchainCryptocurrency from the given config.
-func NewBlockchainCryptocurrencyClient(c config) *BlockchainCryptocurrencyClient {
-	return &BlockchainCryptocurrencyClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `blockchaincryptocurrency.Hooks(f(g(h())))`.
-func (c *BlockchainCryptocurrencyClient) Use(hooks ...Hook) {
-	c.hooks.BlockchainCryptocurrency = append(c.hooks.BlockchainCryptocurrency, hooks...)
-}
-
-// Create returns a builder for creating a BlockchainCryptocurrency entity.
-func (c *BlockchainCryptocurrencyClient) Create() *BlockchainCryptocurrencyCreate {
-	mutation := newBlockchainCryptocurrencyMutation(c.config, OpCreate)
-	return &BlockchainCryptocurrencyCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of BlockchainCryptocurrency entities.
-func (c *BlockchainCryptocurrencyClient) CreateBulk(builders ...*BlockchainCryptocurrencyCreate) *BlockchainCryptocurrencyCreateBulk {
-	return &BlockchainCryptocurrencyCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for BlockchainCryptocurrency.
-func (c *BlockchainCryptocurrencyClient) Update() *BlockchainCryptocurrencyUpdate {
-	mutation := newBlockchainCryptocurrencyMutation(c.config, OpUpdate)
-	return &BlockchainCryptocurrencyUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *BlockchainCryptocurrencyClient) UpdateOne(bc *BlockchainCryptocurrency) *BlockchainCryptocurrencyUpdateOne {
-	mutation := newBlockchainCryptocurrencyMutation(c.config, OpUpdateOne, withBlockchainCryptocurrency(bc))
-	return &BlockchainCryptocurrencyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *BlockchainCryptocurrencyClient) UpdateOneID(id pulid.PULID) *BlockchainCryptocurrencyUpdateOne {
-	mutation := newBlockchainCryptocurrencyMutation(c.config, OpUpdateOne, withBlockchainCryptocurrencyID(id))
-	return &BlockchainCryptocurrencyUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for BlockchainCryptocurrency.
-func (c *BlockchainCryptocurrencyClient) Delete() *BlockchainCryptocurrencyDelete {
-	mutation := newBlockchainCryptocurrencyMutation(c.config, OpDelete)
-	return &BlockchainCryptocurrencyDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *BlockchainCryptocurrencyClient) DeleteOne(bc *BlockchainCryptocurrency) *BlockchainCryptocurrencyDeleteOne {
-	return c.DeleteOneID(bc.ID)
-}
-
-// DeleteOne returns a builder for deleting the given entity by its id.
-func (c *BlockchainCryptocurrencyClient) DeleteOneID(id pulid.PULID) *BlockchainCryptocurrencyDeleteOne {
-	builder := c.Delete().Where(blockchaincryptocurrency.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &BlockchainCryptocurrencyDeleteOne{builder}
-}
-
-// Query returns a query builder for BlockchainCryptocurrency.
-func (c *BlockchainCryptocurrencyClient) Query() *BlockchainCryptocurrencyQuery {
-	return &BlockchainCryptocurrencyQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a BlockchainCryptocurrency entity by its id.
-func (c *BlockchainCryptocurrencyClient) Get(ctx context.Context, id pulid.PULID) (*BlockchainCryptocurrency, error) {
-	return c.Query().Where(blockchaincryptocurrency.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *BlockchainCryptocurrencyClient) GetX(ctx context.Context, id pulid.PULID) *BlockchainCryptocurrency {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryBlockchain queries the blockchain edge of a BlockchainCryptocurrency.
-func (c *BlockchainCryptocurrencyClient) QueryBlockchain(bc *BlockchainCryptocurrency) *BlockchainQuery {
-	query := &BlockchainQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := bc.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(blockchaincryptocurrency.Table, blockchaincryptocurrency.FieldID, id),
-			sqlgraph.To(blockchain.Table, blockchain.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, blockchaincryptocurrency.BlockchainTable, blockchaincryptocurrency.BlockchainColumn),
-		)
-		fromV = sqlgraph.Neighbors(bc.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryCryptocurrency queries the cryptocurrency edge of a BlockchainCryptocurrency.
-func (c *BlockchainCryptocurrencyClient) QueryCryptocurrency(bc *BlockchainCryptocurrency) *CryptocurrencyQuery {
-	query := &CryptocurrencyQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := bc.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(blockchaincryptocurrency.Table, blockchaincryptocurrency.FieldID, id),
-			sqlgraph.To(cryptocurrency.Table, cryptocurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, blockchaincryptocurrency.CryptocurrencyTable, blockchaincryptocurrency.CryptocurrencyColumn),
-		)
-		fromV = sqlgraph.Neighbors(bc.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *BlockchainCryptocurrencyClient) Hooks() []Hook {
-	return c.hooks.BlockchainCryptocurrency
 }
 
 // CryptocurrencyClient is a client for the Cryptocurrency schema.
@@ -1418,22 +1096,6 @@ func (c *CryptocurrencyClient) QueryBlockchains(cr *Cryptocurrency) *BlockchainQ
 	return query
 }
 
-// QueryBlockchainCryptocurrencies queries the blockchain_cryptocurrencies edge of a Cryptocurrency.
-func (c *CryptocurrencyClient) QueryBlockchainCryptocurrencies(cr *Cryptocurrency) *BlockchainCryptocurrencyQuery {
-	query := &BlockchainCryptocurrencyQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := cr.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(cryptocurrency.Table, cryptocurrency.FieldID, id),
-			sqlgraph.To(blockchaincryptocurrency.Table, blockchaincryptocurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, cryptocurrency.BlockchainCryptocurrenciesTable, cryptocurrency.BlockchainCryptocurrenciesColumn),
-		)
-		fromV = sqlgraph.Neighbors(cr.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *CryptocurrencyClient) Hooks() []Hook {
 	return c.hooks.Cryptocurrency
@@ -1524,15 +1186,15 @@ func (c *DailyAssetPriceClient) GetX(ctx context.Context, id pulid.PULID) *Daily
 	return obj
 }
 
-// QueryBaseAsset queries the base_asset edge of a DailyAssetPrice.
-func (c *DailyAssetPriceClient) QueryBaseAsset(dap *DailyAssetPrice) *AssetQuery {
+// QueryAsset queries the asset edge of a DailyAssetPrice.
+func (c *DailyAssetPriceClient) QueryAsset(dap *DailyAssetPrice) *AssetQuery {
 	query := &AssetQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := dap.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(dailyassetprice.Table, dailyassetprice.FieldID, id),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, dailyassetprice.BaseAssetTable, dailyassetprice.BaseAssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, dailyassetprice.AssetTable, dailyassetprice.AssetColumn),
 		)
 		fromV = sqlgraph.Neighbors(dap.driver.Dialect(), step)
 		return fromV, nil
@@ -1882,23 +1544,7 @@ func (c *StaffAccountClient) QueryAuthType(sa *StaffAccount) *AuthTypeQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(staffaccount.Table, staffaccount.FieldID, id),
 			sqlgraph.To(authtype.Table, authtype.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, staffaccount.AuthTypeTable, staffaccount.AuthTypeColumn),
-		)
-		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryStaffAccountAuthRoles queries the staff_account_auth_roles edge of a StaffAccount.
-func (c *StaffAccountClient) QueryStaffAccountAuthRoles(sa *StaffAccount) *StaffAccountAuthRoleQuery {
-	query := &StaffAccountAuthRoleQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := sa.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(staffaccount.Table, staffaccount.FieldID, id),
-			sqlgraph.To(staffaccountauthrole.Table, staffaccountauthrole.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, staffaccount.StaffAccountAuthRolesTable, staffaccount.StaffAccountAuthRolesColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, staffaccount.AuthTypeTable, staffaccount.AuthTypeColumn),
 		)
 		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
 		return fromV, nil

@@ -83,9 +83,9 @@ func (pu *PortfolioUpdate) SetNillableIsVisible(b *bool) *PortfolioUpdate {
 	return pu
 }
 
-// SetAccountID sets the "account_id" field.
-func (pu *PortfolioUpdate) SetAccountID(value pulid.PULID) *PortfolioUpdate {
-	pu.mutation.SetAccountID(value)
+// SetAccountID sets the "account" edge to the Account entity by ID.
+func (pu *PortfolioUpdate) SetAccountID(id pulid.PULID) *PortfolioUpdate {
+	pu.mutation.SetAccountID(id)
 	return pu
 }
 
@@ -446,9 +446,9 @@ func (puo *PortfolioUpdateOne) SetNillableIsVisible(b *bool) *PortfolioUpdateOne
 	return puo
 }
 
-// SetAccountID sets the "account_id" field.
-func (puo *PortfolioUpdateOne) SetAccountID(pu pulid.PULID) *PortfolioUpdateOne {
-	puo.mutation.SetAccountID(pu)
+// SetAccountID sets the "account" edge to the Account entity by ID.
+func (puo *PortfolioUpdateOne) SetAccountID(id pulid.PULID) *PortfolioUpdateOne {
+	puo.mutation.SetAccountID(id)
 	return puo
 }
 

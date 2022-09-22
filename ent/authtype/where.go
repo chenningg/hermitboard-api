@@ -465,25 +465,25 @@ func DescriptionContainsFold(v string) predicate.AuthType {
 	})
 }
 
-// HasAccount applies the HasEdge predicate on the "account" edge.
-func HasAccount() predicate.AuthType {
+// HasAccounts applies the HasEdge predicate on the "accounts" edge.
+func HasAccounts() predicate.AuthType {
 	return predicate.AuthType(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AccountTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, AccountTable, AccountColumn),
+			sqlgraph.To(AccountsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, AccountsTable, AccountsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasAccountWith applies the HasEdge predicate on the "account" edge with a given conditions (other predicates).
-func HasAccountWith(preds ...predicate.Account) predicate.AuthType {
+// HasAccountsWith applies the HasEdge predicate on the "accounts" edge with a given conditions (other predicates).
+func HasAccountsWith(preds ...predicate.Account) predicate.AuthType {
 	return predicate.AuthType(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AccountInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, AccountTable, AccountColumn),
+			sqlgraph.To(AccountsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, AccountsTable, AccountsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -493,25 +493,25 @@ func HasAccountWith(preds ...predicate.Account) predicate.AuthType {
 	})
 }
 
-// HasStaffAccount applies the HasEdge predicate on the "staff_account" edge.
-func HasStaffAccount() predicate.AuthType {
+// HasStaffAccounts applies the HasEdge predicate on the "staff_accounts" edge.
+func HasStaffAccounts() predicate.AuthType {
 	return predicate.AuthType(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StaffAccountTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, StaffAccountTable, StaffAccountColumn),
+			sqlgraph.To(StaffAccountsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, StaffAccountsTable, StaffAccountsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasStaffAccountWith applies the HasEdge predicate on the "staff_account" edge with a given conditions (other predicates).
-func HasStaffAccountWith(preds ...predicate.StaffAccount) predicate.AuthType {
+// HasStaffAccountsWith applies the HasEdge predicate on the "staff_accounts" edge with a given conditions (other predicates).
+func HasStaffAccountsWith(preds ...predicate.StaffAccount) predicate.AuthType {
 	return predicate.AuthType(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StaffAccountInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, StaffAccountTable, StaffAccountColumn),
+			sqlgraph.To(StaffAccountsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, StaffAccountsTable, StaffAccountsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

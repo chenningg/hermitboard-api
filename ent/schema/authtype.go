@@ -47,9 +47,9 @@ func (AuthType) Fields() []ent.Field {
 // Edges of the AuthType.
 func (AuthType) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("account", Account.Type).
-			Unique(),
-		edge.To("staff_account", StaffAccount.Type).
-			Unique(),
+		edge.From("accounts", Account.Type).
+			Ref("auth_type"),
+		edge.From("staff_accounts", StaffAccount.Type).
+			Ref("auth_type"),
 	}
 }

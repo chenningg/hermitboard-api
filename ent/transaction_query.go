@@ -33,6 +33,7 @@ type TransactionQuery struct {
 	withQuoteAsset      *AssetQuery
 	withPortfolio       *PortfolioQuery
 	withExchange        *ExchangeQuery
+	withFKs             bool
 	modifiers           []func(*sql.Selector)
 	loadTotal           []func(context.Context, []*Transaction) error
 	// intermediate query (i.e. traversal path).
@@ -496,6 +497,7 @@ func (tq *TransactionQuery) prepareQuery(ctx context.Context) error {
 func (tq *TransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Transaction, error) {
 	var (
 		nodes       = []*Transaction{}
+		withFKs     = tq.withFKs
 		_spec       = tq.querySpec()
 		loadedTypes = [5]bool{
 			tq.withTransactionType != nil,
@@ -505,6 +507,12 @@ func (tq *TransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			tq.withExchange != nil,
 		}
 	)
+	if tq.withTransactionType != nil || tq.withBaseAsset != nil || tq.withQuoteAsset != nil || tq.withPortfolio != nil || tq.withExchange != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, transaction.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Transaction).scanValues(nil, columns)
 	}
@@ -568,7 +576,10 @@ func (tq *TransactionQuery) loadTransactionType(ctx context.Context, query *Tran
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Transaction)
 	for i := range nodes {
-		fk := nodes[i].TransactionTypeID
+		if nodes[i].transaction_transaction_type == nil {
+			continue
+		}
+		fk := *nodes[i].transaction_transaction_type
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -582,7 +593,7 @@ func (tq *TransactionQuery) loadTransactionType(ctx context.Context, query *Tran
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "transaction_type_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "transaction_transaction_type" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -594,7 +605,10 @@ func (tq *TransactionQuery) loadBaseAsset(ctx context.Context, query *AssetQuery
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Transaction)
 	for i := range nodes {
-		fk := nodes[i].BaseAssetID
+		if nodes[i].transaction_base_asset == nil {
+			continue
+		}
+		fk := *nodes[i].transaction_base_asset
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -608,7 +622,7 @@ func (tq *TransactionQuery) loadBaseAsset(ctx context.Context, query *AssetQuery
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "base_asset_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "transaction_base_asset" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -620,10 +634,10 @@ func (tq *TransactionQuery) loadQuoteAsset(ctx context.Context, query *AssetQuer
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Transaction)
 	for i := range nodes {
-		if nodes[i].QuoteAssetID == nil {
+		if nodes[i].transaction_quote_asset == nil {
 			continue
 		}
-		fk := *nodes[i].QuoteAssetID
+		fk := *nodes[i].transaction_quote_asset
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -637,7 +651,7 @@ func (tq *TransactionQuery) loadQuoteAsset(ctx context.Context, query *AssetQuer
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "quote_asset_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "transaction_quote_asset" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -649,7 +663,10 @@ func (tq *TransactionQuery) loadPortfolio(ctx context.Context, query *PortfolioQ
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Transaction)
 	for i := range nodes {
-		fk := nodes[i].PortfolioID
+		if nodes[i].portfolio_transactions == nil {
+			continue
+		}
+		fk := *nodes[i].portfolio_transactions
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -663,7 +680,7 @@ func (tq *TransactionQuery) loadPortfolio(ctx context.Context, query *PortfolioQ
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "portfolio_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "portfolio_transactions" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -675,7 +692,10 @@ func (tq *TransactionQuery) loadExchange(ctx context.Context, query *ExchangeQue
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Transaction)
 	for i := range nodes {
-		fk := nodes[i].ExchangeID
+		if nodes[i].exchange_transactions == nil {
+			continue
+		}
+		fk := *nodes[i].exchange_transactions
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -689,7 +709,7 @@ func (tq *TransactionQuery) loadExchange(ctx context.Context, query *ExchangeQue
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "exchange_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "exchange_transactions" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

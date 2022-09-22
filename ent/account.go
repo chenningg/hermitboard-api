@@ -24,8 +24,6 @@ type Account struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// AuthTypeID holds the value of the "auth_type_id" field.
-	AuthTypeID pulid.PULID `json:"auth_type_id,omitempty"`
 	// Nickname holds the value of the "nickname" field.
 	Nickname string `json:"nickname,omitempty"`
 	// Email holds the value of the "email" field.
@@ -36,7 +34,8 @@ type Account struct {
 	PasswordUpdatedAt time.Time `json:"password_updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AccountQuery when eager-loading is set.
-	Edges AccountEdges `json:"edges"`
+	Edges             AccountEdges `json:"edges"`
+	account_auth_type *pulid.PULID
 }
 
 // AccountEdges holds the relations/edges for other nodes in the graph.
@@ -47,17 +46,14 @@ type AccountEdges struct {
 	Portfolios []*Portfolio `json:"portfolios,omitempty"`
 	// AuthType holds the value of the auth_type edge.
 	AuthType *AuthType `json:"auth_type,omitempty"`
-	// AccountAuthRoles holds the value of the account_auth_roles edge.
-	AccountAuthRoles []*AccountAuthRole `json:"account_auth_roles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [3]bool
 	// totalCount holds the count of the edges above.
-	totalCount [4]map[string]int
+	totalCount [3]map[string]int
 
-	namedAuthRoles        map[string][]*AuthRole
-	namedPortfolios       map[string][]*Portfolio
-	namedAccountAuthRoles map[string][]*AccountAuthRole
+	namedAuthRoles  map[string][]*AuthRole
+	namedPortfolios map[string][]*Portfolio
 }
 
 // AuthRolesOrErr returns the AuthRoles value or an error if the edge
@@ -91,26 +87,19 @@ func (e AccountEdges) AuthTypeOrErr() (*AuthType, error) {
 	return nil, &NotLoadedError{edge: "auth_type"}
 }
 
-// AccountAuthRolesOrErr returns the AccountAuthRoles value or an error if the edge
-// was not loaded in eager-loading.
-func (e AccountEdges) AccountAuthRolesOrErr() ([]*AccountAuthRole, error) {
-	if e.loadedTypes[3] {
-		return e.AccountAuthRoles, nil
-	}
-	return nil, &NotLoadedError{edge: "account_auth_roles"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Account) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case account.FieldID, account.FieldAuthTypeID:
+		case account.FieldID:
 			values[i] = new(pulid.PULID)
 		case account.FieldNickname, account.FieldEmail, account.FieldPassword:
 			values[i] = new(sql.NullString)
 		case account.FieldCreatedAt, account.FieldUpdatedAt, account.FieldDeletedAt, account.FieldPasswordUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case account.ForeignKeys[0]: // account_auth_type
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Account", columns[i])
 		}
@@ -151,12 +140,6 @@ func (a *Account) assignValues(columns []string, values []any) error {
 				a.DeletedAt = new(time.Time)
 				*a.DeletedAt = value.Time
 			}
-		case account.FieldAuthTypeID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field auth_type_id", values[i])
-			} else if value != nil {
-				a.AuthTypeID = *value
-			}
 		case account.FieldNickname:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field nickname", values[i])
@@ -182,6 +165,13 @@ func (a *Account) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.PasswordUpdatedAt = value.Time
 			}
+		case account.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field account_auth_type", values[i])
+			} else if value.Valid {
+				a.account_auth_type = new(pulid.PULID)
+				*a.account_auth_type = *value.S.(*pulid.PULID)
+			}
 		}
 	}
 	return nil
@@ -200,11 +190,6 @@ func (a *Account) QueryPortfolios() *PortfolioQuery {
 // QueryAuthType queries the "auth_type" edge of the Account entity.
 func (a *Account) QueryAuthType() *AuthTypeQuery {
 	return (&AccountClient{config: a.config}).QueryAuthType(a)
-}
-
-// QueryAccountAuthRoles queries the "account_auth_roles" edge of the Account entity.
-func (a *Account) QueryAccountAuthRoles() *AccountAuthRoleQuery {
-	return (&AccountClient{config: a.config}).QueryAccountAuthRoles(a)
 }
 
 // Update returns a builder for updating this Account.
@@ -240,9 +225,6 @@ func (a *Account) String() string {
 		builder.WriteString("deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", ")
-	builder.WriteString("auth_type_id=")
-	builder.WriteString(fmt.Sprintf("%v", a.AuthTypeID))
 	builder.WriteString(", ")
 	builder.WriteString("nickname=")
 	builder.WriteString(a.Nickname)
@@ -303,30 +285,6 @@ func (a *Account) appendNamedPortfolios(name string, edges ...*Portfolio) {
 		a.Edges.namedPortfolios[name] = []*Portfolio{}
 	} else {
 		a.Edges.namedPortfolios[name] = append(a.Edges.namedPortfolios[name], edges...)
-	}
-}
-
-// NamedAccountAuthRoles returns the AccountAuthRoles named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (a *Account) NamedAccountAuthRoles(name string) ([]*AccountAuthRole, error) {
-	if a.Edges.namedAccountAuthRoles == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := a.Edges.namedAccountAuthRoles[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (a *Account) appendNamedAccountAuthRoles(name string, edges ...*AccountAuthRole) {
-	if a.Edges.namedAccountAuthRoles == nil {
-		a.Edges.namedAccountAuthRoles = make(map[string][]*AccountAuthRole)
-	}
-	if len(edges) == 0 {
-		a.Edges.namedAccountAuthRoles[name] = []*AccountAuthRole{}
-	} else {
-		a.Edges.namedAccountAuthRoles[name] = append(a.Edges.namedAccountAuthRoles[name], edges...)
 	}
 }
 

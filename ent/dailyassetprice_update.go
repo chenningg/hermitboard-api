@@ -183,15 +183,23 @@ func (dapu *DailyAssetPriceUpdate) AddAdjustedClose(f float64) *DailyAssetPriceU
 	return dapu
 }
 
-// SetBaseAssetID sets the "base_asset_id" field.
-func (dapu *DailyAssetPriceUpdate) SetBaseAssetID(pu pulid.PULID) *DailyAssetPriceUpdate {
-	dapu.mutation.SetBaseAssetID(pu)
+// SetAssetID sets the "asset" edge to the Asset entity by ID.
+func (dapu *DailyAssetPriceUpdate) SetAssetID(id pulid.PULID) *DailyAssetPriceUpdate {
+	dapu.mutation.SetAssetID(id)
 	return dapu
 }
 
-// SetBaseAsset sets the "base_asset" edge to the Asset entity.
-func (dapu *DailyAssetPriceUpdate) SetBaseAsset(a *Asset) *DailyAssetPriceUpdate {
-	return dapu.SetBaseAssetID(a.ID)
+// SetNillableAssetID sets the "asset" edge to the Asset entity by ID if the given value is not nil.
+func (dapu *DailyAssetPriceUpdate) SetNillableAssetID(id *pulid.PULID) *DailyAssetPriceUpdate {
+	if id != nil {
+		dapu = dapu.SetAssetID(*id)
+	}
+	return dapu
+}
+
+// SetAsset sets the "asset" edge to the Asset entity.
+func (dapu *DailyAssetPriceUpdate) SetAsset(a *Asset) *DailyAssetPriceUpdate {
+	return dapu.SetAssetID(a.ID)
 }
 
 // Mutation returns the DailyAssetPriceMutation object of the builder.
@@ -199,9 +207,9 @@ func (dapu *DailyAssetPriceUpdate) Mutation() *DailyAssetPriceMutation {
 	return dapu.mutation
 }
 
-// ClearBaseAsset clears the "base_asset" edge to the Asset entity.
-func (dapu *DailyAssetPriceUpdate) ClearBaseAsset() *DailyAssetPriceUpdate {
-	dapu.mutation.ClearBaseAsset()
+// ClearAsset clears the "asset" edge to the Asset entity.
+func (dapu *DailyAssetPriceUpdate) ClearAsset() *DailyAssetPriceUpdate {
+	dapu.mutation.ClearAsset()
 	return dapu
 }
 
@@ -213,18 +221,12 @@ func (dapu *DailyAssetPriceUpdate) Save(ctx context.Context) (int, error) {
 	)
 	dapu.defaults()
 	if len(dapu.hooks) == 0 {
-		if err = dapu.check(); err != nil {
-			return 0, err
-		}
 		affected, err = dapu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*DailyAssetPriceMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = dapu.check(); err != nil {
-				return 0, err
 			}
 			dapu.mutation = mutation
 			affected, err = dapu.sqlSave(ctx)
@@ -276,14 +278,6 @@ func (dapu *DailyAssetPriceUpdate) defaults() {
 		v := dailyassetprice.UpdateDefaultDeletedAt()
 		dapu.mutation.SetDeletedAt(v)
 	}
-}
-
-// check runs all checks and user-defined validators on the builder.
-func (dapu *DailyAssetPriceUpdate) check() error {
-	if _, ok := dapu.mutation.BaseAssetID(); dapu.mutation.BaseAssetCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "DailyAssetPrice.base_asset"`)
-	}
-	return nil
 }
 
 func (dapu *DailyAssetPriceUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -425,12 +419,12 @@ func (dapu *DailyAssetPriceUpdate) sqlSave(ctx context.Context) (n int, err erro
 			Column: dailyassetprice.FieldAdjustedClose,
 		})
 	}
-	if dapu.mutation.BaseAssetCleared() {
+	if dapu.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   dailyassetprice.BaseAssetTable,
-			Columns: []string{dailyassetprice.BaseAssetColumn},
+			Table:   dailyassetprice.AssetTable,
+			Columns: []string{dailyassetprice.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -441,12 +435,12 @@ func (dapu *DailyAssetPriceUpdate) sqlSave(ctx context.Context) (n int, err erro
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := dapu.mutation.BaseAssetIDs(); len(nodes) > 0 {
+	if nodes := dapu.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   dailyassetprice.BaseAssetTable,
-			Columns: []string{dailyassetprice.BaseAssetColumn},
+			Table:   dailyassetprice.AssetTable,
+			Columns: []string{dailyassetprice.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -632,15 +626,23 @@ func (dapuo *DailyAssetPriceUpdateOne) AddAdjustedClose(f float64) *DailyAssetPr
 	return dapuo
 }
 
-// SetBaseAssetID sets the "base_asset_id" field.
-func (dapuo *DailyAssetPriceUpdateOne) SetBaseAssetID(pu pulid.PULID) *DailyAssetPriceUpdateOne {
-	dapuo.mutation.SetBaseAssetID(pu)
+// SetAssetID sets the "asset" edge to the Asset entity by ID.
+func (dapuo *DailyAssetPriceUpdateOne) SetAssetID(id pulid.PULID) *DailyAssetPriceUpdateOne {
+	dapuo.mutation.SetAssetID(id)
 	return dapuo
 }
 
-// SetBaseAsset sets the "base_asset" edge to the Asset entity.
-func (dapuo *DailyAssetPriceUpdateOne) SetBaseAsset(a *Asset) *DailyAssetPriceUpdateOne {
-	return dapuo.SetBaseAssetID(a.ID)
+// SetNillableAssetID sets the "asset" edge to the Asset entity by ID if the given value is not nil.
+func (dapuo *DailyAssetPriceUpdateOne) SetNillableAssetID(id *pulid.PULID) *DailyAssetPriceUpdateOne {
+	if id != nil {
+		dapuo = dapuo.SetAssetID(*id)
+	}
+	return dapuo
+}
+
+// SetAsset sets the "asset" edge to the Asset entity.
+func (dapuo *DailyAssetPriceUpdateOne) SetAsset(a *Asset) *DailyAssetPriceUpdateOne {
+	return dapuo.SetAssetID(a.ID)
 }
 
 // Mutation returns the DailyAssetPriceMutation object of the builder.
@@ -648,9 +650,9 @@ func (dapuo *DailyAssetPriceUpdateOne) Mutation() *DailyAssetPriceMutation {
 	return dapuo.mutation
 }
 
-// ClearBaseAsset clears the "base_asset" edge to the Asset entity.
-func (dapuo *DailyAssetPriceUpdateOne) ClearBaseAsset() *DailyAssetPriceUpdateOne {
-	dapuo.mutation.ClearBaseAsset()
+// ClearAsset clears the "asset" edge to the Asset entity.
+func (dapuo *DailyAssetPriceUpdateOne) ClearAsset() *DailyAssetPriceUpdateOne {
+	dapuo.mutation.ClearAsset()
 	return dapuo
 }
 
@@ -669,18 +671,12 @@ func (dapuo *DailyAssetPriceUpdateOne) Save(ctx context.Context) (*DailyAssetPri
 	)
 	dapuo.defaults()
 	if len(dapuo.hooks) == 0 {
-		if err = dapuo.check(); err != nil {
-			return nil, err
-		}
 		node, err = dapuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*DailyAssetPriceMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
-			}
-			if err = dapuo.check(); err != nil {
-				return nil, err
 			}
 			dapuo.mutation = mutation
 			node, err = dapuo.sqlSave(ctx)
@@ -738,14 +734,6 @@ func (dapuo *DailyAssetPriceUpdateOne) defaults() {
 		v := dailyassetprice.UpdateDefaultDeletedAt()
 		dapuo.mutation.SetDeletedAt(v)
 	}
-}
-
-// check runs all checks and user-defined validators on the builder.
-func (dapuo *DailyAssetPriceUpdateOne) check() error {
-	if _, ok := dapuo.mutation.BaseAssetID(); dapuo.mutation.BaseAssetCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "DailyAssetPrice.base_asset"`)
-	}
-	return nil
 }
 
 func (dapuo *DailyAssetPriceUpdateOne) sqlSave(ctx context.Context) (_node *DailyAssetPrice, err error) {
@@ -904,12 +892,12 @@ func (dapuo *DailyAssetPriceUpdateOne) sqlSave(ctx context.Context) (_node *Dail
 			Column: dailyassetprice.FieldAdjustedClose,
 		})
 	}
-	if dapuo.mutation.BaseAssetCleared() {
+	if dapuo.mutation.AssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   dailyassetprice.BaseAssetTable,
-			Columns: []string{dailyassetprice.BaseAssetColumn},
+			Table:   dailyassetprice.AssetTable,
+			Columns: []string{dailyassetprice.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -920,12 +908,12 @@ func (dapuo *DailyAssetPriceUpdateOne) sqlSave(ctx context.Context) (_node *Dail
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := dapuo.mutation.BaseAssetIDs(); len(nodes) > 0 {
+	if nodes := dapuo.mutation.AssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   dailyassetprice.BaseAssetTable,
-			Columns: []string{dailyassetprice.BaseAssetColumn},
+			Table:   dailyassetprice.AssetTable,
+			Columns: []string{dailyassetprice.AssetColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

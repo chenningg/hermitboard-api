@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
-	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -82,9 +81,9 @@ func (cu *CryptocurrencyUpdate) SetName(s string) *CryptocurrencyUpdate {
 	return cu
 }
 
-// SetAssetID sets the "asset_id" field.
-func (cu *CryptocurrencyUpdate) SetAssetID(pu pulid.PULID) *CryptocurrencyUpdate {
-	cu.mutation.SetAssetID(pu)
+// SetAssetID sets the "asset" edge to the Asset entity by ID.
+func (cu *CryptocurrencyUpdate) SetAssetID(id pulid.PULID) *CryptocurrencyUpdate {
+	cu.mutation.SetAssetID(id)
 	return cu
 }
 
@@ -106,21 +105,6 @@ func (cu *CryptocurrencyUpdate) AddBlockchains(b ...*Blockchain) *Cryptocurrency
 		ids[i] = b[i].ID
 	}
 	return cu.AddBlockchainIDs(ids...)
-}
-
-// AddBlockchainCryptocurrencyIDs adds the "blockchain_cryptocurrencies" edge to the BlockchainCryptocurrency entity by IDs.
-func (cu *CryptocurrencyUpdate) AddBlockchainCryptocurrencyIDs(ids ...pulid.PULID) *CryptocurrencyUpdate {
-	cu.mutation.AddBlockchainCryptocurrencyIDs(ids...)
-	return cu
-}
-
-// AddBlockchainCryptocurrencies adds the "blockchain_cryptocurrencies" edges to the BlockchainCryptocurrency entity.
-func (cu *CryptocurrencyUpdate) AddBlockchainCryptocurrencies(b ...*BlockchainCryptocurrency) *CryptocurrencyUpdate {
-	ids := make([]pulid.PULID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return cu.AddBlockchainCryptocurrencyIDs(ids...)
 }
 
 // Mutation returns the CryptocurrencyMutation object of the builder.
@@ -153,27 +137,6 @@ func (cu *CryptocurrencyUpdate) RemoveBlockchains(b ...*Blockchain) *Cryptocurre
 		ids[i] = b[i].ID
 	}
 	return cu.RemoveBlockchainIDs(ids...)
-}
-
-// ClearBlockchainCryptocurrencies clears all "blockchain_cryptocurrencies" edges to the BlockchainCryptocurrency entity.
-func (cu *CryptocurrencyUpdate) ClearBlockchainCryptocurrencies() *CryptocurrencyUpdate {
-	cu.mutation.ClearBlockchainCryptocurrencies()
-	return cu
-}
-
-// RemoveBlockchainCryptocurrencyIDs removes the "blockchain_cryptocurrencies" edge to BlockchainCryptocurrency entities by IDs.
-func (cu *CryptocurrencyUpdate) RemoveBlockchainCryptocurrencyIDs(ids ...pulid.PULID) *CryptocurrencyUpdate {
-	cu.mutation.RemoveBlockchainCryptocurrencyIDs(ids...)
-	return cu
-}
-
-// RemoveBlockchainCryptocurrencies removes "blockchain_cryptocurrencies" edges to BlockchainCryptocurrency entities.
-func (cu *CryptocurrencyUpdate) RemoveBlockchainCryptocurrencies(b ...*BlockchainCryptocurrency) *CryptocurrencyUpdate {
-	ids := make([]pulid.PULID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return cu.RemoveBlockchainCryptocurrencyIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -386,13 +349,6 @@ func (cu *CryptocurrencyUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				},
 			},
 		}
-		createE := &BlockchainCryptocurrencyCreate{config: cu.config, mutation: newBlockchainCryptocurrencyMutation(cu.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := cu.mutation.RemovedBlockchainsIDs(); len(nodes) > 0 && !cu.mutation.BlockchainsCleared() {
@@ -412,13 +368,6 @@ func (cu *CryptocurrencyUpdate) sqlSave(ctx context.Context) (n int, err error) 
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &BlockchainCryptocurrencyCreate{config: cu.config, mutation: newBlockchainCryptocurrencyMutation(cu.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := cu.mutation.BlockchainsIDs(); len(nodes) > 0 {
@@ -432,67 +381,6 @@ func (cu *CryptocurrencyUpdate) sqlSave(ctx context.Context) (n int, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: blockchain.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		createE := &BlockchainCryptocurrencyCreate{config: cu.config, mutation: newBlockchainCryptocurrencyMutation(cu.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cu.mutation.BlockchainCryptocurrenciesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   cryptocurrency.BlockchainCryptocurrenciesTable,
-			Columns: []string{cryptocurrency.BlockchainCryptocurrenciesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: blockchaincryptocurrency.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.RemovedBlockchainCryptocurrenciesIDs(); len(nodes) > 0 && !cu.mutation.BlockchainCryptocurrenciesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   cryptocurrency.BlockchainCryptocurrenciesTable,
-			Columns: []string{cryptocurrency.BlockchainCryptocurrenciesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: blockchaincryptocurrency.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cu.mutation.BlockchainCryptocurrenciesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   cryptocurrency.BlockchainCryptocurrenciesTable,
-			Columns: []string{cryptocurrency.BlockchainCryptocurrenciesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: blockchaincryptocurrency.FieldID,
 				},
 			},
 		}
@@ -570,9 +458,9 @@ func (cuo *CryptocurrencyUpdateOne) SetName(s string) *CryptocurrencyUpdateOne {
 	return cuo
 }
 
-// SetAssetID sets the "asset_id" field.
-func (cuo *CryptocurrencyUpdateOne) SetAssetID(pu pulid.PULID) *CryptocurrencyUpdateOne {
-	cuo.mutation.SetAssetID(pu)
+// SetAssetID sets the "asset" edge to the Asset entity by ID.
+func (cuo *CryptocurrencyUpdateOne) SetAssetID(id pulid.PULID) *CryptocurrencyUpdateOne {
+	cuo.mutation.SetAssetID(id)
 	return cuo
 }
 
@@ -594,21 +482,6 @@ func (cuo *CryptocurrencyUpdateOne) AddBlockchains(b ...*Blockchain) *Cryptocurr
 		ids[i] = b[i].ID
 	}
 	return cuo.AddBlockchainIDs(ids...)
-}
-
-// AddBlockchainCryptocurrencyIDs adds the "blockchain_cryptocurrencies" edge to the BlockchainCryptocurrency entity by IDs.
-func (cuo *CryptocurrencyUpdateOne) AddBlockchainCryptocurrencyIDs(ids ...pulid.PULID) *CryptocurrencyUpdateOne {
-	cuo.mutation.AddBlockchainCryptocurrencyIDs(ids...)
-	return cuo
-}
-
-// AddBlockchainCryptocurrencies adds the "blockchain_cryptocurrencies" edges to the BlockchainCryptocurrency entity.
-func (cuo *CryptocurrencyUpdateOne) AddBlockchainCryptocurrencies(b ...*BlockchainCryptocurrency) *CryptocurrencyUpdateOne {
-	ids := make([]pulid.PULID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return cuo.AddBlockchainCryptocurrencyIDs(ids...)
 }
 
 // Mutation returns the CryptocurrencyMutation object of the builder.
@@ -641,27 +514,6 @@ func (cuo *CryptocurrencyUpdateOne) RemoveBlockchains(b ...*Blockchain) *Cryptoc
 		ids[i] = b[i].ID
 	}
 	return cuo.RemoveBlockchainIDs(ids...)
-}
-
-// ClearBlockchainCryptocurrencies clears all "blockchain_cryptocurrencies" edges to the BlockchainCryptocurrency entity.
-func (cuo *CryptocurrencyUpdateOne) ClearBlockchainCryptocurrencies() *CryptocurrencyUpdateOne {
-	cuo.mutation.ClearBlockchainCryptocurrencies()
-	return cuo
-}
-
-// RemoveBlockchainCryptocurrencyIDs removes the "blockchain_cryptocurrencies" edge to BlockchainCryptocurrency entities by IDs.
-func (cuo *CryptocurrencyUpdateOne) RemoveBlockchainCryptocurrencyIDs(ids ...pulid.PULID) *CryptocurrencyUpdateOne {
-	cuo.mutation.RemoveBlockchainCryptocurrencyIDs(ids...)
-	return cuo
-}
-
-// RemoveBlockchainCryptocurrencies removes "blockchain_cryptocurrencies" edges to BlockchainCryptocurrency entities.
-func (cuo *CryptocurrencyUpdateOne) RemoveBlockchainCryptocurrencies(b ...*BlockchainCryptocurrency) *CryptocurrencyUpdateOne {
-	ids := make([]pulid.PULID, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
-	}
-	return cuo.RemoveBlockchainCryptocurrencyIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -904,13 +756,6 @@ func (cuo *CryptocurrencyUpdateOne) sqlSave(ctx context.Context) (_node *Cryptoc
 				},
 			},
 		}
-		createE := &BlockchainCryptocurrencyCreate{config: cuo.config, mutation: newBlockchainCryptocurrencyMutation(cuo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := cuo.mutation.RemovedBlockchainsIDs(); len(nodes) > 0 && !cuo.mutation.BlockchainsCleared() {
@@ -930,13 +775,6 @@ func (cuo *CryptocurrencyUpdateOne) sqlSave(ctx context.Context) (_node *Cryptoc
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &BlockchainCryptocurrencyCreate{config: cuo.config, mutation: newBlockchainCryptocurrencyMutation(cuo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := cuo.mutation.BlockchainsIDs(); len(nodes) > 0 {
@@ -950,67 +788,6 @@ func (cuo *CryptocurrencyUpdateOne) sqlSave(ctx context.Context) (_node *Cryptoc
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: blockchain.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		createE := &BlockchainCryptocurrencyCreate{config: cuo.config, mutation: newBlockchainCryptocurrencyMutation(cuo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if cuo.mutation.BlockchainCryptocurrenciesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   cryptocurrency.BlockchainCryptocurrenciesTable,
-			Columns: []string{cryptocurrency.BlockchainCryptocurrenciesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: blockchaincryptocurrency.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.RemovedBlockchainCryptocurrenciesIDs(); len(nodes) > 0 && !cuo.mutation.BlockchainCryptocurrenciesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   cryptocurrency.BlockchainCryptocurrenciesTable,
-			Columns: []string{cryptocurrency.BlockchainCryptocurrenciesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: blockchaincryptocurrency.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := cuo.mutation.BlockchainCryptocurrenciesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   cryptocurrency.BlockchainCryptocurrenciesTable,
-			Columns: []string{cryptocurrency.BlockchainCryptocurrenciesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: blockchaincryptocurrency.FieldID,
 				},
 			},
 		}

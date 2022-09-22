@@ -521,62 +521,6 @@ func HasStaffAccountsWith(preds ...predicate.StaffAccount) predicate.AuthRole {
 	})
 }
 
-// HasAccountAuthRoles applies the HasEdge predicate on the "account_auth_roles" edge.
-func HasAccountAuthRoles() predicate.AuthRole {
-	return predicate.AuthRole(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AccountAuthRolesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, AccountAuthRolesTable, AccountAuthRolesColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasAccountAuthRolesWith applies the HasEdge predicate on the "account_auth_roles" edge with a given conditions (other predicates).
-func HasAccountAuthRolesWith(preds ...predicate.AccountAuthRole) predicate.AuthRole {
-	return predicate.AuthRole(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AccountAuthRolesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, AccountAuthRolesTable, AccountAuthRolesColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasStaffAccountAuthRoles applies the HasEdge predicate on the "staff_account_auth_roles" edge.
-func HasStaffAccountAuthRoles() predicate.AuthRole {
-	return predicate.AuthRole(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StaffAccountAuthRolesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, StaffAccountAuthRolesTable, StaffAccountAuthRolesColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasStaffAccountAuthRolesWith applies the HasEdge predicate on the "staff_account_auth_roles" edge with a given conditions (other predicates).
-func HasStaffAccountAuthRolesWith(preds ...predicate.StaffAccountAuthRole) predicate.AuthRole {
-	return predicate.AuthRole(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StaffAccountAuthRolesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, StaffAccountAuthRolesTable, StaffAccountAuthRolesColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.AuthRole) predicate.AuthRole {
 	return predicate.AuthRole(func(s *sql.Selector) {

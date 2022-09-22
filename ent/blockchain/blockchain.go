@@ -29,8 +29,6 @@ const (
 	FieldChainID = "chain_id"
 	// EdgeCryptocurrencies holds the string denoting the cryptocurrencies edge name in mutations.
 	EdgeCryptocurrencies = "cryptocurrencies"
-	// EdgeBlockchainCryptocurrencies holds the string denoting the blockchain_cryptocurrencies edge name in mutations.
-	EdgeBlockchainCryptocurrencies = "blockchain_cryptocurrencies"
 	// Table holds the table name of the blockchain in the database.
 	Table = "blockchains"
 	// CryptocurrenciesTable is the table that holds the cryptocurrencies relation/edge. The primary key declared below.
@@ -38,13 +36,6 @@ const (
 	// CryptocurrenciesInverseTable is the table name for the Cryptocurrency entity.
 	// It exists in this package in order to avoid circular dependency with the "cryptocurrency" package.
 	CryptocurrenciesInverseTable = "cryptocurrencies"
-	// BlockchainCryptocurrenciesTable is the table that holds the blockchain_cryptocurrencies relation/edge.
-	BlockchainCryptocurrenciesTable = "blockchain_cryptocurrencies"
-	// BlockchainCryptocurrenciesInverseTable is the table name for the BlockchainCryptocurrency entity.
-	// It exists in this package in order to avoid circular dependency with the "blockchaincryptocurrency" package.
-	BlockchainCryptocurrenciesInverseTable = "blockchain_cryptocurrencies"
-	// BlockchainCryptocurrenciesColumn is the table column denoting the blockchain_cryptocurrencies relation/edge.
-	BlockchainCryptocurrenciesColumn = "blockchain_id"
 )
 
 // Columns holds all SQL columns for blockchain fields.

@@ -31,19 +31,17 @@ const (
 	FieldClose = "close"
 	// FieldAdjustedClose holds the string denoting the adjusted_close field in the database.
 	FieldAdjustedClose = "adjusted_close"
-	// FieldBaseAssetID holds the string denoting the base_asset_id field in the database.
-	FieldBaseAssetID = "base_asset_id"
-	// EdgeBaseAsset holds the string denoting the base_asset edge name in mutations.
-	EdgeBaseAsset = "base_asset"
+	// EdgeAsset holds the string denoting the asset edge name in mutations.
+	EdgeAsset = "asset"
 	// Table holds the table name of the dailyassetprice in the database.
 	Table = "daily_asset_prices"
-	// BaseAssetTable is the table that holds the base_asset relation/edge.
-	BaseAssetTable = "daily_asset_prices"
-	// BaseAssetInverseTable is the table name for the Asset entity.
+	// AssetTable is the table that holds the asset relation/edge.
+	AssetTable = "daily_asset_prices"
+	// AssetInverseTable is the table name for the Asset entity.
 	// It exists in this package in order to avoid circular dependency with the "asset" package.
-	BaseAssetInverseTable = "assets"
-	// BaseAssetColumn is the table column denoting the base_asset relation/edge.
-	BaseAssetColumn = "base_asset_id"
+	AssetInverseTable = "assets"
+	// AssetColumn is the table column denoting the asset relation/edge.
+	AssetColumn = "asset_daily_asset_prices"
 )
 
 // Columns holds all SQL columns for dailyassetprice fields.
@@ -58,13 +56,23 @@ var Columns = []string{
 	FieldLow,
 	FieldClose,
 	FieldAdjustedClose,
-	FieldBaseAssetID,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "daily_asset_prices"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"asset_daily_asset_prices",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

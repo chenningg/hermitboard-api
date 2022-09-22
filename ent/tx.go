@@ -14,8 +14,6 @@ type Tx struct {
 	config
 	// Account is the client for interacting with the Account builders.
 	Account *AccountClient
-	// AccountAuthRole is the client for interacting with the AccountAuthRole builders.
-	AccountAuthRole *AccountAuthRoleClient
 	// Asset is the client for interacting with the Asset builders.
 	Asset *AssetClient
 	// AssetClass is the client for interacting with the AssetClass builders.
@@ -26,8 +24,6 @@ type Tx struct {
 	AuthType *AuthTypeClient
 	// Blockchain is the client for interacting with the Blockchain builders.
 	Blockchain *BlockchainClient
-	// BlockchainCryptocurrency is the client for interacting with the BlockchainCryptocurrency builders.
-	BlockchainCryptocurrency *BlockchainCryptocurrencyClient
 	// Cryptocurrency is the client for interacting with the Cryptocurrency builders.
 	Cryptocurrency *CryptocurrencyClient
 	// DailyAssetPrice is the client for interacting with the DailyAssetPrice builders.
@@ -180,13 +176,11 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Account = NewAccountClient(tx.config)
-	tx.AccountAuthRole = NewAccountAuthRoleClient(tx.config)
 	tx.Asset = NewAssetClient(tx.config)
 	tx.AssetClass = NewAssetClassClient(tx.config)
 	tx.AuthRole = NewAuthRoleClient(tx.config)
 	tx.AuthType = NewAuthTypeClient(tx.config)
 	tx.Blockchain = NewBlockchainClient(tx.config)
-	tx.BlockchainCryptocurrency = NewBlockchainCryptocurrencyClient(tx.config)
 	tx.Cryptocurrency = NewCryptocurrencyClient(tx.config)
 	tx.DailyAssetPrice = NewDailyAssetPriceClient(tx.config)
 	tx.Exchange = NewExchangeClient(tx.config)

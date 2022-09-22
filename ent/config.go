@@ -24,22 +24,20 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
-	Account                  []ent.Hook
-	AccountAuthRole          []ent.Hook
-	Asset                    []ent.Hook
-	AssetClass               []ent.Hook
-	AuthRole                 []ent.Hook
-	AuthType                 []ent.Hook
-	Blockchain               []ent.Hook
-	BlockchainCryptocurrency []ent.Hook
-	Cryptocurrency           []ent.Hook
-	DailyAssetPrice          []ent.Hook
-	Exchange                 []ent.Hook
-	Portfolio                []ent.Hook
-	StaffAccount             []ent.Hook
-	StaffAccountAuthRole     []ent.Hook
-	Transaction              []ent.Hook
-	TransactionType          []ent.Hook
+	Account              []ent.Hook
+	Asset                []ent.Hook
+	AssetClass           []ent.Hook
+	AuthRole             []ent.Hook
+	AuthType             []ent.Hook
+	Blockchain           []ent.Hook
+	Cryptocurrency       []ent.Hook
+	DailyAssetPrice      []ent.Hook
+	Exchange             []ent.Hook
+	Portfolio            []ent.Hook
+	StaffAccount         []ent.Hook
+	StaffAccountAuthRole []ent.Hook
+	Transaction          []ent.Hook
+	TransactionType      []ent.Hook
 }
 
 // Options applies the options on the config object.

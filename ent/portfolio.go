@@ -30,11 +30,10 @@ type Portfolio struct {
 	IsPublic bool `json:"is_public,omitempty"`
 	// Whether this portfolio is visible to the owner.
 	IsVisible bool `json:"is_visible,omitempty"`
-	// AccountID holds the value of the "account_id" field.
-	AccountID pulid.PULID `json:"account_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PortfolioQuery when eager-loading is set.
-	Edges PortfolioEdges `json:"edges"`
+	Edges              PortfolioEdges `json:"edges"`
+	account_portfolios *pulid.PULID
 }
 
 // PortfolioEdges holds the relations/edges for other nodes in the graph.
@@ -79,7 +78,7 @@ func (*Portfolio) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case portfolio.FieldID, portfolio.FieldAccountID:
+		case portfolio.FieldID:
 			values[i] = new(pulid.PULID)
 		case portfolio.FieldIsPublic, portfolio.FieldIsVisible:
 			values[i] = new(sql.NullBool)
@@ -87,6 +86,8 @@ func (*Portfolio) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case portfolio.FieldCreatedAt, portfolio.FieldUpdatedAt, portfolio.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
+		case portfolio.ForeignKeys[0]: // account_portfolios
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Portfolio", columns[i])
 		}
@@ -145,11 +146,12 @@ func (po *Portfolio) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				po.IsVisible = value.Bool
 			}
-		case portfolio.FieldAccountID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field account_id", values[i])
-			} else if value != nil {
-				po.AccountID = *value
+		case portfolio.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field account_portfolios", values[i])
+			} else if value.Valid {
+				po.account_portfolios = new(pulid.PULID)
+				*po.account_portfolios = *value.S.(*pulid.PULID)
 			}
 		}
 	}
@@ -208,9 +210,6 @@ func (po *Portfolio) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_visible=")
 	builder.WriteString(fmt.Sprintf("%v", po.IsVisible))
-	builder.WriteString(", ")
-	builder.WriteString("account_id=")
-	builder.WriteString(fmt.Sprintf("%v", po.AccountID))
 	builder.WriteByte(')')
 	return builder.String()
 }

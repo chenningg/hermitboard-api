@@ -40,16 +40,13 @@ type Blockchain struct {
 type BlockchainEdges struct {
 	// Cryptocurrencies holds the value of the cryptocurrencies edge.
 	Cryptocurrencies []*Cryptocurrency `json:"cryptocurrencies,omitempty"`
-	// BlockchainCryptocurrencies holds the value of the blockchain_cryptocurrencies edge.
-	BlockchainCryptocurrencies []*BlockchainCryptocurrency `json:"blockchain_cryptocurrencies,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [1]bool
 	// totalCount holds the count of the edges above.
-	totalCount [2]map[string]int
+	totalCount [1]map[string]int
 
-	namedCryptocurrencies           map[string][]*Cryptocurrency
-	namedBlockchainCryptocurrencies map[string][]*BlockchainCryptocurrency
+	namedCryptocurrencies map[string][]*Cryptocurrency
 }
 
 // CryptocurrenciesOrErr returns the Cryptocurrencies value or an error if the edge
@@ -59,15 +56,6 @@ func (e BlockchainEdges) CryptocurrenciesOrErr() ([]*Cryptocurrency, error) {
 		return e.Cryptocurrencies, nil
 	}
 	return nil, &NotLoadedError{edge: "cryptocurrencies"}
-}
-
-// BlockchainCryptocurrenciesOrErr returns the BlockchainCryptocurrencies value or an error if the edge
-// was not loaded in eager-loading.
-func (e BlockchainEdges) BlockchainCryptocurrenciesOrErr() ([]*BlockchainCryptocurrency, error) {
-	if e.loadedTypes[1] {
-		return e.BlockchainCryptocurrencies, nil
-	}
-	return nil, &NotLoadedError{edge: "blockchain_cryptocurrencies"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -159,11 +147,6 @@ func (b *Blockchain) QueryCryptocurrencies() *CryptocurrencyQuery {
 	return (&BlockchainClient{config: b.config}).QueryCryptocurrencies(b)
 }
 
-// QueryBlockchainCryptocurrencies queries the "blockchain_cryptocurrencies" edge of the Blockchain entity.
-func (b *Blockchain) QueryBlockchainCryptocurrencies() *BlockchainCryptocurrencyQuery {
-	return (&BlockchainClient{config: b.config}).QueryBlockchainCryptocurrencies(b)
-}
-
 // Update returns a builder for updating this Blockchain.
 // Note that you need to call Blockchain.Unwrap() before calling this method if this Blockchain
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -238,30 +221,6 @@ func (b *Blockchain) appendNamedCryptocurrencies(name string, edges ...*Cryptocu
 		b.Edges.namedCryptocurrencies[name] = []*Cryptocurrency{}
 	} else {
 		b.Edges.namedCryptocurrencies[name] = append(b.Edges.namedCryptocurrencies[name], edges...)
-	}
-}
-
-// NamedBlockchainCryptocurrencies returns the BlockchainCryptocurrencies named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (b *Blockchain) NamedBlockchainCryptocurrencies(name string) ([]*BlockchainCryptocurrency, error) {
-	if b.Edges.namedBlockchainCryptocurrencies == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := b.Edges.namedBlockchainCryptocurrencies[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (b *Blockchain) appendNamedBlockchainCryptocurrencies(name string, edges ...*BlockchainCryptocurrency) {
-	if b.Edges.namedBlockchainCryptocurrencies == nil {
-		b.Edges.namedBlockchainCryptocurrencies = make(map[string][]*BlockchainCryptocurrency)
-	}
-	if len(edges) == 0 {
-		b.Edges.namedBlockchainCryptocurrencies[name] = []*BlockchainCryptocurrency{}
-	} else {
-		b.Edges.namedBlockchainCryptocurrencies[name] = append(b.Edges.namedBlockchainCryptocurrencies[name], edges...)
 	}
 }
 

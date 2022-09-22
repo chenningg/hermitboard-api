@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/account"
-	"github.com/chenningg/hermitboard-api/ent/accountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
@@ -48,12 +47,6 @@ func (au *AccountUpdate) SetDeletedAt(t time.Time) *AccountUpdate {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (au *AccountUpdate) ClearDeletedAt() *AccountUpdate {
 	au.mutation.ClearDeletedAt()
-	return au
-}
-
-// SetAuthTypeID sets the "auth_type_id" field.
-func (au *AccountUpdate) SetAuthTypeID(pu pulid.PULID) *AccountUpdate {
-	au.mutation.SetAuthTypeID(pu)
 	return au
 }
 
@@ -125,24 +118,15 @@ func (au *AccountUpdate) AddPortfolios(p ...*Portfolio) *AccountUpdate {
 	return au.AddPortfolioIDs(ids...)
 }
 
-// SetAuthType sets the "auth_type" edge to the AuthType entity.
-func (au *AccountUpdate) SetAuthType(a *AuthType) *AccountUpdate {
-	return au.SetAuthTypeID(a.ID)
-}
-
-// AddAccountAuthRoleIDs adds the "account_auth_roles" edge to the AccountAuthRole entity by IDs.
-func (au *AccountUpdate) AddAccountAuthRoleIDs(ids ...pulid.PULID) *AccountUpdate {
-	au.mutation.AddAccountAuthRoleIDs(ids...)
+// SetAuthTypeID sets the "auth_type" edge to the AuthType entity by ID.
+func (au *AccountUpdate) SetAuthTypeID(id pulid.PULID) *AccountUpdate {
+	au.mutation.SetAuthTypeID(id)
 	return au
 }
 
-// AddAccountAuthRoles adds the "account_auth_roles" edges to the AccountAuthRole entity.
-func (au *AccountUpdate) AddAccountAuthRoles(a ...*AccountAuthRole) *AccountUpdate {
-	ids := make([]pulid.PULID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return au.AddAccountAuthRoleIDs(ids...)
+// SetAuthType sets the "auth_type" edge to the AuthType entity.
+func (au *AccountUpdate) SetAuthType(a *AuthType) *AccountUpdate {
+	return au.SetAuthTypeID(a.ID)
 }
 
 // Mutation returns the AccountMutation object of the builder.
@@ -196,27 +180,6 @@ func (au *AccountUpdate) RemovePortfolios(p ...*Portfolio) *AccountUpdate {
 func (au *AccountUpdate) ClearAuthType() *AccountUpdate {
 	au.mutation.ClearAuthType()
 	return au
-}
-
-// ClearAccountAuthRoles clears all "account_auth_roles" edges to the AccountAuthRole entity.
-func (au *AccountUpdate) ClearAccountAuthRoles() *AccountUpdate {
-	au.mutation.ClearAccountAuthRoles()
-	return au
-}
-
-// RemoveAccountAuthRoleIDs removes the "account_auth_roles" edge to AccountAuthRole entities by IDs.
-func (au *AccountUpdate) RemoveAccountAuthRoleIDs(ids ...pulid.PULID) *AccountUpdate {
-	au.mutation.RemoveAccountAuthRoleIDs(ids...)
-	return au
-}
-
-// RemoveAccountAuthRoles removes "account_auth_roles" edges to AccountAuthRole entities.
-func (au *AccountUpdate) RemoveAccountAuthRoles(a ...*AccountAuthRole) *AccountUpdate {
-	ids := make([]pulid.PULID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return au.RemoveAccountAuthRoleIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -405,13 +368,6 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				},
 			},
 		}
-		createE := &AccountAuthRoleCreate{config: au.config, mutation: newAccountAuthRoleMutation(au.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := au.mutation.RemovedAuthRolesIDs(); len(nodes) > 0 && !au.mutation.AuthRolesCleared() {
@@ -431,13 +387,6 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AccountAuthRoleCreate{config: au.config, mutation: newAccountAuthRoleMutation(au.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := au.mutation.AuthRolesIDs(); len(nodes) > 0 {
@@ -456,13 +405,6 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		createE := &AccountAuthRoleCreate{config: au.config, mutation: newAccountAuthRoleMutation(au.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
@@ -522,8 +464,8 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if au.mutation.AuthTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -538,8 +480,8 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := au.mutation.AuthTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -547,60 +489,6 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: authtype.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.AccountAuthRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   account.AccountAuthRolesTable,
-			Columns: []string{account.AccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: accountauthrole.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.RemovedAccountAuthRolesIDs(); len(nodes) > 0 && !au.mutation.AccountAuthRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   account.AccountAuthRolesTable,
-			Columns: []string{account.AccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: accountauthrole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.AccountAuthRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   account.AccountAuthRolesTable,
-			Columns: []string{account.AccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: accountauthrole.FieldID,
 				},
 			},
 		}
@@ -643,12 +531,6 @@ func (auo *AccountUpdateOne) SetDeletedAt(t time.Time) *AccountUpdateOne {
 // ClearDeletedAt clears the value of the "deleted_at" field.
 func (auo *AccountUpdateOne) ClearDeletedAt() *AccountUpdateOne {
 	auo.mutation.ClearDeletedAt()
-	return auo
-}
-
-// SetAuthTypeID sets the "auth_type_id" field.
-func (auo *AccountUpdateOne) SetAuthTypeID(pu pulid.PULID) *AccountUpdateOne {
-	auo.mutation.SetAuthTypeID(pu)
 	return auo
 }
 
@@ -720,24 +602,15 @@ func (auo *AccountUpdateOne) AddPortfolios(p ...*Portfolio) *AccountUpdateOne {
 	return auo.AddPortfolioIDs(ids...)
 }
 
-// SetAuthType sets the "auth_type" edge to the AuthType entity.
-func (auo *AccountUpdateOne) SetAuthType(a *AuthType) *AccountUpdateOne {
-	return auo.SetAuthTypeID(a.ID)
-}
-
-// AddAccountAuthRoleIDs adds the "account_auth_roles" edge to the AccountAuthRole entity by IDs.
-func (auo *AccountUpdateOne) AddAccountAuthRoleIDs(ids ...pulid.PULID) *AccountUpdateOne {
-	auo.mutation.AddAccountAuthRoleIDs(ids...)
+// SetAuthTypeID sets the "auth_type" edge to the AuthType entity by ID.
+func (auo *AccountUpdateOne) SetAuthTypeID(id pulid.PULID) *AccountUpdateOne {
+	auo.mutation.SetAuthTypeID(id)
 	return auo
 }
 
-// AddAccountAuthRoles adds the "account_auth_roles" edges to the AccountAuthRole entity.
-func (auo *AccountUpdateOne) AddAccountAuthRoles(a ...*AccountAuthRole) *AccountUpdateOne {
-	ids := make([]pulid.PULID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return auo.AddAccountAuthRoleIDs(ids...)
+// SetAuthType sets the "auth_type" edge to the AuthType entity.
+func (auo *AccountUpdateOne) SetAuthType(a *AuthType) *AccountUpdateOne {
+	return auo.SetAuthTypeID(a.ID)
 }
 
 // Mutation returns the AccountMutation object of the builder.
@@ -791,27 +664,6 @@ func (auo *AccountUpdateOne) RemovePortfolios(p ...*Portfolio) *AccountUpdateOne
 func (auo *AccountUpdateOne) ClearAuthType() *AccountUpdateOne {
 	auo.mutation.ClearAuthType()
 	return auo
-}
-
-// ClearAccountAuthRoles clears all "account_auth_roles" edges to the AccountAuthRole entity.
-func (auo *AccountUpdateOne) ClearAccountAuthRoles() *AccountUpdateOne {
-	auo.mutation.ClearAccountAuthRoles()
-	return auo
-}
-
-// RemoveAccountAuthRoleIDs removes the "account_auth_roles" edge to AccountAuthRole entities by IDs.
-func (auo *AccountUpdateOne) RemoveAccountAuthRoleIDs(ids ...pulid.PULID) *AccountUpdateOne {
-	auo.mutation.RemoveAccountAuthRoleIDs(ids...)
-	return auo
-}
-
-// RemoveAccountAuthRoles removes "account_auth_roles" edges to AccountAuthRole entities.
-func (auo *AccountUpdateOne) RemoveAccountAuthRoles(a ...*AccountAuthRole) *AccountUpdateOne {
-	ids := make([]pulid.PULID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return auo.RemoveAccountAuthRoleIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1030,13 +882,6 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 				},
 			},
 		}
-		createE := &AccountAuthRoleCreate{config: auo.config, mutation: newAccountAuthRoleMutation(auo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := auo.mutation.RemovedAuthRolesIDs(); len(nodes) > 0 && !auo.mutation.AuthRolesCleared() {
@@ -1056,13 +901,6 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AccountAuthRoleCreate{config: auo.config, mutation: newAccountAuthRoleMutation(auo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
 	if nodes := auo.mutation.AuthRolesIDs(); len(nodes) > 0 {
@@ -1081,13 +919,6 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		createE := &AccountAuthRoleCreate{config: auo.config, mutation: newAccountAuthRoleMutation(auo.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
@@ -1147,8 +978,8 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 	}
 	if auo.mutation.AuthTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -1163,8 +994,8 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 	}
 	if nodes := auo.mutation.AuthTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: true,
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -1172,60 +1003,6 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: authtype.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.AccountAuthRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   account.AccountAuthRolesTable,
-			Columns: []string{account.AccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: accountauthrole.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.RemovedAccountAuthRolesIDs(); len(nodes) > 0 && !auo.mutation.AccountAuthRolesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   account.AccountAuthRolesTable,
-			Columns: []string{account.AccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: accountauthrole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.AccountAuthRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   account.AccountAuthRolesTable,
-			Columns: []string{account.AccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: accountauthrole.FieldID,
 				},
 			},
 		}

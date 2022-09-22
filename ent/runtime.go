@@ -6,13 +6,11 @@ import (
 	"time"
 
 	"github.com/chenningg/hermitboard-api/ent/account"
-	"github.com/chenningg/hermitboard-api/ent/accountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
-	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
@@ -55,19 +53,33 @@ func init() {
 	// account.UpdateDefaultDeletedAt holds the default value on update for the deleted_at field.
 	account.UpdateDefaultDeletedAt = accountDescDeletedAt.UpdateDefault.(func() time.Time)
 	// accountDescNickname is the schema descriptor for nickname field.
-	accountDescNickname := accountFields[1].Descriptor()
+	accountDescNickname := accountFields[0].Descriptor()
 	// account.NicknameValidator is a validator for the "nickname" field. It is called by the builders before save.
-	account.NicknameValidator = accountDescNickname.Validators[0].(func(string) error)
+	account.NicknameValidator = func() func(string) error {
+		validators := accountDescNickname.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(nickname string) error {
+			for _, fn := range fns {
+				if err := fn(nickname); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// accountDescEmail is the schema descriptor for email field.
-	accountDescEmail := accountFields[2].Descriptor()
+	accountDescEmail := accountFields[1].Descriptor()
 	// account.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	account.EmailValidator = accountDescEmail.Validators[0].(func(string) error)
 	// accountDescPassword is the schema descriptor for password field.
-	accountDescPassword := accountFields[3].Descriptor()
+	accountDescPassword := accountFields[2].Descriptor()
 	// account.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	account.PasswordValidator = accountDescPassword.Validators[0].(func(string) error)
 	// accountDescPasswordUpdatedAt is the schema descriptor for password_updated_at field.
-	accountDescPasswordUpdatedAt := accountFields[4].Descriptor()
+	accountDescPasswordUpdatedAt := accountFields[3].Descriptor()
 	// account.DefaultPasswordUpdatedAt holds the default value on creation for the password_updated_at field.
 	account.DefaultPasswordUpdatedAt = accountDescPasswordUpdatedAt.Default.(func() time.Time)
 	// account.UpdateDefaultPasswordUpdatedAt holds the default value on update for the password_updated_at field.
@@ -76,35 +88,6 @@ func init() {
 	accountDescID := accountMixinFields0[0].Descriptor()
 	// account.DefaultID holds the default value on creation for the id field.
 	account.DefaultID = accountDescID.Default.(func() pulid.PULID)
-	accountauthroleMixin := schema.AccountAuthRole{}.Mixin()
-	accountauthroleMixinFields0 := accountauthroleMixin[0].Fields()
-	_ = accountauthroleMixinFields0
-	accountauthroleMixinFields1 := accountauthroleMixin[1].Fields()
-	_ = accountauthroleMixinFields1
-	accountauthroleMixinFields2 := accountauthroleMixin[2].Fields()
-	_ = accountauthroleMixinFields2
-	accountauthroleMixinFields3 := accountauthroleMixin[3].Fields()
-	_ = accountauthroleMixinFields3
-	accountauthroleFields := schema.AccountAuthRole{}.Fields()
-	_ = accountauthroleFields
-	// accountauthroleDescCreatedAt is the schema descriptor for created_at field.
-	accountauthroleDescCreatedAt := accountauthroleMixinFields1[0].Descriptor()
-	// accountauthrole.DefaultCreatedAt holds the default value on creation for the created_at field.
-	accountauthrole.DefaultCreatedAt = accountauthroleDescCreatedAt.Default.(func() time.Time)
-	// accountauthroleDescUpdatedAt is the schema descriptor for updated_at field.
-	accountauthroleDescUpdatedAt := accountauthroleMixinFields2[0].Descriptor()
-	// accountauthrole.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	accountauthrole.DefaultUpdatedAt = accountauthroleDescUpdatedAt.Default.(func() time.Time)
-	// accountauthrole.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	accountauthrole.UpdateDefaultUpdatedAt = accountauthroleDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// accountauthroleDescDeletedAt is the schema descriptor for deleted_at field.
-	accountauthroleDescDeletedAt := accountauthroleMixinFields3[0].Descriptor()
-	// accountauthrole.UpdateDefaultDeletedAt holds the default value on update for the deleted_at field.
-	accountauthrole.UpdateDefaultDeletedAt = accountauthroleDescDeletedAt.UpdateDefault.(func() time.Time)
-	// accountauthroleDescID is the schema descriptor for id field.
-	accountauthroleDescID := accountauthroleMixinFields0[0].Descriptor()
-	// accountauthrole.DefaultID holds the default value on creation for the id field.
-	accountauthrole.DefaultID = accountauthroleDescID.Default.(func() pulid.PULID)
 	assetMixin := schema.Asset{}.Mixin()
 	assetMixinFields0 := assetMixin[0].Fields()
 	_ = assetMixinFields0
@@ -274,35 +257,6 @@ func init() {
 	blockchainDescID := blockchainMixinFields0[0].Descriptor()
 	// blockchain.DefaultID holds the default value on creation for the id field.
 	blockchain.DefaultID = blockchainDescID.Default.(func() pulid.PULID)
-	blockchaincryptocurrencyMixin := schema.BlockchainCryptocurrency{}.Mixin()
-	blockchaincryptocurrencyMixinFields0 := blockchaincryptocurrencyMixin[0].Fields()
-	_ = blockchaincryptocurrencyMixinFields0
-	blockchaincryptocurrencyMixinFields1 := blockchaincryptocurrencyMixin[1].Fields()
-	_ = blockchaincryptocurrencyMixinFields1
-	blockchaincryptocurrencyMixinFields2 := blockchaincryptocurrencyMixin[2].Fields()
-	_ = blockchaincryptocurrencyMixinFields2
-	blockchaincryptocurrencyMixinFields3 := blockchaincryptocurrencyMixin[3].Fields()
-	_ = blockchaincryptocurrencyMixinFields3
-	blockchaincryptocurrencyFields := schema.BlockchainCryptocurrency{}.Fields()
-	_ = blockchaincryptocurrencyFields
-	// blockchaincryptocurrencyDescCreatedAt is the schema descriptor for created_at field.
-	blockchaincryptocurrencyDescCreatedAt := blockchaincryptocurrencyMixinFields1[0].Descriptor()
-	// blockchaincryptocurrency.DefaultCreatedAt holds the default value on creation for the created_at field.
-	blockchaincryptocurrency.DefaultCreatedAt = blockchaincryptocurrencyDescCreatedAt.Default.(func() time.Time)
-	// blockchaincryptocurrencyDescUpdatedAt is the schema descriptor for updated_at field.
-	blockchaincryptocurrencyDescUpdatedAt := blockchaincryptocurrencyMixinFields2[0].Descriptor()
-	// blockchaincryptocurrency.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	blockchaincryptocurrency.DefaultUpdatedAt = blockchaincryptocurrencyDescUpdatedAt.Default.(func() time.Time)
-	// blockchaincryptocurrency.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
-	blockchaincryptocurrency.UpdateDefaultUpdatedAt = blockchaincryptocurrencyDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// blockchaincryptocurrencyDescDeletedAt is the schema descriptor for deleted_at field.
-	blockchaincryptocurrencyDescDeletedAt := blockchaincryptocurrencyMixinFields3[0].Descriptor()
-	// blockchaincryptocurrency.UpdateDefaultDeletedAt holds the default value on update for the deleted_at field.
-	blockchaincryptocurrency.UpdateDefaultDeletedAt = blockchaincryptocurrencyDescDeletedAt.UpdateDefault.(func() time.Time)
-	// blockchaincryptocurrencyDescID is the schema descriptor for id field.
-	blockchaincryptocurrencyDescID := blockchaincryptocurrencyMixinFields0[0].Descriptor()
-	// blockchaincryptocurrency.DefaultID holds the default value on creation for the id field.
-	blockchaincryptocurrency.DefaultID = blockchaincryptocurrencyDescID.Default.(func() pulid.PULID)
 	cryptocurrencyMixin := schema.Cryptocurrency{}.Mixin()
 	cryptocurrencyMixinFields0 := cryptocurrencyMixin[0].Fields()
 	_ = cryptocurrencyMixinFields0
@@ -485,19 +439,19 @@ func init() {
 	// staffaccount.UpdateDefaultDeletedAt holds the default value on update for the deleted_at field.
 	staffaccount.UpdateDefaultDeletedAt = staffaccountDescDeletedAt.UpdateDefault.(func() time.Time)
 	// staffaccountDescNickname is the schema descriptor for nickname field.
-	staffaccountDescNickname := staffaccountFields[1].Descriptor()
+	staffaccountDescNickname := staffaccountFields[0].Descriptor()
 	// staffaccount.NicknameValidator is a validator for the "nickname" field. It is called by the builders before save.
 	staffaccount.NicknameValidator = staffaccountDescNickname.Validators[0].(func(string) error)
 	// staffaccountDescEmail is the schema descriptor for email field.
-	staffaccountDescEmail := staffaccountFields[2].Descriptor()
+	staffaccountDescEmail := staffaccountFields[1].Descriptor()
 	// staffaccount.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	staffaccount.EmailValidator = staffaccountDescEmail.Validators[0].(func(string) error)
 	// staffaccountDescPassword is the schema descriptor for password field.
-	staffaccountDescPassword := staffaccountFields[3].Descriptor()
+	staffaccountDescPassword := staffaccountFields[2].Descriptor()
 	// staffaccount.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	staffaccount.PasswordValidator = staffaccountDescPassword.Validators[0].(func(string) error)
 	// staffaccountDescPasswordUpdatedAt is the schema descriptor for password_updated_at field.
-	staffaccountDescPasswordUpdatedAt := staffaccountFields[4].Descriptor()
+	staffaccountDescPasswordUpdatedAt := staffaccountFields[3].Descriptor()
 	// staffaccount.DefaultPasswordUpdatedAt holds the default value on creation for the password_updated_at field.
 	staffaccount.DefaultPasswordUpdatedAt = staffaccountDescPasswordUpdatedAt.Default.(func() time.Time)
 	// staffaccount.UpdateDefaultPasswordUpdatedAt holds the default value on update for the password_updated_at field.

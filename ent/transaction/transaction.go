@@ -25,16 +25,6 @@ const (
 	FieldUnits = "units"
 	// FieldPricePerUnit holds the string denoting the price_per_unit field in the database.
 	FieldPricePerUnit = "price_per_unit"
-	// FieldTransactionTypeID holds the string denoting the transaction_type_id field in the database.
-	FieldTransactionTypeID = "transaction_type_id"
-	// FieldBaseAssetID holds the string denoting the base_asset_id field in the database.
-	FieldBaseAssetID = "base_asset_id"
-	// FieldQuoteAssetID holds the string denoting the quote_asset_id field in the database.
-	FieldQuoteAssetID = "quote_asset_id"
-	// FieldPortfolioID holds the string denoting the portfolio_id field in the database.
-	FieldPortfolioID = "portfolio_id"
-	// FieldExchangeID holds the string denoting the exchange_id field in the database.
-	FieldExchangeID = "exchange_id"
 	// EdgeTransactionType holds the string denoting the transaction_type edge name in mutations.
 	EdgeTransactionType = "transaction_type"
 	// EdgeBaseAsset holds the string denoting the base_asset edge name in mutations.
@@ -53,35 +43,35 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "transactiontype" package.
 	TransactionTypeInverseTable = "transaction_types"
 	// TransactionTypeColumn is the table column denoting the transaction_type relation/edge.
-	TransactionTypeColumn = "transaction_type_id"
+	TransactionTypeColumn = "transaction_transaction_type"
 	// BaseAssetTable is the table that holds the base_asset relation/edge.
 	BaseAssetTable = "transactions"
 	// BaseAssetInverseTable is the table name for the Asset entity.
 	// It exists in this package in order to avoid circular dependency with the "asset" package.
 	BaseAssetInverseTable = "assets"
 	// BaseAssetColumn is the table column denoting the base_asset relation/edge.
-	BaseAssetColumn = "base_asset_id"
+	BaseAssetColumn = "transaction_base_asset"
 	// QuoteAssetTable is the table that holds the quote_asset relation/edge.
 	QuoteAssetTable = "transactions"
 	// QuoteAssetInverseTable is the table name for the Asset entity.
 	// It exists in this package in order to avoid circular dependency with the "asset" package.
 	QuoteAssetInverseTable = "assets"
 	// QuoteAssetColumn is the table column denoting the quote_asset relation/edge.
-	QuoteAssetColumn = "quote_asset_id"
+	QuoteAssetColumn = "transaction_quote_asset"
 	// PortfolioTable is the table that holds the portfolio relation/edge.
 	PortfolioTable = "transactions"
 	// PortfolioInverseTable is the table name for the Portfolio entity.
 	// It exists in this package in order to avoid circular dependency with the "portfolio" package.
 	PortfolioInverseTable = "portfolios"
 	// PortfolioColumn is the table column denoting the portfolio relation/edge.
-	PortfolioColumn = "portfolio_id"
+	PortfolioColumn = "portfolio_transactions"
 	// ExchangeTable is the table that holds the exchange relation/edge.
 	ExchangeTable = "transactions"
 	// ExchangeInverseTable is the table name for the Exchange entity.
 	// It exists in this package in order to avoid circular dependency with the "exchange" package.
 	ExchangeInverseTable = "exchanges"
 	// ExchangeColumn is the table column denoting the exchange relation/edge.
-	ExchangeColumn = "exchange_id"
+	ExchangeColumn = "exchange_transactions"
 )
 
 // Columns holds all SQL columns for transaction fields.
@@ -93,17 +83,27 @@ var Columns = []string{
 	FieldTime,
 	FieldUnits,
 	FieldPricePerUnit,
-	FieldTransactionTypeID,
-	FieldBaseAssetID,
-	FieldQuoteAssetID,
-	FieldPortfolioID,
-	FieldExchangeID,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "transactions"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"exchange_transactions",
+	"portfolio_transactions",
+	"transaction_transaction_type",
+	"transaction_base_asset",
+	"transaction_quote_asset",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

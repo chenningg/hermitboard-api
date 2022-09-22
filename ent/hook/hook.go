@@ -22,19 +22,6 @@ func (f AccountFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return f(ctx, mv)
 }
 
-// The AccountAuthRoleFunc type is an adapter to allow the use of ordinary
-// function as AccountAuthRole mutator.
-type AccountAuthRoleFunc func(context.Context, *ent.AccountAuthRoleMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f AccountAuthRoleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.AccountAuthRoleMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountAuthRoleMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The AssetFunc type is an adapter to allow the use of ordinary
 // function as Asset mutator.
 type AssetFunc func(context.Context, *ent.AssetMutation) (ent.Value, error)
@@ -96,19 +83,6 @@ func (f BlockchainFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	mv, ok := m.(*ent.BlockchainMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BlockchainMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The BlockchainCryptocurrencyFunc type is an adapter to allow the use of ordinary
-// function as BlockchainCryptocurrency mutator.
-type BlockchainCryptocurrencyFunc func(context.Context, *ent.BlockchainCryptocurrencyMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f BlockchainCryptocurrencyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.BlockchainCryptocurrencyMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BlockchainCryptocurrencyMutation", m)
 	}
 	return f(ctx, mv)
 }

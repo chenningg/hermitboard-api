@@ -1,7 +1,6 @@
 package schema
 
 import (
-	"github.com/chenningg/hermitboard-api/pulid"
 	"time"
 
 	"entgo.io/ent"
@@ -30,11 +29,10 @@ func (Account) Mixin() []ent.Mixin {
 // Fields of the Account.
 func (Account) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("auth_type_id").
-			GoType(pulid.PULID("")),
 		field.String("nickname").
 			Unique().
-			NotEmpty(),
+			NotEmpty().
+			MinLen(3),
 		field.String("email").
 			Unique().
 			NotEmpty(),
@@ -54,13 +52,11 @@ func (Account) Fields() []ent.Field {
 func (Account) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_roles", AuthRole.Type).
-			Through("account_auth_roles", AccountAuthRole.Type),
+			Required(),
 		edge.To("portfolios", Portfolio.Type),
-		edge.From("auth_type", AuthType.Type).
+		edge.To("auth_type", AuthType.Type).
 			Required().
-			Unique().
-			Ref("account").
-			Field("auth_type_id"),
+			Unique(),
 	}
 }
 

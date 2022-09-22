@@ -5,7 +5,6 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
-	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // Transaction holds the schema definition for the Transaction entity.
@@ -29,18 +28,6 @@ func (Transaction) Fields() []ent.Field {
 		field.Time("time"),
 		field.Int("units"),
 		field.Float("price_per_unit"),
-		field.String("transaction_type_id").
-			GoType(pulid.PULID("")),
-		field.String("base_asset_id").
-			GoType(pulid.PULID("")),
-		field.String("quote_asset_id").
-			GoType(pulid.PULID("")).
-			Optional().
-			Nillable(),
-		field.String("portfolio_id").
-			GoType(pulid.PULID("")),
-		field.String("exchange_id").
-			GoType(pulid.PULID("")),
 	}
 }
 
@@ -49,24 +36,19 @@ func (Transaction) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("transaction_type", TransactionType.Type).
 			Unique().
-			Required().
-			Field("transaction_type_id"),
+			Required(),
 		edge.To("base_asset", Asset.Type).
 			Required().
-			Unique().
-			Field("base_asset_id"),
+			Unique(),
 		edge.To("quote_asset", Asset.Type).
-			Unique().
-			Field("quote_asset_id"),
+			Unique(),
 		edge.From("portfolio", Portfolio.Type).
 			Ref("transactions").
 			Unique().
-			Required().
-			Field("portfolio_id"),
+			Required(),
 		edge.From("exchange", Exchange.Type).
 			Ref("transactions").
 			Required().
-			Unique().
-			Field("exchange_id"),
+			Unique(),
 	}
 }

@@ -36,17 +36,16 @@ type DailyAssetPrice struct {
 	Close *float64 `json:"close,omitempty"`
 	// AdjustedClose holds the value of the "adjusted_close" field.
 	AdjustedClose float64 `json:"adjusted_close,omitempty"`
-	// BaseAssetID holds the value of the "base_asset_id" field.
-	BaseAssetID pulid.PULID `json:"base_asset_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DailyAssetPriceQuery when eager-loading is set.
-	Edges DailyAssetPriceEdges `json:"edges"`
+	Edges                    DailyAssetPriceEdges `json:"edges"`
+	asset_daily_asset_prices *pulid.PULID
 }
 
 // DailyAssetPriceEdges holds the relations/edges for other nodes in the graph.
 type DailyAssetPriceEdges struct {
-	// BaseAsset holds the value of the base_asset edge.
-	BaseAsset *Asset `json:"base_asset,omitempty"`
+	// Asset holds the value of the asset edge.
+	Asset *Asset `json:"asset,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
@@ -54,17 +53,17 @@ type DailyAssetPriceEdges struct {
 	totalCount [1]map[string]int
 }
 
-// BaseAssetOrErr returns the BaseAsset value or an error if the edge
+// AssetOrErr returns the Asset value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e DailyAssetPriceEdges) BaseAssetOrErr() (*Asset, error) {
+func (e DailyAssetPriceEdges) AssetOrErr() (*Asset, error) {
 	if e.loadedTypes[0] {
-		if e.BaseAsset == nil {
+		if e.Asset == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: asset.Label}
 		}
-		return e.BaseAsset, nil
+		return e.Asset, nil
 	}
-	return nil, &NotLoadedError{edge: "base_asset"}
+	return nil, &NotLoadedError{edge: "asset"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -72,12 +71,14 @@ func (*DailyAssetPrice) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case dailyassetprice.FieldID, dailyassetprice.FieldBaseAssetID:
+		case dailyassetprice.FieldID:
 			values[i] = new(pulid.PULID)
 		case dailyassetprice.FieldOpen, dailyassetprice.FieldHigh, dailyassetprice.FieldLow, dailyassetprice.FieldClose, dailyassetprice.FieldAdjustedClose:
 			values[i] = new(sql.NullFloat64)
 		case dailyassetprice.FieldCreatedAt, dailyassetprice.FieldUpdatedAt, dailyassetprice.FieldDeletedAt, dailyassetprice.FieldTime:
 			values[i] = new(sql.NullTime)
+		case dailyassetprice.ForeignKeys[0]: // asset_daily_asset_prices
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type DailyAssetPrice", columns[i])
 		}
@@ -158,20 +159,21 @@ func (dap *DailyAssetPrice) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				dap.AdjustedClose = value.Float64
 			}
-		case dailyassetprice.FieldBaseAssetID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field base_asset_id", values[i])
-			} else if value != nil {
-				dap.BaseAssetID = *value
+		case dailyassetprice.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field asset_daily_asset_prices", values[i])
+			} else if value.Valid {
+				dap.asset_daily_asset_prices = new(pulid.PULID)
+				*dap.asset_daily_asset_prices = *value.S.(*pulid.PULID)
 			}
 		}
 	}
 	return nil
 }
 
-// QueryBaseAsset queries the "base_asset" edge of the DailyAssetPrice entity.
-func (dap *DailyAssetPrice) QueryBaseAsset() *AssetQuery {
-	return (&DailyAssetPriceClient{config: dap.config}).QueryBaseAsset(dap)
+// QueryAsset queries the "asset" edge of the DailyAssetPrice entity.
+func (dap *DailyAssetPrice) QueryAsset() *AssetQuery {
+	return (&DailyAssetPriceClient{config: dap.config}).QueryAsset(dap)
 }
 
 // Update returns a builder for updating this DailyAssetPrice.
@@ -233,9 +235,6 @@ func (dap *DailyAssetPrice) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("adjusted_close=")
 	builder.WriteString(fmt.Sprintf("%v", dap.AdjustedClose))
-	builder.WriteString(", ")
-	builder.WriteString("base_asset_id=")
-	builder.WriteString(fmt.Sprintf("%v", dap.BaseAssetID))
 	builder.WriteByte(')')
 	return builder.String()
 }

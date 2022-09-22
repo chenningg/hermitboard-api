@@ -124,13 +124,6 @@ func IsVisible(v bool) predicate.Portfolio {
 	})
 }
 
-// AccountID applies equality check predicate on the "account_id" field. It's identical to AccountIDEQ.
-func AccountID(v pulid.PULID) predicate.Portfolio {
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAccountID), v))
-	})
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Portfolio {
 	return predicate.Portfolio(func(s *sql.Selector) {
@@ -461,110 +454,6 @@ func IsVisibleEQ(v bool) predicate.Portfolio {
 func IsVisibleNEQ(v bool) predicate.Portfolio {
 	return predicate.Portfolio(func(s *sql.Selector) {
 		s.Where(sql.NEQ(s.C(FieldIsVisible), v))
-	})
-}
-
-// AccountIDEQ applies the EQ predicate on the "account_id" field.
-func AccountIDEQ(v pulid.PULID) predicate.Portfolio {
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAccountID), v))
-	})
-}
-
-// AccountIDNEQ applies the NEQ predicate on the "account_id" field.
-func AccountIDNEQ(v pulid.PULID) predicate.Portfolio {
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAccountID), v))
-	})
-}
-
-// AccountIDIn applies the In predicate on the "account_id" field.
-func AccountIDIn(vs ...pulid.PULID) predicate.Portfolio {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAccountID), v...))
-	})
-}
-
-// AccountIDNotIn applies the NotIn predicate on the "account_id" field.
-func AccountIDNotIn(vs ...pulid.PULID) predicate.Portfolio {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAccountID), v...))
-	})
-}
-
-// AccountIDGT applies the GT predicate on the "account_id" field.
-func AccountIDGT(v pulid.PULID) predicate.Portfolio {
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldAccountID), v))
-	})
-}
-
-// AccountIDGTE applies the GTE predicate on the "account_id" field.
-func AccountIDGTE(v pulid.PULID) predicate.Portfolio {
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldAccountID), v))
-	})
-}
-
-// AccountIDLT applies the LT predicate on the "account_id" field.
-func AccountIDLT(v pulid.PULID) predicate.Portfolio {
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldAccountID), v))
-	})
-}
-
-// AccountIDLTE applies the LTE predicate on the "account_id" field.
-func AccountIDLTE(v pulid.PULID) predicate.Portfolio {
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldAccountID), v))
-	})
-}
-
-// AccountIDContains applies the Contains predicate on the "account_id" field.
-func AccountIDContains(v pulid.PULID) predicate.Portfolio {
-	vc := string(v)
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldAccountID), vc))
-	})
-}
-
-// AccountIDHasPrefix applies the HasPrefix predicate on the "account_id" field.
-func AccountIDHasPrefix(v pulid.PULID) predicate.Portfolio {
-	vc := string(v)
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldAccountID), vc))
-	})
-}
-
-// AccountIDHasSuffix applies the HasSuffix predicate on the "account_id" field.
-func AccountIDHasSuffix(v pulid.PULID) predicate.Portfolio {
-	vc := string(v)
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldAccountID), vc))
-	})
-}
-
-// AccountIDEqualFold applies the EqualFold predicate on the "account_id" field.
-func AccountIDEqualFold(v pulid.PULID) predicate.Portfolio {
-	vc := string(v)
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldAccountID), vc))
-	})
-}
-
-// AccountIDContainsFold applies the ContainsFold predicate on the "account_id" field.
-func AccountIDContainsFold(v pulid.PULID) predicate.Portfolio {
-	vc := string(v)
-	return predicate.Portfolio(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldAccountID), vc))
 	})
 }
 

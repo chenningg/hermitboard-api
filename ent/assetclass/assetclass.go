@@ -36,7 +36,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "asset" package.
 	AssetsInverseTable = "assets"
 	// AssetsColumn is the table column denoting the assets relation/edge.
-	AssetsColumn = "asset_class_id"
+	AssetsColumn = "asset_asset_class"
 )
 
 // Columns holds all SQL columns for assetclass fields.

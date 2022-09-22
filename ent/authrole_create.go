@@ -11,10 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/account"
-	"github.com/chenningg/hermitboard-api/ent/accountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
-	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -129,36 +127,6 @@ func (arc *AuthRoleCreate) AddStaffAccounts(s ...*StaffAccount) *AuthRoleCreate 
 		ids[i] = s[i].ID
 	}
 	return arc.AddStaffAccountIDs(ids...)
-}
-
-// AddAccountAuthRoleIDs adds the "account_auth_roles" edge to the AccountAuthRole entity by IDs.
-func (arc *AuthRoleCreate) AddAccountAuthRoleIDs(ids ...pulid.PULID) *AuthRoleCreate {
-	arc.mutation.AddAccountAuthRoleIDs(ids...)
-	return arc
-}
-
-// AddAccountAuthRoles adds the "account_auth_roles" edges to the AccountAuthRole entity.
-func (arc *AuthRoleCreate) AddAccountAuthRoles(a ...*AccountAuthRole) *AuthRoleCreate {
-	ids := make([]pulid.PULID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return arc.AddAccountAuthRoleIDs(ids...)
-}
-
-// AddStaffAccountAuthRoleIDs adds the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity by IDs.
-func (arc *AuthRoleCreate) AddStaffAccountAuthRoleIDs(ids ...pulid.PULID) *AuthRoleCreate {
-	arc.mutation.AddStaffAccountAuthRoleIDs(ids...)
-	return arc
-}
-
-// AddStaffAccountAuthRoles adds the "staff_account_auth_roles" edges to the StaffAccountAuthRole entity.
-func (arc *AuthRoleCreate) AddStaffAccountAuthRoles(s ...*StaffAccountAuthRole) *AuthRoleCreate {
-	ids := make([]pulid.PULID, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return arc.AddStaffAccountAuthRoleIDs(ids...)
 }
 
 // Mutation returns the AuthRoleMutation object of the builder.
@@ -366,13 +334,6 @@ func (arc *AuthRoleCreate) createSpec() (*AuthRole, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		createE := &AccountAuthRoleCreate{config: arc.config, mutation: newAccountAuthRoleMutation(arc.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := arc.mutation.StaffAccountsIDs(); len(nodes) > 0 {
@@ -386,51 +347,6 @@ func (arc *AuthRoleCreate) createSpec() (*AuthRole, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: staffaccount.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		createE := &StaffAccountAuthRoleCreate{config: arc.config, mutation: newStaffAccountAuthRoleMutation(arc.config, OpCreate)}
-		createE.defaults()
-		_, specE := createE.createSpec()
-		edge.Target.Fields = specE.Fields
-		if specE.ID.Value != nil {
-			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := arc.mutation.AccountAuthRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   authrole.AccountAuthRolesTable,
-			Columns: []string{authrole.AccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: accountauthrole.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := arc.mutation.StaffAccountAuthRolesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: true,
-			Table:   authrole.StaffAccountAuthRolesTable,
-			Columns: []string{authrole.StaffAccountAuthRolesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: staffaccountauthrole.FieldID,
 				},
 			},
 		}

@@ -30,10 +30,6 @@ const (
 	EdgeAccounts = "accounts"
 	// EdgeStaffAccounts holds the string denoting the staff_accounts edge name in mutations.
 	EdgeStaffAccounts = "staff_accounts"
-	// EdgeAccountAuthRoles holds the string denoting the account_auth_roles edge name in mutations.
-	EdgeAccountAuthRoles = "account_auth_roles"
-	// EdgeStaffAccountAuthRoles holds the string denoting the staff_account_auth_roles edge name in mutations.
-	EdgeStaffAccountAuthRoles = "staff_account_auth_roles"
 	// Table holds the table name of the authrole in the database.
 	Table = "auth_roles"
 	// AccountsTable is the table that holds the accounts relation/edge. The primary key declared below.
@@ -46,20 +42,6 @@ const (
 	// StaffAccountsInverseTable is the table name for the StaffAccount entity.
 	// It exists in this package in order to avoid circular dependency with the "staffaccount" package.
 	StaffAccountsInverseTable = "staff_accounts"
-	// AccountAuthRolesTable is the table that holds the account_auth_roles relation/edge.
-	AccountAuthRolesTable = "account_auth_roles"
-	// AccountAuthRolesInverseTable is the table name for the AccountAuthRole entity.
-	// It exists in this package in order to avoid circular dependency with the "accountauthrole" package.
-	AccountAuthRolesInverseTable = "account_auth_roles"
-	// AccountAuthRolesColumn is the table column denoting the account_auth_roles relation/edge.
-	AccountAuthRolesColumn = "auth_role_id"
-	// StaffAccountAuthRolesTable is the table that holds the staff_account_auth_roles relation/edge.
-	StaffAccountAuthRolesTable = "staff_account_auth_roles"
-	// StaffAccountAuthRolesInverseTable is the table name for the StaffAccountAuthRole entity.
-	// It exists in this package in order to avoid circular dependency with the "staffaccountauthrole" package.
-	StaffAccountAuthRolesInverseTable = "staff_account_auth_roles"
-	// StaffAccountAuthRolesColumn is the table column denoting the staff_account_auth_roles relation/edge.
-	StaffAccountAuthRolesColumn = "auth_role_id"
 )
 
 // Columns holds all SQL columns for authrole fields.

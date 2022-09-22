@@ -107,42 +107,34 @@ func (atc *AuthTypeCreate) SetNillableID(pu *pulid.PULID) *AuthTypeCreate {
 	return atc
 }
 
-// SetAccountID sets the "account" edge to the Account entity by ID.
-func (atc *AuthTypeCreate) SetAccountID(id pulid.PULID) *AuthTypeCreate {
-	atc.mutation.SetAccountID(id)
+// AddAccountIDs adds the "accounts" edge to the Account entity by IDs.
+func (atc *AuthTypeCreate) AddAccountIDs(ids ...pulid.PULID) *AuthTypeCreate {
+	atc.mutation.AddAccountIDs(ids...)
 	return atc
 }
 
-// SetNillableAccountID sets the "account" edge to the Account entity by ID if the given value is not nil.
-func (atc *AuthTypeCreate) SetNillableAccountID(id *pulid.PULID) *AuthTypeCreate {
-	if id != nil {
-		atc = atc.SetAccountID(*id)
+// AddAccounts adds the "accounts" edges to the Account entity.
+func (atc *AuthTypeCreate) AddAccounts(a ...*Account) *AuthTypeCreate {
+	ids := make([]pulid.PULID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
+	return atc.AddAccountIDs(ids...)
+}
+
+// AddStaffAccountIDs adds the "staff_accounts" edge to the StaffAccount entity by IDs.
+func (atc *AuthTypeCreate) AddStaffAccountIDs(ids ...pulid.PULID) *AuthTypeCreate {
+	atc.mutation.AddStaffAccountIDs(ids...)
 	return atc
 }
 
-// SetAccount sets the "account" edge to the Account entity.
-func (atc *AuthTypeCreate) SetAccount(a *Account) *AuthTypeCreate {
-	return atc.SetAccountID(a.ID)
-}
-
-// SetStaffAccountID sets the "staff_account" edge to the StaffAccount entity by ID.
-func (atc *AuthTypeCreate) SetStaffAccountID(id pulid.PULID) *AuthTypeCreate {
-	atc.mutation.SetStaffAccountID(id)
-	return atc
-}
-
-// SetNillableStaffAccountID sets the "staff_account" edge to the StaffAccount entity by ID if the given value is not nil.
-func (atc *AuthTypeCreate) SetNillableStaffAccountID(id *pulid.PULID) *AuthTypeCreate {
-	if id != nil {
-		atc = atc.SetStaffAccountID(*id)
+// AddStaffAccounts adds the "staff_accounts" edges to the StaffAccount entity.
+func (atc *AuthTypeCreate) AddStaffAccounts(s ...*StaffAccount) *AuthTypeCreate {
+	ids := make([]pulid.PULID, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
 	}
-	return atc
-}
-
-// SetStaffAccount sets the "staff_account" edge to the StaffAccount entity.
-func (atc *AuthTypeCreate) SetStaffAccount(s *StaffAccount) *AuthTypeCreate {
-	return atc.SetStaffAccountID(s.ID)
+	return atc.AddStaffAccountIDs(ids...)
 }
 
 // Mutation returns the AuthTypeMutation object of the builder.
@@ -337,12 +329,12 @@ func (atc *AuthTypeCreate) createSpec() (*AuthType, *sqlgraph.CreateSpec) {
 		})
 		_node.Description = &value
 	}
-	if nodes := atc.mutation.AccountIDs(); len(nodes) > 0 {
+	if nodes := atc.mutation.AccountsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   authtype.AccountTable,
-			Columns: []string{authtype.AccountColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.AccountsTable,
+			Columns: []string{authtype.AccountsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -356,12 +348,12 @@ func (atc *AuthTypeCreate) createSpec() (*AuthType, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := atc.mutation.StaffAccountIDs(); len(nodes) > 0 {
+	if nodes := atc.mutation.StaffAccountsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   authtype.StaffAccountTable,
-			Columns: []string{authtype.StaffAccountColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.StaffAccountsTable,
+			Columns: []string{authtype.StaffAccountsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

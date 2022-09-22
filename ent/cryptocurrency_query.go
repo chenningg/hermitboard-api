@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
-	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -22,19 +21,18 @@ import (
 // CryptocurrencyQuery is the builder for querying Cryptocurrency entities.
 type CryptocurrencyQuery struct {
 	config
-	limit                               *int
-	offset                              *int
-	unique                              *bool
-	order                               []OrderFunc
-	fields                              []string
-	predicates                          []predicate.Cryptocurrency
-	withAsset                           *AssetQuery
-	withBlockchains                     *BlockchainQuery
-	withBlockchainCryptocurrencies      *BlockchainCryptocurrencyQuery
-	modifiers                           []func(*sql.Selector)
-	loadTotal                           []func(context.Context, []*Cryptocurrency) error
-	withNamedBlockchains                map[string]*BlockchainQuery
-	withNamedBlockchainCryptocurrencies map[string]*BlockchainCryptocurrencyQuery
+	limit                *int
+	offset               *int
+	unique               *bool
+	order                []OrderFunc
+	fields               []string
+	predicates           []predicate.Cryptocurrency
+	withAsset            *AssetQuery
+	withBlockchains      *BlockchainQuery
+	withFKs              bool
+	modifiers            []func(*sql.Selector)
+	loadTotal            []func(context.Context, []*Cryptocurrency) error
+	withNamedBlockchains map[string]*BlockchainQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -108,28 +106,6 @@ func (cq *CryptocurrencyQuery) QueryBlockchains() *BlockchainQuery {
 			sqlgraph.From(cryptocurrency.Table, cryptocurrency.FieldID, selector),
 			sqlgraph.To(blockchain.Table, blockchain.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, cryptocurrency.BlockchainsTable, cryptocurrency.BlockchainsPrimaryKey...),
-		)
-		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryBlockchainCryptocurrencies chains the current query on the "blockchain_cryptocurrencies" edge.
-func (cq *CryptocurrencyQuery) QueryBlockchainCryptocurrencies() *BlockchainCryptocurrencyQuery {
-	query := &BlockchainCryptocurrencyQuery{config: cq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := cq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := cq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(cryptocurrency.Table, cryptocurrency.FieldID, selector),
-			sqlgraph.To(blockchaincryptocurrency.Table, blockchaincryptocurrency.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, cryptocurrency.BlockchainCryptocurrenciesTable, cryptocurrency.BlockchainCryptocurrenciesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -313,14 +289,13 @@ func (cq *CryptocurrencyQuery) Clone() *CryptocurrencyQuery {
 		return nil
 	}
 	return &CryptocurrencyQuery{
-		config:                         cq.config,
-		limit:                          cq.limit,
-		offset:                         cq.offset,
-		order:                          append([]OrderFunc{}, cq.order...),
-		predicates:                     append([]predicate.Cryptocurrency{}, cq.predicates...),
-		withAsset:                      cq.withAsset.Clone(),
-		withBlockchains:                cq.withBlockchains.Clone(),
-		withBlockchainCryptocurrencies: cq.withBlockchainCryptocurrencies.Clone(),
+		config:          cq.config,
+		limit:           cq.limit,
+		offset:          cq.offset,
+		order:           append([]OrderFunc{}, cq.order...),
+		predicates:      append([]predicate.Cryptocurrency{}, cq.predicates...),
+		withAsset:       cq.withAsset.Clone(),
+		withBlockchains: cq.withBlockchains.Clone(),
 		// clone intermediate query.
 		sql:    cq.sql.Clone(),
 		path:   cq.path,
@@ -347,17 +322,6 @@ func (cq *CryptocurrencyQuery) WithBlockchains(opts ...func(*BlockchainQuery)) *
 		opt(query)
 	}
 	cq.withBlockchains = query
-	return cq
-}
-
-// WithBlockchainCryptocurrencies tells the query-builder to eager-load the nodes that are connected to
-// the "blockchain_cryptocurrencies" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *CryptocurrencyQuery) WithBlockchainCryptocurrencies(opts ...func(*BlockchainCryptocurrencyQuery)) *CryptocurrencyQuery {
-	query := &BlockchainCryptocurrencyQuery{config: cq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	cq.withBlockchainCryptocurrencies = query
 	return cq
 }
 
@@ -428,13 +392,19 @@ func (cq *CryptocurrencyQuery) prepareQuery(ctx context.Context) error {
 func (cq *CryptocurrencyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cryptocurrency, error) {
 	var (
 		nodes       = []*Cryptocurrency{}
+		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [2]bool{
 			cq.withAsset != nil,
 			cq.withBlockchains != nil,
-			cq.withBlockchainCryptocurrencies != nil,
 		}
 	)
+	if cq.withAsset != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, cryptocurrency.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Cryptocurrency).scanValues(nil, columns)
 	}
@@ -469,26 +439,10 @@ func (cq *CryptocurrencyQuery) sqlAll(ctx context.Context, hooks ...queryHook) (
 			return nil, err
 		}
 	}
-	if query := cq.withBlockchainCryptocurrencies; query != nil {
-		if err := cq.loadBlockchainCryptocurrencies(ctx, query, nodes,
-			func(n *Cryptocurrency) { n.Edges.BlockchainCryptocurrencies = []*BlockchainCryptocurrency{} },
-			func(n *Cryptocurrency, e *BlockchainCryptocurrency) {
-				n.Edges.BlockchainCryptocurrencies = append(n.Edges.BlockchainCryptocurrencies, e)
-			}); err != nil {
-			return nil, err
-		}
-	}
 	for name, query := range cq.withNamedBlockchains {
 		if err := cq.loadBlockchains(ctx, query, nodes,
 			func(n *Cryptocurrency) { n.appendNamedBlockchains(name) },
 			func(n *Cryptocurrency, e *Blockchain) { n.appendNamedBlockchains(name, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range cq.withNamedBlockchainCryptocurrencies {
-		if err := cq.loadBlockchainCryptocurrencies(ctx, query, nodes,
-			func(n *Cryptocurrency) { n.appendNamedBlockchainCryptocurrencies(name) },
-			func(n *Cryptocurrency, e *BlockchainCryptocurrency) { n.appendNamedBlockchainCryptocurrencies(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -504,7 +458,10 @@ func (cq *CryptocurrencyQuery) loadAsset(ctx context.Context, query *AssetQuery,
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Cryptocurrency)
 	for i := range nodes {
-		fk := nodes[i].AssetID
+		if nodes[i].asset_cryptocurrency == nil {
+			continue
+		}
+		fk := *nodes[i].asset_cryptocurrency
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -518,7 +475,7 @@ func (cq *CryptocurrencyQuery) loadAsset(ctx context.Context, query *AssetQuery,
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "asset_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "asset_cryptocurrency" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -581,33 +538,6 @@ func (cq *CryptocurrencyQuery) loadBlockchains(ctx context.Context, query *Block
 		for kn := range nodes {
 			assign(kn, n)
 		}
-	}
-	return nil
-}
-func (cq *CryptocurrencyQuery) loadBlockchainCryptocurrencies(ctx context.Context, query *BlockchainCryptocurrencyQuery, nodes []*Cryptocurrency, init func(*Cryptocurrency), assign func(*Cryptocurrency, *BlockchainCryptocurrency)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[pulid.PULID]*Cryptocurrency)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.Where(predicate.BlockchainCryptocurrency(func(s *sql.Selector) {
-		s.Where(sql.InValues(cryptocurrency.BlockchainCryptocurrenciesColumn, fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.CryptocurrencyID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "cryptocurrency_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
 	}
 	return nil
 }
@@ -726,20 +656,6 @@ func (cq *CryptocurrencyQuery) WithNamedBlockchains(name string, opts ...func(*B
 		cq.withNamedBlockchains = make(map[string]*BlockchainQuery)
 	}
 	cq.withNamedBlockchains[name] = query
-	return cq
-}
-
-// WithNamedBlockchainCryptocurrencies tells the query-builder to eager-load the nodes that are connected to the "blockchain_cryptocurrencies"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (cq *CryptocurrencyQuery) WithNamedBlockchainCryptocurrencies(name string, opts ...func(*BlockchainCryptocurrencyQuery)) *CryptocurrencyQuery {
-	query := &BlockchainCryptocurrencyQuery{config: cq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	if cq.withNamedBlockchainCryptocurrencies == nil {
-		cq.withNamedBlockchainCryptocurrencies = make(map[string]*BlockchainCryptocurrencyQuery)
-	}
-	cq.withNamedBlockchainCryptocurrencies[name] = query
 	return cq
 }
 

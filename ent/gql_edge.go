@@ -32,30 +32,6 @@ func (a *Account) AuthType(ctx context.Context) (*AuthType, error) {
 	return result, err
 }
 
-func (a *Account) AccountAuthRoles(ctx context.Context) ([]*AccountAuthRole, error) {
-	result, err := a.NamedAccountAuthRoles(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = a.QueryAccountAuthRoles().All(ctx)
-	}
-	return result, err
-}
-
-func (aar *AccountAuthRole) Account(ctx context.Context) (*Account, error) {
-	result, err := aar.Edges.AccountOrErr()
-	if IsNotLoaded(err) {
-		result, err = aar.QueryAccount().Only(ctx)
-	}
-	return result, err
-}
-
-func (aar *AccountAuthRole) AuthRole(ctx context.Context) (*AuthRole, error) {
-	result, err := aar.Edges.AuthRoleOrErr()
-	if IsNotLoaded(err) {
-		result, err = aar.QueryAuthRole().Only(ctx)
-	}
-	return result, err
-}
-
 func (a *Asset) AssetClass(ctx context.Context) (*AssetClass, error) {
 	result, err := a.Edges.AssetClassOrErr()
 	if IsNotLoaded(err) {
@@ -88,10 +64,10 @@ func (a *Asset) TransactionQuote(ctx context.Context) ([]*Transaction, error) {
 	return result, err
 }
 
-func (a *Asset) DailyAssetPrice(ctx context.Context) ([]*DailyAssetPrice, error) {
-	result, err := a.NamedDailyAssetPrice(graphql.GetFieldContext(ctx).Field.Alias)
+func (a *Asset) DailyAssetPrices(ctx context.Context) ([]*DailyAssetPrice, error) {
+	result, err := a.NamedDailyAssetPrices(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
-		result, err = a.QueryDailyAssetPrice().All(ctx)
+		result, err = a.QueryDailyAssetPrices().All(ctx)
 	}
 	return result, err
 }
@@ -120,66 +96,26 @@ func (ar *AuthRole) StaffAccounts(ctx context.Context) ([]*StaffAccount, error) 
 	return result, err
 }
 
-func (ar *AuthRole) AccountAuthRoles(ctx context.Context) ([]*AccountAuthRole, error) {
-	result, err := ar.NamedAccountAuthRoles(graphql.GetFieldContext(ctx).Field.Alias)
+func (at *AuthType) Accounts(ctx context.Context) ([]*Account, error) {
+	result, err := at.NamedAccounts(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
-		result, err = ar.QueryAccountAuthRoles().All(ctx)
+		result, err = at.QueryAccounts().All(ctx)
 	}
 	return result, err
 }
 
-func (ar *AuthRole) StaffAccountAuthRoles(ctx context.Context) ([]*StaffAccountAuthRole, error) {
-	result, err := ar.NamedStaffAccountAuthRoles(graphql.GetFieldContext(ctx).Field.Alias)
+func (at *AuthType) StaffAccounts(ctx context.Context) ([]*StaffAccount, error) {
+	result, err := at.NamedStaffAccounts(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
-		result, err = ar.QueryStaffAccountAuthRoles().All(ctx)
+		result, err = at.QueryStaffAccounts().All(ctx)
 	}
 	return result, err
-}
-
-func (at *AuthType) Account(ctx context.Context) (*Account, error) {
-	result, err := at.Edges.AccountOrErr()
-	if IsNotLoaded(err) {
-		result, err = at.QueryAccount().Only(ctx)
-	}
-	return result, MaskNotFound(err)
-}
-
-func (at *AuthType) StaffAccount(ctx context.Context) (*StaffAccount, error) {
-	result, err := at.Edges.StaffAccountOrErr()
-	if IsNotLoaded(err) {
-		result, err = at.QueryStaffAccount().Only(ctx)
-	}
-	return result, MaskNotFound(err)
 }
 
 func (b *Blockchain) Cryptocurrencies(ctx context.Context) ([]*Cryptocurrency, error) {
 	result, err := b.NamedCryptocurrencies(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
 		result, err = b.QueryCryptocurrencies().All(ctx)
-	}
-	return result, err
-}
-
-func (b *Blockchain) BlockchainCryptocurrencies(ctx context.Context) ([]*BlockchainCryptocurrency, error) {
-	result, err := b.NamedBlockchainCryptocurrencies(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = b.QueryBlockchainCryptocurrencies().All(ctx)
-	}
-	return result, err
-}
-
-func (bc *BlockchainCryptocurrency) Blockchain(ctx context.Context) (*Blockchain, error) {
-	result, err := bc.Edges.BlockchainOrErr()
-	if IsNotLoaded(err) {
-		result, err = bc.QueryBlockchain().Only(ctx)
-	}
-	return result, err
-}
-
-func (bc *BlockchainCryptocurrency) Cryptocurrency(ctx context.Context) (*Cryptocurrency, error) {
-	result, err := bc.Edges.CryptocurrencyOrErr()
-	if IsNotLoaded(err) {
-		result, err = bc.QueryCryptocurrency().Only(ctx)
 	}
 	return result, err
 }
@@ -200,20 +136,12 @@ func (c *Cryptocurrency) Blockchains(ctx context.Context) ([]*Blockchain, error)
 	return result, err
 }
 
-func (c *Cryptocurrency) BlockchainCryptocurrencies(ctx context.Context) ([]*BlockchainCryptocurrency, error) {
-	result, err := c.NamedBlockchainCryptocurrencies(graphql.GetFieldContext(ctx).Field.Alias)
+func (dap *DailyAssetPrice) Asset(ctx context.Context) (*Asset, error) {
+	result, err := dap.Edges.AssetOrErr()
 	if IsNotLoaded(err) {
-		result, err = c.QueryBlockchainCryptocurrencies().All(ctx)
+		result, err = dap.QueryAsset().Only(ctx)
 	}
-	return result, err
-}
-
-func (dap *DailyAssetPrice) BaseAsset(ctx context.Context) (*Asset, error) {
-	result, err := dap.Edges.BaseAssetOrErr()
-	if IsNotLoaded(err) {
-		result, err = dap.QueryBaseAsset().Only(ctx)
-	}
-	return result, err
+	return result, MaskNotFound(err)
 }
 
 func (e *Exchange) Transactions(ctx context.Context) ([]*Transaction, error) {
@@ -252,14 +180,6 @@ func (sa *StaffAccount) AuthType(ctx context.Context) (*AuthType, error) {
 	result, err := sa.Edges.AuthTypeOrErr()
 	if IsNotLoaded(err) {
 		result, err = sa.QueryAuthType().Only(ctx)
-	}
-	return result, err
-}
-
-func (sa *StaffAccount) StaffAccountAuthRoles(ctx context.Context) ([]*StaffAccountAuthRole, error) {
-	result, err := sa.NamedStaffAccountAuthRoles(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = sa.QueryStaffAccountAuthRoles().All(ctx)
 	}
 	return result, err
 }

@@ -8,9 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/chenningg/hermitboard-api/ent/account"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
-	"github.com/chenningg/hermitboard-api/ent/staffaccount"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -36,41 +34,36 @@ type AuthType struct {
 
 // AuthTypeEdges holds the relations/edges for other nodes in the graph.
 type AuthTypeEdges struct {
-	// Account holds the value of the account edge.
-	Account *Account `json:"account,omitempty"`
-	// StaffAccount holds the value of the staff_account edge.
-	StaffAccount *StaffAccount `json:"staff_account,omitempty"`
+	// Accounts holds the value of the accounts edge.
+	Accounts []*Account `json:"accounts,omitempty"`
+	// StaffAccounts holds the value of the staff_accounts edge.
+	StaffAccounts []*StaffAccount `json:"staff_accounts,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
 	// totalCount holds the count of the edges above.
 	totalCount [2]map[string]int
+
+	namedAccounts      map[string][]*Account
+	namedStaffAccounts map[string][]*StaffAccount
 }
 
-// AccountOrErr returns the Account value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e AuthTypeEdges) AccountOrErr() (*Account, error) {
+// AccountsOrErr returns the Accounts value or an error if the edge
+// was not loaded in eager-loading.
+func (e AuthTypeEdges) AccountsOrErr() ([]*Account, error) {
 	if e.loadedTypes[0] {
-		if e.Account == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: account.Label}
-		}
-		return e.Account, nil
+		return e.Accounts, nil
 	}
-	return nil, &NotLoadedError{edge: "account"}
+	return nil, &NotLoadedError{edge: "accounts"}
 }
 
-// StaffAccountOrErr returns the StaffAccount value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e AuthTypeEdges) StaffAccountOrErr() (*StaffAccount, error) {
+// StaffAccountsOrErr returns the StaffAccounts value or an error if the edge
+// was not loaded in eager-loading.
+func (e AuthTypeEdges) StaffAccountsOrErr() ([]*StaffAccount, error) {
 	if e.loadedTypes[1] {
-		if e.StaffAccount == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: staffaccount.Label}
-		}
-		return e.StaffAccount, nil
+		return e.StaffAccounts, nil
 	}
-	return nil, &NotLoadedError{edge: "staff_account"}
+	return nil, &NotLoadedError{edge: "staff_accounts"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -142,14 +135,14 @@ func (at *AuthType) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// QueryAccount queries the "account" edge of the AuthType entity.
-func (at *AuthType) QueryAccount() *AccountQuery {
-	return (&AuthTypeClient{config: at.config}).QueryAccount(at)
+// QueryAccounts queries the "accounts" edge of the AuthType entity.
+func (at *AuthType) QueryAccounts() *AccountQuery {
+	return (&AuthTypeClient{config: at.config}).QueryAccounts(at)
 }
 
-// QueryStaffAccount queries the "staff_account" edge of the AuthType entity.
-func (at *AuthType) QueryStaffAccount() *StaffAccountQuery {
-	return (&AuthTypeClient{config: at.config}).QueryStaffAccount(at)
+// QueryStaffAccounts queries the "staff_accounts" edge of the AuthType entity.
+func (at *AuthType) QueryStaffAccounts() *StaffAccountQuery {
+	return (&AuthTypeClient{config: at.config}).QueryStaffAccounts(at)
 }
 
 // Update returns a builder for updating this AuthType.
@@ -195,6 +188,54 @@ func (at *AuthType) String() string {
 	}
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedAccounts returns the Accounts named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (at *AuthType) NamedAccounts(name string) ([]*Account, error) {
+	if at.Edges.namedAccounts == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := at.Edges.namedAccounts[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (at *AuthType) appendNamedAccounts(name string, edges ...*Account) {
+	if at.Edges.namedAccounts == nil {
+		at.Edges.namedAccounts = make(map[string][]*Account)
+	}
+	if len(edges) == 0 {
+		at.Edges.namedAccounts[name] = []*Account{}
+	} else {
+		at.Edges.namedAccounts[name] = append(at.Edges.namedAccounts[name], edges...)
+	}
+}
+
+// NamedStaffAccounts returns the StaffAccounts named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (at *AuthType) NamedStaffAccounts(name string) ([]*StaffAccount, error) {
+	if at.Edges.namedStaffAccounts == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := at.Edges.namedStaffAccounts[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (at *AuthType) appendNamedStaffAccounts(name string, edges ...*StaffAccount) {
+	if at.Edges.namedStaffAccounts == nil {
+		at.Edges.namedStaffAccounts = make(map[string][]*StaffAccount)
+	}
+	if len(edges) == 0 {
+		at.Edges.namedStaffAccounts[name] = []*StaffAccount{}
+	} else {
+		at.Edges.namedStaffAccounts[name] = append(at.Edges.namedStaffAccounts[name], edges...)
+	}
 }
 
 // AuthTypes is a parsable slice of AuthType.

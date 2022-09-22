@@ -10,13 +10,11 @@ import (
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/chenningg/hermitboard-api/ent/account"
-	"github.com/chenningg/hermitboard-api/ent/accountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
-	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
@@ -60,8 +58,8 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     a.ID,
 		Type:   "Account",
-		Fields: make([]*Field, 8),
-		Edges:  make([]*Edge, 4),
+		Fields: make([]*Field, 7),
+		Edges:  make([]*Edge, 3),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(a.CreatedAt); err != nil {
@@ -88,18 +86,10 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "deleted_at",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(a.AuthTypeID); err != nil {
-		return nil, err
-	}
-	node.Fields[3] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "auth_type_id",
-		Value: string(buf),
-	}
 	if buf, err = json.Marshal(a.Nickname); err != nil {
 		return nil, err
 	}
-	node.Fields[4] = &Field{
+	node.Fields[3] = &Field{
 		Type:  "string",
 		Name:  "nickname",
 		Value: string(buf),
@@ -107,7 +97,7 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(a.Email); err != nil {
 		return nil, err
 	}
-	node.Fields[5] = &Field{
+	node.Fields[4] = &Field{
 		Type:  "string",
 		Name:  "email",
 		Value: string(buf),
@@ -115,7 +105,7 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(a.Password); err != nil {
 		return nil, err
 	}
-	node.Fields[6] = &Field{
+	node.Fields[5] = &Field{
 		Type:  "string",
 		Name:  "password",
 		Value: string(buf),
@@ -123,7 +113,7 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(a.PasswordUpdatedAt); err != nil {
 		return nil, err
 	}
-	node.Fields[7] = &Field{
+	node.Fields[6] = &Field{
 		Type:  "time.Time",
 		Name:  "password_updated_at",
 		Value: string(buf),
@@ -158,87 +148,6 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 	if err != nil {
 		return nil, err
 	}
-	node.Edges[3] = &Edge{
-		Type: "AccountAuthRole",
-		Name: "account_auth_roles",
-	}
-	err = a.QueryAccountAuthRoles().
-		Select(accountauthrole.FieldID).
-		Scan(ctx, &node.Edges[3].IDs)
-	if err != nil {
-		return nil, err
-	}
-	return node, nil
-}
-
-func (aar *AccountAuthRole) Node(ctx context.Context) (node *Node, err error) {
-	node = &Node{
-		ID:     aar.ID,
-		Type:   "AccountAuthRole",
-		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 2),
-	}
-	var buf []byte
-	if buf, err = json.Marshal(aar.CreatedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[0] = &Field{
-		Type:  "time.Time",
-		Name:  "created_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(aar.UpdatedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[1] = &Field{
-		Type:  "time.Time",
-		Name:  "updated_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(aar.DeletedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[2] = &Field{
-		Type:  "time.Time",
-		Name:  "deleted_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(aar.AccountID); err != nil {
-		return nil, err
-	}
-	node.Fields[3] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "account_id",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(aar.AuthRoleID); err != nil {
-		return nil, err
-	}
-	node.Fields[4] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "auth_role_id",
-		Value: string(buf),
-	}
-	node.Edges[0] = &Edge{
-		Type: "Account",
-		Name: "account",
-	}
-	err = aar.QueryAccount().
-		Select(account.FieldID).
-		Scan(ctx, &node.Edges[0].IDs)
-	if err != nil {
-		return nil, err
-	}
-	node.Edges[1] = &Edge{
-		Type: "AuthRole",
-		Name: "auth_role",
-	}
-	err = aar.QueryAuthRole().
-		Select(authrole.FieldID).
-		Scan(ctx, &node.Edges[1].IDs)
-	if err != nil {
-		return nil, err
-	}
 	return node, nil
 }
 
@@ -246,7 +155,7 @@ func (a *Asset) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     a.ID,
 		Type:   "Asset",
-		Fields: make([]*Field, 4),
+		Fields: make([]*Field, 3),
 		Edges:  make([]*Edge, 5),
 	}
 	var buf []byte
@@ -272,14 +181,6 @@ func (a *Asset) Node(ctx context.Context) (node *Node, err error) {
 	node.Fields[2] = &Field{
 		Type:  "time.Time",
 		Name:  "deleted_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(a.AssetClassID); err != nil {
-		return nil, err
-	}
-	node.Fields[3] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "asset_class_id",
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
@@ -324,9 +225,9 @@ func (a *Asset) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[4] = &Edge{
 		Type: "DailyAssetPrice",
-		Name: "daily_asset_price",
+		Name: "daily_asset_prices",
 	}
-	err = a.QueryDailyAssetPrice().
+	err = a.QueryDailyAssetPrices().
 		Select(dailyassetprice.FieldID).
 		Scan(ctx, &node.Edges[4].IDs)
 	if err != nil {
@@ -401,7 +302,7 @@ func (ar *AuthRole) Node(ctx context.Context) (node *Node, err error) {
 		ID:     ar.ID,
 		Type:   "AuthRole",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 4),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(ar.CreatedAt); err != nil {
@@ -464,26 +365,6 @@ func (ar *AuthRole) Node(ctx context.Context) (node *Node, err error) {
 	if err != nil {
 		return nil, err
 	}
-	node.Edges[2] = &Edge{
-		Type: "AccountAuthRole",
-		Name: "account_auth_roles",
-	}
-	err = ar.QueryAccountAuthRoles().
-		Select(accountauthrole.FieldID).
-		Scan(ctx, &node.Edges[2].IDs)
-	if err != nil {
-		return nil, err
-	}
-	node.Edges[3] = &Edge{
-		Type: "StaffAccountAuthRole",
-		Name: "staff_account_auth_roles",
-	}
-	err = ar.QueryStaffAccountAuthRoles().
-		Select(staffaccountauthrole.FieldID).
-		Scan(ctx, &node.Edges[3].IDs)
-	if err != nil {
-		return nil, err
-	}
 	return node, nil
 }
 
@@ -537,9 +418,9 @@ func (at *AuthType) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[0] = &Edge{
 		Type: "Account",
-		Name: "account",
+		Name: "accounts",
 	}
-	err = at.QueryAccount().
+	err = at.QueryAccounts().
 		Select(account.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
@@ -547,9 +428,9 @@ func (at *AuthType) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[1] = &Edge{
 		Type: "StaffAccount",
-		Name: "staff_account",
+		Name: "staff_accounts",
 	}
-	err = at.QueryStaffAccount().
+	err = at.QueryStaffAccounts().
 		Select(staffaccount.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
@@ -563,7 +444,7 @@ func (b *Blockchain) Node(ctx context.Context) (node *Node, err error) {
 		ID:     b.ID,
 		Type:   "Blockchain",
 		Fields: make([]*Field, 7),
-		Edges:  make([]*Edge, 2),
+		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(b.CreatedAt); err != nil {
@@ -632,87 +513,6 @@ func (b *Blockchain) Node(ctx context.Context) (node *Node, err error) {
 	if err != nil {
 		return nil, err
 	}
-	node.Edges[1] = &Edge{
-		Type: "BlockchainCryptocurrency",
-		Name: "blockchain_cryptocurrencies",
-	}
-	err = b.QueryBlockchainCryptocurrencies().
-		Select(blockchaincryptocurrency.FieldID).
-		Scan(ctx, &node.Edges[1].IDs)
-	if err != nil {
-		return nil, err
-	}
-	return node, nil
-}
-
-func (bc *BlockchainCryptocurrency) Node(ctx context.Context) (node *Node, err error) {
-	node = &Node{
-		ID:     bc.ID,
-		Type:   "BlockchainCryptocurrency",
-		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 2),
-	}
-	var buf []byte
-	if buf, err = json.Marshal(bc.CreatedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[0] = &Field{
-		Type:  "time.Time",
-		Name:  "created_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(bc.UpdatedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[1] = &Field{
-		Type:  "time.Time",
-		Name:  "updated_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(bc.DeletedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[2] = &Field{
-		Type:  "time.Time",
-		Name:  "deleted_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(bc.BlockchainID); err != nil {
-		return nil, err
-	}
-	node.Fields[3] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "blockchain_id",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(bc.CryptocurrencyID); err != nil {
-		return nil, err
-	}
-	node.Fields[4] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "cryptocurrency_id",
-		Value: string(buf),
-	}
-	node.Edges[0] = &Edge{
-		Type: "Blockchain",
-		Name: "blockchain",
-	}
-	err = bc.QueryBlockchain().
-		Select(blockchain.FieldID).
-		Scan(ctx, &node.Edges[0].IDs)
-	if err != nil {
-		return nil, err
-	}
-	node.Edges[1] = &Edge{
-		Type: "Cryptocurrency",
-		Name: "cryptocurrency",
-	}
-	err = bc.QueryCryptocurrency().
-		Select(cryptocurrency.FieldID).
-		Scan(ctx, &node.Edges[1].IDs)
-	if err != nil {
-		return nil, err
-	}
 	return node, nil
 }
 
@@ -720,8 +520,8 @@ func (c *Cryptocurrency) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     c.ID,
 		Type:   "Cryptocurrency",
-		Fields: make([]*Field, 7),
-		Edges:  make([]*Edge, 3),
+		Fields: make([]*Field, 6),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(c.CreatedAt); err != nil {
@@ -772,14 +572,6 @@ func (c *Cryptocurrency) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "name",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(c.AssetID); err != nil {
-		return nil, err
-	}
-	node.Fields[6] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "asset_id",
-		Value: string(buf),
-	}
 	node.Edges[0] = &Edge{
 		Type: "Asset",
 		Name: "asset",
@@ -800,16 +592,6 @@ func (c *Cryptocurrency) Node(ctx context.Context) (node *Node, err error) {
 	if err != nil {
 		return nil, err
 	}
-	node.Edges[2] = &Edge{
-		Type: "BlockchainCryptocurrency",
-		Name: "blockchain_cryptocurrencies",
-	}
-	err = c.QueryBlockchainCryptocurrencies().
-		Select(blockchaincryptocurrency.FieldID).
-		Scan(ctx, &node.Edges[2].IDs)
-	if err != nil {
-		return nil, err
-	}
 	return node, nil
 }
 
@@ -817,7 +599,7 @@ func (dap *DailyAssetPrice) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     dap.ID,
 		Type:   "DailyAssetPrice",
-		Fields: make([]*Field, 10),
+		Fields: make([]*Field, 9),
 		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
@@ -893,19 +675,11 @@ func (dap *DailyAssetPrice) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "adjusted_close",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(dap.BaseAssetID); err != nil {
-		return nil, err
-	}
-	node.Fields[9] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "base_asset_id",
-		Value: string(buf),
-	}
 	node.Edges[0] = &Edge{
 		Type: "Asset",
-		Name: "base_asset",
+		Name: "asset",
 	}
-	err = dap.QueryBaseAsset().
+	err = dap.QueryAsset().
 		Select(asset.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
@@ -987,7 +761,7 @@ func (po *Portfolio) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     po.ID,
 		Type:   "Portfolio",
-		Fields: make([]*Field, 7),
+		Fields: make([]*Field, 6),
 		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
@@ -1039,14 +813,6 @@ func (po *Portfolio) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "is_visible",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(po.AccountID); err != nil {
-		return nil, err
-	}
-	node.Fields[6] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "account_id",
-		Value: string(buf),
-	}
 	node.Edges[0] = &Edge{
 		Type: "Account",
 		Name: "account",
@@ -1074,8 +840,8 @@ func (sa *StaffAccount) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     sa.ID,
 		Type:   "StaffAccount",
-		Fields: make([]*Field, 8),
-		Edges:  make([]*Edge, 3),
+		Fields: make([]*Field, 7),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(sa.CreatedAt); err != nil {
@@ -1102,18 +868,10 @@ func (sa *StaffAccount) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "deleted_at",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(sa.AuthTypeID); err != nil {
-		return nil, err
-	}
-	node.Fields[3] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "auth_type_id",
-		Value: string(buf),
-	}
 	if buf, err = json.Marshal(sa.Nickname); err != nil {
 		return nil, err
 	}
-	node.Fields[4] = &Field{
+	node.Fields[3] = &Field{
 		Type:  "string",
 		Name:  "nickname",
 		Value: string(buf),
@@ -1121,7 +879,7 @@ func (sa *StaffAccount) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(sa.Email); err != nil {
 		return nil, err
 	}
-	node.Fields[5] = &Field{
+	node.Fields[4] = &Field{
 		Type:  "string",
 		Name:  "email",
 		Value: string(buf),
@@ -1129,7 +887,7 @@ func (sa *StaffAccount) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(sa.Password); err != nil {
 		return nil, err
 	}
-	node.Fields[6] = &Field{
+	node.Fields[5] = &Field{
 		Type:  "string",
 		Name:  "password",
 		Value: string(buf),
@@ -1137,7 +895,7 @@ func (sa *StaffAccount) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(sa.PasswordUpdatedAt); err != nil {
 		return nil, err
 	}
-	node.Fields[7] = &Field{
+	node.Fields[6] = &Field{
 		Type:  "time.Time",
 		Name:  "password_updated_at",
 		Value: string(buf),
@@ -1159,16 +917,6 @@ func (sa *StaffAccount) Node(ctx context.Context) (node *Node, err error) {
 	err = sa.QueryAuthType().
 		Select(authtype.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
-	if err != nil {
-		return nil, err
-	}
-	node.Edges[2] = &Edge{
-		Type: "StaffAccountAuthRole",
-		Name: "staff_account_auth_roles",
-	}
-	err = sa.QueryStaffAccountAuthRoles().
-		Select(staffaccountauthrole.FieldID).
-		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -1250,7 +998,7 @@ func (t *Transaction) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     t.ID,
 		Type:   "Transaction",
-		Fields: make([]*Field, 11),
+		Fields: make([]*Field, 6),
 		Edges:  make([]*Edge, 5),
 	}
 	var buf []byte
@@ -1300,46 +1048,6 @@ func (t *Transaction) Node(ctx context.Context) (node *Node, err error) {
 	node.Fields[5] = &Field{
 		Type:  "float64",
 		Name:  "price_per_unit",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(t.TransactionTypeID); err != nil {
-		return nil, err
-	}
-	node.Fields[6] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "transaction_type_id",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(t.BaseAssetID); err != nil {
-		return nil, err
-	}
-	node.Fields[7] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "base_asset_id",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(t.QuoteAssetID); err != nil {
-		return nil, err
-	}
-	node.Fields[8] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "quote_asset_id",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(t.PortfolioID); err != nil {
-		return nil, err
-	}
-	node.Fields[9] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "portfolio_id",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(t.ExchangeID); err != nil {
-		return nil, err
-	}
-	node.Fields[10] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "exchange_id",
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
@@ -1538,22 +1246,6 @@ func (c *Client) noder(ctx context.Context, table string, id pulid.PULID) (Noder
 			return nil, err
 		}
 		return n, nil
-	case accountauthrole.Table:
-		var uid pulid.PULID
-		if err := uid.UnmarshalGQL(id); err != nil {
-			return nil, err
-		}
-		query := c.AccountAuthRole.Query().
-			Where(accountauthrole.ID(uid))
-		query, err := query.CollectFields(ctx, "AccountAuthRole")
-		if err != nil {
-			return nil, err
-		}
-		n, err := query.Only(ctx)
-		if err != nil {
-			return nil, err
-		}
-		return n, nil
 	case asset.Table:
 		var uid pulid.PULID
 		if err := uid.UnmarshalGQL(id); err != nil {
@@ -1626,22 +1318,6 @@ func (c *Client) noder(ctx context.Context, table string, id pulid.PULID) (Noder
 		query := c.Blockchain.Query().
 			Where(blockchain.ID(uid))
 		query, err := query.CollectFields(ctx, "Blockchain")
-		if err != nil {
-			return nil, err
-		}
-		n, err := query.Only(ctx)
-		if err != nil {
-			return nil, err
-		}
-		return n, nil
-	case blockchaincryptocurrency.Table:
-		var uid pulid.PULID
-		if err := uid.UnmarshalGQL(id); err != nil {
-			return nil, err
-		}
-		query := c.BlockchainCryptocurrency.Query().
-			Where(blockchaincryptocurrency.ID(uid))
-		query, err := query.CollectFields(ctx, "BlockchainCryptocurrency")
 		if err != nil {
 			return nil, err
 		}
@@ -1867,22 +1543,6 @@ func (c *Client) noders(ctx context.Context, table string, ids []pulid.PULID) ([
 				*noder = node
 			}
 		}
-	case accountauthrole.Table:
-		query := c.AccountAuthRole.Query().
-			Where(accountauthrole.IDIn(ids...))
-		query, err := query.CollectFields(ctx, "AccountAuthRole")
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
 	case asset.Table:
 		query := c.Asset.Query().
 			Where(asset.IDIn(ids...))
@@ -1951,22 +1611,6 @@ func (c *Client) noders(ctx context.Context, table string, ids []pulid.PULID) ([
 		query := c.Blockchain.Query().
 			Where(blockchain.IDIn(ids...))
 		query, err := query.CollectFields(ctx, "Blockchain")
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case blockchaincryptocurrency.Table:
-		query := c.BlockchainCryptocurrency.Query().
-			Where(blockchaincryptocurrency.IDIn(ids...))
-		query, err := query.CollectFields(ctx, "BlockchainCryptocurrency")
 		if err != nil {
 			return nil, err
 		}

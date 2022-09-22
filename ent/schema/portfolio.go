@@ -4,9 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"entgo.io/ent/schema/index"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
-	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // Portfolio holds the schema definition for the Portfolio entity.
@@ -35,8 +33,6 @@ func (Portfolio) Fields() []ent.Field {
 		field.Bool("is_visible").
 			Default(true).
 			Comment("Whether this portfolio is visible to the owner."),
-		field.String("account_id").
-			GoType(pulid.PULID("")),
 	}
 }
 
@@ -46,15 +42,7 @@ func (Portfolio) Edges() []ent.Edge {
 		edge.From("account", Account.Type).
 			Ref("portfolios").
 			Unique().
-			Required().
-			Field("account_id"),
+			Required(),
 		edge.To("transactions", Transaction.Type),
-	}
-}
-
-func (Portfolio) Indexes() []ent.Index {
-	return []ent.Index{
-		index.Fields("account_id", "name").
-			Unique(),
 	}
 }

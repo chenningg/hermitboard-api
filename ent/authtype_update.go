@@ -83,42 +83,34 @@ func (atu *AuthTypeUpdate) ClearDescription() *AuthTypeUpdate {
 	return atu
 }
 
-// SetAccountID sets the "account" edge to the Account entity by ID.
-func (atu *AuthTypeUpdate) SetAccountID(id pulid.PULID) *AuthTypeUpdate {
-	atu.mutation.SetAccountID(id)
+// AddAccountIDs adds the "accounts" edge to the Account entity by IDs.
+func (atu *AuthTypeUpdate) AddAccountIDs(ids ...pulid.PULID) *AuthTypeUpdate {
+	atu.mutation.AddAccountIDs(ids...)
 	return atu
 }
 
-// SetNillableAccountID sets the "account" edge to the Account entity by ID if the given value is not nil.
-func (atu *AuthTypeUpdate) SetNillableAccountID(id *pulid.PULID) *AuthTypeUpdate {
-	if id != nil {
-		atu = atu.SetAccountID(*id)
+// AddAccounts adds the "accounts" edges to the Account entity.
+func (atu *AuthTypeUpdate) AddAccounts(a ...*Account) *AuthTypeUpdate {
+	ids := make([]pulid.PULID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
+	return atu.AddAccountIDs(ids...)
+}
+
+// AddStaffAccountIDs adds the "staff_accounts" edge to the StaffAccount entity by IDs.
+func (atu *AuthTypeUpdate) AddStaffAccountIDs(ids ...pulid.PULID) *AuthTypeUpdate {
+	atu.mutation.AddStaffAccountIDs(ids...)
 	return atu
 }
 
-// SetAccount sets the "account" edge to the Account entity.
-func (atu *AuthTypeUpdate) SetAccount(a *Account) *AuthTypeUpdate {
-	return atu.SetAccountID(a.ID)
-}
-
-// SetStaffAccountID sets the "staff_account" edge to the StaffAccount entity by ID.
-func (atu *AuthTypeUpdate) SetStaffAccountID(id pulid.PULID) *AuthTypeUpdate {
-	atu.mutation.SetStaffAccountID(id)
-	return atu
-}
-
-// SetNillableStaffAccountID sets the "staff_account" edge to the StaffAccount entity by ID if the given value is not nil.
-func (atu *AuthTypeUpdate) SetNillableStaffAccountID(id *pulid.PULID) *AuthTypeUpdate {
-	if id != nil {
-		atu = atu.SetStaffAccountID(*id)
+// AddStaffAccounts adds the "staff_accounts" edges to the StaffAccount entity.
+func (atu *AuthTypeUpdate) AddStaffAccounts(s ...*StaffAccount) *AuthTypeUpdate {
+	ids := make([]pulid.PULID, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
 	}
-	return atu
-}
-
-// SetStaffAccount sets the "staff_account" edge to the StaffAccount entity.
-func (atu *AuthTypeUpdate) SetStaffAccount(s *StaffAccount) *AuthTypeUpdate {
-	return atu.SetStaffAccountID(s.ID)
+	return atu.AddStaffAccountIDs(ids...)
 }
 
 // Mutation returns the AuthTypeMutation object of the builder.
@@ -126,16 +118,46 @@ func (atu *AuthTypeUpdate) Mutation() *AuthTypeMutation {
 	return atu.mutation
 }
 
-// ClearAccount clears the "account" edge to the Account entity.
-func (atu *AuthTypeUpdate) ClearAccount() *AuthTypeUpdate {
-	atu.mutation.ClearAccount()
+// ClearAccounts clears all "accounts" edges to the Account entity.
+func (atu *AuthTypeUpdate) ClearAccounts() *AuthTypeUpdate {
+	atu.mutation.ClearAccounts()
 	return atu
 }
 
-// ClearStaffAccount clears the "staff_account" edge to the StaffAccount entity.
-func (atu *AuthTypeUpdate) ClearStaffAccount() *AuthTypeUpdate {
-	atu.mutation.ClearStaffAccount()
+// RemoveAccountIDs removes the "accounts" edge to Account entities by IDs.
+func (atu *AuthTypeUpdate) RemoveAccountIDs(ids ...pulid.PULID) *AuthTypeUpdate {
+	atu.mutation.RemoveAccountIDs(ids...)
 	return atu
+}
+
+// RemoveAccounts removes "accounts" edges to Account entities.
+func (atu *AuthTypeUpdate) RemoveAccounts(a ...*Account) *AuthTypeUpdate {
+	ids := make([]pulid.PULID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return atu.RemoveAccountIDs(ids...)
+}
+
+// ClearStaffAccounts clears all "staff_accounts" edges to the StaffAccount entity.
+func (atu *AuthTypeUpdate) ClearStaffAccounts() *AuthTypeUpdate {
+	atu.mutation.ClearStaffAccounts()
+	return atu
+}
+
+// RemoveStaffAccountIDs removes the "staff_accounts" edge to StaffAccount entities by IDs.
+func (atu *AuthTypeUpdate) RemoveStaffAccountIDs(ids ...pulid.PULID) *AuthTypeUpdate {
+	atu.mutation.RemoveStaffAccountIDs(ids...)
+	return atu
+}
+
+// RemoveStaffAccounts removes "staff_accounts" edges to StaffAccount entities.
+func (atu *AuthTypeUpdate) RemoveStaffAccounts(s ...*StaffAccount) *AuthTypeUpdate {
+	ids := make([]pulid.PULID, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return atu.RemoveStaffAccountIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -284,12 +306,12 @@ func (atu *AuthTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: authtype.FieldDescription,
 		})
 	}
-	if atu.mutation.AccountCleared() {
+	if atu.mutation.AccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   authtype.AccountTable,
-			Columns: []string{authtype.AccountColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.AccountsTable,
+			Columns: []string{authtype.AccountsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -300,12 +322,31 @@ func (atu *AuthTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.AccountIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.RemovedAccountsIDs(); len(nodes) > 0 && !atu.mutation.AccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   authtype.AccountTable,
-			Columns: []string{authtype.AccountColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.AccountsTable,
+			Columns: []string{authtype.AccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: account.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atu.mutation.AccountsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.AccountsTable,
+			Columns: []string{authtype.AccountsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -319,12 +360,12 @@ func (atu *AuthTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atu.mutation.StaffAccountCleared() {
+	if atu.mutation.StaffAccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   authtype.StaffAccountTable,
-			Columns: []string{authtype.StaffAccountColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.StaffAccountsTable,
+			Columns: []string{authtype.StaffAccountsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -335,12 +376,31 @@ func (atu *AuthTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atu.mutation.StaffAccountIDs(); len(nodes) > 0 {
+	if nodes := atu.mutation.RemovedStaffAccountsIDs(); len(nodes) > 0 && !atu.mutation.StaffAccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   authtype.StaffAccountTable,
-			Columns: []string{authtype.StaffAccountColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.StaffAccountsTable,
+			Columns: []string{authtype.StaffAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: staffaccount.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atu.mutation.StaffAccountsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.StaffAccountsTable,
+			Columns: []string{authtype.StaffAccountsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -425,42 +485,34 @@ func (atuo *AuthTypeUpdateOne) ClearDescription() *AuthTypeUpdateOne {
 	return atuo
 }
 
-// SetAccountID sets the "account" edge to the Account entity by ID.
-func (atuo *AuthTypeUpdateOne) SetAccountID(id pulid.PULID) *AuthTypeUpdateOne {
-	atuo.mutation.SetAccountID(id)
+// AddAccountIDs adds the "accounts" edge to the Account entity by IDs.
+func (atuo *AuthTypeUpdateOne) AddAccountIDs(ids ...pulid.PULID) *AuthTypeUpdateOne {
+	atuo.mutation.AddAccountIDs(ids...)
 	return atuo
 }
 
-// SetNillableAccountID sets the "account" edge to the Account entity by ID if the given value is not nil.
-func (atuo *AuthTypeUpdateOne) SetNillableAccountID(id *pulid.PULID) *AuthTypeUpdateOne {
-	if id != nil {
-		atuo = atuo.SetAccountID(*id)
+// AddAccounts adds the "accounts" edges to the Account entity.
+func (atuo *AuthTypeUpdateOne) AddAccounts(a ...*Account) *AuthTypeUpdateOne {
+	ids := make([]pulid.PULID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
 	}
+	return atuo.AddAccountIDs(ids...)
+}
+
+// AddStaffAccountIDs adds the "staff_accounts" edge to the StaffAccount entity by IDs.
+func (atuo *AuthTypeUpdateOne) AddStaffAccountIDs(ids ...pulid.PULID) *AuthTypeUpdateOne {
+	atuo.mutation.AddStaffAccountIDs(ids...)
 	return atuo
 }
 
-// SetAccount sets the "account" edge to the Account entity.
-func (atuo *AuthTypeUpdateOne) SetAccount(a *Account) *AuthTypeUpdateOne {
-	return atuo.SetAccountID(a.ID)
-}
-
-// SetStaffAccountID sets the "staff_account" edge to the StaffAccount entity by ID.
-func (atuo *AuthTypeUpdateOne) SetStaffAccountID(id pulid.PULID) *AuthTypeUpdateOne {
-	atuo.mutation.SetStaffAccountID(id)
-	return atuo
-}
-
-// SetNillableStaffAccountID sets the "staff_account" edge to the StaffAccount entity by ID if the given value is not nil.
-func (atuo *AuthTypeUpdateOne) SetNillableStaffAccountID(id *pulid.PULID) *AuthTypeUpdateOne {
-	if id != nil {
-		atuo = atuo.SetStaffAccountID(*id)
+// AddStaffAccounts adds the "staff_accounts" edges to the StaffAccount entity.
+func (atuo *AuthTypeUpdateOne) AddStaffAccounts(s ...*StaffAccount) *AuthTypeUpdateOne {
+	ids := make([]pulid.PULID, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
 	}
-	return atuo
-}
-
-// SetStaffAccount sets the "staff_account" edge to the StaffAccount entity.
-func (atuo *AuthTypeUpdateOne) SetStaffAccount(s *StaffAccount) *AuthTypeUpdateOne {
-	return atuo.SetStaffAccountID(s.ID)
+	return atuo.AddStaffAccountIDs(ids...)
 }
 
 // Mutation returns the AuthTypeMutation object of the builder.
@@ -468,16 +520,46 @@ func (atuo *AuthTypeUpdateOne) Mutation() *AuthTypeMutation {
 	return atuo.mutation
 }
 
-// ClearAccount clears the "account" edge to the Account entity.
-func (atuo *AuthTypeUpdateOne) ClearAccount() *AuthTypeUpdateOne {
-	atuo.mutation.ClearAccount()
+// ClearAccounts clears all "accounts" edges to the Account entity.
+func (atuo *AuthTypeUpdateOne) ClearAccounts() *AuthTypeUpdateOne {
+	atuo.mutation.ClearAccounts()
 	return atuo
 }
 
-// ClearStaffAccount clears the "staff_account" edge to the StaffAccount entity.
-func (atuo *AuthTypeUpdateOne) ClearStaffAccount() *AuthTypeUpdateOne {
-	atuo.mutation.ClearStaffAccount()
+// RemoveAccountIDs removes the "accounts" edge to Account entities by IDs.
+func (atuo *AuthTypeUpdateOne) RemoveAccountIDs(ids ...pulid.PULID) *AuthTypeUpdateOne {
+	atuo.mutation.RemoveAccountIDs(ids...)
 	return atuo
+}
+
+// RemoveAccounts removes "accounts" edges to Account entities.
+func (atuo *AuthTypeUpdateOne) RemoveAccounts(a ...*Account) *AuthTypeUpdateOne {
+	ids := make([]pulid.PULID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return atuo.RemoveAccountIDs(ids...)
+}
+
+// ClearStaffAccounts clears all "staff_accounts" edges to the StaffAccount entity.
+func (atuo *AuthTypeUpdateOne) ClearStaffAccounts() *AuthTypeUpdateOne {
+	atuo.mutation.ClearStaffAccounts()
+	return atuo
+}
+
+// RemoveStaffAccountIDs removes the "staff_accounts" edge to StaffAccount entities by IDs.
+func (atuo *AuthTypeUpdateOne) RemoveStaffAccountIDs(ids ...pulid.PULID) *AuthTypeUpdateOne {
+	atuo.mutation.RemoveStaffAccountIDs(ids...)
+	return atuo
+}
+
+// RemoveStaffAccounts removes "staff_accounts" edges to StaffAccount entities.
+func (atuo *AuthTypeUpdateOne) RemoveStaffAccounts(s ...*StaffAccount) *AuthTypeUpdateOne {
+	ids := make([]pulid.PULID, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return atuo.RemoveStaffAccountIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -656,12 +738,12 @@ func (atuo *AuthTypeUpdateOne) sqlSave(ctx context.Context) (_node *AuthType, er
 			Column: authtype.FieldDescription,
 		})
 	}
-	if atuo.mutation.AccountCleared() {
+	if atuo.mutation.AccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   authtype.AccountTable,
-			Columns: []string{authtype.AccountColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.AccountsTable,
+			Columns: []string{authtype.AccountsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -672,12 +754,31 @@ func (atuo *AuthTypeUpdateOne) sqlSave(ctx context.Context) (_node *AuthType, er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.AccountIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.RemovedAccountsIDs(); len(nodes) > 0 && !atuo.mutation.AccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   authtype.AccountTable,
-			Columns: []string{authtype.AccountColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.AccountsTable,
+			Columns: []string{authtype.AccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: account.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atuo.mutation.AccountsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.AccountsTable,
+			Columns: []string{authtype.AccountsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -691,12 +792,12 @@ func (atuo *AuthTypeUpdateOne) sqlSave(ctx context.Context) (_node *AuthType, er
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atuo.mutation.StaffAccountCleared() {
+	if atuo.mutation.StaffAccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   authtype.StaffAccountTable,
-			Columns: []string{authtype.StaffAccountColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.StaffAccountsTable,
+			Columns: []string{authtype.StaffAccountsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -707,12 +808,31 @@ func (atuo *AuthTypeUpdateOne) sqlSave(ctx context.Context) (_node *AuthType, er
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atuo.mutation.StaffAccountIDs(); len(nodes) > 0 {
+	if nodes := atuo.mutation.RemovedStaffAccountsIDs(); len(nodes) > 0 && !atuo.mutation.StaffAccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
-			Inverse: false,
-			Table:   authtype.StaffAccountTable,
-			Columns: []string{authtype.StaffAccountColumn},
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.StaffAccountsTable,
+			Columns: []string{authtype.StaffAccountsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: staffaccount.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atuo.mutation.StaffAccountsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   authtype.StaffAccountsTable,
+			Columns: []string{authtype.StaffAccountsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

@@ -85,44 +85,6 @@ func (tc *TransactionCreate) SetPricePerUnit(f float64) *TransactionCreate {
 	return tc
 }
 
-// SetTransactionTypeID sets the "transaction_type_id" field.
-func (tc *TransactionCreate) SetTransactionTypeID(pu pulid.PULID) *TransactionCreate {
-	tc.mutation.SetTransactionTypeID(pu)
-	return tc
-}
-
-// SetBaseAssetID sets the "base_asset_id" field.
-func (tc *TransactionCreate) SetBaseAssetID(pu pulid.PULID) *TransactionCreate {
-	tc.mutation.SetBaseAssetID(pu)
-	return tc
-}
-
-// SetQuoteAssetID sets the "quote_asset_id" field.
-func (tc *TransactionCreate) SetQuoteAssetID(pu pulid.PULID) *TransactionCreate {
-	tc.mutation.SetQuoteAssetID(pu)
-	return tc
-}
-
-// SetNillableQuoteAssetID sets the "quote_asset_id" field if the given value is not nil.
-func (tc *TransactionCreate) SetNillableQuoteAssetID(pu *pulid.PULID) *TransactionCreate {
-	if pu != nil {
-		tc.SetQuoteAssetID(*pu)
-	}
-	return tc
-}
-
-// SetPortfolioID sets the "portfolio_id" field.
-func (tc *TransactionCreate) SetPortfolioID(pu pulid.PULID) *TransactionCreate {
-	tc.mutation.SetPortfolioID(pu)
-	return tc
-}
-
-// SetExchangeID sets the "exchange_id" field.
-func (tc *TransactionCreate) SetExchangeID(pu pulid.PULID) *TransactionCreate {
-	tc.mutation.SetExchangeID(pu)
-	return tc
-}
-
 // SetID sets the "id" field.
 func (tc *TransactionCreate) SetID(pu pulid.PULID) *TransactionCreate {
 	tc.mutation.SetID(pu)
@@ -137,9 +99,21 @@ func (tc *TransactionCreate) SetNillableID(pu *pulid.PULID) *TransactionCreate {
 	return tc
 }
 
+// SetTransactionTypeID sets the "transaction_type" edge to the TransactionType entity by ID.
+func (tc *TransactionCreate) SetTransactionTypeID(id pulid.PULID) *TransactionCreate {
+	tc.mutation.SetTransactionTypeID(id)
+	return tc
+}
+
 // SetTransactionType sets the "transaction_type" edge to the TransactionType entity.
 func (tc *TransactionCreate) SetTransactionType(t *TransactionType) *TransactionCreate {
 	return tc.SetTransactionTypeID(t.ID)
+}
+
+// SetBaseAssetID sets the "base_asset" edge to the Asset entity by ID.
+func (tc *TransactionCreate) SetBaseAssetID(id pulid.PULID) *TransactionCreate {
+	tc.mutation.SetBaseAssetID(id)
+	return tc
 }
 
 // SetBaseAsset sets the "base_asset" edge to the Asset entity.
@@ -147,14 +121,40 @@ func (tc *TransactionCreate) SetBaseAsset(a *Asset) *TransactionCreate {
 	return tc.SetBaseAssetID(a.ID)
 }
 
+// SetQuoteAssetID sets the "quote_asset" edge to the Asset entity by ID.
+func (tc *TransactionCreate) SetQuoteAssetID(id pulid.PULID) *TransactionCreate {
+	tc.mutation.SetQuoteAssetID(id)
+	return tc
+}
+
+// SetNillableQuoteAssetID sets the "quote_asset" edge to the Asset entity by ID if the given value is not nil.
+func (tc *TransactionCreate) SetNillableQuoteAssetID(id *pulid.PULID) *TransactionCreate {
+	if id != nil {
+		tc = tc.SetQuoteAssetID(*id)
+	}
+	return tc
+}
+
 // SetQuoteAsset sets the "quote_asset" edge to the Asset entity.
 func (tc *TransactionCreate) SetQuoteAsset(a *Asset) *TransactionCreate {
 	return tc.SetQuoteAssetID(a.ID)
 }
 
+// SetPortfolioID sets the "portfolio" edge to the Portfolio entity by ID.
+func (tc *TransactionCreate) SetPortfolioID(id pulid.PULID) *TransactionCreate {
+	tc.mutation.SetPortfolioID(id)
+	return tc
+}
+
 // SetPortfolio sets the "portfolio" edge to the Portfolio entity.
 func (tc *TransactionCreate) SetPortfolio(p *Portfolio) *TransactionCreate {
 	return tc.SetPortfolioID(p.ID)
+}
+
+// SetExchangeID sets the "exchange" edge to the Exchange entity by ID.
+func (tc *TransactionCreate) SetExchangeID(id pulid.PULID) *TransactionCreate {
+	tc.mutation.SetExchangeID(id)
+	return tc
 }
 
 // SetExchange sets the "exchange" edge to the Exchange entity.
@@ -271,18 +271,6 @@ func (tc *TransactionCreate) check() error {
 		return &ValidationError{Name: "price_per_unit", err: errors.New(`ent: missing required field "Transaction.price_per_unit"`)}
 	}
 	if _, ok := tc.mutation.TransactionTypeID(); !ok {
-		return &ValidationError{Name: "transaction_type_id", err: errors.New(`ent: missing required field "Transaction.transaction_type_id"`)}
-	}
-	if _, ok := tc.mutation.BaseAssetID(); !ok {
-		return &ValidationError{Name: "base_asset_id", err: errors.New(`ent: missing required field "Transaction.base_asset_id"`)}
-	}
-	if _, ok := tc.mutation.PortfolioID(); !ok {
-		return &ValidationError{Name: "portfolio_id", err: errors.New(`ent: missing required field "Transaction.portfolio_id"`)}
-	}
-	if _, ok := tc.mutation.ExchangeID(); !ok {
-		return &ValidationError{Name: "exchange_id", err: errors.New(`ent: missing required field "Transaction.exchange_id"`)}
-	}
-	if _, ok := tc.mutation.TransactionTypeID(); !ok {
 		return &ValidationError{Name: "transaction_type", err: errors.New(`ent: missing required edge "Transaction.transaction_type"`)}
 	}
 	if _, ok := tc.mutation.BaseAssetID(); !ok {
@@ -395,7 +383,7 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.TransactionTypeID = nodes[0]
+		_node.transaction_transaction_type = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tc.mutation.BaseAssetIDs(); len(nodes) > 0 {
@@ -415,7 +403,7 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.BaseAssetID = nodes[0]
+		_node.transaction_base_asset = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tc.mutation.QuoteAssetIDs(); len(nodes) > 0 {
@@ -435,7 +423,7 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.QuoteAssetID = &nodes[0]
+		_node.transaction_quote_asset = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tc.mutation.PortfolioIDs(); len(nodes) > 0 {
@@ -455,7 +443,7 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.PortfolioID = nodes[0]
+		_node.portfolio_transactions = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tc.mutation.ExchangeIDs(); len(nodes) > 0 {
@@ -475,7 +463,7 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ExchangeID = nodes[0]
+		_node.exchange_transactions = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

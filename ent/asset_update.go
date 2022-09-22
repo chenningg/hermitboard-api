@@ -51,9 +51,9 @@ func (au *AssetUpdate) ClearDeletedAt() *AssetUpdate {
 	return au
 }
 
-// SetAssetClassID sets the "asset_class_id" field.
-func (au *AssetUpdate) SetAssetClassID(pu pulid.PULID) *AssetUpdate {
-	au.mutation.SetAssetClassID(pu)
+// SetAssetClassID sets the "asset_class" edge to the AssetClass entity by ID.
+func (au *AssetUpdate) SetAssetClassID(id pulid.PULID) *AssetUpdate {
+	au.mutation.SetAssetClassID(id)
 	return au
 }
 
@@ -111,14 +111,14 @@ func (au *AssetUpdate) AddTransactionQuote(t ...*Transaction) *AssetUpdate {
 	return au.AddTransactionQuoteIDs(ids...)
 }
 
-// AddDailyAssetPriceIDs adds the "daily_asset_price" edge to the DailyAssetPrice entity by IDs.
+// AddDailyAssetPriceIDs adds the "daily_asset_prices" edge to the DailyAssetPrice entity by IDs.
 func (au *AssetUpdate) AddDailyAssetPriceIDs(ids ...pulid.PULID) *AssetUpdate {
 	au.mutation.AddDailyAssetPriceIDs(ids...)
 	return au
 }
 
-// AddDailyAssetPrice adds the "daily_asset_price" edges to the DailyAssetPrice entity.
-func (au *AssetUpdate) AddDailyAssetPrice(d ...*DailyAssetPrice) *AssetUpdate {
+// AddDailyAssetPrices adds the "daily_asset_prices" edges to the DailyAssetPrice entity.
+func (au *AssetUpdate) AddDailyAssetPrices(d ...*DailyAssetPrice) *AssetUpdate {
 	ids := make([]pulid.PULID, len(d))
 	for i := range d {
 		ids[i] = d[i].ID
@@ -185,20 +185,20 @@ func (au *AssetUpdate) RemoveTransactionQuote(t ...*Transaction) *AssetUpdate {
 	return au.RemoveTransactionQuoteIDs(ids...)
 }
 
-// ClearDailyAssetPrice clears all "daily_asset_price" edges to the DailyAssetPrice entity.
-func (au *AssetUpdate) ClearDailyAssetPrice() *AssetUpdate {
-	au.mutation.ClearDailyAssetPrice()
+// ClearDailyAssetPrices clears all "daily_asset_prices" edges to the DailyAssetPrice entity.
+func (au *AssetUpdate) ClearDailyAssetPrices() *AssetUpdate {
+	au.mutation.ClearDailyAssetPrices()
 	return au
 }
 
-// RemoveDailyAssetPriceIDs removes the "daily_asset_price" edge to DailyAssetPrice entities by IDs.
+// RemoveDailyAssetPriceIDs removes the "daily_asset_prices" edge to DailyAssetPrice entities by IDs.
 func (au *AssetUpdate) RemoveDailyAssetPriceIDs(ids ...pulid.PULID) *AssetUpdate {
 	au.mutation.RemoveDailyAssetPriceIDs(ids...)
 	return au
 }
 
-// RemoveDailyAssetPrice removes "daily_asset_price" edges to DailyAssetPrice entities.
-func (au *AssetUpdate) RemoveDailyAssetPrice(d ...*DailyAssetPrice) *AssetUpdate {
+// RemoveDailyAssetPrices removes "daily_asset_prices" edges to DailyAssetPrice entities.
+func (au *AssetUpdate) RemoveDailyAssetPrices(d ...*DailyAssetPrice) *AssetUpdate {
 	ids := make([]pulid.PULID, len(d))
 	for i := range d {
 		ids[i] = d[i].ID
@@ -503,12 +503,12 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if au.mutation.DailyAssetPriceCleared() {
+	if au.mutation.DailyAssetPricesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.DailyAssetPriceTable,
-			Columns: []string{asset.DailyAssetPriceColumn},
+			Table:   asset.DailyAssetPricesTable,
+			Columns: []string{asset.DailyAssetPricesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -519,12 +519,12 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.RemovedDailyAssetPriceIDs(); len(nodes) > 0 && !au.mutation.DailyAssetPriceCleared() {
+	if nodes := au.mutation.RemovedDailyAssetPricesIDs(); len(nodes) > 0 && !au.mutation.DailyAssetPricesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.DailyAssetPriceTable,
-			Columns: []string{asset.DailyAssetPriceColumn},
+			Table:   asset.DailyAssetPricesTable,
+			Columns: []string{asset.DailyAssetPricesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -538,12 +538,12 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := au.mutation.DailyAssetPriceIDs(); len(nodes) > 0 {
+	if nodes := au.mutation.DailyAssetPricesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.DailyAssetPriceTable,
-			Columns: []string{asset.DailyAssetPriceColumn},
+			Table:   asset.DailyAssetPricesTable,
+			Columns: []string{asset.DailyAssetPricesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -594,9 +594,9 @@ func (auo *AssetUpdateOne) ClearDeletedAt() *AssetUpdateOne {
 	return auo
 }
 
-// SetAssetClassID sets the "asset_class_id" field.
-func (auo *AssetUpdateOne) SetAssetClassID(pu pulid.PULID) *AssetUpdateOne {
-	auo.mutation.SetAssetClassID(pu)
+// SetAssetClassID sets the "asset_class" edge to the AssetClass entity by ID.
+func (auo *AssetUpdateOne) SetAssetClassID(id pulid.PULID) *AssetUpdateOne {
+	auo.mutation.SetAssetClassID(id)
 	return auo
 }
 
@@ -654,14 +654,14 @@ func (auo *AssetUpdateOne) AddTransactionQuote(t ...*Transaction) *AssetUpdateOn
 	return auo.AddTransactionQuoteIDs(ids...)
 }
 
-// AddDailyAssetPriceIDs adds the "daily_asset_price" edge to the DailyAssetPrice entity by IDs.
+// AddDailyAssetPriceIDs adds the "daily_asset_prices" edge to the DailyAssetPrice entity by IDs.
 func (auo *AssetUpdateOne) AddDailyAssetPriceIDs(ids ...pulid.PULID) *AssetUpdateOne {
 	auo.mutation.AddDailyAssetPriceIDs(ids...)
 	return auo
 }
 
-// AddDailyAssetPrice adds the "daily_asset_price" edges to the DailyAssetPrice entity.
-func (auo *AssetUpdateOne) AddDailyAssetPrice(d ...*DailyAssetPrice) *AssetUpdateOne {
+// AddDailyAssetPrices adds the "daily_asset_prices" edges to the DailyAssetPrice entity.
+func (auo *AssetUpdateOne) AddDailyAssetPrices(d ...*DailyAssetPrice) *AssetUpdateOne {
 	ids := make([]pulid.PULID, len(d))
 	for i := range d {
 		ids[i] = d[i].ID
@@ -728,20 +728,20 @@ func (auo *AssetUpdateOne) RemoveTransactionQuote(t ...*Transaction) *AssetUpdat
 	return auo.RemoveTransactionQuoteIDs(ids...)
 }
 
-// ClearDailyAssetPrice clears all "daily_asset_price" edges to the DailyAssetPrice entity.
-func (auo *AssetUpdateOne) ClearDailyAssetPrice() *AssetUpdateOne {
-	auo.mutation.ClearDailyAssetPrice()
+// ClearDailyAssetPrices clears all "daily_asset_prices" edges to the DailyAssetPrice entity.
+func (auo *AssetUpdateOne) ClearDailyAssetPrices() *AssetUpdateOne {
+	auo.mutation.ClearDailyAssetPrices()
 	return auo
 }
 
-// RemoveDailyAssetPriceIDs removes the "daily_asset_price" edge to DailyAssetPrice entities by IDs.
+// RemoveDailyAssetPriceIDs removes the "daily_asset_prices" edge to DailyAssetPrice entities by IDs.
 func (auo *AssetUpdateOne) RemoveDailyAssetPriceIDs(ids ...pulid.PULID) *AssetUpdateOne {
 	auo.mutation.RemoveDailyAssetPriceIDs(ids...)
 	return auo
 }
 
-// RemoveDailyAssetPrice removes "daily_asset_price" edges to DailyAssetPrice entities.
-func (auo *AssetUpdateOne) RemoveDailyAssetPrice(d ...*DailyAssetPrice) *AssetUpdateOne {
+// RemoveDailyAssetPrices removes "daily_asset_prices" edges to DailyAssetPrice entities.
+func (auo *AssetUpdateOne) RemoveDailyAssetPrices(d ...*DailyAssetPrice) *AssetUpdateOne {
 	ids := make([]pulid.PULID, len(d))
 	for i := range d {
 		ids[i] = d[i].ID
@@ -1076,12 +1076,12 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if auo.mutation.DailyAssetPriceCleared() {
+	if auo.mutation.DailyAssetPricesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.DailyAssetPriceTable,
-			Columns: []string{asset.DailyAssetPriceColumn},
+			Table:   asset.DailyAssetPricesTable,
+			Columns: []string{asset.DailyAssetPricesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1092,12 +1092,12 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.RemovedDailyAssetPriceIDs(); len(nodes) > 0 && !auo.mutation.DailyAssetPriceCleared() {
+	if nodes := auo.mutation.RemovedDailyAssetPricesIDs(); len(nodes) > 0 && !auo.mutation.DailyAssetPricesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.DailyAssetPriceTable,
-			Columns: []string{asset.DailyAssetPriceColumn},
+			Table:   asset.DailyAssetPricesTable,
+			Columns: []string{asset.DailyAssetPricesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1111,12 +1111,12 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := auo.mutation.DailyAssetPriceIDs(); len(nodes) > 0 {
+	if nodes := auo.mutation.DailyAssetPricesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   asset.DailyAssetPriceTable,
-			Columns: []string{asset.DailyAssetPriceColumn},
+			Table:   asset.DailyAssetPricesTable,
+			Columns: []string{asset.DailyAssetPricesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
