@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
 	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -65,17 +66,9 @@ func (sac *StaffAccountCreate) SetNillableDeletedAt(t *time.Time) *StaffAccountC
 	return sac
 }
 
-// SetAuthType sets the "auth_type" field.
-func (sac *StaffAccountCreate) SetAuthType(st staffaccount.AuthType) *StaffAccountCreate {
-	sac.mutation.SetAuthType(st)
-	return sac
-}
-
-// SetNillableAuthType sets the "auth_type" field if the given value is not nil.
-func (sac *StaffAccountCreate) SetNillableAuthType(st *staffaccount.AuthType) *StaffAccountCreate {
-	if st != nil {
-		sac.SetAuthType(*st)
-	}
+// SetAuthTypeID sets the "auth_type_id" field.
+func (sac *StaffAccountCreate) SetAuthTypeID(pu pulid.PULID) *StaffAccountCreate {
+	sac.mutation.SetAuthTypeID(pu)
 	return sac
 }
 
@@ -146,6 +139,11 @@ func (sac *StaffAccountCreate) AddAuthRoles(a ...*AuthRole) *StaffAccountCreate 
 		ids[i] = a[i].ID
 	}
 	return sac.AddAuthRoleIDs(ids...)
+}
+
+// SetAuthType sets the "auth_type" edge to the AuthType entity.
+func (sac *StaffAccountCreate) SetAuthType(a *AuthType) *StaffAccountCreate {
+	return sac.SetAuthTypeID(a.ID)
 }
 
 // AddStaffAccountAuthRoleIDs adds the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity by IDs.
@@ -248,10 +246,6 @@ func (sac *StaffAccountCreate) defaults() {
 		v := staffaccount.DefaultUpdatedAt()
 		sac.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := sac.mutation.AuthType(); !ok {
-		v := staffaccount.DefaultAuthType
-		sac.mutation.SetAuthType(v)
-	}
 	if _, ok := sac.mutation.PasswordUpdatedAt(); !ok {
 		v := staffaccount.DefaultPasswordUpdatedAt()
 		sac.mutation.SetPasswordUpdatedAt(v)
@@ -270,13 +264,8 @@ func (sac *StaffAccountCreate) check() error {
 	if _, ok := sac.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "StaffAccount.updated_at"`)}
 	}
-	if _, ok := sac.mutation.AuthType(); !ok {
-		return &ValidationError{Name: "auth_type", err: errors.New(`ent: missing required field "StaffAccount.auth_type"`)}
-	}
-	if v, ok := sac.mutation.AuthType(); ok {
-		if err := staffaccount.AuthTypeValidator(v); err != nil {
-			return &ValidationError{Name: "auth_type", err: fmt.Errorf(`ent: validator failed for field "StaffAccount.auth_type": %w`, err)}
-		}
+	if _, ok := sac.mutation.AuthTypeID(); !ok {
+		return &ValidationError{Name: "auth_type_id", err: errors.New(`ent: missing required field "StaffAccount.auth_type_id"`)}
 	}
 	if _, ok := sac.mutation.Nickname(); !ok {
 		return &ValidationError{Name: "nickname", err: errors.New(`ent: missing required field "StaffAccount.nickname"`)}
@@ -301,6 +290,9 @@ func (sac *StaffAccountCreate) check() error {
 	}
 	if _, ok := sac.mutation.PasswordUpdatedAt(); !ok {
 		return &ValidationError{Name: "password_updated_at", err: errors.New(`ent: missing required field "StaffAccount.password_updated_at"`)}
+	}
+	if _, ok := sac.mutation.AuthTypeID(); !ok {
+		return &ValidationError{Name: "auth_type", err: errors.New(`ent: missing required edge "StaffAccount.auth_type"`)}
 	}
 	return nil
 }
@@ -362,14 +354,6 @@ func (sac *StaffAccountCreate) createSpec() (*StaffAccount, *sqlgraph.CreateSpec
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := sac.mutation.AuthType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: staffaccount.FieldAuthType,
-		})
-		_node.AuthType = value
-	}
 	if value, ok := sac.mutation.Nickname(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -426,6 +410,26 @@ func (sac *StaffAccountCreate) createSpec() (*StaffAccount, *sqlgraph.CreateSpec
 		if specE.ID.Value != nil {
 			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sac.mutation.AuthTypeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   staffaccount.AuthTypeTable,
+			Columns: []string{staffaccount.AuthTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: authtype.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.AuthTypeID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sac.mutation.StaffAccountAuthRolesIDs(); len(nodes) > 0 {

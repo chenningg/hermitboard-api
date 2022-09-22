@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/chenningg/hermitboard-api/ent"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
-	"github.com/chenningg/hermitboard-api/ent/staffaccount"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -19,11 +19,17 @@ func seedStaffAccounts(ctx context.Context, client *ent.Client) error {
 	// Retrieve super admin role reference from database
 	superAdminRole, err := client.AuthRole.Query().Where(authrole.AuthRoleEQ(authrole.AuthRoleSuperAdmin)).Only(ctx)
 	if err != nil {
-		return fmt.Errorf("seedStaffAccounts(): could not find super admin role for seeding")
+		return fmt.Errorf("seedStaffAccounts(): could not find super admin role while seeding")
+	}
+
+	// Retrieve local authentication type reference from database
+	localAuthType, err := client.AuthType.Query().Where(authtype.AuthTypeEQ(authtype.AuthTypeLocal)).Only(ctx)
+	if err != nil {
+		return fmt.Errorf("seedStaffAccounts(): could not find local auth type while seeding")
 	}
 
 	_, err = client.StaffAccount.Create().
-		SetAuthType(staffaccount.AuthTypeLocal).
+		SetAuthType(localAuthType).
 		SetNickname("owner").
 		SetEmail("owner@hermitboard.com").
 		SetPassword(string(ownerPassword)).

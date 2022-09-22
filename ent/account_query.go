@@ -14,6 +14,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/account"
 	"github.com/chenningg/hermitboard-api/ent/accountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -30,6 +31,7 @@ type AccountQuery struct {
 	predicates                []predicate.Account
 	withAuthRoles             *AuthRoleQuery
 	withPortfolios            *PortfolioQuery
+	withAuthType              *AuthTypeQuery
 	withAccountAuthRoles      *AccountAuthRoleQuery
 	modifiers                 []func(*sql.Selector)
 	loadTotal                 []func(context.Context, []*Account) error
@@ -109,6 +111,28 @@ func (aq *AccountQuery) QueryPortfolios() *PortfolioQuery {
 			sqlgraph.From(account.Table, account.FieldID, selector),
 			sqlgraph.To(portfolio.Table, portfolio.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, account.PortfoliosTable, account.PortfoliosColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAuthType chains the current query on the "auth_type" edge.
+func (aq *AccountQuery) QueryAuthType() *AuthTypeQuery {
+	query := &AuthTypeQuery{config: aq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(account.Table, account.FieldID, selector),
+			sqlgraph.To(authtype.Table, authtype.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, account.AuthTypeTable, account.AuthTypeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -321,6 +345,7 @@ func (aq *AccountQuery) Clone() *AccountQuery {
 		predicates:           append([]predicate.Account{}, aq.predicates...),
 		withAuthRoles:        aq.withAuthRoles.Clone(),
 		withPortfolios:       aq.withPortfolios.Clone(),
+		withAuthType:         aq.withAuthType.Clone(),
 		withAccountAuthRoles: aq.withAccountAuthRoles.Clone(),
 		// clone intermediate query.
 		sql:    aq.sql.Clone(),
@@ -348,6 +373,17 @@ func (aq *AccountQuery) WithPortfolios(opts ...func(*PortfolioQuery)) *AccountQu
 		opt(query)
 	}
 	aq.withPortfolios = query
+	return aq
+}
+
+// WithAuthType tells the query-builder to eager-load the nodes that are connected to
+// the "auth_type" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AccountQuery) WithAuthType(opts ...func(*AuthTypeQuery)) *AccountQuery {
+	query := &AuthTypeQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withAuthType = query
 	return aq
 }
 
@@ -430,9 +466,10 @@ func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 	var (
 		nodes       = []*Account{}
 		_spec       = aq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			aq.withAuthRoles != nil,
 			aq.withPortfolios != nil,
+			aq.withAuthType != nil,
 			aq.withAccountAuthRoles != nil,
 		}
 	)
@@ -468,6 +505,12 @@ func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 		if err := aq.loadPortfolios(ctx, query, nodes,
 			func(n *Account) { n.Edges.Portfolios = []*Portfolio{} },
 			func(n *Account, e *Portfolio) { n.Edges.Portfolios = append(n.Edges.Portfolios, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := aq.withAuthType; query != nil {
+		if err := aq.loadAuthType(ctx, query, nodes, nil,
+			func(n *Account, e *AuthType) { n.Edges.AuthType = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -589,6 +632,32 @@ func (aq *AccountQuery) loadPortfolios(ctx context.Context, query *PortfolioQuer
 			return fmt.Errorf(`unexpected foreign-key "account_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (aq *AccountQuery) loadAuthType(ctx context.Context, query *AuthTypeQuery, nodes []*Account, init func(*Account), assign func(*Account, *AuthType)) error {
+	ids := make([]pulid.PULID, 0, len(nodes))
+	nodeids := make(map[pulid.PULID][]*Account)
+	for i := range nodes {
+		fk := nodes[i].AuthTypeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(authtype.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "auth_type_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
 	}
 	return nil
 }

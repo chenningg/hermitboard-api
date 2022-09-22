@@ -22,6 +22,8 @@ type Tx struct {
 	AssetClass *AssetClassClient
 	// AuthRole is the client for interacting with the AuthRole builders.
 	AuthRole *AuthRoleClient
+	// AuthType is the client for interacting with the AuthType builders.
+	AuthType *AuthTypeClient
 	// Blockchain is the client for interacting with the Blockchain builders.
 	Blockchain *BlockchainClient
 	// BlockchainCryptocurrency is the client for interacting with the BlockchainCryptocurrency builders.
@@ -182,6 +184,7 @@ func (tx *Tx) init() {
 	tx.Asset = NewAssetClient(tx.config)
 	tx.AssetClass = NewAssetClassClient(tx.config)
 	tx.AuthRole = NewAuthRoleClient(tx.config)
+	tx.AuthType = NewAuthTypeClient(tx.config)
 	tx.Blockchain = NewBlockchainClient(tx.config)
 	tx.BlockchainCryptocurrency = NewBlockchainCryptocurrencyClient(tx.config)
 	tx.Cryptocurrency = NewCryptocurrencyClient(tx.config)

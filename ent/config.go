@@ -29,6 +29,7 @@ type hooks struct {
 	Asset                    []ent.Hook
 	AssetClass               []ent.Hook
 	AuthRole                 []ent.Hook
+	AuthType                 []ent.Hook
 	Blockchain               []ent.Hook
 	BlockchainCryptocurrency []ent.Hook
 	Cryptocurrency           []ent.Hook

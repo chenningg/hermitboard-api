@@ -103,6 +103,13 @@ func DeletedAt(v time.Time) predicate.Account {
 	})
 }
 
+// AuthTypeID applies equality check predicate on the "auth_type_id" field. It's identical to AuthTypeIDEQ.
+func AuthTypeID(v pulid.PULID) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldAuthTypeID), v))
+	})
+}
+
 // Nickname applies equality check predicate on the "nickname" field. It's identical to NicknameEQ.
 func Nickname(v string) predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
@@ -337,39 +344,107 @@ func DeletedAtNotNil() predicate.Account {
 	})
 }
 
-// AuthTypeEQ applies the EQ predicate on the "auth_type" field.
-func AuthTypeEQ(v AuthType) predicate.Account {
+// AuthTypeIDEQ applies the EQ predicate on the "auth_type_id" field.
+func AuthTypeIDEQ(v pulid.PULID) predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthType), v))
+		s.Where(sql.EQ(s.C(FieldAuthTypeID), v))
 	})
 }
 
-// AuthTypeNEQ applies the NEQ predicate on the "auth_type" field.
-func AuthTypeNEQ(v AuthType) predicate.Account {
+// AuthTypeIDNEQ applies the NEQ predicate on the "auth_type_id" field.
+func AuthTypeIDNEQ(v pulid.PULID) predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAuthType), v))
+		s.Where(sql.NEQ(s.C(FieldAuthTypeID), v))
 	})
 }
 
-// AuthTypeIn applies the In predicate on the "auth_type" field.
-func AuthTypeIn(vs ...AuthType) predicate.Account {
+// AuthTypeIDIn applies the In predicate on the "auth_type_id" field.
+func AuthTypeIDIn(vs ...pulid.PULID) predicate.Account {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAuthType), v...))
+		s.Where(sql.In(s.C(FieldAuthTypeID), v...))
 	})
 }
 
-// AuthTypeNotIn applies the NotIn predicate on the "auth_type" field.
-func AuthTypeNotIn(vs ...AuthType) predicate.Account {
+// AuthTypeIDNotIn applies the NotIn predicate on the "auth_type_id" field.
+func AuthTypeIDNotIn(vs ...pulid.PULID) predicate.Account {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAuthType), v...))
+		s.Where(sql.NotIn(s.C(FieldAuthTypeID), v...))
+	})
+}
+
+// AuthTypeIDGT applies the GT predicate on the "auth_type_id" field.
+func AuthTypeIDGT(v pulid.PULID) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldAuthTypeID), v))
+	})
+}
+
+// AuthTypeIDGTE applies the GTE predicate on the "auth_type_id" field.
+func AuthTypeIDGTE(v pulid.PULID) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldAuthTypeID), v))
+	})
+}
+
+// AuthTypeIDLT applies the LT predicate on the "auth_type_id" field.
+func AuthTypeIDLT(v pulid.PULID) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldAuthTypeID), v))
+	})
+}
+
+// AuthTypeIDLTE applies the LTE predicate on the "auth_type_id" field.
+func AuthTypeIDLTE(v pulid.PULID) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldAuthTypeID), v))
+	})
+}
+
+// AuthTypeIDContains applies the Contains predicate on the "auth_type_id" field.
+func AuthTypeIDContains(v pulid.PULID) predicate.Account {
+	vc := string(v)
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldAuthTypeID), vc))
+	})
+}
+
+// AuthTypeIDHasPrefix applies the HasPrefix predicate on the "auth_type_id" field.
+func AuthTypeIDHasPrefix(v pulid.PULID) predicate.Account {
+	vc := string(v)
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldAuthTypeID), vc))
+	})
+}
+
+// AuthTypeIDHasSuffix applies the HasSuffix predicate on the "auth_type_id" field.
+func AuthTypeIDHasSuffix(v pulid.PULID) predicate.Account {
+	vc := string(v)
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldAuthTypeID), vc))
+	})
+}
+
+// AuthTypeIDEqualFold applies the EqualFold predicate on the "auth_type_id" field.
+func AuthTypeIDEqualFold(v pulid.PULID) predicate.Account {
+	vc := string(v)
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldAuthTypeID), vc))
+	})
+}
+
+// AuthTypeIDContainsFold applies the ContainsFold predicate on the "auth_type_id" field.
+func AuthTypeIDContainsFold(v pulid.PULID) predicate.Account {
+	vc := string(v)
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldAuthTypeID), vc))
 	})
 }
 
@@ -795,6 +870,34 @@ func HasPortfoliosWith(preds ...predicate.Portfolio) predicate.Account {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(PortfoliosInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, PortfoliosTable, PortfoliosColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAuthType applies the HasEdge predicate on the "auth_type" edge.
+func HasAuthType() predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AuthTypeTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, AuthTypeTable, AuthTypeColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAuthTypeWith applies the HasEdge predicate on the "auth_type" edge with a given conditions (other predicates).
+func HasAuthTypeWith(preds ...predicate.AuthType) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(AuthTypeInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, AuthTypeTable, AuthTypeColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -16,6 +16,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
 	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
@@ -47,6 +48,8 @@ type Client struct {
 	AssetClass *AssetClassClient
 	// AuthRole is the client for interacting with the AuthRole builders.
 	AuthRole *AuthRoleClient
+	// AuthType is the client for interacting with the AuthType builders.
+	AuthType *AuthTypeClient
 	// Blockchain is the client for interacting with the Blockchain builders.
 	Blockchain *BlockchainClient
 	// BlockchainCryptocurrency is the client for interacting with the BlockchainCryptocurrency builders.
@@ -85,6 +88,7 @@ func (c *Client) init() {
 	c.Asset = NewAssetClient(c.config)
 	c.AssetClass = NewAssetClassClient(c.config)
 	c.AuthRole = NewAuthRoleClient(c.config)
+	c.AuthType = NewAuthTypeClient(c.config)
 	c.Blockchain = NewBlockchainClient(c.config)
 	c.BlockchainCryptocurrency = NewBlockchainCryptocurrencyClient(c.config)
 	c.Cryptocurrency = NewCryptocurrencyClient(c.config)
@@ -133,6 +137,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Asset:                    NewAssetClient(cfg),
 		AssetClass:               NewAssetClassClient(cfg),
 		AuthRole:                 NewAuthRoleClient(cfg),
+		AuthType:                 NewAuthTypeClient(cfg),
 		Blockchain:               NewBlockchainClient(cfg),
 		BlockchainCryptocurrency: NewBlockchainCryptocurrencyClient(cfg),
 		Cryptocurrency:           NewCryptocurrencyClient(cfg),
@@ -167,6 +172,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Asset:                    NewAssetClient(cfg),
 		AssetClass:               NewAssetClassClient(cfg),
 		AuthRole:                 NewAuthRoleClient(cfg),
+		AuthType:                 NewAuthTypeClient(cfg),
 		Blockchain:               NewBlockchainClient(cfg),
 		BlockchainCryptocurrency: NewBlockchainCryptocurrencyClient(cfg),
 		Cryptocurrency:           NewCryptocurrencyClient(cfg),
@@ -210,6 +216,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Asset.Use(hooks...)
 	c.AssetClass.Use(hooks...)
 	c.AuthRole.Use(hooks...)
+	c.AuthType.Use(hooks...)
 	c.Blockchain.Use(hooks...)
 	c.BlockchainCryptocurrency.Use(hooks...)
 	c.Cryptocurrency.Use(hooks...)
@@ -332,6 +339,22 @@ func (c *AccountClient) QueryPortfolios(a *Account) *PortfolioQuery {
 			sqlgraph.From(account.Table, account.FieldID, id),
 			sqlgraph.To(portfolio.Table, portfolio.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, account.PortfoliosTable, account.PortfoliosColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAuthType queries the auth_type edge of a Account.
+func (c *AccountClient) QueryAuthType(a *Account) *AuthTypeQuery {
+	query := &AuthTypeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(account.Table, account.FieldID, id),
+			sqlgraph.To(authtype.Table, authtype.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, account.AuthTypeTable, account.AuthTypeColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -910,6 +933,128 @@ func (c *AuthRoleClient) QueryStaffAccountAuthRoles(ar *AuthRole) *StaffAccountA
 // Hooks returns the client hooks.
 func (c *AuthRoleClient) Hooks() []Hook {
 	return c.hooks.AuthRole
+}
+
+// AuthTypeClient is a client for the AuthType schema.
+type AuthTypeClient struct {
+	config
+}
+
+// NewAuthTypeClient returns a client for the AuthType from the given config.
+func NewAuthTypeClient(c config) *AuthTypeClient {
+	return &AuthTypeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `authtype.Hooks(f(g(h())))`.
+func (c *AuthTypeClient) Use(hooks ...Hook) {
+	c.hooks.AuthType = append(c.hooks.AuthType, hooks...)
+}
+
+// Create returns a builder for creating a AuthType entity.
+func (c *AuthTypeClient) Create() *AuthTypeCreate {
+	mutation := newAuthTypeMutation(c.config, OpCreate)
+	return &AuthTypeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AuthType entities.
+func (c *AuthTypeClient) CreateBulk(builders ...*AuthTypeCreate) *AuthTypeCreateBulk {
+	return &AuthTypeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AuthType.
+func (c *AuthTypeClient) Update() *AuthTypeUpdate {
+	mutation := newAuthTypeMutation(c.config, OpUpdate)
+	return &AuthTypeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AuthTypeClient) UpdateOne(at *AuthType) *AuthTypeUpdateOne {
+	mutation := newAuthTypeMutation(c.config, OpUpdateOne, withAuthType(at))
+	return &AuthTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AuthTypeClient) UpdateOneID(id pulid.PULID) *AuthTypeUpdateOne {
+	mutation := newAuthTypeMutation(c.config, OpUpdateOne, withAuthTypeID(id))
+	return &AuthTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AuthType.
+func (c *AuthTypeClient) Delete() *AuthTypeDelete {
+	mutation := newAuthTypeMutation(c.config, OpDelete)
+	return &AuthTypeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AuthTypeClient) DeleteOne(at *AuthType) *AuthTypeDeleteOne {
+	return c.DeleteOneID(at.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *AuthTypeClient) DeleteOneID(id pulid.PULID) *AuthTypeDeleteOne {
+	builder := c.Delete().Where(authtype.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AuthTypeDeleteOne{builder}
+}
+
+// Query returns a query builder for AuthType.
+func (c *AuthTypeClient) Query() *AuthTypeQuery {
+	return &AuthTypeQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a AuthType entity by its id.
+func (c *AuthTypeClient) Get(ctx context.Context, id pulid.PULID) (*AuthType, error) {
+	return c.Query().Where(authtype.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AuthTypeClient) GetX(ctx context.Context, id pulid.PULID) *AuthType {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAccount queries the account edge of a AuthType.
+func (c *AuthTypeClient) QueryAccount(at *AuthType) *AccountQuery {
+	query := &AccountQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(authtype.Table, authtype.FieldID, id),
+			sqlgraph.To(account.Table, account.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, authtype.AccountTable, authtype.AccountColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryStaffAccount queries the staff_account edge of a AuthType.
+func (c *AuthTypeClient) QueryStaffAccount(at *AuthType) *StaffAccountQuery {
+	query := &StaffAccountQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(authtype.Table, authtype.FieldID, id),
+			sqlgraph.To(staffaccount.Table, staffaccount.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, authtype.StaffAccountTable, authtype.StaffAccountColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AuthTypeClient) Hooks() []Hook {
+	return c.hooks.AuthType
 }
 
 // BlockchainClient is a client for the Blockchain schema.
@@ -1722,6 +1867,22 @@ func (c *StaffAccountClient) QueryAuthRoles(sa *StaffAccount) *AuthRoleQuery {
 			sqlgraph.From(staffaccount.Table, staffaccount.FieldID, id),
 			sqlgraph.To(authrole.Table, authrole.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, staffaccount.AuthRolesTable, staffaccount.AuthRolesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAuthType queries the auth_type edge of a StaffAccount.
+func (c *StaffAccountClient) QueryAuthType(sa *StaffAccount) *AuthTypeQuery {
+	query := &AuthTypeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := sa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(staffaccount.Table, staffaccount.FieldID, id),
+			sqlgraph.To(authtype.Table, authtype.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, staffaccount.AuthTypeTable, staffaccount.AuthTypeColumn),
 		)
 		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
 		return fromV, nil

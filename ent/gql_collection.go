@@ -49,6 +49,16 @@ func (a *AccountQuery) collectField(ctx context.Context, op *graphql.OperationCo
 			a.WithNamedPortfolios(alias, func(wq *PortfolioQuery) {
 				*wq = *query
 			})
+		case "authType", "auth_type":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &AuthTypeQuery{config: a.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			a.withAuthType = query
 		case "accountAuthRoles", "account_auth_roles":
 			var (
 				alias = field.Alias
@@ -88,28 +98,6 @@ func newAccountPaginateArgs(rv map[string]interface{}) *accountPaginateArgs {
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
-	}
-	if v, ok := rv[orderByField]; ok {
-		switch v := v.(type) {
-		case map[string]interface{}:
-			var (
-				err1, err2 error
-				order      = &AccountOrder{Field: &AccountOrderField{}}
-			)
-			if d, ok := v[directionField]; ok {
-				err1 = order.Direction.UnmarshalGQL(d)
-			}
-			if f, ok := v[fieldField]; ok {
-				err2 = order.Field.UnmarshalGQL(f)
-			}
-			if err1 == nil && err2 == nil {
-				args.opts = append(args.opts, WithAccountOrder(order))
-			}
-		case *AccountOrder:
-			if v != nil {
-				args.opts = append(args.opts, WithAccountOrder(v))
-			}
-		}
 	}
 	return args
 }
@@ -476,6 +464,95 @@ func newAuthRolePaginateArgs(rv map[string]interface{}) *authrolePaginateArgs {
 		case *AuthRoleOrder:
 			if v != nil {
 				args.opts = append(args.opts, WithAuthRoleOrder(v))
+			}
+		}
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (at *AuthTypeQuery) CollectFields(ctx context.Context, satisfies ...string) (*AuthTypeQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return at, nil
+	}
+	if err := at.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return at, nil
+}
+
+func (at *AuthTypeQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
+		switch field.Name {
+		case "account":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &AccountQuery{config: at.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			at.withAccount = query
+		case "staffAccount", "staff_account":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &StaffAccountQuery{config: at.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			at.withStaffAccount = query
+		}
+	}
+	return nil
+}
+
+type authtypePaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []AuthTypePaginateOption
+}
+
+func newAuthTypePaginateArgs(rv map[string]interface{}) *authtypePaginateArgs {
+	args := &authtypePaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &AuthTypeOrder{Field: &AuthTypeOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithAuthTypeOrder(order))
+			}
+		case *AuthTypeOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithAuthTypeOrder(v))
 			}
 		}
 	}
@@ -914,6 +991,16 @@ func (sa *StaffAccountQuery) collectField(ctx context.Context, op *graphql.Opera
 			sa.WithNamedAuthRoles(alias, func(wq *AuthRoleQuery) {
 				*wq = *query
 			})
+		case "authType", "auth_type":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &AuthTypeQuery{config: sa.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			sa.withAuthType = query
 		case "staffAccountAuthRoles", "staff_account_auth_roles":
 			var (
 				alias = field.Alias
@@ -953,28 +1040,6 @@ func newStaffAccountPaginateArgs(rv map[string]interface{}) *staffaccountPaginat
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
-	}
-	if v, ok := rv[orderByField]; ok {
-		switch v := v.(type) {
-		case map[string]interface{}:
-			var (
-				err1, err2 error
-				order      = &StaffAccountOrder{Field: &StaffAccountOrderField{}}
-			)
-			if d, ok := v[directionField]; ok {
-				err1 = order.Direction.UnmarshalGQL(d)
-			}
-			if f, ok := v[fieldField]; ok {
-				err2 = order.Field.UnmarshalGQL(f)
-			}
-			if err1 == nil && err2 == nil {
-				args.opts = append(args.opts, WithStaffAccountOrder(order))
-			}
-		case *StaffAccountOrder:
-			if v != nil {
-				args.opts = append(args.opts, WithStaffAccountOrder(v))
-			}
-		}
 	}
 	return args
 }

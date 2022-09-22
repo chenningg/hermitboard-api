@@ -24,6 +24,14 @@ func (a *Account) Portfolios(ctx context.Context) ([]*Portfolio, error) {
 	return result, err
 }
 
+func (a *Account) AuthType(ctx context.Context) (*AuthType, error) {
+	result, err := a.Edges.AuthTypeOrErr()
+	if IsNotLoaded(err) {
+		result, err = a.QueryAuthType().Only(ctx)
+	}
+	return result, err
+}
+
 func (a *Account) AccountAuthRoles(ctx context.Context) ([]*AccountAuthRole, error) {
 	result, err := a.NamedAccountAuthRoles(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
@@ -128,6 +136,22 @@ func (ar *AuthRole) StaffAccountAuthRoles(ctx context.Context) ([]*StaffAccountA
 	return result, err
 }
 
+func (at *AuthType) Account(ctx context.Context) (*Account, error) {
+	result, err := at.Edges.AccountOrErr()
+	if IsNotLoaded(err) {
+		result, err = at.QueryAccount().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
+func (at *AuthType) StaffAccount(ctx context.Context) (*StaffAccount, error) {
+	result, err := at.Edges.StaffAccountOrErr()
+	if IsNotLoaded(err) {
+		result, err = at.QueryStaffAccount().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
 func (b *Blockchain) Cryptocurrencies(ctx context.Context) ([]*Cryptocurrency, error) {
 	result, err := b.NamedCryptocurrencies(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
@@ -220,6 +244,14 @@ func (sa *StaffAccount) AuthRoles(ctx context.Context) ([]*AuthRole, error) {
 	result, err := sa.NamedAuthRoles(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
 		result, err = sa.QueryAuthRoles().All(ctx)
+	}
+	return result, err
+}
+
+func (sa *StaffAccount) AuthType(ctx context.Context) (*AuthType, error) {
+	result, err := sa.Edges.AuthTypeOrErr()
+	if IsNotLoaded(err) {
+		result, err = sa.QueryAuthType().Only(ctx)
 	}
 	return result, err
 }

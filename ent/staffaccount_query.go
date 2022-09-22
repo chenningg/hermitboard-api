@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
 	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
@@ -28,6 +29,7 @@ type StaffAccountQuery struct {
 	fields                         []string
 	predicates                     []predicate.StaffAccount
 	withAuthRoles                  *AuthRoleQuery
+	withAuthType                   *AuthTypeQuery
 	withStaffAccountAuthRoles      *StaffAccountAuthRoleQuery
 	modifiers                      []func(*sql.Selector)
 	loadTotal                      []func(context.Context, []*StaffAccount) error
@@ -84,6 +86,28 @@ func (saq *StaffAccountQuery) QueryAuthRoles() *AuthRoleQuery {
 			sqlgraph.From(staffaccount.Table, staffaccount.FieldID, selector),
 			sqlgraph.To(authrole.Table, authrole.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, staffaccount.AuthRolesTable, staffaccount.AuthRolesPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(saq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAuthType chains the current query on the "auth_type" edge.
+func (saq *StaffAccountQuery) QueryAuthType() *AuthTypeQuery {
+	query := &AuthTypeQuery{config: saq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := saq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := saq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(staffaccount.Table, staffaccount.FieldID, selector),
+			sqlgraph.To(authtype.Table, authtype.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, staffaccount.AuthTypeTable, staffaccount.AuthTypeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(saq.driver.Dialect(), step)
 		return fromU, nil
@@ -295,6 +319,7 @@ func (saq *StaffAccountQuery) Clone() *StaffAccountQuery {
 		order:                     append([]OrderFunc{}, saq.order...),
 		predicates:                append([]predicate.StaffAccount{}, saq.predicates...),
 		withAuthRoles:             saq.withAuthRoles.Clone(),
+		withAuthType:              saq.withAuthType.Clone(),
 		withStaffAccountAuthRoles: saq.withStaffAccountAuthRoles.Clone(),
 		// clone intermediate query.
 		sql:    saq.sql.Clone(),
@@ -311,6 +336,17 @@ func (saq *StaffAccountQuery) WithAuthRoles(opts ...func(*AuthRoleQuery)) *Staff
 		opt(query)
 	}
 	saq.withAuthRoles = query
+	return saq
+}
+
+// WithAuthType tells the query-builder to eager-load the nodes that are connected to
+// the "auth_type" edge. The optional arguments are used to configure the query builder of the edge.
+func (saq *StaffAccountQuery) WithAuthType(opts ...func(*AuthTypeQuery)) *StaffAccountQuery {
+	query := &AuthTypeQuery{config: saq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	saq.withAuthType = query
 	return saq
 }
 
@@ -393,8 +429,9 @@ func (saq *StaffAccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 	var (
 		nodes       = []*StaffAccount{}
 		_spec       = saq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			saq.withAuthRoles != nil,
+			saq.withAuthType != nil,
 			saq.withStaffAccountAuthRoles != nil,
 		}
 	)
@@ -423,6 +460,12 @@ func (saq *StaffAccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 		if err := saq.loadAuthRoles(ctx, query, nodes,
 			func(n *StaffAccount) { n.Edges.AuthRoles = []*AuthRole{} },
 			func(n *StaffAccount, e *AuthRole) { n.Edges.AuthRoles = append(n.Edges.AuthRoles, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := saq.withAuthType; query != nil {
+		if err := saq.loadAuthType(ctx, query, nodes, nil,
+			func(n *StaffAccount, e *AuthType) { n.Edges.AuthType = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -511,6 +554,32 @@ func (saq *StaffAccountQuery) loadAuthRoles(ctx context.Context, query *AuthRole
 		}
 		for kn := range nodes {
 			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (saq *StaffAccountQuery) loadAuthType(ctx context.Context, query *AuthTypeQuery, nodes []*StaffAccount, init func(*StaffAccount), assign func(*StaffAccount, *AuthType)) error {
+	ids := make([]pulid.PULID, 0, len(nodes))
+	nodeids := make(map[pulid.PULID][]*StaffAccount)
+	for i := range nodes {
+		fk := nodes[i].AuthTypeID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(authtype.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "auth_type_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
 		}
 	}
 	return nil

@@ -74,6 +74,19 @@ func (f AuthRoleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return f(ctx, mv)
 }
 
+// The AuthTypeFunc type is an adapter to allow the use of ordinary
+// function as AuthType mutator.
+type AuthTypeFunc func(context.Context, *ent.AuthTypeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AuthTypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.AuthTypeMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AuthTypeMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The BlockchainFunc type is an adapter to allow the use of ordinary
 // function as Blockchain mutator.
 type BlockchainFunc func(context.Context, *ent.BlockchainMutation) (ent.Value, error)

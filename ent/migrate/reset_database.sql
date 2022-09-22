@@ -1,4 +1,5 @@
 -- Warning! This drops ALL tables in the database. Run only for testing.
+DROP TABLE IF EXISTS auth_types;
 DROP TABLE IF EXISTS account_auth_roles;
 DROP TABLE IF EXISTS staff_account_auth_roles;
 DROP TABLE IF EXISTS auth_roles;

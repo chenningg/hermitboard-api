@@ -14,6 +14,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/account"
 	"github.com/chenningg/hermitboard-api/ent/accountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -50,17 +51,9 @@ func (au *AccountUpdate) ClearDeletedAt() *AccountUpdate {
 	return au
 }
 
-// SetAuthType sets the "auth_type" field.
-func (au *AccountUpdate) SetAuthType(at account.AuthType) *AccountUpdate {
-	au.mutation.SetAuthType(at)
-	return au
-}
-
-// SetNillableAuthType sets the "auth_type" field if the given value is not nil.
-func (au *AccountUpdate) SetNillableAuthType(at *account.AuthType) *AccountUpdate {
-	if at != nil {
-		au.SetAuthType(*at)
-	}
+// SetAuthTypeID sets the "auth_type_id" field.
+func (au *AccountUpdate) SetAuthTypeID(pu pulid.PULID) *AccountUpdate {
+	au.mutation.SetAuthTypeID(pu)
 	return au
 }
 
@@ -132,6 +125,11 @@ func (au *AccountUpdate) AddPortfolios(p ...*Portfolio) *AccountUpdate {
 	return au.AddPortfolioIDs(ids...)
 }
 
+// SetAuthType sets the "auth_type" edge to the AuthType entity.
+func (au *AccountUpdate) SetAuthType(a *AuthType) *AccountUpdate {
+	return au.SetAuthTypeID(a.ID)
+}
+
 // AddAccountAuthRoleIDs adds the "account_auth_roles" edge to the AccountAuthRole entity by IDs.
 func (au *AccountUpdate) AddAccountAuthRoleIDs(ids ...pulid.PULID) *AccountUpdate {
 	au.mutation.AddAccountAuthRoleIDs(ids...)
@@ -192,6 +190,12 @@ func (au *AccountUpdate) RemovePortfolios(p ...*Portfolio) *AccountUpdate {
 		ids[i] = p[i].ID
 	}
 	return au.RemovePortfolioIDs(ids...)
+}
+
+// ClearAuthType clears the "auth_type" edge to the AuthType entity.
+func (au *AccountUpdate) ClearAuthType() *AccountUpdate {
+	au.mutation.ClearAuthType()
+	return au
 }
 
 // ClearAccountAuthRoles clears all "account_auth_roles" edges to the AccountAuthRole entity.
@@ -294,11 +298,6 @@ func (au *AccountUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (au *AccountUpdate) check() error {
-	if v, ok := au.mutation.AuthType(); ok {
-		if err := account.AuthTypeValidator(v); err != nil {
-			return &ValidationError{Name: "auth_type", err: fmt.Errorf(`ent: validator failed for field "Account.auth_type": %w`, err)}
-		}
-	}
 	if v, ok := au.mutation.Nickname(); ok {
 		if err := account.NicknameValidator(v); err != nil {
 			return &ValidationError{Name: "nickname", err: fmt.Errorf(`ent: validator failed for field "Account.nickname": %w`, err)}
@@ -313,6 +312,9 @@ func (au *AccountUpdate) check() error {
 		if err := account.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Account.password": %w`, err)}
 		}
+	}
+	if _, ok := au.mutation.AuthTypeID(); au.mutation.AuthTypeCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Account.auth_type"`)
 	}
 	return nil
 }
@@ -353,13 +355,6 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: account.FieldDeletedAt,
-		})
-	}
-	if value, ok := au.mutation.AuthType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: account.FieldAuthType,
 		})
 	}
 	if value, ok := au.mutation.Nickname(); ok {
@@ -525,6 +520,41 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if au.mutation.AuthTypeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   account.AuthTypeTable,
+			Columns: []string{account.AuthTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: authtype.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.AuthTypeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   account.AuthTypeTable,
+			Columns: []string{account.AuthTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: authtype.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if au.mutation.AccountAuthRolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -616,17 +646,9 @@ func (auo *AccountUpdateOne) ClearDeletedAt() *AccountUpdateOne {
 	return auo
 }
 
-// SetAuthType sets the "auth_type" field.
-func (auo *AccountUpdateOne) SetAuthType(at account.AuthType) *AccountUpdateOne {
-	auo.mutation.SetAuthType(at)
-	return auo
-}
-
-// SetNillableAuthType sets the "auth_type" field if the given value is not nil.
-func (auo *AccountUpdateOne) SetNillableAuthType(at *account.AuthType) *AccountUpdateOne {
-	if at != nil {
-		auo.SetAuthType(*at)
-	}
+// SetAuthTypeID sets the "auth_type_id" field.
+func (auo *AccountUpdateOne) SetAuthTypeID(pu pulid.PULID) *AccountUpdateOne {
+	auo.mutation.SetAuthTypeID(pu)
 	return auo
 }
 
@@ -698,6 +720,11 @@ func (auo *AccountUpdateOne) AddPortfolios(p ...*Portfolio) *AccountUpdateOne {
 	return auo.AddPortfolioIDs(ids...)
 }
 
+// SetAuthType sets the "auth_type" edge to the AuthType entity.
+func (auo *AccountUpdateOne) SetAuthType(a *AuthType) *AccountUpdateOne {
+	return auo.SetAuthTypeID(a.ID)
+}
+
 // AddAccountAuthRoleIDs adds the "account_auth_roles" edge to the AccountAuthRole entity by IDs.
 func (auo *AccountUpdateOne) AddAccountAuthRoleIDs(ids ...pulid.PULID) *AccountUpdateOne {
 	auo.mutation.AddAccountAuthRoleIDs(ids...)
@@ -758,6 +785,12 @@ func (auo *AccountUpdateOne) RemovePortfolios(p ...*Portfolio) *AccountUpdateOne
 		ids[i] = p[i].ID
 	}
 	return auo.RemovePortfolioIDs(ids...)
+}
+
+// ClearAuthType clears the "auth_type" edge to the AuthType entity.
+func (auo *AccountUpdateOne) ClearAuthType() *AccountUpdateOne {
+	auo.mutation.ClearAuthType()
+	return auo
 }
 
 // ClearAccountAuthRoles clears all "account_auth_roles" edges to the AccountAuthRole entity.
@@ -873,11 +906,6 @@ func (auo *AccountUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (auo *AccountUpdateOne) check() error {
-	if v, ok := auo.mutation.AuthType(); ok {
-		if err := account.AuthTypeValidator(v); err != nil {
-			return &ValidationError{Name: "auth_type", err: fmt.Errorf(`ent: validator failed for field "Account.auth_type": %w`, err)}
-		}
-	}
 	if v, ok := auo.mutation.Nickname(); ok {
 		if err := account.NicknameValidator(v); err != nil {
 			return &ValidationError{Name: "nickname", err: fmt.Errorf(`ent: validator failed for field "Account.nickname": %w`, err)}
@@ -892,6 +920,9 @@ func (auo *AccountUpdateOne) check() error {
 		if err := account.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Account.password": %w`, err)}
 		}
+	}
+	if _, ok := auo.mutation.AuthTypeID(); auo.mutation.AuthTypeCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Account.auth_type"`)
 	}
 	return nil
 }
@@ -949,13 +980,6 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: account.FieldDeletedAt,
-		})
-	}
-	if value, ok := auo.mutation.AuthType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: account.FieldAuthType,
 		})
 	}
 	if value, ok := auo.mutation.Nickname(); ok {
@@ -1113,6 +1137,41 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: portfolio.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.AuthTypeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   account.AuthTypeTable,
+			Columns: []string{account.AuthTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: authtype.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.AuthTypeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   account.AuthTypeTable,
+			Columns: []string{account.AuthTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: authtype.FieldID,
 				},
 			},
 		}

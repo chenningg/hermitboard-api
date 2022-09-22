@@ -21,6 +21,9 @@ type AssetClass func(*sql.Selector)
 // AuthRole is the predicate function for authrole builders.
 type AuthRole func(*sql.Selector)
 
+// AuthType is the predicate function for authtype builders.
+type AuthType func(*sql.Selector)
+
 // Blockchain is the predicate function for blockchain builders.
 type Blockchain func(*sql.Selector)
 

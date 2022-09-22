@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
@@ -23,8 +24,8 @@ type StaffAccount struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// AuthType holds the value of the "auth_type" field.
-	AuthType staffaccount.AuthType `json:"auth_type,omitempty"`
+	// AuthTypeID holds the value of the "auth_type_id" field.
+	AuthTypeID pulid.PULID `json:"auth_type_id,omitempty"`
 	// Nickname holds the value of the "nickname" field.
 	Nickname string `json:"nickname,omitempty"`
 	// Email holds the value of the "email" field.
@@ -42,13 +43,15 @@ type StaffAccount struct {
 type StaffAccountEdges struct {
 	// AuthRoles holds the value of the auth_roles edge.
 	AuthRoles []*AuthRole `json:"auth_roles,omitempty"`
+	// AuthType holds the value of the auth_type edge.
+	AuthType *AuthType `json:"auth_type,omitempty"`
 	// StaffAccountAuthRoles holds the value of the staff_account_auth_roles edge.
 	StaffAccountAuthRoles []*StaffAccountAuthRole `json:"staff_account_auth_roles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 	// totalCount holds the count of the edges above.
-	totalCount [2]map[string]int
+	totalCount [3]map[string]int
 
 	namedAuthRoles             map[string][]*AuthRole
 	namedStaffAccountAuthRoles map[string][]*StaffAccountAuthRole
@@ -63,10 +66,23 @@ func (e StaffAccountEdges) AuthRolesOrErr() ([]*AuthRole, error) {
 	return nil, &NotLoadedError{edge: "auth_roles"}
 }
 
+// AuthTypeOrErr returns the AuthType value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e StaffAccountEdges) AuthTypeOrErr() (*AuthType, error) {
+	if e.loadedTypes[1] {
+		if e.AuthType == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: authtype.Label}
+		}
+		return e.AuthType, nil
+	}
+	return nil, &NotLoadedError{edge: "auth_type"}
+}
+
 // StaffAccountAuthRolesOrErr returns the StaffAccountAuthRoles value or an error if the edge
 // was not loaded in eager-loading.
 func (e StaffAccountEdges) StaffAccountAuthRolesOrErr() ([]*StaffAccountAuthRole, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.StaffAccountAuthRoles, nil
 	}
 	return nil, &NotLoadedError{edge: "staff_account_auth_roles"}
@@ -77,9 +93,9 @@ func (*StaffAccount) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case staffaccount.FieldID:
+		case staffaccount.FieldID, staffaccount.FieldAuthTypeID:
 			values[i] = new(pulid.PULID)
-		case staffaccount.FieldAuthType, staffaccount.FieldNickname, staffaccount.FieldEmail, staffaccount.FieldPassword:
+		case staffaccount.FieldNickname, staffaccount.FieldEmail, staffaccount.FieldPassword:
 			values[i] = new(sql.NullString)
 		case staffaccount.FieldCreatedAt, staffaccount.FieldUpdatedAt, staffaccount.FieldDeletedAt, staffaccount.FieldPasswordUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -123,11 +139,11 @@ func (sa *StaffAccount) assignValues(columns []string, values []any) error {
 				sa.DeletedAt = new(time.Time)
 				*sa.DeletedAt = value.Time
 			}
-		case staffaccount.FieldAuthType:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field auth_type", values[i])
-			} else if value.Valid {
-				sa.AuthType = staffaccount.AuthType(value.String)
+		case staffaccount.FieldAuthTypeID:
+			if value, ok := values[i].(*pulid.PULID); !ok {
+				return fmt.Errorf("unexpected type %T for field auth_type_id", values[i])
+			} else if value != nil {
+				sa.AuthTypeID = *value
 			}
 		case staffaccount.FieldNickname:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -162,6 +178,11 @@ func (sa *StaffAccount) assignValues(columns []string, values []any) error {
 // QueryAuthRoles queries the "auth_roles" edge of the StaffAccount entity.
 func (sa *StaffAccount) QueryAuthRoles() *AuthRoleQuery {
 	return (&StaffAccountClient{config: sa.config}).QueryAuthRoles(sa)
+}
+
+// QueryAuthType queries the "auth_type" edge of the StaffAccount entity.
+func (sa *StaffAccount) QueryAuthType() *AuthTypeQuery {
+	return (&StaffAccountClient{config: sa.config}).QueryAuthType(sa)
 }
 
 // QueryStaffAccountAuthRoles queries the "staff_account_auth_roles" edge of the StaffAccount entity.
@@ -203,8 +224,8 @@ func (sa *StaffAccount) String() string {
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("auth_type=")
-	builder.WriteString(fmt.Sprintf("%v", sa.AuthType))
+	builder.WriteString("auth_type_id=")
+	builder.WriteString(fmt.Sprintf("%v", sa.AuthTypeID))
 	builder.WriteString(", ")
 	builder.WriteString("nickname=")
 	builder.WriteString(sa.Nickname)

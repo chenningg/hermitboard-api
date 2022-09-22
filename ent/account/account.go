@@ -3,9 +3,6 @@
 package account
 
 import (
-	"fmt"
-	"io"
-	"strconv"
 	"time"
 
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -22,8 +19,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldAuthType holds the string denoting the auth_type field in the database.
-	FieldAuthType = "auth_type"
+	// FieldAuthTypeID holds the string denoting the auth_type_id field in the database.
+	FieldAuthTypeID = "auth_type_id"
 	// FieldNickname holds the string denoting the nickname field in the database.
 	FieldNickname = "nickname"
 	// FieldEmail holds the string denoting the email field in the database.
@@ -36,6 +33,8 @@ const (
 	EdgeAuthRoles = "auth_roles"
 	// EdgePortfolios holds the string denoting the portfolios edge name in mutations.
 	EdgePortfolios = "portfolios"
+	// EdgeAuthType holds the string denoting the auth_type edge name in mutations.
+	EdgeAuthType = "auth_type"
 	// EdgeAccountAuthRoles holds the string denoting the account_auth_roles edge name in mutations.
 	EdgeAccountAuthRoles = "account_auth_roles"
 	// Table holds the table name of the account in the database.
@@ -52,6 +51,13 @@ const (
 	PortfoliosInverseTable = "portfolios"
 	// PortfoliosColumn is the table column denoting the portfolios relation/edge.
 	PortfoliosColumn = "account_id"
+	// AuthTypeTable is the table that holds the auth_type relation/edge.
+	AuthTypeTable = "accounts"
+	// AuthTypeInverseTable is the table name for the AuthType entity.
+	// It exists in this package in order to avoid circular dependency with the "authtype" package.
+	AuthTypeInverseTable = "auth_types"
+	// AuthTypeColumn is the table column denoting the auth_type relation/edge.
+	AuthTypeColumn = "auth_type_id"
 	// AccountAuthRolesTable is the table that holds the account_auth_roles relation/edge.
 	AccountAuthRolesTable = "account_auth_roles"
 	// AccountAuthRolesInverseTable is the table name for the AccountAuthRole entity.
@@ -67,7 +73,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldAuthType,
+	FieldAuthTypeID,
 	FieldNickname,
 	FieldEmail,
 	FieldPassword,
@@ -112,49 +118,3 @@ var (
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() pulid.PULID
 )
-
-// AuthType defines the type for the "auth_type" enum field.
-type AuthType string
-
-// AuthTypeLocal is the default value of the AuthType enum.
-const DefaultAuthType = AuthTypeLocal
-
-// AuthType values.
-const (
-	AuthTypeLocal    AuthType = "LOCAL"
-	AuthTypeGoogle   AuthType = "GOOGLE"
-	AuthTypeFacebook AuthType = "FACEBOOK"
-	AuthTypeApple    AuthType = "APPLE"
-)
-
-func (at AuthType) String() string {
-	return string(at)
-}
-
-// AuthTypeValidator is a validator for the "auth_type" field enum values. It is called by the builders before save.
-func AuthTypeValidator(at AuthType) error {
-	switch at {
-	case AuthTypeLocal, AuthTypeGoogle, AuthTypeFacebook, AuthTypeApple:
-		return nil
-	default:
-		return fmt.Errorf("account: invalid enum value for auth_type field: %q", at)
-	}
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (e AuthType) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(e.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *AuthType) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*e = AuthType(str)
-	if err := AuthTypeValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid AuthType", str)
-	}
-	return nil
-}

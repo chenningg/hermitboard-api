@@ -1,35 +1,36 @@
 type Account {
-  id: ID!
-  authId: String!
-  nickname: String!
-  email: Boolean!
+    id: ID!
+    authTypeId: ID!
+    nickname: String!
+    email: Boolean!
+
 }
 
 # Queries
 extend type Query {
-  accounts: [Account!]!
+    accounts: [Account!]!
 }
 
 # Mutations
 input NewAccountDto {
-  nickname: String!
-  email: String!
-  password: String!
+    nickname: String!
+    email: String!
+    password: String!
 }
 
 input UpdateAccountDto {
-  id: ID!
-  nickname: String
-  email: String
-  password: String
+    id: ID!
+    nickname: String
+    email: String
+    password: String
 }
 
 input DeleteAccountDto {
-  id: ID!
+    id: ID!
 }
 
 extend type Mutation {
-  createAccount(input: NewAccountDto!): Account!
-  updateAccount(input: UpdateAccountDto!): Account!
-  deleteAccount(input: DeleteAccountDto!): ID!
+    createAccount(input: NewAccountDto!): Account!
+    updateAccount(input: UpdateAccountDto!): Account!
+    deleteAccount(input: DeleteAccountDto!): ID!
 }

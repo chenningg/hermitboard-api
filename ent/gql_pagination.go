@@ -19,6 +19,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
 	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
@@ -451,49 +452,6 @@ func (a *AccountQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
-}
-
-var (
-	// AccountOrderFieldAuthType orders Account by auth_type.
-	AccountOrderFieldAuthType = &AccountOrderField{
-		field: account.FieldAuthType,
-		toCursor: func(a *Account) Cursor {
-			return Cursor{
-				ID:    a.ID,
-				Value: a.AuthType,
-			}
-		},
-	}
-)
-
-// String implement fmt.Stringer interface.
-func (f AccountOrderField) String() string {
-	var str string
-	switch f.field {
-	case account.FieldAuthType:
-		str = "AUTH_TYPE"
-	}
-	return str
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (f AccountOrderField) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(f.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (f *AccountOrderField) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("AccountOrderField %T must be a string", v)
-	}
-	switch str {
-	case "AUTH_TYPE":
-		*f = *AccountOrderFieldAuthType
-	default:
-		return fmt.Errorf("%s is not a valid AccountOrderField", str)
-	}
-	return nil
 }
 
 // AccountOrderField defines the ordering field of Account.
@@ -1537,6 +1495,280 @@ func (ar *AuthRole) ToEdge(order *AuthRoleOrder) *AuthRoleEdge {
 	return &AuthRoleEdge{
 		Node:   ar,
 		Cursor: order.Field.toCursor(ar),
+	}
+}
+
+// AuthTypeEdge is the edge representation of AuthType.
+type AuthTypeEdge struct {
+	Node   *AuthType `json:"node"`
+	Cursor Cursor    `json:"cursor"`
+}
+
+// AuthTypeConnection is the connection containing edges to AuthType.
+type AuthTypeConnection struct {
+	Edges      []*AuthTypeEdge `json:"edges"`
+	PageInfo   PageInfo        `json:"pageInfo"`
+	TotalCount int             `json:"totalCount"`
+}
+
+func (c *AuthTypeConnection) build(nodes []*AuthType, pager *authtypePager, after *Cursor, first *int, before *Cursor, last *int) {
+	c.PageInfo.HasNextPage = before != nil
+	c.PageInfo.HasPreviousPage = after != nil
+	if first != nil && *first+1 == len(nodes) {
+		c.PageInfo.HasNextPage = true
+		nodes = nodes[:len(nodes)-1]
+	} else if last != nil && *last+1 == len(nodes) {
+		c.PageInfo.HasPreviousPage = true
+		nodes = nodes[:len(nodes)-1]
+	}
+	var nodeAt func(int) *AuthType
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *AuthType {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *AuthType {
+			return nodes[i]
+		}
+	}
+	c.Edges = make([]*AuthTypeEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		c.Edges[i] = &AuthTypeEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+	if l := len(c.Edges); l > 0 {
+		c.PageInfo.StartCursor = &c.Edges[0].Cursor
+		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
+	}
+	if c.TotalCount == 0 {
+		c.TotalCount = len(nodes)
+	}
+}
+
+// AuthTypePaginateOption enables pagination customization.
+type AuthTypePaginateOption func(*authtypePager) error
+
+// WithAuthTypeOrder configures pagination ordering.
+func WithAuthTypeOrder(order *AuthTypeOrder) AuthTypePaginateOption {
+	if order == nil {
+		order = DefaultAuthTypeOrder
+	}
+	o := *order
+	return func(pager *authtypePager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultAuthTypeOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithAuthTypeFilter configures pagination filter.
+func WithAuthTypeFilter(filter func(*AuthTypeQuery) (*AuthTypeQuery, error)) AuthTypePaginateOption {
+	return func(pager *authtypePager) error {
+		if filter == nil {
+			return errors.New("AuthTypeQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type authtypePager struct {
+	order  *AuthTypeOrder
+	filter func(*AuthTypeQuery) (*AuthTypeQuery, error)
+}
+
+func newAuthTypePager(opts []AuthTypePaginateOption) (*authtypePager, error) {
+	pager := &authtypePager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultAuthTypeOrder
+	}
+	return pager, nil
+}
+
+func (p *authtypePager) applyFilter(query *AuthTypeQuery) (*AuthTypeQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *authtypePager) toCursor(at *AuthType) Cursor {
+	return p.order.Field.toCursor(at)
+}
+
+func (p *authtypePager) applyCursors(query *AuthTypeQuery, after, before *Cursor) *AuthTypeQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultAuthTypeOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *authtypePager) applyOrder(query *AuthTypeQuery, reverse bool) *AuthTypeQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultAuthTypeOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultAuthTypeOrder.Field.field))
+	}
+	return query
+}
+
+func (p *authtypePager) orderExpr(reverse bool) sql.Querier {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	return sql.ExprFunc(func(b *sql.Builder) {
+		b.Ident(p.order.Field.field).Pad().WriteString(string(direction))
+		if p.order.Field != DefaultAuthTypeOrder.Field {
+			b.Comma().Ident(DefaultAuthTypeOrder.Field.field).Pad().WriteString(string(direction))
+		}
+	})
+}
+
+// Paginate executes the query and returns a relay based cursor connection to AuthType.
+func (at *AuthTypeQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...AuthTypePaginateOption,
+) (*AuthTypeConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newAuthTypePager(opts)
+	if err != nil {
+		return nil, err
+	}
+	if at, err = pager.applyFilter(at); err != nil {
+		return nil, err
+	}
+	conn := &AuthTypeConnection{Edges: []*AuthTypeEdge{}}
+	ignoredEdges := !hasCollectedField(ctx, edgesField)
+	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
+		hasPagination := after != nil || first != nil || before != nil || last != nil
+		if hasPagination || ignoredEdges {
+			if conn.TotalCount, err = at.Count(ctx); err != nil {
+				return nil, err
+			}
+			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
+			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
+		}
+	}
+	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
+		return conn, nil
+	}
+
+	at = pager.applyCursors(at, after, before)
+	at = pager.applyOrder(at, last != nil)
+	if limit := paginateLimit(first, last); limit != 0 {
+		at.Limit(limit)
+	}
+	if field := collectedField(ctx, edgesField, nodeField); field != nil {
+		if err := at.collectField(ctx, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
+			return nil, err
+		}
+	}
+
+	nodes, err := at.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	conn.build(nodes, pager, after, first, before, last)
+	return conn, nil
+}
+
+var (
+	// AuthTypeOrderFieldAuthType orders AuthType by auth_type.
+	AuthTypeOrderFieldAuthType = &AuthTypeOrderField{
+		field: authtype.FieldAuthType,
+		toCursor: func(at *AuthType) Cursor {
+			return Cursor{
+				ID:    at.ID,
+				Value: at.AuthType,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f AuthTypeOrderField) String() string {
+	var str string
+	switch f.field {
+	case authtype.FieldAuthType:
+		str = "AUTH_TYPE"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f AuthTypeOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *AuthTypeOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("AuthTypeOrderField %T must be a string", v)
+	}
+	switch str {
+	case "AUTH_TYPE":
+		*f = *AuthTypeOrderFieldAuthType
+	default:
+		return fmt.Errorf("%s is not a valid AuthTypeOrderField", str)
+	}
+	return nil
+}
+
+// AuthTypeOrderField defines the ordering field of AuthType.
+type AuthTypeOrderField struct {
+	field    string
+	toCursor func(*AuthType) Cursor
+}
+
+// AuthTypeOrder defines the ordering of AuthType.
+type AuthTypeOrder struct {
+	Direction OrderDirection      `json:"direction"`
+	Field     *AuthTypeOrderField `json:"field"`
+}
+
+// DefaultAuthTypeOrder is the default ordering of AuthType.
+var DefaultAuthTypeOrder = &AuthTypeOrder{
+	Direction: OrderDirectionAsc,
+	Field: &AuthTypeOrderField{
+		field: authtype.FieldID,
+		toCursor: func(at *AuthType) Cursor {
+			return Cursor{ID: at.ID}
+		},
+	},
+}
+
+// ToEdge converts AuthType into AuthTypeEdge.
+func (at *AuthType) ToEdge(order *AuthTypeOrder) *AuthTypeEdge {
+	if order == nil {
+		order = DefaultAuthTypeOrder
+	}
+	return &AuthTypeEdge{
+		Node:   at,
+		Cursor: order.Field.toCursor(at),
 	}
 }
 
@@ -3121,49 +3353,6 @@ func (sa *StaffAccountQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
-}
-
-var (
-	// StaffAccountOrderFieldAuthType orders StaffAccount by auth_type.
-	StaffAccountOrderFieldAuthType = &StaffAccountOrderField{
-		field: staffaccount.FieldAuthType,
-		toCursor: func(sa *StaffAccount) Cursor {
-			return Cursor{
-				ID:    sa.ID,
-				Value: sa.AuthType,
-			}
-		},
-	}
-)
-
-// String implement fmt.Stringer interface.
-func (f StaffAccountOrderField) String() string {
-	var str string
-	switch f.field {
-	case staffaccount.FieldAuthType:
-		str = "AUTH_TYPE"
-	}
-	return str
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (f StaffAccountOrderField) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(f.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (f *StaffAccountOrderField) UnmarshalGQL(v interface{}) error {
-	str, ok := v.(string)
-	if !ok {
-		return fmt.Errorf("StaffAccountOrderField %T must be a string", v)
-	}
-	switch str {
-	case "AUTH_TYPE":
-		*f = *StaffAccountOrderFieldAuthType
-	default:
-		return fmt.Errorf("%s is not a valid StaffAccountOrderField", str)
-	}
-	return nil
 }
 
 // StaffAccountOrderField defines the ordering field of StaffAccount.

@@ -45,7 +45,12 @@ resolver:
 # gqlgen will search for any type names in the schema in these go packages
 # if they match it will use them, otherwise it will generate them.
 autobind:
-  - "github.com/chenningg/hermitboard-api/ent"
+  - github.com/chenningg/hermitboard-api/ent
+  # Bind generated enums by Ent as well
+  - github.com/chenningg/hermitboard-api/ent/assetclass
+  - github.com/chenningg/hermitboard-api/ent/authrole
+  - github.com/chenningg/hermitboard-api/ent/authtype
+  - github.com/chenningg/hermitboard-api/ent/transactiontype
 
 # This section declares type mapping between the GraphQL and go type systems
 #
@@ -61,3 +66,6 @@ models:
       - github.com/99designs/gqlgen/graphql.Int
       - github.com/99designs/gqlgen/graphql.Int64
       - github.com/99designs/gqlgen/graphql.Int32
+  Node:
+    model:
+      - github.com/chenningg/hermitboard-api/ent.Noder

@@ -15,17 +15,25 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "auth_type", Type: field.TypeEnum, Enums: []string{"LOCAL", "GOOGLE", "FACEBOOK", "APPLE"}, Default: "LOCAL"},
 		{Name: "nickname", Type: field.TypeString, Unique: true},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "password_updated_at", Type: field.TypeTime},
+		{Name: "auth_type_id", Type: field.TypeString, Unique: true},
 	}
 	// AccountsTable holds the schema information for the "accounts" table.
 	AccountsTable = &schema.Table{
 		Name:       "accounts",
 		Columns:    AccountsColumns,
 		PrimaryKey: []*schema.Column{AccountsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "accounts_auth_types_account",
+				Columns:    []*schema.Column{AccountsColumns[8]},
+				RefColumns: []*schema.Column{AuthTypesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 	}
 	// AccountAuthRolesColumns holds the columns for the "account_auth_roles" table.
 	AccountAuthRolesColumns = []*schema.Column{
@@ -114,6 +122,21 @@ var (
 		Name:       "auth_roles",
 		Columns:    AuthRolesColumns,
 		PrimaryKey: []*schema.Column{AuthRolesColumns[0]},
+	}
+	// AuthTypesColumns holds the columns for the "auth_types" table.
+	AuthTypesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "auth_type", Type: field.TypeEnum, Enums: []string{"LOCAL", "GOOGLE", "APPLE", "FACEBOOK"}, Default: "LOCAL"},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+	}
+	// AuthTypesTable holds the schema information for the "auth_types" table.
+	AuthTypesTable = &schema.Table{
+		Name:       "auth_types",
+		Columns:    AuthTypesColumns,
+		PrimaryKey: []*schema.Column{AuthTypesColumns[0]},
 	}
 	// BlockchainsColumns holds the columns for the "blockchains" table.
 	BlockchainsColumns = []*schema.Column{
@@ -282,17 +305,25 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "auth_type", Type: field.TypeEnum, Enums: []string{"LOCAL", "GOOGLE", "FACEBOOK", "APPLE"}, Default: "LOCAL"},
 		{Name: "nickname", Type: field.TypeString, Unique: true},
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "password_updated_at", Type: field.TypeTime},
+		{Name: "auth_type_id", Type: field.TypeString, Unique: true},
 	}
 	// StaffAccountsTable holds the schema information for the "staff_accounts" table.
 	StaffAccountsTable = &schema.Table{
 		Name:       "staff_accounts",
 		Columns:    StaffAccountsColumns,
 		PrimaryKey: []*schema.Column{StaffAccountsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "staff_accounts_auth_types_staff_account",
+				Columns:    []*schema.Column{StaffAccountsColumns[8]},
+				RefColumns: []*schema.Column{AuthTypesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 	}
 	// StaffAccountAuthRolesColumns holds the columns for the "staff_account_auth_roles" table.
 	StaffAccountAuthRolesColumns = []*schema.Column{
@@ -405,6 +436,7 @@ var (
 		AssetsTable,
 		AssetClassesTable,
 		AuthRolesTable,
+		AuthTypesTable,
 		BlockchainsTable,
 		BlockchainCryptocurrenciesTable,
 		CryptocurrenciesTable,
@@ -419,6 +451,7 @@ var (
 )
 
 func init() {
+	AccountsTable.ForeignKeys[0].RefTable = AuthTypesTable
 	AccountsTable.Annotation = &entsql.Annotation{}
 	AccountsTable.Annotation.Checks = map[string]string{
 		"account_chk_if_auth_type_local_then_password_not_null": "(auth_type <> 'LOCAL') OR (password IS NOT NULL)",
@@ -431,6 +464,7 @@ func init() {
 	CryptocurrenciesTable.ForeignKeys[0].RefTable = AssetsTable
 	DailyAssetPricesTable.ForeignKeys[0].RefTable = AssetsTable
 	PortfoliosTable.ForeignKeys[0].RefTable = AccountsTable
+	StaffAccountsTable.ForeignKeys[0].RefTable = AuthTypesTable
 	StaffAccountsTable.Annotation = &entsql.Annotation{}
 	StaffAccountsTable.Annotation.Checks = map[string]string{
 		"staff_account_chk_if_auth_type_local_then_password_not_null": "(auth_type <> 'LOCAL') OR (password IS NOT NULL)",

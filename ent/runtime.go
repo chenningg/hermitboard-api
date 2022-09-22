@@ -10,6 +10,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
 	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
@@ -199,6 +200,39 @@ func init() {
 	authroleDescID := authroleMixinFields0[0].Descriptor()
 	// authrole.DefaultID holds the default value on creation for the id field.
 	authrole.DefaultID = authroleDescID.Default.(func() pulid.PULID)
+	authtypeMixin := schema.AuthType{}.Mixin()
+	authtypeMixinFields0 := authtypeMixin[0].Fields()
+	_ = authtypeMixinFields0
+	authtypeMixinFields1 := authtypeMixin[1].Fields()
+	_ = authtypeMixinFields1
+	authtypeMixinFields2 := authtypeMixin[2].Fields()
+	_ = authtypeMixinFields2
+	authtypeMixinFields3 := authtypeMixin[3].Fields()
+	_ = authtypeMixinFields3
+	authtypeFields := schema.AuthType{}.Fields()
+	_ = authtypeFields
+	// authtypeDescCreatedAt is the schema descriptor for created_at field.
+	authtypeDescCreatedAt := authtypeMixinFields1[0].Descriptor()
+	// authtype.DefaultCreatedAt holds the default value on creation for the created_at field.
+	authtype.DefaultCreatedAt = authtypeDescCreatedAt.Default.(func() time.Time)
+	// authtypeDescUpdatedAt is the schema descriptor for updated_at field.
+	authtypeDescUpdatedAt := authtypeMixinFields2[0].Descriptor()
+	// authtype.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	authtype.DefaultUpdatedAt = authtypeDescUpdatedAt.Default.(func() time.Time)
+	// authtype.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	authtype.UpdateDefaultUpdatedAt = authtypeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// authtypeDescDeletedAt is the schema descriptor for deleted_at field.
+	authtypeDescDeletedAt := authtypeMixinFields3[0].Descriptor()
+	// authtype.UpdateDefaultDeletedAt holds the default value on update for the deleted_at field.
+	authtype.UpdateDefaultDeletedAt = authtypeDescDeletedAt.UpdateDefault.(func() time.Time)
+	// authtypeDescDescription is the schema descriptor for description field.
+	authtypeDescDescription := authtypeFields[1].Descriptor()
+	// authtype.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	authtype.DescriptionValidator = authtypeDescDescription.Validators[0].(func(string) error)
+	// authtypeDescID is the schema descriptor for id field.
+	authtypeDescID := authtypeMixinFields0[0].Descriptor()
+	// authtype.DefaultID holds the default value on creation for the id field.
+	authtype.DefaultID = authtypeDescID.Default.(func() pulid.PULID)
 	blockchainMixin := schema.Blockchain{}.Mixin()
 	blockchainMixinFields0 := blockchainMixin[0].Fields()
 	_ = blockchainMixinFields0

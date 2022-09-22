@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/chenningg/hermitboard-api/ent/account"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -23,8 +24,8 @@ type Account struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// AuthType holds the value of the "auth_type" field.
-	AuthType account.AuthType `json:"auth_type,omitempty"`
+	// AuthTypeID holds the value of the "auth_type_id" field.
+	AuthTypeID pulid.PULID `json:"auth_type_id,omitempty"`
 	// Nickname holds the value of the "nickname" field.
 	Nickname string `json:"nickname,omitempty"`
 	// Email holds the value of the "email" field.
@@ -44,13 +45,15 @@ type AccountEdges struct {
 	AuthRoles []*AuthRole `json:"auth_roles,omitempty"`
 	// Portfolios holds the value of the portfolios edge.
 	Portfolios []*Portfolio `json:"portfolios,omitempty"`
+	// AuthType holds the value of the auth_type edge.
+	AuthType *AuthType `json:"auth_type,omitempty"`
 	// AccountAuthRoles holds the value of the account_auth_roles edge.
 	AccountAuthRoles []*AccountAuthRole `json:"account_auth_roles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 	// totalCount holds the count of the edges above.
-	totalCount [3]map[string]int
+	totalCount [4]map[string]int
 
 	namedAuthRoles        map[string][]*AuthRole
 	namedPortfolios       map[string][]*Portfolio
@@ -75,10 +78,23 @@ func (e AccountEdges) PortfoliosOrErr() ([]*Portfolio, error) {
 	return nil, &NotLoadedError{edge: "portfolios"}
 }
 
+// AuthTypeOrErr returns the AuthType value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e AccountEdges) AuthTypeOrErr() (*AuthType, error) {
+	if e.loadedTypes[2] {
+		if e.AuthType == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: authtype.Label}
+		}
+		return e.AuthType, nil
+	}
+	return nil, &NotLoadedError{edge: "auth_type"}
+}
+
 // AccountAuthRolesOrErr returns the AccountAuthRoles value or an error if the edge
 // was not loaded in eager-loading.
 func (e AccountEdges) AccountAuthRolesOrErr() ([]*AccountAuthRole, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.AccountAuthRoles, nil
 	}
 	return nil, &NotLoadedError{edge: "account_auth_roles"}
@@ -89,9 +105,9 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case account.FieldID:
+		case account.FieldID, account.FieldAuthTypeID:
 			values[i] = new(pulid.PULID)
-		case account.FieldAuthType, account.FieldNickname, account.FieldEmail, account.FieldPassword:
+		case account.FieldNickname, account.FieldEmail, account.FieldPassword:
 			values[i] = new(sql.NullString)
 		case account.FieldCreatedAt, account.FieldUpdatedAt, account.FieldDeletedAt, account.FieldPasswordUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -135,11 +151,11 @@ func (a *Account) assignValues(columns []string, values []any) error {
 				a.DeletedAt = new(time.Time)
 				*a.DeletedAt = value.Time
 			}
-		case account.FieldAuthType:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field auth_type", values[i])
-			} else if value.Valid {
-				a.AuthType = account.AuthType(value.String)
+		case account.FieldAuthTypeID:
+			if value, ok := values[i].(*pulid.PULID); !ok {
+				return fmt.Errorf("unexpected type %T for field auth_type_id", values[i])
+			} else if value != nil {
+				a.AuthTypeID = *value
 			}
 		case account.FieldNickname:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -181,6 +197,11 @@ func (a *Account) QueryPortfolios() *PortfolioQuery {
 	return (&AccountClient{config: a.config}).QueryPortfolios(a)
 }
 
+// QueryAuthType queries the "auth_type" edge of the Account entity.
+func (a *Account) QueryAuthType() *AuthTypeQuery {
+	return (&AccountClient{config: a.config}).QueryAuthType(a)
+}
+
 // QueryAccountAuthRoles queries the "account_auth_roles" edge of the Account entity.
 func (a *Account) QueryAccountAuthRoles() *AccountAuthRoleQuery {
 	return (&AccountClient{config: a.config}).QueryAccountAuthRoles(a)
@@ -220,8 +241,8 @@ func (a *Account) String() string {
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("auth_type=")
-	builder.WriteString(fmt.Sprintf("%v", a.AuthType))
+	builder.WriteString("auth_type_id=")
+	builder.WriteString(fmt.Sprintf("%v", a.AuthTypeID))
 	builder.WriteString(", ")
 	builder.WriteString("nickname=")
 	builder.WriteString(a.Nickname)

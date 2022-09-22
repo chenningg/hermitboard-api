@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
 	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
@@ -49,17 +50,9 @@ func (sau *StaffAccountUpdate) ClearDeletedAt() *StaffAccountUpdate {
 	return sau
 }
 
-// SetAuthType sets the "auth_type" field.
-func (sau *StaffAccountUpdate) SetAuthType(st staffaccount.AuthType) *StaffAccountUpdate {
-	sau.mutation.SetAuthType(st)
-	return sau
-}
-
-// SetNillableAuthType sets the "auth_type" field if the given value is not nil.
-func (sau *StaffAccountUpdate) SetNillableAuthType(st *staffaccount.AuthType) *StaffAccountUpdate {
-	if st != nil {
-		sau.SetAuthType(*st)
-	}
+// SetAuthTypeID sets the "auth_type_id" field.
+func (sau *StaffAccountUpdate) SetAuthTypeID(pu pulid.PULID) *StaffAccountUpdate {
+	sau.mutation.SetAuthTypeID(pu)
 	return sau
 }
 
@@ -116,6 +109,11 @@ func (sau *StaffAccountUpdate) AddAuthRoles(a ...*AuthRole) *StaffAccountUpdate 
 	return sau.AddAuthRoleIDs(ids...)
 }
 
+// SetAuthType sets the "auth_type" edge to the AuthType entity.
+func (sau *StaffAccountUpdate) SetAuthType(a *AuthType) *StaffAccountUpdate {
+	return sau.SetAuthTypeID(a.ID)
+}
+
 // AddStaffAccountAuthRoleIDs adds the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity by IDs.
 func (sau *StaffAccountUpdate) AddStaffAccountAuthRoleIDs(ids ...pulid.PULID) *StaffAccountUpdate {
 	sau.mutation.AddStaffAccountAuthRoleIDs(ids...)
@@ -155,6 +153,12 @@ func (sau *StaffAccountUpdate) RemoveAuthRoles(a ...*AuthRole) *StaffAccountUpda
 		ids[i] = a[i].ID
 	}
 	return sau.RemoveAuthRoleIDs(ids...)
+}
+
+// ClearAuthType clears the "auth_type" edge to the AuthType entity.
+func (sau *StaffAccountUpdate) ClearAuthType() *StaffAccountUpdate {
+	sau.mutation.ClearAuthType()
+	return sau
 }
 
 // ClearStaffAccountAuthRoles clears all "staff_account_auth_roles" edges to the StaffAccountAuthRole entity.
@@ -257,11 +261,6 @@ func (sau *StaffAccountUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (sau *StaffAccountUpdate) check() error {
-	if v, ok := sau.mutation.AuthType(); ok {
-		if err := staffaccount.AuthTypeValidator(v); err != nil {
-			return &ValidationError{Name: "auth_type", err: fmt.Errorf(`ent: validator failed for field "StaffAccount.auth_type": %w`, err)}
-		}
-	}
 	if v, ok := sau.mutation.Nickname(); ok {
 		if err := staffaccount.NicknameValidator(v); err != nil {
 			return &ValidationError{Name: "nickname", err: fmt.Errorf(`ent: validator failed for field "StaffAccount.nickname": %w`, err)}
@@ -276,6 +275,9 @@ func (sau *StaffAccountUpdate) check() error {
 		if err := staffaccount.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "StaffAccount.password": %w`, err)}
 		}
+	}
+	if _, ok := sau.mutation.AuthTypeID(); sau.mutation.AuthTypeCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "StaffAccount.auth_type"`)
 	}
 	return nil
 }
@@ -316,13 +318,6 @@ func (sau *StaffAccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: staffaccount.FieldDeletedAt,
-		})
-	}
-	if value, ok := sau.mutation.AuthType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: staffaccount.FieldAuthType,
 		})
 	}
 	if value, ok := sau.mutation.Nickname(); ok {
@@ -434,6 +429,41 @@ func (sau *StaffAccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if sau.mutation.AuthTypeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   staffaccount.AuthTypeTable,
+			Columns: []string{staffaccount.AuthTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: authtype.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := sau.mutation.AuthTypeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   staffaccount.AuthTypeTable,
+			Columns: []string{staffaccount.AuthTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: authtype.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if sau.mutation.StaffAccountAuthRolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -525,17 +555,9 @@ func (sauo *StaffAccountUpdateOne) ClearDeletedAt() *StaffAccountUpdateOne {
 	return sauo
 }
 
-// SetAuthType sets the "auth_type" field.
-func (sauo *StaffAccountUpdateOne) SetAuthType(st staffaccount.AuthType) *StaffAccountUpdateOne {
-	sauo.mutation.SetAuthType(st)
-	return sauo
-}
-
-// SetNillableAuthType sets the "auth_type" field if the given value is not nil.
-func (sauo *StaffAccountUpdateOne) SetNillableAuthType(st *staffaccount.AuthType) *StaffAccountUpdateOne {
-	if st != nil {
-		sauo.SetAuthType(*st)
-	}
+// SetAuthTypeID sets the "auth_type_id" field.
+func (sauo *StaffAccountUpdateOne) SetAuthTypeID(pu pulid.PULID) *StaffAccountUpdateOne {
+	sauo.mutation.SetAuthTypeID(pu)
 	return sauo
 }
 
@@ -592,6 +614,11 @@ func (sauo *StaffAccountUpdateOne) AddAuthRoles(a ...*AuthRole) *StaffAccountUpd
 	return sauo.AddAuthRoleIDs(ids...)
 }
 
+// SetAuthType sets the "auth_type" edge to the AuthType entity.
+func (sauo *StaffAccountUpdateOne) SetAuthType(a *AuthType) *StaffAccountUpdateOne {
+	return sauo.SetAuthTypeID(a.ID)
+}
+
 // AddStaffAccountAuthRoleIDs adds the "staff_account_auth_roles" edge to the StaffAccountAuthRole entity by IDs.
 func (sauo *StaffAccountUpdateOne) AddStaffAccountAuthRoleIDs(ids ...pulid.PULID) *StaffAccountUpdateOne {
 	sauo.mutation.AddStaffAccountAuthRoleIDs(ids...)
@@ -631,6 +658,12 @@ func (sauo *StaffAccountUpdateOne) RemoveAuthRoles(a ...*AuthRole) *StaffAccount
 		ids[i] = a[i].ID
 	}
 	return sauo.RemoveAuthRoleIDs(ids...)
+}
+
+// ClearAuthType clears the "auth_type" edge to the AuthType entity.
+func (sauo *StaffAccountUpdateOne) ClearAuthType() *StaffAccountUpdateOne {
+	sauo.mutation.ClearAuthType()
+	return sauo
 }
 
 // ClearStaffAccountAuthRoles clears all "staff_account_auth_roles" edges to the StaffAccountAuthRole entity.
@@ -746,11 +779,6 @@ func (sauo *StaffAccountUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (sauo *StaffAccountUpdateOne) check() error {
-	if v, ok := sauo.mutation.AuthType(); ok {
-		if err := staffaccount.AuthTypeValidator(v); err != nil {
-			return &ValidationError{Name: "auth_type", err: fmt.Errorf(`ent: validator failed for field "StaffAccount.auth_type": %w`, err)}
-		}
-	}
 	if v, ok := sauo.mutation.Nickname(); ok {
 		if err := staffaccount.NicknameValidator(v); err != nil {
 			return &ValidationError{Name: "nickname", err: fmt.Errorf(`ent: validator failed for field "StaffAccount.nickname": %w`, err)}
@@ -765,6 +793,9 @@ func (sauo *StaffAccountUpdateOne) check() error {
 		if err := staffaccount.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "StaffAccount.password": %w`, err)}
 		}
+	}
+	if _, ok := sauo.mutation.AuthTypeID(); sauo.mutation.AuthTypeCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "StaffAccount.auth_type"`)
 	}
 	return nil
 }
@@ -822,13 +853,6 @@ func (sauo *StaffAccountUpdateOne) sqlSave(ctx context.Context) (_node *StaffAcc
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: staffaccount.FieldDeletedAt,
-		})
-	}
-	if value, ok := sauo.mutation.AuthType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: staffaccount.FieldAuthType,
 		})
 	}
 	if value, ok := sauo.mutation.Nickname(); ok {
@@ -937,6 +961,41 @@ func (sauo *StaffAccountUpdateOne) sqlSave(ctx context.Context) (_node *StaffAcc
 		edge.Target.Fields = specE.Fields
 		if specE.ID.Value != nil {
 			edge.Target.Fields = append(edge.Target.Fields, specE.ID)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if sauo.mutation.AuthTypeCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   staffaccount.AuthTypeTable,
+			Columns: []string{staffaccount.AuthTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: authtype.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := sauo.mutation.AuthTypeIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   staffaccount.AuthTypeTable,
+			Columns: []string{staffaccount.AuthTypeColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: authtype.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}

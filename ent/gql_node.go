@@ -14,6 +14,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
 	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
@@ -60,7 +61,7 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 		ID:     a.ID,
 		Type:   "Account",
 		Fields: make([]*Field, 8),
-		Edges:  make([]*Edge, 3),
+		Edges:  make([]*Edge, 4),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(a.CreatedAt); err != nil {
@@ -87,12 +88,12 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "deleted_at",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(a.AuthType); err != nil {
+	if buf, err = json.Marshal(a.AuthTypeID); err != nil {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
-		Type:  "account.AuthType",
-		Name:  "auth_type",
+		Type:  "pulid.PULID",
+		Name:  "auth_type_id",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(a.Nickname); err != nil {
@@ -148,12 +149,22 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Edges[2] = &Edge{
+		Type: "AuthType",
+		Name: "auth_type",
+	}
+	err = a.QueryAuthType().
+		Select(authtype.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[3] = &Edge{
 		Type: "AccountAuthRole",
 		Name: "account_auth_roles",
 	}
 	err = a.QueryAccountAuthRoles().
 		Select(accountauthrole.FieldID).
-		Scan(ctx, &node.Edges[2].IDs)
+		Scan(ctx, &node.Edges[3].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -470,6 +481,77 @@ func (ar *AuthRole) Node(ctx context.Context) (node *Node, err error) {
 	err = ar.QueryStaffAccountAuthRoles().
 		Select(staffaccountauthrole.FieldID).
 		Scan(ctx, &node.Edges[3].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (at *AuthType) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     at.ID,
+		Type:   "AuthType",
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(at.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(at.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(at.DeletedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "deleted_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(at.AuthType); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "authtype.AuthType",
+		Name:  "auth_type",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(at.Description); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "string",
+		Name:  "description",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Account",
+		Name: "account",
+	}
+	err = at.QueryAccount().
+		Select(account.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "StaffAccount",
+		Name: "staff_account",
+	}
+	err = at.QueryStaffAccount().
+		Select(staffaccount.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -993,7 +1075,7 @@ func (sa *StaffAccount) Node(ctx context.Context) (node *Node, err error) {
 		ID:     sa.ID,
 		Type:   "StaffAccount",
 		Fields: make([]*Field, 8),
-		Edges:  make([]*Edge, 2),
+		Edges:  make([]*Edge, 3),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(sa.CreatedAt); err != nil {
@@ -1020,12 +1102,12 @@ func (sa *StaffAccount) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "deleted_at",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(sa.AuthType); err != nil {
+	if buf, err = json.Marshal(sa.AuthTypeID); err != nil {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
-		Type:  "staffaccount.AuthType",
-		Name:  "auth_type",
+		Type:  "pulid.PULID",
+		Name:  "auth_type_id",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(sa.Nickname); err != nil {
@@ -1071,12 +1153,22 @@ func (sa *StaffAccount) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Edges[1] = &Edge{
+		Type: "AuthType",
+		Name: "auth_type",
+	}
+	err = sa.QueryAuthType().
+		Select(authtype.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
 		Type: "StaffAccountAuthRole",
 		Name: "staff_account_auth_roles",
 	}
 	err = sa.QueryStaffAccountAuthRoles().
 		Select(staffaccountauthrole.FieldID).
-		Scan(ctx, &node.Edges[1].IDs)
+		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -1510,6 +1602,22 @@ func (c *Client) noder(ctx context.Context, table string, id pulid.PULID) (Noder
 			return nil, err
 		}
 		return n, nil
+	case authtype.Table:
+		var uid pulid.PULID
+		if err := uid.UnmarshalGQL(id); err != nil {
+			return nil, err
+		}
+		query := c.AuthType.Query().
+			Where(authtype.ID(uid))
+		query, err := query.CollectFields(ctx, "AuthType")
+		if err != nil {
+			return nil, err
+		}
+		n, err := query.Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case blockchain.Table:
 		var uid pulid.PULID
 		if err := uid.UnmarshalGQL(id); err != nil {
@@ -1811,6 +1919,22 @@ func (c *Client) noders(ctx context.Context, table string, ids []pulid.PULID) ([
 		query := c.AuthRole.Query().
 			Where(authrole.IDIn(ids...))
 		query, err := query.CollectFields(ctx, "AuthRole")
+		if err != nil {
+			return nil, err
+		}
+		nodes, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case authtype.Table:
+		query := c.AuthType.Query().
+			Where(authtype.IDIn(ids...))
+		query, err := query.CollectFields(ctx, "AuthType")
 		if err != nil {
 			return nil, err
 		}

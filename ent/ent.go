@@ -15,6 +15,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
 	"github.com/chenningg/hermitboard-api/ent/blockchaincryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
@@ -50,6 +51,7 @@ func columnChecker(table string) func(string) error {
 		asset.Table:                    asset.ValidColumn,
 		assetclass.Table:               assetclass.ValidColumn,
 		authrole.Table:                 authrole.ValidColumn,
+		authtype.Table:                 authtype.ValidColumn,
 		blockchain.Table:               blockchain.ValidColumn,
 		blockchaincryptocurrency.Table: blockchaincryptocurrency.ValidColumn,
 		cryptocurrency.Table:           cryptocurrency.ValidColumn,
