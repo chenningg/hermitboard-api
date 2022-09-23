@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
@@ -42,7 +44,17 @@ func (Portfolio) Edges() []ent.Edge {
 		edge.From("account", Account.Type).
 			Ref("portfolios").
 			Unique().
-			Required(),
-		edge.To("transactions", Transaction.Type),
+			Required().
+			Annotations(entgql.MapsTo("account")),
+		edge.To("transactions", Transaction.Type).
+			Annotations(entgql.MapsTo("transactions")),
+	}
+}
+
+func (Portfolio) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.RelayConnection(),
+		entgql.QueryField(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

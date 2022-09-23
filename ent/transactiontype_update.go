@@ -48,9 +48,9 @@ func (ttu *TransactionTypeUpdate) ClearDeletedAt() *TransactionTypeUpdate {
 	return ttu
 }
 
-// SetTransactionType sets the "transaction_type" field.
-func (ttu *TransactionTypeUpdate) SetTransactionType(tt transactiontype.TransactionType) *TransactionTypeUpdate {
-	ttu.mutation.SetTransactionType(tt)
+// SetValue sets the "value" field.
+func (ttu *TransactionTypeUpdate) SetValue(t transactiontype.Value) *TransactionTypeUpdate {
+	ttu.mutation.SetValue(t)
 	return ttu
 }
 
@@ -190,9 +190,9 @@ func (ttu *TransactionTypeUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ttu *TransactionTypeUpdate) check() error {
-	if v, ok := ttu.mutation.TransactionType(); ok {
-		if err := transactiontype.TransactionTypeValidator(v); err != nil {
-			return &ValidationError{Name: "transaction_type", err: fmt.Errorf(`ent: validator failed for field "TransactionType.transaction_type": %w`, err)}
+	if v, ok := ttu.mutation.Value(); ok {
+		if err := transactiontype.ValueValidator(v); err != nil {
+			return &ValidationError{Name: "value", err: fmt.Errorf(`ent: validator failed for field "TransactionType.value": %w`, err)}
 		}
 	}
 	if v, ok := ttu.mutation.Description(); ok {
@@ -241,11 +241,11 @@ func (ttu *TransactionTypeUpdate) sqlSave(ctx context.Context) (n int, err error
 			Column: transactiontype.FieldDeletedAt,
 		})
 	}
-	if value, ok := ttu.mutation.TransactionType(); ok {
+	if value, ok := ttu.mutation.Value(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: transactiontype.FieldTransactionType,
+			Column: transactiontype.FieldValue,
 		})
 	}
 	if value, ok := ttu.mutation.Description(); ok {
@@ -352,9 +352,9 @@ func (ttuo *TransactionTypeUpdateOne) ClearDeletedAt() *TransactionTypeUpdateOne
 	return ttuo
 }
 
-// SetTransactionType sets the "transaction_type" field.
-func (ttuo *TransactionTypeUpdateOne) SetTransactionType(tt transactiontype.TransactionType) *TransactionTypeUpdateOne {
-	ttuo.mutation.SetTransactionType(tt)
+// SetValue sets the "value" field.
+func (ttuo *TransactionTypeUpdateOne) SetValue(t transactiontype.Value) *TransactionTypeUpdateOne {
+	ttuo.mutation.SetValue(t)
 	return ttuo
 }
 
@@ -507,9 +507,9 @@ func (ttuo *TransactionTypeUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ttuo *TransactionTypeUpdateOne) check() error {
-	if v, ok := ttuo.mutation.TransactionType(); ok {
-		if err := transactiontype.TransactionTypeValidator(v); err != nil {
-			return &ValidationError{Name: "transaction_type", err: fmt.Errorf(`ent: validator failed for field "TransactionType.transaction_type": %w`, err)}
+	if v, ok := ttuo.mutation.Value(); ok {
+		if err := transactiontype.ValueValidator(v); err != nil {
+			return &ValidationError{Name: "value", err: fmt.Errorf(`ent: validator failed for field "TransactionType.value": %w`, err)}
 		}
 	}
 	if v, ok := ttuo.mutation.Description(); ok {
@@ -575,11 +575,11 @@ func (ttuo *TransactionTypeUpdateOne) sqlSave(ctx context.Context) (_node *Trans
 			Column: transactiontype.FieldDeletedAt,
 		})
 	}
-	if value, ok := ttuo.mutation.TransactionType(); ok {
+	if value, ok := ttuo.mutation.Value(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: transactiontype.FieldTransactionType,
+			Column: transactiontype.FieldValue,
 		})
 	}
 	if value, ok := ttuo.mutation.Description(); ok {

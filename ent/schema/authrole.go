@@ -3,6 +3,7 @@ package schema
 import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
@@ -26,7 +27,7 @@ func (AuthRole) Mixin() []ent.Mixin {
 // Fields of the AuthRole.
 func (AuthRole) Fields() []ent.Field {
 	return []ent.Field{
-		field.Enum("auth_role").
+		field.Enum("value").
 			NamedValues(
 				"Demo", "DEMO",
 				"Free", "FREE",
@@ -38,6 +39,7 @@ func (AuthRole) Fields() []ent.Field {
 				"SuperAdmin", "SUPER_ADMIN",
 			).
 			Annotations(
+				entgql.Type("AuthRoleValue"),
 				entgql.OrderField("AUTH_ROLE"),
 			),
 		field.String("description").
@@ -51,8 +53,18 @@ func (AuthRole) Fields() []ent.Field {
 func (AuthRole) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("accounts", Account.Type).
-			Ref("auth_roles"),
+			Ref("auth_roles").
+			Annotations(entgql.MapsTo("accounts")),
 		edge.From("staff_accounts", StaffAccount.Type).
-			Ref("auth_roles"),
+			Ref("auth_roles").
+			Annotations(entgql.MapsTo("staffAccounts")),
+	}
+}
+
+func (AuthRole) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.RelayConnection(),
+		entgql.QueryField(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

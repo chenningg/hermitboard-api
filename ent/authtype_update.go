@@ -49,17 +49,9 @@ func (atu *AuthTypeUpdate) ClearDeletedAt() *AuthTypeUpdate {
 	return atu
 }
 
-// SetAuthType sets the "auth_type" field.
-func (atu *AuthTypeUpdate) SetAuthType(at authtype.AuthType) *AuthTypeUpdate {
-	atu.mutation.SetAuthType(at)
-	return atu
-}
-
-// SetNillableAuthType sets the "auth_type" field if the given value is not nil.
-func (atu *AuthTypeUpdate) SetNillableAuthType(at *authtype.AuthType) *AuthTypeUpdate {
-	if at != nil {
-		atu.SetAuthType(*at)
-	}
+// SetValue sets the "value" field.
+func (atu *AuthTypeUpdate) SetValue(a authtype.Value) *AuthTypeUpdate {
+	atu.mutation.SetValue(a)
 	return atu
 }
 
@@ -235,9 +227,9 @@ func (atu *AuthTypeUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (atu *AuthTypeUpdate) check() error {
-	if v, ok := atu.mutation.AuthType(); ok {
-		if err := authtype.AuthTypeValidator(v); err != nil {
-			return &ValidationError{Name: "auth_type", err: fmt.Errorf(`ent: validator failed for field "AuthType.auth_type": %w`, err)}
+	if v, ok := atu.mutation.Value(); ok {
+		if err := authtype.ValueValidator(v); err != nil {
+			return &ValidationError{Name: "value", err: fmt.Errorf(`ent: validator failed for field "AuthType.value": %w`, err)}
 		}
 	}
 	if v, ok := atu.mutation.Description(); ok {
@@ -286,11 +278,11 @@ func (atu *AuthTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: authtype.FieldDeletedAt,
 		})
 	}
-	if value, ok := atu.mutation.AuthType(); ok {
+	if value, ok := atu.mutation.Value(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: authtype.FieldAuthType,
+			Column: authtype.FieldValue,
 		})
 	}
 	if value, ok := atu.mutation.Description(); ok {
@@ -451,17 +443,9 @@ func (atuo *AuthTypeUpdateOne) ClearDeletedAt() *AuthTypeUpdateOne {
 	return atuo
 }
 
-// SetAuthType sets the "auth_type" field.
-func (atuo *AuthTypeUpdateOne) SetAuthType(at authtype.AuthType) *AuthTypeUpdateOne {
-	atuo.mutation.SetAuthType(at)
-	return atuo
-}
-
-// SetNillableAuthType sets the "auth_type" field if the given value is not nil.
-func (atuo *AuthTypeUpdateOne) SetNillableAuthType(at *authtype.AuthType) *AuthTypeUpdateOne {
-	if at != nil {
-		atuo.SetAuthType(*at)
-	}
+// SetValue sets the "value" field.
+func (atuo *AuthTypeUpdateOne) SetValue(a authtype.Value) *AuthTypeUpdateOne {
+	atuo.mutation.SetValue(a)
 	return atuo
 }
 
@@ -650,9 +634,9 @@ func (atuo *AuthTypeUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (atuo *AuthTypeUpdateOne) check() error {
-	if v, ok := atuo.mutation.AuthType(); ok {
-		if err := authtype.AuthTypeValidator(v); err != nil {
-			return &ValidationError{Name: "auth_type", err: fmt.Errorf(`ent: validator failed for field "AuthType.auth_type": %w`, err)}
+	if v, ok := atuo.mutation.Value(); ok {
+		if err := authtype.ValueValidator(v); err != nil {
+			return &ValidationError{Name: "value", err: fmt.Errorf(`ent: validator failed for field "AuthType.value": %w`, err)}
 		}
 	}
 	if v, ok := atuo.mutation.Description(); ok {
@@ -718,11 +702,11 @@ func (atuo *AuthTypeUpdateOne) sqlSave(ctx context.Context) (_node *AuthType, er
 			Column: authtype.FieldDeletedAt,
 		})
 	}
-	if value, ok := atuo.mutation.AuthType(); ok {
+	if value, ok := atuo.mutation.Value(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: authtype.FieldAuthType,
+			Column: authtype.FieldValue,
 		})
 	}
 	if value, ok := atuo.mutation.Description(); ok {

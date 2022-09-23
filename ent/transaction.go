@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/chenningg/hermitboard-api/ent/asset"
+	"github.com/chenningg/hermitboard-api/ent/blockchain"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
@@ -41,6 +42,7 @@ type Transaction struct {
 	transaction_transaction_type *pulid.PULID
 	transaction_base_asset       *pulid.PULID
 	transaction_quote_asset      *pulid.PULID
+	transaction_blockchain       *pulid.PULID
 }
 
 // TransactionEdges holds the relations/edges for other nodes in the graph.
@@ -55,11 +57,13 @@ type TransactionEdges struct {
 	Portfolio *Portfolio `json:"portfolio,omitempty"`
 	// Exchange holds the value of the exchange edge.
 	Exchange *Exchange `json:"exchange,omitempty"`
+	// Blockchain holds the value of the blockchain edge.
+	Blockchain *Blockchain `json:"blockchain,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 	// totalCount holds the count of the edges above.
-	totalCount [5]map[string]int
+	totalCount [6]map[string]int
 }
 
 // TransactionTypeOrErr returns the TransactionType value or an error if the edge
@@ -127,6 +131,19 @@ func (e TransactionEdges) ExchangeOrErr() (*Exchange, error) {
 	return nil, &NotLoadedError{edge: "exchange"}
 }
 
+// BlockchainOrErr returns the Blockchain value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TransactionEdges) BlockchainOrErr() (*Blockchain, error) {
+	if e.loadedTypes[5] {
+		if e.Blockchain == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: blockchain.Label}
+		}
+		return e.Blockchain, nil
+	}
+	return nil, &NotLoadedError{edge: "blockchain"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Transaction) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -149,6 +166,8 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 		case transaction.ForeignKeys[3]: // transaction_base_asset
 			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		case transaction.ForeignKeys[4]: // transaction_quote_asset
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
+		case transaction.ForeignKeys[5]: // transaction_blockchain
 			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Transaction", columns[i])
@@ -243,6 +262,13 @@ func (t *Transaction) assignValues(columns []string, values []any) error {
 				t.transaction_quote_asset = new(pulid.PULID)
 				*t.transaction_quote_asset = *value.S.(*pulid.PULID)
 			}
+		case transaction.ForeignKeys[5]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field transaction_blockchain", values[i])
+			} else if value.Valid {
+				t.transaction_blockchain = new(pulid.PULID)
+				*t.transaction_blockchain = *value.S.(*pulid.PULID)
+			}
 		}
 	}
 	return nil
@@ -271,6 +297,11 @@ func (t *Transaction) QueryPortfolio() *PortfolioQuery {
 // QueryExchange queries the "exchange" edge of the Transaction entity.
 func (t *Transaction) QueryExchange() *ExchangeQuery {
 	return (&TransactionClient{config: t.config}).QueryExchange(t)
+}
+
+// QueryBlockchain queries the "blockchain" edge of the Transaction entity.
+func (t *Transaction) QueryBlockchain() *BlockchainQuery {
+	return (&TransactionClient{config: t.config}).QueryBlockchain(t)
 }
 
 // Update returns a builder for updating this Transaction.

@@ -20,7 +20,6 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
-	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -205,9 +204,9 @@ func (a *Asset) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[2] = &Edge{
 		Type: "Transaction",
-		Name: "transaction_base",
+		Name: "transaction_bases",
 	}
-	err = a.QueryTransactionBase().
+	err = a.QueryTransactionBases().
 		Select(transaction.FieldID).
 		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
@@ -215,9 +214,9 @@ func (a *Asset) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[3] = &Edge{
 		Type: "Transaction",
-		Name: "transaction_quote",
+		Name: "transaction_quotes",
 	}
-	err = a.QueryTransactionQuote().
+	err = a.QueryTransactionQuotes().
 		Select(transaction.FieldID).
 		Scan(ctx, &node.Edges[3].IDs)
 	if err != nil {
@@ -268,12 +267,12 @@ func (ac *AssetClass) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "deleted_at",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(ac.AssetClass); err != nil {
+	if buf, err = json.Marshal(ac.Value); err != nil {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
-		Type:  "assetclass.AssetClass",
-		Name:  "asset_class",
+		Type:  "assetclass.Value",
+		Name:  "value",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(ac.Description); err != nil {
@@ -329,12 +328,12 @@ func (ar *AuthRole) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "deleted_at",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(ar.AuthRole); err != nil {
+	if buf, err = json.Marshal(ar.Value); err != nil {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
-		Type:  "authrole.AuthRole",
-		Name:  "auth_role",
+		Type:  "authrole.Value",
+		Name:  "value",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(ar.Description); err != nil {
@@ -400,12 +399,12 @@ func (at *AuthType) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "deleted_at",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(at.AuthType); err != nil {
+	if buf, err = json.Marshal(at.Value); err != nil {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
-		Type:  "authtype.AuthType",
-		Name:  "auth_type",
+		Type:  "authtype.Value",
+		Name:  "value",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(at.Description); err != nil {
@@ -444,7 +443,7 @@ func (b *Blockchain) Node(ctx context.Context) (node *Node, err error) {
 		ID:     b.ID,
 		Type:   "Blockchain",
 		Fields: make([]*Field, 7),
-		Edges:  make([]*Edge, 1),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(b.CreatedAt); err != nil {
@@ -510,6 +509,16 @@ func (b *Blockchain) Node(ctx context.Context) (node *Node, err error) {
 	err = b.QueryCryptocurrencies().
 		Select(cryptocurrency.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Transaction",
+		Name: "transactions",
+	}
+	err = b.QueryTransactions().
+		Select(transaction.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -923,83 +932,12 @@ func (sa *StaffAccount) Node(ctx context.Context) (node *Node, err error) {
 	return node, nil
 }
 
-func (saar *StaffAccountAuthRole) Node(ctx context.Context) (node *Node, err error) {
-	node = &Node{
-		ID:     saar.ID,
-		Type:   "StaffAccountAuthRole",
-		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 2),
-	}
-	var buf []byte
-	if buf, err = json.Marshal(saar.CreatedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[0] = &Field{
-		Type:  "time.Time",
-		Name:  "created_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(saar.UpdatedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[1] = &Field{
-		Type:  "time.Time",
-		Name:  "updated_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(saar.DeletedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[2] = &Field{
-		Type:  "time.Time",
-		Name:  "deleted_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(saar.StaffAccountID); err != nil {
-		return nil, err
-	}
-	node.Fields[3] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "staff_account_id",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(saar.AuthRoleID); err != nil {
-		return nil, err
-	}
-	node.Fields[4] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "auth_role_id",
-		Value: string(buf),
-	}
-	node.Edges[0] = &Edge{
-		Type: "StaffAccount",
-		Name: "staff_account",
-	}
-	err = saar.QueryStaffAccount().
-		Select(staffaccount.FieldID).
-		Scan(ctx, &node.Edges[0].IDs)
-	if err != nil {
-		return nil, err
-	}
-	node.Edges[1] = &Edge{
-		Type: "AuthRole",
-		Name: "auth_role",
-	}
-	err = saar.QueryAuthRole().
-		Select(authrole.FieldID).
-		Scan(ctx, &node.Edges[1].IDs)
-	if err != nil {
-		return nil, err
-	}
-	return node, nil
-}
-
 func (t *Transaction) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     t.ID,
 		Type:   "Transaction",
 		Fields: make([]*Field, 6),
-		Edges:  make([]*Edge, 5),
+		Edges:  make([]*Edge, 6),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.CreatedAt); err != nil {
@@ -1100,6 +1038,16 @@ func (t *Transaction) Node(ctx context.Context) (node *Node, err error) {
 	if err != nil {
 		return nil, err
 	}
+	node.Edges[5] = &Edge{
+		Type: "Blockchain",
+		Name: "blockchain",
+	}
+	err = t.QueryBlockchain().
+		Select(blockchain.FieldID).
+		Scan(ctx, &node.Edges[5].IDs)
+	if err != nil {
+		return nil, err
+	}
 	return node, nil
 }
 
@@ -1135,12 +1083,12 @@ func (tt *TransactionType) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "deleted_at",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(tt.TransactionType); err != nil {
+	if buf, err = json.Marshal(tt.Value); err != nil {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
-		Type:  "transactiontype.TransactionType",
-		Name:  "transaction_type",
+		Type:  "transactiontype.Value",
+		Name:  "value",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(tt.Description); err != nil {
@@ -1398,22 +1346,6 @@ func (c *Client) noder(ctx context.Context, table string, id pulid.PULID) (Noder
 		query := c.StaffAccount.Query().
 			Where(staffaccount.ID(uid))
 		query, err := query.CollectFields(ctx, "StaffAccount")
-		if err != nil {
-			return nil, err
-		}
-		n, err := query.Only(ctx)
-		if err != nil {
-			return nil, err
-		}
-		return n, nil
-	case staffaccountauthrole.Table:
-		var uid pulid.PULID
-		if err := uid.UnmarshalGQL(id); err != nil {
-			return nil, err
-		}
-		query := c.StaffAccountAuthRole.Query().
-			Where(staffaccountauthrole.ID(uid))
-		query, err := query.CollectFields(ctx, "StaffAccountAuthRole")
 		if err != nil {
 			return nil, err
 		}
@@ -1691,22 +1623,6 @@ func (c *Client) noders(ctx context.Context, table string, ids []pulid.PULID) ([
 		query := c.StaffAccount.Query().
 			Where(staffaccount.IDIn(ids...))
 		query, err := query.CollectFields(ctx, "StaffAccount")
-		if err != nil {
-			return nil, err
-		}
-		nodes, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, node := range nodes {
-			for _, noder := range idmap[node.ID] {
-				*noder = node
-			}
-		}
-	case staffaccountauthrole.Table:
-		query := c.StaffAccountAuthRole.Query().
-			Where(staffaccountauthrole.IDIn(ids...))
-		query, err := query.CollectFields(ctx, "StaffAccountAuthRole")
 		if err != nil {
 			return nil, err
 		}

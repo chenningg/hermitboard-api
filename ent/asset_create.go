@@ -111,29 +111,29 @@ func (ac *AssetCreate) SetCryptocurrency(c *Cryptocurrency) *AssetCreate {
 	return ac.SetCryptocurrencyID(c.ID)
 }
 
-// AddTransactionBaseIDs adds the "transaction_base" edge to the Transaction entity by IDs.
-func (ac *AssetCreate) AddTransactionBaseIDs(ids ...pulid.PULID) *AssetCreate {
-	ac.mutation.AddTransactionBaseIDs(ids...)
+// AddTransactionBasisIDs adds the "transaction_bases" edge to the Transaction entity by IDs.
+func (ac *AssetCreate) AddTransactionBasisIDs(ids ...pulid.PULID) *AssetCreate {
+	ac.mutation.AddTransactionBasisIDs(ids...)
 	return ac
 }
 
-// AddTransactionBase adds the "transaction_base" edges to the Transaction entity.
-func (ac *AssetCreate) AddTransactionBase(t ...*Transaction) *AssetCreate {
+// AddTransactionBases adds the "transaction_bases" edges to the Transaction entity.
+func (ac *AssetCreate) AddTransactionBases(t ...*Transaction) *AssetCreate {
 	ids := make([]pulid.PULID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return ac.AddTransactionBaseIDs(ids...)
+	return ac.AddTransactionBasisIDs(ids...)
 }
 
-// AddTransactionQuoteIDs adds the "transaction_quote" edge to the Transaction entity by IDs.
+// AddTransactionQuoteIDs adds the "transaction_quotes" edge to the Transaction entity by IDs.
 func (ac *AssetCreate) AddTransactionQuoteIDs(ids ...pulid.PULID) *AssetCreate {
 	ac.mutation.AddTransactionQuoteIDs(ids...)
 	return ac
 }
 
-// AddTransactionQuote adds the "transaction_quote" edges to the Transaction entity.
-func (ac *AssetCreate) AddTransactionQuote(t ...*Transaction) *AssetCreate {
+// AddTransactionQuotes adds the "transaction_quotes" edges to the Transaction entity.
+func (ac *AssetCreate) AddTransactionQuotes(t ...*Transaction) *AssetCreate {
 	ids := make([]pulid.PULID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
@@ -357,12 +357,12 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.TransactionBaseIDs(); len(nodes) > 0 {
+	if nodes := ac.mutation.TransactionBasesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   asset.TransactionBaseTable,
-			Columns: []string{asset.TransactionBaseColumn},
+			Table:   asset.TransactionBasesTable,
+			Columns: []string{asset.TransactionBasesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -376,12 +376,12 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := ac.mutation.TransactionQuoteIDs(); len(nodes) > 0 {
+	if nodes := ac.mutation.TransactionQuotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
-			Table:   asset.TransactionQuoteTable,
-			Columns: []string{asset.TransactionQuoteColumn},
+			Table:   asset.TransactionQuotesTable,
+			Columns: []string{asset.TransactionQuotesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

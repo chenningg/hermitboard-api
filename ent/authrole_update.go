@@ -49,9 +49,9 @@ func (aru *AuthRoleUpdate) ClearDeletedAt() *AuthRoleUpdate {
 	return aru
 }
 
-// SetAuthRole sets the "auth_role" field.
-func (aru *AuthRoleUpdate) SetAuthRole(ar authrole.AuthRole) *AuthRoleUpdate {
-	aru.mutation.SetAuthRole(ar)
+// SetValue sets the "value" field.
+func (aru *AuthRoleUpdate) SetValue(a authrole.Value) *AuthRoleUpdate {
+	aru.mutation.SetValue(a)
 	return aru
 }
 
@@ -227,9 +227,9 @@ func (aru *AuthRoleUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (aru *AuthRoleUpdate) check() error {
-	if v, ok := aru.mutation.AuthRole(); ok {
-		if err := authrole.AuthRoleValidator(v); err != nil {
-			return &ValidationError{Name: "auth_role", err: fmt.Errorf(`ent: validator failed for field "AuthRole.auth_role": %w`, err)}
+	if v, ok := aru.mutation.Value(); ok {
+		if err := authrole.ValueValidator(v); err != nil {
+			return &ValidationError{Name: "value", err: fmt.Errorf(`ent: validator failed for field "AuthRole.value": %w`, err)}
 		}
 	}
 	if v, ok := aru.mutation.Description(); ok {
@@ -278,11 +278,11 @@ func (aru *AuthRoleUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: authrole.FieldDeletedAt,
 		})
 	}
-	if value, ok := aru.mutation.AuthRole(); ok {
+	if value, ok := aru.mutation.Value(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: authrole.FieldAuthRole,
+			Column: authrole.FieldValue,
 		})
 	}
 	if value, ok := aru.mutation.Description(); ok {
@@ -443,9 +443,9 @@ func (aruo *AuthRoleUpdateOne) ClearDeletedAt() *AuthRoleUpdateOne {
 	return aruo
 }
 
-// SetAuthRole sets the "auth_role" field.
-func (aruo *AuthRoleUpdateOne) SetAuthRole(ar authrole.AuthRole) *AuthRoleUpdateOne {
-	aruo.mutation.SetAuthRole(ar)
+// SetValue sets the "value" field.
+func (aruo *AuthRoleUpdateOne) SetValue(a authrole.Value) *AuthRoleUpdateOne {
+	aruo.mutation.SetValue(a)
 	return aruo
 }
 
@@ -634,9 +634,9 @@ func (aruo *AuthRoleUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (aruo *AuthRoleUpdateOne) check() error {
-	if v, ok := aruo.mutation.AuthRole(); ok {
-		if err := authrole.AuthRoleValidator(v); err != nil {
-			return &ValidationError{Name: "auth_role", err: fmt.Errorf(`ent: validator failed for field "AuthRole.auth_role": %w`, err)}
+	if v, ok := aruo.mutation.Value(); ok {
+		if err := authrole.ValueValidator(v); err != nil {
+			return &ValidationError{Name: "value", err: fmt.Errorf(`ent: validator failed for field "AuthRole.value": %w`, err)}
 		}
 	}
 	if v, ok := aruo.mutation.Description(); ok {
@@ -702,11 +702,11 @@ func (aruo *AuthRoleUpdateOne) sqlSave(ctx context.Context) (_node *AuthRole, er
 			Column: authrole.FieldDeletedAt,
 		})
 	}
-	if value, ok := aruo.mutation.AuthRole(); ok {
+	if value, ok := aruo.mutation.Value(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: authrole.FieldAuthRole,
+			Column: authrole.FieldValue,
 		})
 	}
 	if value, ok := aruo.mutation.Description(); ok {

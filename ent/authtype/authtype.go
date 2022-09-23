@@ -22,8 +22,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldAuthType holds the string denoting the auth_type field in the database.
-	FieldAuthType = "auth_type"
+	// FieldValue holds the string denoting the value field in the database.
+	FieldValue = "value"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
 	// EdgeAccounts holds the string denoting the accounts edge name in mutations.
@@ -54,7 +54,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldAuthType,
+	FieldValue,
 	FieldDescription,
 }
 
@@ -83,48 +83,45 @@ var (
 	DefaultID func() pulid.PULID
 )
 
-// AuthType defines the type for the "auth_type" enum field.
-type AuthType string
+// Value defines the type for the "value" enum field.
+type Value string
 
-// AuthTypeLocal is the default value of the AuthType enum.
-const DefaultAuthType = AuthTypeLocal
-
-// AuthType values.
+// Value values.
 const (
-	AuthTypeLocal    AuthType = "LOCAL"
-	AuthTypeGoogle   AuthType = "GOOGLE"
-	AuthTypeApple    AuthType = "APPLE"
-	AuthTypeFacebook AuthType = "FACEBOOK"
+	ValueLocal    Value = "LOCAL"
+	ValueGoogle   Value = "GOOGLE"
+	ValueApple    Value = "APPLE"
+	ValueFacebook Value = "FACEBOOK"
 )
 
-func (at AuthType) String() string {
-	return string(at)
+func (v Value) String() string {
+	return string(v)
 }
 
-// AuthTypeValidator is a validator for the "auth_type" field enum values. It is called by the builders before save.
-func AuthTypeValidator(at AuthType) error {
-	switch at {
-	case AuthTypeLocal, AuthTypeGoogle, AuthTypeApple, AuthTypeFacebook:
+// ValueValidator is a validator for the "value" field enum values. It is called by the builders before save.
+func ValueValidator(v Value) error {
+	switch v {
+	case ValueLocal, ValueGoogle, ValueApple, ValueFacebook:
 		return nil
 	default:
-		return fmt.Errorf("authtype: invalid enum value for auth_type field: %q", at)
+		return fmt.Errorf("authtype: invalid enum value for value field: %q", v)
 	}
 }
 
 // MarshalGQL implements graphql.Marshaler interface.
-func (e AuthType) MarshalGQL(w io.Writer) {
+func (e Value) MarshalGQL(w io.Writer) {
 	io.WriteString(w, strconv.Quote(e.String()))
 }
 
 // UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *AuthType) UnmarshalGQL(val interface{}) error {
+func (e *Value) UnmarshalGQL(val interface{}) error {
 	str, ok := val.(string)
 	if !ok {
 		return fmt.Errorf("enum %T must be a string", val)
 	}
-	*e = AuthType(str)
-	if err := AuthTypeValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid AuthType", str)
+	*e = Value(str)
+	if err := ValueValidator(*e); err != nil {
+		return fmt.Errorf("%s is not a valid Value", str)
 	}
 	return nil
 }

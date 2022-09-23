@@ -14,6 +14,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
+	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -122,6 +123,21 @@ func (bu *BlockchainUpdate) AddCryptocurrencies(c ...*Cryptocurrency) *Blockchai
 	return bu.AddCryptocurrencyIDs(ids...)
 }
 
+// AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
+func (bu *BlockchainUpdate) AddTransactionIDs(ids ...pulid.PULID) *BlockchainUpdate {
+	bu.mutation.AddTransactionIDs(ids...)
+	return bu
+}
+
+// AddTransactions adds the "transactions" edges to the Transaction entity.
+func (bu *BlockchainUpdate) AddTransactions(t ...*Transaction) *BlockchainUpdate {
+	ids := make([]pulid.PULID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return bu.AddTransactionIDs(ids...)
+}
+
 // Mutation returns the BlockchainMutation object of the builder.
 func (bu *BlockchainUpdate) Mutation() *BlockchainMutation {
 	return bu.mutation
@@ -146,6 +162,27 @@ func (bu *BlockchainUpdate) RemoveCryptocurrencies(c ...*Cryptocurrency) *Blockc
 		ids[i] = c[i].ID
 	}
 	return bu.RemoveCryptocurrencyIDs(ids...)
+}
+
+// ClearTransactions clears all "transactions" edges to the Transaction entity.
+func (bu *BlockchainUpdate) ClearTransactions() *BlockchainUpdate {
+	bu.mutation.ClearTransactions()
+	return bu
+}
+
+// RemoveTransactionIDs removes the "transactions" edge to Transaction entities by IDs.
+func (bu *BlockchainUpdate) RemoveTransactionIDs(ids ...pulid.PULID) *BlockchainUpdate {
+	bu.mutation.RemoveTransactionIDs(ids...)
+	return bu
+}
+
+// RemoveTransactions removes "transactions" edges to Transaction entities.
+func (bu *BlockchainUpdate) RemoveTransactions(t ...*Transaction) *BlockchainUpdate {
+	ids := make([]pulid.PULID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return bu.RemoveTransactionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -380,6 +417,60 @@ func (bu *BlockchainUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.TransactionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   blockchain.TransactionsTable,
+			Columns: []string{blockchain.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: transaction.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !bu.mutation.TransactionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   blockchain.TransactionsTable,
+			Columns: []string{blockchain.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: transaction.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.TransactionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   blockchain.TransactionsTable,
+			Columns: []string{blockchain.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: transaction.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{blockchain.Label}
@@ -491,6 +582,21 @@ func (buo *BlockchainUpdateOne) AddCryptocurrencies(c ...*Cryptocurrency) *Block
 	return buo.AddCryptocurrencyIDs(ids...)
 }
 
+// AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
+func (buo *BlockchainUpdateOne) AddTransactionIDs(ids ...pulid.PULID) *BlockchainUpdateOne {
+	buo.mutation.AddTransactionIDs(ids...)
+	return buo
+}
+
+// AddTransactions adds the "transactions" edges to the Transaction entity.
+func (buo *BlockchainUpdateOne) AddTransactions(t ...*Transaction) *BlockchainUpdateOne {
+	ids := make([]pulid.PULID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return buo.AddTransactionIDs(ids...)
+}
+
 // Mutation returns the BlockchainMutation object of the builder.
 func (buo *BlockchainUpdateOne) Mutation() *BlockchainMutation {
 	return buo.mutation
@@ -515,6 +621,27 @@ func (buo *BlockchainUpdateOne) RemoveCryptocurrencies(c ...*Cryptocurrency) *Bl
 		ids[i] = c[i].ID
 	}
 	return buo.RemoveCryptocurrencyIDs(ids...)
+}
+
+// ClearTransactions clears all "transactions" edges to the Transaction entity.
+func (buo *BlockchainUpdateOne) ClearTransactions() *BlockchainUpdateOne {
+	buo.mutation.ClearTransactions()
+	return buo
+}
+
+// RemoveTransactionIDs removes the "transactions" edge to Transaction entities by IDs.
+func (buo *BlockchainUpdateOne) RemoveTransactionIDs(ids ...pulid.PULID) *BlockchainUpdateOne {
+	buo.mutation.RemoveTransactionIDs(ids...)
+	return buo
+}
+
+// RemoveTransactions removes "transactions" edges to Transaction entities.
+func (buo *BlockchainUpdateOne) RemoveTransactions(t ...*Transaction) *BlockchainUpdateOne {
+	ids := make([]pulid.PULID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return buo.RemoveTransactionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -771,6 +898,60 @@ func (buo *BlockchainUpdateOne) sqlSave(ctx context.Context) (_node *Blockchain,
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: cryptocurrency.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.TransactionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   blockchain.TransactionsTable,
+			Columns: []string{blockchain.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: transaction.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !buo.mutation.TransactionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   blockchain.TransactionsTable,
+			Columns: []string{blockchain.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: transaction.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.TransactionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   blockchain.TransactionsTable,
+			Columns: []string{blockchain.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: transaction.FieldID,
 				},
 			},
 		}

@@ -23,8 +23,8 @@ type TransactionType struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// TransactionType holds the value of the "transaction_type" field.
-	TransactionType transactiontype.TransactionType `json:"transaction_type,omitempty"`
+	// Value holds the value of the "value" field.
+	Value transactiontype.Value `json:"value,omitempty"`
 	// Description holds the value of the "description" field.
 	Description *string `json:"description,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -61,7 +61,7 @@ func (*TransactionType) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case transactiontype.FieldID:
 			values[i] = new(pulid.PULID)
-		case transactiontype.FieldTransactionType, transactiontype.FieldDescription:
+		case transactiontype.FieldValue, transactiontype.FieldDescription:
 			values[i] = new(sql.NullString)
 		case transactiontype.FieldCreatedAt, transactiontype.FieldUpdatedAt, transactiontype.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -105,11 +105,11 @@ func (tt *TransactionType) assignValues(columns []string, values []any) error {
 				tt.DeletedAt = new(time.Time)
 				*tt.DeletedAt = value.Time
 			}
-		case transactiontype.FieldTransactionType:
+		case transactiontype.FieldValue:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field transaction_type", values[i])
+				return fmt.Errorf("unexpected type %T for field value", values[i])
 			} else if value.Valid {
-				tt.TransactionType = transactiontype.TransactionType(value.String)
+				tt.Value = transactiontype.Value(value.String)
 			}
 		case transactiontype.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -162,8 +162,8 @@ func (tt *TransactionType) String() string {
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("transaction_type=")
-	builder.WriteString(fmt.Sprintf("%v", tt.TransactionType))
+	builder.WriteString("value=")
+	builder.WriteString(fmt.Sprintf("%v", tt.Value))
 	builder.WriteString(", ")
 	if v := tt.Description; v != nil {
 		builder.WriteString("description=")

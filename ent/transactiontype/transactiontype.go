@@ -22,8 +22,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldTransactionType holds the string denoting the transaction_type field in the database.
-	FieldTransactionType = "transaction_type"
+	// FieldValue holds the string denoting the value field in the database.
+	FieldValue = "value"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
 	// EdgeTransactions holds the string denoting the transactions edge name in mutations.
@@ -45,7 +45,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldTransactionType,
+	FieldValue,
 	FieldDescription,
 }
 
@@ -74,48 +74,49 @@ var (
 	DefaultID func() pulid.PULID
 )
 
-// TransactionType defines the type for the "transaction_type" enum field.
-type TransactionType string
+// Value defines the type for the "value" enum field.
+type Value string
 
-// TransactionType values.
+// Value values.
 const (
-	TransactionTypeBuy            TransactionType = "BUY"
-	TransactionTypeSell           TransactionType = "SELL"
-	TransactionTypeStake          TransactionType = "STAKE"
-	TransactionTypeDividendIncome TransactionType = "DIVIDEND_INCOME"
-	TransactionTypeRentPayment    TransactionType = "RENT_PAYMENT"
-	TransactionTypeRentIncome     TransactionType = "RENT_INCOME"
-	TransactionTypeStockDividend  TransactionType = "STOCK_DIVIDEND"
+	ValueBuy            Value = "BUY"
+	ValueSell           Value = "SELL"
+	ValueSwap           Value = "SWAP"
+	ValueStake          Value = "STAKE"
+	ValueDividendIncome Value = "DIVIDEND_INCOME"
+	ValueRentPayment    Value = "RENT_PAYMENT"
+	ValueRentIncome     Value = "RENT_INCOME"
+	ValueStockDividend  Value = "STOCK_DIVIDEND"
 )
 
-func (tt TransactionType) String() string {
-	return string(tt)
+func (v Value) String() string {
+	return string(v)
 }
 
-// TransactionTypeValidator is a validator for the "transaction_type" field enum values. It is called by the builders before save.
-func TransactionTypeValidator(tt TransactionType) error {
-	switch tt {
-	case TransactionTypeBuy, TransactionTypeSell, TransactionTypeStake, TransactionTypeDividendIncome, TransactionTypeRentPayment, TransactionTypeRentIncome, TransactionTypeStockDividend:
+// ValueValidator is a validator for the "value" field enum values. It is called by the builders before save.
+func ValueValidator(v Value) error {
+	switch v {
+	case ValueBuy, ValueSell, ValueSwap, ValueStake, ValueDividendIncome, ValueRentPayment, ValueRentIncome, ValueStockDividend:
 		return nil
 	default:
-		return fmt.Errorf("transactiontype: invalid enum value for transaction_type field: %q", tt)
+		return fmt.Errorf("transactiontype: invalid enum value for value field: %q", v)
 	}
 }
 
 // MarshalGQL implements graphql.Marshaler interface.
-func (e TransactionType) MarshalGQL(w io.Writer) {
+func (e Value) MarshalGQL(w io.Writer) {
 	io.WriteString(w, strconv.Quote(e.String()))
 }
 
 // UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *TransactionType) UnmarshalGQL(val interface{}) error {
+func (e *Value) UnmarshalGQL(val interface{}) error {
 	str, ok := val.(string)
 	if !ok {
 		return fmt.Errorf("enum %T must be a string", val)
 	}
-	*e = TransactionType(str)
-	if err := TransactionTypeValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid TransactionType", str)
+	*e = Value(str)
+	if err := ValueValidator(*e); err != nil {
+		return fmt.Errorf("%s is not a valid Value", str)
 	}
 	return nil
 }

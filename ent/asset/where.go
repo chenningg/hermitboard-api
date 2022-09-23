@@ -365,25 +365,25 @@ func HasCryptocurrencyWith(preds ...predicate.Cryptocurrency) predicate.Asset {
 	})
 }
 
-// HasTransactionBase applies the HasEdge predicate on the "transaction_base" edge.
-func HasTransactionBase() predicate.Asset {
+// HasTransactionBases applies the HasEdge predicate on the "transaction_bases" edge.
+func HasTransactionBases() predicate.Asset {
 	return predicate.Asset(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TransactionBaseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, TransactionBaseTable, TransactionBaseColumn),
+			sqlgraph.To(TransactionBasesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, TransactionBasesTable, TransactionBasesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasTransactionBaseWith applies the HasEdge predicate on the "transaction_base" edge with a given conditions (other predicates).
-func HasTransactionBaseWith(preds ...predicate.Transaction) predicate.Asset {
+// HasTransactionBasesWith applies the HasEdge predicate on the "transaction_bases" edge with a given conditions (other predicates).
+func HasTransactionBasesWith(preds ...predicate.Transaction) predicate.Asset {
 	return predicate.Asset(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TransactionBaseInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, TransactionBaseTable, TransactionBaseColumn),
+			sqlgraph.To(TransactionBasesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, TransactionBasesTable, TransactionBasesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -393,25 +393,25 @@ func HasTransactionBaseWith(preds ...predicate.Transaction) predicate.Asset {
 	})
 }
 
-// HasTransactionQuote applies the HasEdge predicate on the "transaction_quote" edge.
-func HasTransactionQuote() predicate.Asset {
+// HasTransactionQuotes applies the HasEdge predicate on the "transaction_quotes" edge.
+func HasTransactionQuotes() predicate.Asset {
 	return predicate.Asset(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TransactionQuoteTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, TransactionQuoteTable, TransactionQuoteColumn),
+			sqlgraph.To(TransactionQuotesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, TransactionQuotesTable, TransactionQuotesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasTransactionQuoteWith applies the HasEdge predicate on the "transaction_quote" edge with a given conditions (other predicates).
-func HasTransactionQuoteWith(preds ...predicate.Transaction) predicate.Asset {
+// HasTransactionQuotesWith applies the HasEdge predicate on the "transaction_quotes" edge with a given conditions (other predicates).
+func HasTransactionQuotesWith(preds ...predicate.Transaction) predicate.Asset {
 	return predicate.Asset(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TransactionQuoteInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, TransactionQuoteTable, TransactionQuoteColumn),
+			sqlgraph.To(TransactionQuotesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, TransactionQuotesTable, TransactionQuotesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

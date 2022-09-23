@@ -23,10 +23,10 @@ const (
 	EdgeAssetClass = "asset_class"
 	// EdgeCryptocurrency holds the string denoting the cryptocurrency edge name in mutations.
 	EdgeCryptocurrency = "cryptocurrency"
-	// EdgeTransactionBase holds the string denoting the transaction_base edge name in mutations.
-	EdgeTransactionBase = "transaction_base"
-	// EdgeTransactionQuote holds the string denoting the transaction_quote edge name in mutations.
-	EdgeTransactionQuote = "transaction_quote"
+	// EdgeTransactionBases holds the string denoting the transaction_bases edge name in mutations.
+	EdgeTransactionBases = "transaction_bases"
+	// EdgeTransactionQuotes holds the string denoting the transaction_quotes edge name in mutations.
+	EdgeTransactionQuotes = "transaction_quotes"
 	// EdgeDailyAssetPrices holds the string denoting the daily_asset_prices edge name in mutations.
 	EdgeDailyAssetPrices = "daily_asset_prices"
 	// Table holds the table name of the asset in the database.
@@ -45,20 +45,20 @@ const (
 	CryptocurrencyInverseTable = "cryptocurrencies"
 	// CryptocurrencyColumn is the table column denoting the cryptocurrency relation/edge.
 	CryptocurrencyColumn = "asset_cryptocurrency"
-	// TransactionBaseTable is the table that holds the transaction_base relation/edge.
-	TransactionBaseTable = "transactions"
-	// TransactionBaseInverseTable is the table name for the Transaction entity.
+	// TransactionBasesTable is the table that holds the transaction_bases relation/edge.
+	TransactionBasesTable = "transactions"
+	// TransactionBasesInverseTable is the table name for the Transaction entity.
 	// It exists in this package in order to avoid circular dependency with the "transaction" package.
-	TransactionBaseInverseTable = "transactions"
-	// TransactionBaseColumn is the table column denoting the transaction_base relation/edge.
-	TransactionBaseColumn = "transaction_base_asset"
-	// TransactionQuoteTable is the table that holds the transaction_quote relation/edge.
-	TransactionQuoteTable = "transactions"
-	// TransactionQuoteInverseTable is the table name for the Transaction entity.
+	TransactionBasesInverseTable = "transactions"
+	// TransactionBasesColumn is the table column denoting the transaction_bases relation/edge.
+	TransactionBasesColumn = "transaction_base_asset"
+	// TransactionQuotesTable is the table that holds the transaction_quotes relation/edge.
+	TransactionQuotesTable = "transactions"
+	// TransactionQuotesInverseTable is the table name for the Transaction entity.
 	// It exists in this package in order to avoid circular dependency with the "transaction" package.
-	TransactionQuoteInverseTable = "transactions"
-	// TransactionQuoteColumn is the table column denoting the transaction_quote relation/edge.
-	TransactionQuoteColumn = "transaction_quote_asset"
+	TransactionQuotesInverseTable = "transactions"
+	// TransactionQuotesColumn is the table column denoting the transaction_quotes relation/edge.
+	TransactionQuotesColumn = "transaction_quote_asset"
 	// DailyAssetPricesTable is the table that holds the daily_asset_prices relation/edge.
 	DailyAssetPricesTable = "daily_asset_prices"
 	// DailyAssetPricesInverseTable is the table name for the DailyAssetPrice entity.

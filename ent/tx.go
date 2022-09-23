@@ -34,8 +34,6 @@ type Tx struct {
 	Portfolio *PortfolioClient
 	// StaffAccount is the client for interacting with the StaffAccount builders.
 	StaffAccount *StaffAccountClient
-	// StaffAccountAuthRole is the client for interacting with the StaffAccountAuthRole builders.
-	StaffAccountAuthRole *StaffAccountAuthRoleClient
 	// Transaction is the client for interacting with the Transaction builders.
 	Transaction *TransactionClient
 	// TransactionType is the client for interacting with the TransactionType builders.
@@ -186,7 +184,6 @@ func (tx *Tx) init() {
 	tx.Exchange = NewExchangeClient(tx.config)
 	tx.Portfolio = NewPortfolioClient(tx.config)
 	tx.StaffAccount = NewStaffAccountClient(tx.config)
-	tx.StaffAccountAuthRole = NewStaffAccountAuthRoleClient(tx.config)
 	tx.Transaction = NewTransactionClient(tx.config)
 	tx.TransactionType = NewTransactionTypeClient(tx.config)
 }

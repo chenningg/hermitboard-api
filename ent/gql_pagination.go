@@ -25,7 +25,6 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
-	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -452,6 +451,105 @@ func (a *AccountQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// AccountOrderFieldCreatedAt orders Account by created_at.
+	AccountOrderFieldCreatedAt = &AccountOrderField{
+		field: account.FieldCreatedAt,
+		toCursor: func(a *Account) Cursor {
+			return Cursor{
+				ID:    a.ID,
+				Value: a.CreatedAt,
+			}
+		},
+	}
+	// AccountOrderFieldUpdatedAt orders Account by updated_at.
+	AccountOrderFieldUpdatedAt = &AccountOrderField{
+		field: account.FieldUpdatedAt,
+		toCursor: func(a *Account) Cursor {
+			return Cursor{
+				ID:    a.ID,
+				Value: a.UpdatedAt,
+			}
+		},
+	}
+	// AccountOrderFieldDeletedAt orders Account by deleted_at.
+	AccountOrderFieldDeletedAt = &AccountOrderField{
+		field: account.FieldDeletedAt,
+		toCursor: func(a *Account) Cursor {
+			return Cursor{
+				ID:    a.ID,
+				Value: a.DeletedAt,
+			}
+		},
+	}
+	// AccountOrderFieldNickname orders Account by nickname.
+	AccountOrderFieldNickname = &AccountOrderField{
+		field: account.FieldNickname,
+		toCursor: func(a *Account) Cursor {
+			return Cursor{
+				ID:    a.ID,
+				Value: a.Nickname,
+			}
+		},
+	}
+	// AccountOrderFieldEmail orders Account by email.
+	AccountOrderFieldEmail = &AccountOrderField{
+		field: account.FieldEmail,
+		toCursor: func(a *Account) Cursor {
+			return Cursor{
+				ID:    a.ID,
+				Value: a.Email,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f AccountOrderField) String() string {
+	var str string
+	switch f.field {
+	case account.FieldCreatedAt:
+		str = "CREATED_AT"
+	case account.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case account.FieldDeletedAt:
+		str = "DELETED_AT"
+	case account.FieldNickname:
+		str = "NICKNAME"
+	case account.FieldEmail:
+		str = "EMAIL"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f AccountOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *AccountOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("AccountOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *AccountOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *AccountOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *AccountOrderFieldDeletedAt
+	case "NICKNAME":
+		*f = *AccountOrderFieldNickname
+	case "EMAIL":
+		*f = *AccountOrderFieldEmail
+	default:
+		return fmt.Errorf("%s is not a valid AccountOrderField", str)
+	}
+	return nil
+}
+
 // AccountOrderField defines the ordering field of Account.
 type AccountOrderField struct {
 	field    string
@@ -681,6 +779,77 @@ func (a *AssetQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// AssetOrderFieldCreatedAt orders Asset by created_at.
+	AssetOrderFieldCreatedAt = &AssetOrderField{
+		field: asset.FieldCreatedAt,
+		toCursor: func(a *Asset) Cursor {
+			return Cursor{
+				ID:    a.ID,
+				Value: a.CreatedAt,
+			}
+		},
+	}
+	// AssetOrderFieldUpdatedAt orders Asset by updated_at.
+	AssetOrderFieldUpdatedAt = &AssetOrderField{
+		field: asset.FieldUpdatedAt,
+		toCursor: func(a *Asset) Cursor {
+			return Cursor{
+				ID:    a.ID,
+				Value: a.UpdatedAt,
+			}
+		},
+	}
+	// AssetOrderFieldDeletedAt orders Asset by deleted_at.
+	AssetOrderFieldDeletedAt = &AssetOrderField{
+		field: asset.FieldDeletedAt,
+		toCursor: func(a *Asset) Cursor {
+			return Cursor{
+				ID:    a.ID,
+				Value: a.DeletedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f AssetOrderField) String() string {
+	var str string
+	switch f.field {
+	case asset.FieldCreatedAt:
+		str = "CREATED_AT"
+	case asset.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case asset.FieldDeletedAt:
+		str = "DELETED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f AssetOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *AssetOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("AssetOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *AssetOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *AssetOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *AssetOrderFieldDeletedAt
+	default:
+		return fmt.Errorf("%s is not a valid AssetOrderField", str)
+	}
+	return nil
 }
 
 // AssetOrderField defines the ordering field of Asset.
@@ -915,13 +1084,43 @@ func (ac *AssetClassQuery) Paginate(
 }
 
 var (
-	// AssetClassOrderFieldAssetClass orders AssetClass by asset_class.
-	AssetClassOrderFieldAssetClass = &AssetClassOrderField{
-		field: assetclass.FieldAssetClass,
+	// AssetClassOrderFieldCreatedAt orders AssetClass by created_at.
+	AssetClassOrderFieldCreatedAt = &AssetClassOrderField{
+		field: assetclass.FieldCreatedAt,
 		toCursor: func(ac *AssetClass) Cursor {
 			return Cursor{
 				ID:    ac.ID,
-				Value: ac.AssetClass,
+				Value: ac.CreatedAt,
+			}
+		},
+	}
+	// AssetClassOrderFieldUpdatedAt orders AssetClass by updated_at.
+	AssetClassOrderFieldUpdatedAt = &AssetClassOrderField{
+		field: assetclass.FieldUpdatedAt,
+		toCursor: func(ac *AssetClass) Cursor {
+			return Cursor{
+				ID:    ac.ID,
+				Value: ac.UpdatedAt,
+			}
+		},
+	}
+	// AssetClassOrderFieldDeletedAt orders AssetClass by deleted_at.
+	AssetClassOrderFieldDeletedAt = &AssetClassOrderField{
+		field: assetclass.FieldDeletedAt,
+		toCursor: func(ac *AssetClass) Cursor {
+			return Cursor{
+				ID:    ac.ID,
+				Value: ac.DeletedAt,
+			}
+		},
+	}
+	// AssetClassOrderFieldValue orders AssetClass by value.
+	AssetClassOrderFieldValue = &AssetClassOrderField{
+		field: assetclass.FieldValue,
+		toCursor: func(ac *AssetClass) Cursor {
+			return Cursor{
+				ID:    ac.ID,
+				Value: ac.Value,
 			}
 		},
 	}
@@ -931,7 +1130,13 @@ var (
 func (f AssetClassOrderField) String() string {
 	var str string
 	switch f.field {
-	case assetclass.FieldAssetClass:
+	case assetclass.FieldCreatedAt:
+		str = "CREATED_AT"
+	case assetclass.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case assetclass.FieldDeletedAt:
+		str = "DELETED_AT"
+	case assetclass.FieldValue:
 		str = "ASSET_CLASS"
 	}
 	return str
@@ -949,8 +1154,14 @@ func (f *AssetClassOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("AssetClassOrderField %T must be a string", v)
 	}
 	switch str {
+	case "CREATED_AT":
+		*f = *AssetClassOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *AssetClassOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *AssetClassOrderFieldDeletedAt
 	case "ASSET_CLASS":
-		*f = *AssetClassOrderFieldAssetClass
+		*f = *AssetClassOrderFieldValue
 	default:
 		return fmt.Errorf("%s is not a valid AssetClassOrderField", str)
 	}
@@ -1189,13 +1400,43 @@ func (ar *AuthRoleQuery) Paginate(
 }
 
 var (
-	// AuthRoleOrderFieldAuthRole orders AuthRole by auth_role.
-	AuthRoleOrderFieldAuthRole = &AuthRoleOrderField{
-		field: authrole.FieldAuthRole,
+	// AuthRoleOrderFieldCreatedAt orders AuthRole by created_at.
+	AuthRoleOrderFieldCreatedAt = &AuthRoleOrderField{
+		field: authrole.FieldCreatedAt,
 		toCursor: func(ar *AuthRole) Cursor {
 			return Cursor{
 				ID:    ar.ID,
-				Value: ar.AuthRole,
+				Value: ar.CreatedAt,
+			}
+		},
+	}
+	// AuthRoleOrderFieldUpdatedAt orders AuthRole by updated_at.
+	AuthRoleOrderFieldUpdatedAt = &AuthRoleOrderField{
+		field: authrole.FieldUpdatedAt,
+		toCursor: func(ar *AuthRole) Cursor {
+			return Cursor{
+				ID:    ar.ID,
+				Value: ar.UpdatedAt,
+			}
+		},
+	}
+	// AuthRoleOrderFieldDeletedAt orders AuthRole by deleted_at.
+	AuthRoleOrderFieldDeletedAt = &AuthRoleOrderField{
+		field: authrole.FieldDeletedAt,
+		toCursor: func(ar *AuthRole) Cursor {
+			return Cursor{
+				ID:    ar.ID,
+				Value: ar.DeletedAt,
+			}
+		},
+	}
+	// AuthRoleOrderFieldValue orders AuthRole by value.
+	AuthRoleOrderFieldValue = &AuthRoleOrderField{
+		field: authrole.FieldValue,
+		toCursor: func(ar *AuthRole) Cursor {
+			return Cursor{
+				ID:    ar.ID,
+				Value: ar.Value,
 			}
 		},
 	}
@@ -1205,7 +1446,13 @@ var (
 func (f AuthRoleOrderField) String() string {
 	var str string
 	switch f.field {
-	case authrole.FieldAuthRole:
+	case authrole.FieldCreatedAt:
+		str = "CREATED_AT"
+	case authrole.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case authrole.FieldDeletedAt:
+		str = "DELETED_AT"
+	case authrole.FieldValue:
 		str = "AUTH_ROLE"
 	}
 	return str
@@ -1223,8 +1470,14 @@ func (f *AuthRoleOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("AuthRoleOrderField %T must be a string", v)
 	}
 	switch str {
+	case "CREATED_AT":
+		*f = *AuthRoleOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *AuthRoleOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *AuthRoleOrderFieldDeletedAt
 	case "AUTH_ROLE":
-		*f = *AuthRoleOrderFieldAuthRole
+		*f = *AuthRoleOrderFieldValue
 	default:
 		return fmt.Errorf("%s is not a valid AuthRoleOrderField", str)
 	}
@@ -1463,13 +1716,43 @@ func (at *AuthTypeQuery) Paginate(
 }
 
 var (
-	// AuthTypeOrderFieldAuthType orders AuthType by auth_type.
-	AuthTypeOrderFieldAuthType = &AuthTypeOrderField{
-		field: authtype.FieldAuthType,
+	// AuthTypeOrderFieldCreatedAt orders AuthType by created_at.
+	AuthTypeOrderFieldCreatedAt = &AuthTypeOrderField{
+		field: authtype.FieldCreatedAt,
 		toCursor: func(at *AuthType) Cursor {
 			return Cursor{
 				ID:    at.ID,
-				Value: at.AuthType,
+				Value: at.CreatedAt,
+			}
+		},
+	}
+	// AuthTypeOrderFieldUpdatedAt orders AuthType by updated_at.
+	AuthTypeOrderFieldUpdatedAt = &AuthTypeOrderField{
+		field: authtype.FieldUpdatedAt,
+		toCursor: func(at *AuthType) Cursor {
+			return Cursor{
+				ID:    at.ID,
+				Value: at.UpdatedAt,
+			}
+		},
+	}
+	// AuthTypeOrderFieldDeletedAt orders AuthType by deleted_at.
+	AuthTypeOrderFieldDeletedAt = &AuthTypeOrderField{
+		field: authtype.FieldDeletedAt,
+		toCursor: func(at *AuthType) Cursor {
+			return Cursor{
+				ID:    at.ID,
+				Value: at.DeletedAt,
+			}
+		},
+	}
+	// AuthTypeOrderFieldValue orders AuthType by value.
+	AuthTypeOrderFieldValue = &AuthTypeOrderField{
+		field: authtype.FieldValue,
+		toCursor: func(at *AuthType) Cursor {
+			return Cursor{
+				ID:    at.ID,
+				Value: at.Value,
 			}
 		},
 	}
@@ -1479,7 +1762,13 @@ var (
 func (f AuthTypeOrderField) String() string {
 	var str string
 	switch f.field {
-	case authtype.FieldAuthType:
+	case authtype.FieldCreatedAt:
+		str = "CREATED_AT"
+	case authtype.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case authtype.FieldDeletedAt:
+		str = "DELETED_AT"
+	case authtype.FieldValue:
 		str = "AUTH_TYPE"
 	}
 	return str
@@ -1497,8 +1786,14 @@ func (f *AuthTypeOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("AuthTypeOrderField %T must be a string", v)
 	}
 	switch str {
+	case "CREATED_AT":
+		*f = *AuthTypeOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *AuthTypeOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *AuthTypeOrderFieldDeletedAt
 	case "AUTH_TYPE":
-		*f = *AuthTypeOrderFieldAuthType
+		*f = *AuthTypeOrderFieldValue
 	default:
 		return fmt.Errorf("%s is not a valid AuthTypeOrderField", str)
 	}
@@ -1736,6 +2031,119 @@ func (b *BlockchainQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// BlockchainOrderFieldCreatedAt orders Blockchain by created_at.
+	BlockchainOrderFieldCreatedAt = &BlockchainOrderField{
+		field: blockchain.FieldCreatedAt,
+		toCursor: func(b *Blockchain) Cursor {
+			return Cursor{
+				ID:    b.ID,
+				Value: b.CreatedAt,
+			}
+		},
+	}
+	// BlockchainOrderFieldUpdatedAt orders Blockchain by updated_at.
+	BlockchainOrderFieldUpdatedAt = &BlockchainOrderField{
+		field: blockchain.FieldUpdatedAt,
+		toCursor: func(b *Blockchain) Cursor {
+			return Cursor{
+				ID:    b.ID,
+				Value: b.UpdatedAt,
+			}
+		},
+	}
+	// BlockchainOrderFieldDeletedAt orders Blockchain by deleted_at.
+	BlockchainOrderFieldDeletedAt = &BlockchainOrderField{
+		field: blockchain.FieldDeletedAt,
+		toCursor: func(b *Blockchain) Cursor {
+			return Cursor{
+				ID:    b.ID,
+				Value: b.DeletedAt,
+			}
+		},
+	}
+	// BlockchainOrderFieldName orders Blockchain by name.
+	BlockchainOrderFieldName = &BlockchainOrderField{
+		field: blockchain.FieldName,
+		toCursor: func(b *Blockchain) Cursor {
+			return Cursor{
+				ID:    b.ID,
+				Value: b.Name,
+			}
+		},
+	}
+	// BlockchainOrderFieldSymbol orders Blockchain by symbol.
+	BlockchainOrderFieldSymbol = &BlockchainOrderField{
+		field: blockchain.FieldSymbol,
+		toCursor: func(b *Blockchain) Cursor {
+			return Cursor{
+				ID:    b.ID,
+				Value: b.Symbol,
+			}
+		},
+	}
+	// BlockchainOrderFieldChainID orders Blockchain by chain_id.
+	BlockchainOrderFieldChainID = &BlockchainOrderField{
+		field: blockchain.FieldChainID,
+		toCursor: func(b *Blockchain) Cursor {
+			return Cursor{
+				ID:    b.ID,
+				Value: b.ChainID,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f BlockchainOrderField) String() string {
+	var str string
+	switch f.field {
+	case blockchain.FieldCreatedAt:
+		str = "CREATED_AT"
+	case blockchain.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case blockchain.FieldDeletedAt:
+		str = "DELETED_AT"
+	case blockchain.FieldName:
+		str = "NAME"
+	case blockchain.FieldSymbol:
+		str = "SYMBOL"
+	case blockchain.FieldChainID:
+		str = "CHAIN_ID"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f BlockchainOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *BlockchainOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("BlockchainOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *BlockchainOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *BlockchainOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *BlockchainOrderFieldDeletedAt
+	case "NAME":
+		*f = *BlockchainOrderFieldName
+	case "SYMBOL":
+		*f = *BlockchainOrderFieldSymbol
+	case "CHAIN_ID":
+		*f = *BlockchainOrderFieldChainID
+	default:
+		return fmt.Errorf("%s is not a valid BlockchainOrderField", str)
+	}
+	return nil
+}
+
 // BlockchainOrderField defines the ordering field of Blockchain.
 type BlockchainOrderField struct {
 	field    string
@@ -1965,6 +2373,105 @@ func (c *CryptocurrencyQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// CryptocurrencyOrderFieldCreatedAt orders Cryptocurrency by created_at.
+	CryptocurrencyOrderFieldCreatedAt = &CryptocurrencyOrderField{
+		field: cryptocurrency.FieldCreatedAt,
+		toCursor: func(c *Cryptocurrency) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.CreatedAt,
+			}
+		},
+	}
+	// CryptocurrencyOrderFieldUpdatedAt orders Cryptocurrency by updated_at.
+	CryptocurrencyOrderFieldUpdatedAt = &CryptocurrencyOrderField{
+		field: cryptocurrency.FieldUpdatedAt,
+		toCursor: func(c *Cryptocurrency) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.UpdatedAt,
+			}
+		},
+	}
+	// CryptocurrencyOrderFieldDeletedAt orders Cryptocurrency by deleted_at.
+	CryptocurrencyOrderFieldDeletedAt = &CryptocurrencyOrderField{
+		field: cryptocurrency.FieldDeletedAt,
+		toCursor: func(c *Cryptocurrency) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.DeletedAt,
+			}
+		},
+	}
+	// CryptocurrencyOrderFieldSymbol orders Cryptocurrency by symbol.
+	CryptocurrencyOrderFieldSymbol = &CryptocurrencyOrderField{
+		field: cryptocurrency.FieldSymbol,
+		toCursor: func(c *Cryptocurrency) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.Symbol,
+			}
+		},
+	}
+	// CryptocurrencyOrderFieldName orders Cryptocurrency by name.
+	CryptocurrencyOrderFieldName = &CryptocurrencyOrderField{
+		field: cryptocurrency.FieldName,
+		toCursor: func(c *Cryptocurrency) Cursor {
+			return Cursor{
+				ID:    c.ID,
+				Value: c.Name,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f CryptocurrencyOrderField) String() string {
+	var str string
+	switch f.field {
+	case cryptocurrency.FieldCreatedAt:
+		str = "CREATED_AT"
+	case cryptocurrency.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case cryptocurrency.FieldDeletedAt:
+		str = "DELETED_AT"
+	case cryptocurrency.FieldSymbol:
+		str = "SYMBOL"
+	case cryptocurrency.FieldName:
+		str = "NAME"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f CryptocurrencyOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *CryptocurrencyOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("CryptocurrencyOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *CryptocurrencyOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *CryptocurrencyOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *CryptocurrencyOrderFieldDeletedAt
+	case "SYMBOL":
+		*f = *CryptocurrencyOrderFieldSymbol
+	case "NAME":
+		*f = *CryptocurrencyOrderFieldName
+	default:
+		return fmt.Errorf("%s is not a valid CryptocurrencyOrderField", str)
+	}
+	return nil
 }
 
 // CryptocurrencyOrderField defines the ordering field of Cryptocurrency.
@@ -2198,6 +2705,91 @@ func (dap *DailyAssetPriceQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// DailyAssetPriceOrderFieldCreatedAt orders DailyAssetPrice by created_at.
+	DailyAssetPriceOrderFieldCreatedAt = &DailyAssetPriceOrderField{
+		field: dailyassetprice.FieldCreatedAt,
+		toCursor: func(dap *DailyAssetPrice) Cursor {
+			return Cursor{
+				ID:    dap.ID,
+				Value: dap.CreatedAt,
+			}
+		},
+	}
+	// DailyAssetPriceOrderFieldUpdatedAt orders DailyAssetPrice by updated_at.
+	DailyAssetPriceOrderFieldUpdatedAt = &DailyAssetPriceOrderField{
+		field: dailyassetprice.FieldUpdatedAt,
+		toCursor: func(dap *DailyAssetPrice) Cursor {
+			return Cursor{
+				ID:    dap.ID,
+				Value: dap.UpdatedAt,
+			}
+		},
+	}
+	// DailyAssetPriceOrderFieldDeletedAt orders DailyAssetPrice by deleted_at.
+	DailyAssetPriceOrderFieldDeletedAt = &DailyAssetPriceOrderField{
+		field: dailyassetprice.FieldDeletedAt,
+		toCursor: func(dap *DailyAssetPrice) Cursor {
+			return Cursor{
+				ID:    dap.ID,
+				Value: dap.DeletedAt,
+			}
+		},
+	}
+	// DailyAssetPriceOrderFieldTime orders DailyAssetPrice by time.
+	DailyAssetPriceOrderFieldTime = &DailyAssetPriceOrderField{
+		field: dailyassetprice.FieldTime,
+		toCursor: func(dap *DailyAssetPrice) Cursor {
+			return Cursor{
+				ID:    dap.ID,
+				Value: dap.Time,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f DailyAssetPriceOrderField) String() string {
+	var str string
+	switch f.field {
+	case dailyassetprice.FieldCreatedAt:
+		str = "CREATED_AT"
+	case dailyassetprice.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case dailyassetprice.FieldDeletedAt:
+		str = "DELETED_AT"
+	case dailyassetprice.FieldTime:
+		str = "TIME"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f DailyAssetPriceOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *DailyAssetPriceOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("DailyAssetPriceOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *DailyAssetPriceOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *DailyAssetPriceOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *DailyAssetPriceOrderFieldDeletedAt
+	case "TIME":
+		*f = *DailyAssetPriceOrderFieldTime
+	default:
+		return fmt.Errorf("%s is not a valid DailyAssetPriceOrderField", str)
+	}
+	return nil
+}
+
 // DailyAssetPriceOrderField defines the ordering field of DailyAssetPrice.
 type DailyAssetPriceOrderField struct {
 	field    string
@@ -2427,6 +3019,91 @@ func (e *ExchangeQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// ExchangeOrderFieldCreatedAt orders Exchange by created_at.
+	ExchangeOrderFieldCreatedAt = &ExchangeOrderField{
+		field: exchange.FieldCreatedAt,
+		toCursor: func(e *Exchange) Cursor {
+			return Cursor{
+				ID:    e.ID,
+				Value: e.CreatedAt,
+			}
+		},
+	}
+	// ExchangeOrderFieldUpdatedAt orders Exchange by updated_at.
+	ExchangeOrderFieldUpdatedAt = &ExchangeOrderField{
+		field: exchange.FieldUpdatedAt,
+		toCursor: func(e *Exchange) Cursor {
+			return Cursor{
+				ID:    e.ID,
+				Value: e.UpdatedAt,
+			}
+		},
+	}
+	// ExchangeOrderFieldDeletedAt orders Exchange by deleted_at.
+	ExchangeOrderFieldDeletedAt = &ExchangeOrderField{
+		field: exchange.FieldDeletedAt,
+		toCursor: func(e *Exchange) Cursor {
+			return Cursor{
+				ID:    e.ID,
+				Value: e.DeletedAt,
+			}
+		},
+	}
+	// ExchangeOrderFieldName orders Exchange by name.
+	ExchangeOrderFieldName = &ExchangeOrderField{
+		field: exchange.FieldName,
+		toCursor: func(e *Exchange) Cursor {
+			return Cursor{
+				ID:    e.ID,
+				Value: e.Name,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f ExchangeOrderField) String() string {
+	var str string
+	switch f.field {
+	case exchange.FieldCreatedAt:
+		str = "CREATED_AT"
+	case exchange.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case exchange.FieldDeletedAt:
+		str = "DELETED_AT"
+	case exchange.FieldName:
+		str = "NAME"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f ExchangeOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *ExchangeOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("ExchangeOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *ExchangeOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *ExchangeOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *ExchangeOrderFieldDeletedAt
+	case "NAME":
+		*f = *ExchangeOrderFieldName
+	default:
+		return fmt.Errorf("%s is not a valid ExchangeOrderField", str)
+	}
+	return nil
 }
 
 // ExchangeOrderField defines the ordering field of Exchange.
@@ -2660,6 +3337,77 @@ func (po *PortfolioQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// PortfolioOrderFieldCreatedAt orders Portfolio by created_at.
+	PortfolioOrderFieldCreatedAt = &PortfolioOrderField{
+		field: portfolio.FieldCreatedAt,
+		toCursor: func(po *Portfolio) Cursor {
+			return Cursor{
+				ID:    po.ID,
+				Value: po.CreatedAt,
+			}
+		},
+	}
+	// PortfolioOrderFieldUpdatedAt orders Portfolio by updated_at.
+	PortfolioOrderFieldUpdatedAt = &PortfolioOrderField{
+		field: portfolio.FieldUpdatedAt,
+		toCursor: func(po *Portfolio) Cursor {
+			return Cursor{
+				ID:    po.ID,
+				Value: po.UpdatedAt,
+			}
+		},
+	}
+	// PortfolioOrderFieldDeletedAt orders Portfolio by deleted_at.
+	PortfolioOrderFieldDeletedAt = &PortfolioOrderField{
+		field: portfolio.FieldDeletedAt,
+		toCursor: func(po *Portfolio) Cursor {
+			return Cursor{
+				ID:    po.ID,
+				Value: po.DeletedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f PortfolioOrderField) String() string {
+	var str string
+	switch f.field {
+	case portfolio.FieldCreatedAt:
+		str = "CREATED_AT"
+	case portfolio.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case portfolio.FieldDeletedAt:
+		str = "DELETED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f PortfolioOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *PortfolioOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("PortfolioOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *PortfolioOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *PortfolioOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *PortfolioOrderFieldDeletedAt
+	default:
+		return fmt.Errorf("%s is not a valid PortfolioOrderField", str)
+	}
+	return nil
+}
+
 // PortfolioOrderField defines the ordering field of Portfolio.
 type PortfolioOrderField struct {
 	field    string
@@ -2891,6 +3639,77 @@ func (sa *StaffAccountQuery) Paginate(
 	return conn, nil
 }
 
+var (
+	// StaffAccountOrderFieldCreatedAt orders StaffAccount by created_at.
+	StaffAccountOrderFieldCreatedAt = &StaffAccountOrderField{
+		field: staffaccount.FieldCreatedAt,
+		toCursor: func(sa *StaffAccount) Cursor {
+			return Cursor{
+				ID:    sa.ID,
+				Value: sa.CreatedAt,
+			}
+		},
+	}
+	// StaffAccountOrderFieldUpdatedAt orders StaffAccount by updated_at.
+	StaffAccountOrderFieldUpdatedAt = &StaffAccountOrderField{
+		field: staffaccount.FieldUpdatedAt,
+		toCursor: func(sa *StaffAccount) Cursor {
+			return Cursor{
+				ID:    sa.ID,
+				Value: sa.UpdatedAt,
+			}
+		},
+	}
+	// StaffAccountOrderFieldDeletedAt orders StaffAccount by deleted_at.
+	StaffAccountOrderFieldDeletedAt = &StaffAccountOrderField{
+		field: staffaccount.FieldDeletedAt,
+		toCursor: func(sa *StaffAccount) Cursor {
+			return Cursor{
+				ID:    sa.ID,
+				Value: sa.DeletedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f StaffAccountOrderField) String() string {
+	var str string
+	switch f.field {
+	case staffaccount.FieldCreatedAt:
+		str = "CREATED_AT"
+	case staffaccount.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case staffaccount.FieldDeletedAt:
+		str = "DELETED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f StaffAccountOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *StaffAccountOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("StaffAccountOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *StaffAccountOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *StaffAccountOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *StaffAccountOrderFieldDeletedAt
+	default:
+		return fmt.Errorf("%s is not a valid StaffAccountOrderField", str)
+	}
+	return nil
+}
+
 // StaffAccountOrderField defines the ordering field of StaffAccount.
 type StaffAccountOrderField struct {
 	field    string
@@ -2922,237 +3741,6 @@ func (sa *StaffAccount) ToEdge(order *StaffAccountOrder) *StaffAccountEdge {
 	return &StaffAccountEdge{
 		Node:   sa,
 		Cursor: order.Field.toCursor(sa),
-	}
-}
-
-// StaffAccountAuthRoleEdge is the edge representation of StaffAccountAuthRole.
-type StaffAccountAuthRoleEdge struct {
-	Node   *StaffAccountAuthRole `json:"node"`
-	Cursor Cursor                `json:"cursor"`
-}
-
-// StaffAccountAuthRoleConnection is the connection containing edges to StaffAccountAuthRole.
-type StaffAccountAuthRoleConnection struct {
-	Edges      []*StaffAccountAuthRoleEdge `json:"edges"`
-	PageInfo   PageInfo                    `json:"pageInfo"`
-	TotalCount int                         `json:"totalCount"`
-}
-
-func (c *StaffAccountAuthRoleConnection) build(nodes []*StaffAccountAuthRole, pager *staffaccountauthrolePager, after *Cursor, first *int, before *Cursor, last *int) {
-	c.PageInfo.HasNextPage = before != nil
-	c.PageInfo.HasPreviousPage = after != nil
-	if first != nil && *first+1 == len(nodes) {
-		c.PageInfo.HasNextPage = true
-		nodes = nodes[:len(nodes)-1]
-	} else if last != nil && *last+1 == len(nodes) {
-		c.PageInfo.HasPreviousPage = true
-		nodes = nodes[:len(nodes)-1]
-	}
-	var nodeAt func(int) *StaffAccountAuthRole
-	if last != nil {
-		n := len(nodes) - 1
-		nodeAt = func(i int) *StaffAccountAuthRole {
-			return nodes[n-i]
-		}
-	} else {
-		nodeAt = func(i int) *StaffAccountAuthRole {
-			return nodes[i]
-		}
-	}
-	c.Edges = make([]*StaffAccountAuthRoleEdge, len(nodes))
-	for i := range nodes {
-		node := nodeAt(i)
-		c.Edges[i] = &StaffAccountAuthRoleEdge{
-			Node:   node,
-			Cursor: pager.toCursor(node),
-		}
-	}
-	if l := len(c.Edges); l > 0 {
-		c.PageInfo.StartCursor = &c.Edges[0].Cursor
-		c.PageInfo.EndCursor = &c.Edges[l-1].Cursor
-	}
-	if c.TotalCount == 0 {
-		c.TotalCount = len(nodes)
-	}
-}
-
-// StaffAccountAuthRolePaginateOption enables pagination customization.
-type StaffAccountAuthRolePaginateOption func(*staffaccountauthrolePager) error
-
-// WithStaffAccountAuthRoleOrder configures pagination ordering.
-func WithStaffAccountAuthRoleOrder(order *StaffAccountAuthRoleOrder) StaffAccountAuthRolePaginateOption {
-	if order == nil {
-		order = DefaultStaffAccountAuthRoleOrder
-	}
-	o := *order
-	return func(pager *staffaccountauthrolePager) error {
-		if err := o.Direction.Validate(); err != nil {
-			return err
-		}
-		if o.Field == nil {
-			o.Field = DefaultStaffAccountAuthRoleOrder.Field
-		}
-		pager.order = &o
-		return nil
-	}
-}
-
-// WithStaffAccountAuthRoleFilter configures pagination filter.
-func WithStaffAccountAuthRoleFilter(filter func(*StaffAccountAuthRoleQuery) (*StaffAccountAuthRoleQuery, error)) StaffAccountAuthRolePaginateOption {
-	return func(pager *staffaccountauthrolePager) error {
-		if filter == nil {
-			return errors.New("StaffAccountAuthRoleQuery filter cannot be nil")
-		}
-		pager.filter = filter
-		return nil
-	}
-}
-
-type staffaccountauthrolePager struct {
-	order  *StaffAccountAuthRoleOrder
-	filter func(*StaffAccountAuthRoleQuery) (*StaffAccountAuthRoleQuery, error)
-}
-
-func newStaffAccountAuthRolePager(opts []StaffAccountAuthRolePaginateOption) (*staffaccountauthrolePager, error) {
-	pager := &staffaccountauthrolePager{}
-	for _, opt := range opts {
-		if err := opt(pager); err != nil {
-			return nil, err
-		}
-	}
-	if pager.order == nil {
-		pager.order = DefaultStaffAccountAuthRoleOrder
-	}
-	return pager, nil
-}
-
-func (p *staffaccountauthrolePager) applyFilter(query *StaffAccountAuthRoleQuery) (*StaffAccountAuthRoleQuery, error) {
-	if p.filter != nil {
-		return p.filter(query)
-	}
-	return query, nil
-}
-
-func (p *staffaccountauthrolePager) toCursor(saar *StaffAccountAuthRole) Cursor {
-	return p.order.Field.toCursor(saar)
-}
-
-func (p *staffaccountauthrolePager) applyCursors(query *StaffAccountAuthRoleQuery, after, before *Cursor) *StaffAccountAuthRoleQuery {
-	for _, predicate := range cursorsToPredicates(
-		p.order.Direction, after, before,
-		p.order.Field.field, DefaultStaffAccountAuthRoleOrder.Field.field,
-	) {
-		query = query.Where(predicate)
-	}
-	return query
-}
-
-func (p *staffaccountauthrolePager) applyOrder(query *StaffAccountAuthRoleQuery, reverse bool) *StaffAccountAuthRoleQuery {
-	direction := p.order.Direction
-	if reverse {
-		direction = direction.reverse()
-	}
-	query = query.Order(direction.orderFunc(p.order.Field.field))
-	if p.order.Field != DefaultStaffAccountAuthRoleOrder.Field {
-		query = query.Order(direction.orderFunc(DefaultStaffAccountAuthRoleOrder.Field.field))
-	}
-	return query
-}
-
-func (p *staffaccountauthrolePager) orderExpr(reverse bool) sql.Querier {
-	direction := p.order.Direction
-	if reverse {
-		direction = direction.reverse()
-	}
-	return sql.ExprFunc(func(b *sql.Builder) {
-		b.Ident(p.order.Field.field).Pad().WriteString(string(direction))
-		if p.order.Field != DefaultStaffAccountAuthRoleOrder.Field {
-			b.Comma().Ident(DefaultStaffAccountAuthRoleOrder.Field.field).Pad().WriteString(string(direction))
-		}
-	})
-}
-
-// Paginate executes the query and returns a relay based cursor connection to StaffAccountAuthRole.
-func (saar *StaffAccountAuthRoleQuery) Paginate(
-	ctx context.Context, after *Cursor, first *int,
-	before *Cursor, last *int, opts ...StaffAccountAuthRolePaginateOption,
-) (*StaffAccountAuthRoleConnection, error) {
-	if err := validateFirstLast(first, last); err != nil {
-		return nil, err
-	}
-	pager, err := newStaffAccountAuthRolePager(opts)
-	if err != nil {
-		return nil, err
-	}
-	if saar, err = pager.applyFilter(saar); err != nil {
-		return nil, err
-	}
-	conn := &StaffAccountAuthRoleConnection{Edges: []*StaffAccountAuthRoleEdge{}}
-	ignoredEdges := !hasCollectedField(ctx, edgesField)
-	if hasCollectedField(ctx, totalCountField) || hasCollectedField(ctx, pageInfoField) {
-		hasPagination := after != nil || first != nil || before != nil || last != nil
-		if hasPagination || ignoredEdges {
-			if conn.TotalCount, err = saar.Count(ctx); err != nil {
-				return nil, err
-			}
-			conn.PageInfo.HasNextPage = first != nil && conn.TotalCount > 0
-			conn.PageInfo.HasPreviousPage = last != nil && conn.TotalCount > 0
-		}
-	}
-	if ignoredEdges || (first != nil && *first == 0) || (last != nil && *last == 0) {
-		return conn, nil
-	}
-
-	saar = pager.applyCursors(saar, after, before)
-	saar = pager.applyOrder(saar, last != nil)
-	if limit := paginateLimit(first, last); limit != 0 {
-		saar.Limit(limit)
-	}
-	if field := collectedField(ctx, edgesField, nodeField); field != nil {
-		if err := saar.collectField(ctx, graphql.GetOperationContext(ctx), *field, []string{edgesField, nodeField}); err != nil {
-			return nil, err
-		}
-	}
-
-	nodes, err := saar.All(ctx)
-	if err != nil {
-		return nil, err
-	}
-	conn.build(nodes, pager, after, first, before, last)
-	return conn, nil
-}
-
-// StaffAccountAuthRoleOrderField defines the ordering field of StaffAccountAuthRole.
-type StaffAccountAuthRoleOrderField struct {
-	field    string
-	toCursor func(*StaffAccountAuthRole) Cursor
-}
-
-// StaffAccountAuthRoleOrder defines the ordering of StaffAccountAuthRole.
-type StaffAccountAuthRoleOrder struct {
-	Direction OrderDirection                  `json:"direction"`
-	Field     *StaffAccountAuthRoleOrderField `json:"field"`
-}
-
-// DefaultStaffAccountAuthRoleOrder is the default ordering of StaffAccountAuthRole.
-var DefaultStaffAccountAuthRoleOrder = &StaffAccountAuthRoleOrder{
-	Direction: OrderDirectionAsc,
-	Field: &StaffAccountAuthRoleOrderField{
-		field: staffaccountauthrole.FieldID,
-		toCursor: func(saar *StaffAccountAuthRole) Cursor {
-			return Cursor{ID: saar.ID}
-		},
-	},
-}
-
-// ToEdge converts StaffAccountAuthRole into StaffAccountAuthRoleEdge.
-func (saar *StaffAccountAuthRole) ToEdge(order *StaffAccountAuthRoleOrder) *StaffAccountAuthRoleEdge {
-	if order == nil {
-		order = DefaultStaffAccountAuthRoleOrder
-	}
-	return &StaffAccountAuthRoleEdge{
-		Node:   saar,
-		Cursor: order.Field.toCursor(saar),
 	}
 }
 
@@ -3351,6 +3939,77 @@ func (t *TransactionQuery) Paginate(
 	}
 	conn.build(nodes, pager, after, first, before, last)
 	return conn, nil
+}
+
+var (
+	// TransactionOrderFieldCreatedAt orders Transaction by created_at.
+	TransactionOrderFieldCreatedAt = &TransactionOrderField{
+		field: transaction.FieldCreatedAt,
+		toCursor: func(t *Transaction) Cursor {
+			return Cursor{
+				ID:    t.ID,
+				Value: t.CreatedAt,
+			}
+		},
+	}
+	// TransactionOrderFieldUpdatedAt orders Transaction by updated_at.
+	TransactionOrderFieldUpdatedAt = &TransactionOrderField{
+		field: transaction.FieldUpdatedAt,
+		toCursor: func(t *Transaction) Cursor {
+			return Cursor{
+				ID:    t.ID,
+				Value: t.UpdatedAt,
+			}
+		},
+	}
+	// TransactionOrderFieldDeletedAt orders Transaction by deleted_at.
+	TransactionOrderFieldDeletedAt = &TransactionOrderField{
+		field: transaction.FieldDeletedAt,
+		toCursor: func(t *Transaction) Cursor {
+			return Cursor{
+				ID:    t.ID,
+				Value: t.DeletedAt,
+			}
+		},
+	}
+)
+
+// String implement fmt.Stringer interface.
+func (f TransactionOrderField) String() string {
+	var str string
+	switch f.field {
+	case transaction.FieldCreatedAt:
+		str = "CREATED_AT"
+	case transaction.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case transaction.FieldDeletedAt:
+		str = "DELETED_AT"
+	}
+	return str
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (f TransactionOrderField) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(f.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (f *TransactionOrderField) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("TransactionOrderField %T must be a string", v)
+	}
+	switch str {
+	case "CREATED_AT":
+		*f = *TransactionOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *TransactionOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *TransactionOrderFieldDeletedAt
+	default:
+		return fmt.Errorf("%s is not a valid TransactionOrderField", str)
+	}
+	return nil
 }
 
 // TransactionOrderField defines the ordering field of Transaction.
@@ -3585,13 +4244,43 @@ func (tt *TransactionTypeQuery) Paginate(
 }
 
 var (
-	// TransactionTypeOrderFieldTransactionType orders TransactionType by transaction_type.
-	TransactionTypeOrderFieldTransactionType = &TransactionTypeOrderField{
-		field: transactiontype.FieldTransactionType,
+	// TransactionTypeOrderFieldCreatedAt orders TransactionType by created_at.
+	TransactionTypeOrderFieldCreatedAt = &TransactionTypeOrderField{
+		field: transactiontype.FieldCreatedAt,
 		toCursor: func(tt *TransactionType) Cursor {
 			return Cursor{
 				ID:    tt.ID,
-				Value: tt.TransactionType,
+				Value: tt.CreatedAt,
+			}
+		},
+	}
+	// TransactionTypeOrderFieldUpdatedAt orders TransactionType by updated_at.
+	TransactionTypeOrderFieldUpdatedAt = &TransactionTypeOrderField{
+		field: transactiontype.FieldUpdatedAt,
+		toCursor: func(tt *TransactionType) Cursor {
+			return Cursor{
+				ID:    tt.ID,
+				Value: tt.UpdatedAt,
+			}
+		},
+	}
+	// TransactionTypeOrderFieldDeletedAt orders TransactionType by deleted_at.
+	TransactionTypeOrderFieldDeletedAt = &TransactionTypeOrderField{
+		field: transactiontype.FieldDeletedAt,
+		toCursor: func(tt *TransactionType) Cursor {
+			return Cursor{
+				ID:    tt.ID,
+				Value: tt.DeletedAt,
+			}
+		},
+	}
+	// TransactionTypeOrderFieldValue orders TransactionType by value.
+	TransactionTypeOrderFieldValue = &TransactionTypeOrderField{
+		field: transactiontype.FieldValue,
+		toCursor: func(tt *TransactionType) Cursor {
+			return Cursor{
+				ID:    tt.ID,
+				Value: tt.Value,
 			}
 		},
 	}
@@ -3601,7 +4290,13 @@ var (
 func (f TransactionTypeOrderField) String() string {
 	var str string
 	switch f.field {
-	case transactiontype.FieldTransactionType:
+	case transactiontype.FieldCreatedAt:
+		str = "CREATED_AT"
+	case transactiontype.FieldUpdatedAt:
+		str = "UPDATED_AT"
+	case transactiontype.FieldDeletedAt:
+		str = "DELETED_AT"
+	case transactiontype.FieldValue:
 		str = "TRANSACTION_TYPE"
 	}
 	return str
@@ -3619,8 +4314,14 @@ func (f *TransactionTypeOrderField) UnmarshalGQL(v interface{}) error {
 		return fmt.Errorf("TransactionTypeOrderField %T must be a string", v)
 	}
 	switch str {
+	case "CREATED_AT":
+		*f = *TransactionTypeOrderFieldCreatedAt
+	case "UPDATED_AT":
+		*f = *TransactionTypeOrderFieldUpdatedAt
+	case "DELETED_AT":
+		*f = *TransactionTypeOrderFieldDeletedAt
 	case "TRANSACTION_TYPE":
-		*f = *TransactionTypeOrderFieldTransactionType
+		*f = *TransactionTypeOrderFieldValue
 	default:
 		return fmt.Errorf("%s is not a valid TransactionTypeOrderField", str)
 	}

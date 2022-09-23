@@ -63,7 +63,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "asset_class", Type: field.TypeEnum, Enums: []string{"CASH_OR_CASH_EQUIVALENT", "COMMODITY", "CRYPTOCURRENCY", "EQUITY", "FIXED_INCOME", "FUTURE", "REAL_ESTATE"}},
+		{Name: "value", Type: field.TypeEnum, Enums: []string{"CASH_OR_CASH_EQUIVALENT", "COMMODITY", "CRYPTOCURRENCY", "EQUITY", "FIXED_INCOME", "FUTURE", "REAL_ESTATE"}},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 	}
 	// AssetClassesTable holds the schema information for the "asset_classes" table.
@@ -78,7 +78,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "auth_role", Type: field.TypeEnum, Enums: []string{"DEMO", "FREE", "PLUS", "PRO", "ENTERPRISE", "SUPPORT", "ADMIN", "SUPER_ADMIN"}},
+		{Name: "value", Type: field.TypeEnum, Enums: []string{"DEMO", "FREE", "PLUS", "PRO", "ENTERPRISE", "SUPPORT", "ADMIN", "SUPER_ADMIN"}},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 	}
 	// AuthRolesTable holds the schema information for the "auth_roles" table.
@@ -93,7 +93,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "auth_type", Type: field.TypeEnum, Enums: []string{"LOCAL", "GOOGLE", "APPLE", "FACEBOOK"}, Default: "LOCAL"},
+		{Name: "value", Type: field.TypeEnum, Enums: []string{"LOCAL", "GOOGLE", "APPLE", "FACEBOOK"}},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 	}
 	// AuthTypesTable holds the schema information for the "auth_types" table.
@@ -239,35 +239,6 @@ var (
 			},
 		},
 	}
-	// StaffAccountAuthRolesColumns holds the columns for the "staff_account_auth_roles" table.
-	StaffAccountAuthRolesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
-		{Name: "created_at", Type: field.TypeTime},
-		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "staff_account_id", Type: field.TypeString},
-		{Name: "auth_role_id", Type: field.TypeString},
-	}
-	// StaffAccountAuthRolesTable holds the schema information for the "staff_account_auth_roles" table.
-	StaffAccountAuthRolesTable = &schema.Table{
-		Name:       "staff_account_auth_roles",
-		Columns:    StaffAccountAuthRolesColumns,
-		PrimaryKey: []*schema.Column{StaffAccountAuthRolesColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "staff_account_auth_roles_staff_accounts_staff_account",
-				Columns:    []*schema.Column{StaffAccountAuthRolesColumns[4]},
-				RefColumns: []*schema.Column{StaffAccountsColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "staff_account_auth_roles_auth_roles_auth_role",
-				Columns:    []*schema.Column{StaffAccountAuthRolesColumns[5]},
-				RefColumns: []*schema.Column{AuthRolesColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-		},
-	}
 	// TransactionsColumns holds the columns for the "transactions" table.
 	TransactionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -282,6 +253,7 @@ var (
 		{Name: "transaction_transaction_type", Type: field.TypeString},
 		{Name: "transaction_base_asset", Type: field.TypeString},
 		{Name: "transaction_quote_asset", Type: field.TypeString, Nullable: true},
+		{Name: "transaction_blockchain", Type: field.TypeString, Nullable: true},
 	}
 	// TransactionsTable holds the schema information for the "transactions" table.
 	TransactionsTable = &schema.Table{
@@ -319,6 +291,12 @@ var (
 				RefColumns: []*schema.Column{AssetsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
+			{
+				Symbol:     "transactions_blockchains_blockchain",
+				Columns:    []*schema.Column{TransactionsColumns[12]},
+				RefColumns: []*schema.Column{BlockchainsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
 		},
 	}
 	// TransactionTypesColumns holds the columns for the "transaction_types" table.
@@ -327,7 +305,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "transaction_type", Type: field.TypeEnum, Enums: []string{"BUY", "SELL", "STAKE", "DIVIDEND_INCOME", "RENT_PAYMENT", "RENT_INCOME", "STOCK_DIVIDEND"}},
+		{Name: "value", Type: field.TypeEnum, Enums: []string{"BUY", "SELL", "SWAP", "STAKE", "DIVIDEND_INCOME", "RENT_PAYMENT", "RENT_INCOME", "STOCK_DIVIDEND"}},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 	}
 	// TransactionTypesTable holds the schema information for the "transaction_types" table.
@@ -424,7 +402,6 @@ var (
 		ExchangesTable,
 		PortfoliosTable,
 		StaffAccountsTable,
-		StaffAccountAuthRolesTable,
 		TransactionsTable,
 		TransactionTypesTable,
 		AccountAuthRolesTable,
@@ -448,13 +425,12 @@ func init() {
 	StaffAccountsTable.Annotation.Checks = map[string]string{
 		"staff_account_chk_if_auth_type_local_then_password_not_null": "(auth_type <> 'LOCAL') OR (password IS NOT NULL)",
 	}
-	StaffAccountAuthRolesTable.ForeignKeys[0].RefTable = StaffAccountsTable
-	StaffAccountAuthRolesTable.ForeignKeys[1].RefTable = AuthRolesTable
 	TransactionsTable.ForeignKeys[0].RefTable = ExchangesTable
 	TransactionsTable.ForeignKeys[1].RefTable = PortfoliosTable
 	TransactionsTable.ForeignKeys[2].RefTable = TransactionTypesTable
 	TransactionsTable.ForeignKeys[3].RefTable = AssetsTable
 	TransactionsTable.ForeignKeys[4].RefTable = AssetsTable
+	TransactionsTable.ForeignKeys[5].RefTable = BlockchainsTable
 	AccountAuthRolesTable.ForeignKeys[0].RefTable = AccountsTable
 	AccountAuthRolesTable.ForeignKeys[1].RefTable = AuthRolesTable
 	BlockchainCryptocurrenciesTable.ForeignKeys[0].RefTable = BlockchainsTable

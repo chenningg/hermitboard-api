@@ -22,8 +22,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldAssetClass holds the string denoting the asset_class field in the database.
-	FieldAssetClass = "asset_class"
+	// FieldValue holds the string denoting the value field in the database.
+	FieldValue = "value"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
 	// EdgeAssets holds the string denoting the assets edge name in mutations.
@@ -45,7 +45,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldAssetClass,
+	FieldValue,
 	FieldDescription,
 }
 
@@ -74,48 +74,48 @@ var (
 	DefaultID func() pulid.PULID
 )
 
-// AssetClass defines the type for the "asset_class" enum field.
-type AssetClass string
+// Value defines the type for the "value" enum field.
+type Value string
 
-// AssetClass values.
+// Value values.
 const (
-	AssetClassCashOrCashEquivalent AssetClass = "CASH_OR_CASH_EQUIVALENT"
-	AssetClassCommodity            AssetClass = "COMMODITY"
-	AssetClassCryptocurrency       AssetClass = "CRYPTOCURRENCY"
-	AssetClassEquity               AssetClass = "EQUITY"
-	AssetClassFixedIncome          AssetClass = "FIXED_INCOME"
-	AssetClassFuture               AssetClass = "FUTURE"
-	AssetClassRealEstate           AssetClass = "REAL_ESTATE"
+	ValueCashOrCashEquivalent Value = "CASH_OR_CASH_EQUIVALENT"
+	ValueCommodity            Value = "COMMODITY"
+	ValueCryptocurrency       Value = "CRYPTOCURRENCY"
+	ValueEquity               Value = "EQUITY"
+	ValueFixedIncome          Value = "FIXED_INCOME"
+	ValueFuture               Value = "FUTURE"
+	ValueRealEstate           Value = "REAL_ESTATE"
 )
 
-func (ac AssetClass) String() string {
-	return string(ac)
+func (v Value) String() string {
+	return string(v)
 }
 
-// AssetClassValidator is a validator for the "asset_class" field enum values. It is called by the builders before save.
-func AssetClassValidator(ac AssetClass) error {
-	switch ac {
-	case AssetClassCashOrCashEquivalent, AssetClassCommodity, AssetClassCryptocurrency, AssetClassEquity, AssetClassFixedIncome, AssetClassFuture, AssetClassRealEstate:
+// ValueValidator is a validator for the "value" field enum values. It is called by the builders before save.
+func ValueValidator(v Value) error {
+	switch v {
+	case ValueCashOrCashEquivalent, ValueCommodity, ValueCryptocurrency, ValueEquity, ValueFixedIncome, ValueFuture, ValueRealEstate:
 		return nil
 	default:
-		return fmt.Errorf("assetclass: invalid enum value for asset_class field: %q", ac)
+		return fmt.Errorf("assetclass: invalid enum value for value field: %q", v)
 	}
 }
 
 // MarshalGQL implements graphql.Marshaler interface.
-func (e AssetClass) MarshalGQL(w io.Writer) {
+func (e Value) MarshalGQL(w io.Writer) {
 	io.WriteString(w, strconv.Quote(e.String()))
 }
 
 // UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *AssetClass) UnmarshalGQL(val interface{}) error {
+func (e *Value) UnmarshalGQL(val interface{}) error {
 	str, ok := val.(string)
 	if !ok {
 		return fmt.Errorf("enum %T must be a string", val)
 	}
-	*e = AssetClass(str)
-	if err := AssetClassValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid AssetClass", str)
+	*e = Value(str)
+	if err := ValueValidator(*e); err != nil {
+		return fmt.Errorf("%s is not a valid Value", str)
 	}
 	return nil
 }

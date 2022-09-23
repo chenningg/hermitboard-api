@@ -754,6 +754,34 @@ func HasCryptocurrenciesWith(preds ...predicate.Cryptocurrency) predicate.Blockc
 	})
 }
 
+// HasTransactions applies the HasEdge predicate on the "transactions" edge.
+func HasTransactions() predicate.Blockchain {
+	return predicate.Blockchain(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TransactionsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, TransactionsTable, TransactionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTransactionsWith applies the HasEdge predicate on the "transactions" edge with a given conditions (other predicates).
+func HasTransactionsWith(preds ...predicate.Transaction) predicate.Blockchain {
+	return predicate.Blockchain(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TransactionsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, TransactionsTable, TransactionsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Blockchain) predicate.Blockchain {
 	return predicate.Blockchain(func(s *sql.Selector) {

@@ -64,9 +64,9 @@ func (acc *AssetClassCreate) SetNillableDeletedAt(t *time.Time) *AssetClassCreat
 	return acc
 }
 
-// SetAssetClass sets the "asset_class" field.
-func (acc *AssetClassCreate) SetAssetClass(ac assetclass.AssetClass) *AssetClassCreate {
-	acc.mutation.SetAssetClass(ac)
+// SetValue sets the "value" field.
+func (acc *AssetClassCreate) SetValue(a assetclass.Value) *AssetClassCreate {
+	acc.mutation.SetValue(a)
 	return acc
 }
 
@@ -212,12 +212,12 @@ func (acc *AssetClassCreate) check() error {
 	if _, ok := acc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AssetClass.updated_at"`)}
 	}
-	if _, ok := acc.mutation.AssetClass(); !ok {
-		return &ValidationError{Name: "asset_class", err: errors.New(`ent: missing required field "AssetClass.asset_class"`)}
+	if _, ok := acc.mutation.Value(); !ok {
+		return &ValidationError{Name: "value", err: errors.New(`ent: missing required field "AssetClass.value"`)}
 	}
-	if v, ok := acc.mutation.AssetClass(); ok {
-		if err := assetclass.AssetClassValidator(v); err != nil {
-			return &ValidationError{Name: "asset_class", err: fmt.Errorf(`ent: validator failed for field "AssetClass.asset_class": %w`, err)}
+	if v, ok := acc.mutation.Value(); ok {
+		if err := assetclass.ValueValidator(v); err != nil {
+			return &ValidationError{Name: "value", err: fmt.Errorf(`ent: validator failed for field "AssetClass.value": %w`, err)}
 		}
 	}
 	if v, ok := acc.mutation.Description(); ok {
@@ -285,13 +285,13 @@ func (acc *AssetClassCreate) createSpec() (*AssetClass, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := acc.mutation.AssetClass(); ok {
+	if value, ok := acc.mutation.Value(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: assetclass.FieldAssetClass,
+			Column: assetclass.FieldValue,
 		})
-		_node.AssetClass = value
+		_node.Value = value
 	}
 	if value, ok := acc.mutation.Description(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

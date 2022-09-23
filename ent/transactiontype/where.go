@@ -316,39 +316,39 @@ func DeletedAtNotNil() predicate.TransactionType {
 	})
 }
 
-// TransactionTypeEQ applies the EQ predicate on the "transaction_type" field.
-func TransactionTypeEQ(v TransactionType) predicate.TransactionType {
+// ValueEQ applies the EQ predicate on the "value" field.
+func ValueEQ(v Value) predicate.TransactionType {
 	return predicate.TransactionType(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTransactionType), v))
+		s.Where(sql.EQ(s.C(FieldValue), v))
 	})
 }
 
-// TransactionTypeNEQ applies the NEQ predicate on the "transaction_type" field.
-func TransactionTypeNEQ(v TransactionType) predicate.TransactionType {
+// ValueNEQ applies the NEQ predicate on the "value" field.
+func ValueNEQ(v Value) predicate.TransactionType {
 	return predicate.TransactionType(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldTransactionType), v))
+		s.Where(sql.NEQ(s.C(FieldValue), v))
 	})
 }
 
-// TransactionTypeIn applies the In predicate on the "transaction_type" field.
-func TransactionTypeIn(vs ...TransactionType) predicate.TransactionType {
+// ValueIn applies the In predicate on the "value" field.
+func ValueIn(vs ...Value) predicate.TransactionType {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.TransactionType(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldTransactionType), v...))
+		s.Where(sql.In(s.C(FieldValue), v...))
 	})
 }
 
-// TransactionTypeNotIn applies the NotIn predicate on the "transaction_type" field.
-func TransactionTypeNotIn(vs ...TransactionType) predicate.TransactionType {
+// ValueNotIn applies the NotIn predicate on the "value" field.
+func ValueNotIn(vs ...Value) predicate.TransactionType {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.TransactionType(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldTransactionType), v...))
+		s.Where(sql.NotIn(s.C(FieldValue), v...))
 	})
 }
 

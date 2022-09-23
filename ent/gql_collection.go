@@ -25,7 +25,7 @@ func (a *AccountQuery) collectField(ctx context.Context, op *graphql.OperationCo
 	path = append([]string(nil), path...)
 	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
 		switch field.Name {
-		case "authRoles", "auth_roles":
+		case "authRoles":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -49,7 +49,7 @@ func (a *AccountQuery) collectField(ctx context.Context, op *graphql.OperationCo
 			a.WithNamedPortfolios(alias, func(wq *PortfolioQuery) {
 				*wq = *query
 			})
-		case "authType", "auth_type":
+		case "authType":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -87,6 +87,28 @@ func newAccountPaginateArgs(rv map[string]interface{}) *accountPaginateArgs {
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
 	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &AccountOrder{Field: &AccountOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithAccountOrder(order))
+			}
+		case *AccountOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithAccountOrder(v))
+			}
+		}
+	}
 	return args
 }
 
@@ -106,7 +128,7 @@ func (a *AssetQuery) collectField(ctx context.Context, op *graphql.OperationCont
 	path = append([]string(nil), path...)
 	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
 		switch field.Name {
-		case "assetClass", "asset_class":
+		case "assetClass":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -126,7 +148,7 @@ func (a *AssetQuery) collectField(ctx context.Context, op *graphql.OperationCont
 				return err
 			}
 			a.withCryptocurrency = query
-		case "transactionBase", "transaction_base":
+		case "transactionBases":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -135,10 +157,10 @@ func (a *AssetQuery) collectField(ctx context.Context, op *graphql.OperationCont
 			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
 				return err
 			}
-			a.WithNamedTransactionBase(alias, func(wq *TransactionQuery) {
+			a.WithNamedTransactionBases(alias, func(wq *TransactionQuery) {
 				*wq = *query
 			})
-		case "transactionQuote", "transaction_quote":
+		case "transactionQuotes":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -147,10 +169,10 @@ func (a *AssetQuery) collectField(ctx context.Context, op *graphql.OperationCont
 			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
 				return err
 			}
-			a.WithNamedTransactionQuote(alias, func(wq *TransactionQuery) {
+			a.WithNamedTransactionQuotes(alias, func(wq *TransactionQuery) {
 				*wq = *query
 			})
-		case "dailyAssetPrices", "daily_asset_prices":
+		case "dailyAssetPrices":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -189,6 +211,28 @@ func newAssetPaginateArgs(rv map[string]interface{}) *assetPaginateArgs {
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &AssetOrder{Field: &AssetOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithAssetOrder(order))
+			}
+		case *AssetOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithAssetOrder(v))
+			}
+		}
 	}
 	return args
 }
@@ -302,7 +346,7 @@ func (ar *AuthRoleQuery) collectField(ctx context.Context, op *graphql.Operation
 			ar.WithNamedAccounts(alias, func(wq *AccountQuery) {
 				*wq = *query
 			})
-		case "staffAccounts", "staff_accounts":
+		case "staffAccounts":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -395,7 +439,7 @@ func (at *AuthTypeQuery) collectField(ctx context.Context, op *graphql.Operation
 			at.WithNamedAccounts(alias, func(wq *AccountQuery) {
 				*wq = *query
 			})
-		case "staffAccounts", "staff_accounts":
+		case "staffAccounts":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -488,6 +532,18 @@ func (b *BlockchainQuery) collectField(ctx context.Context, op *graphql.Operatio
 			b.WithNamedCryptocurrencies(alias, func(wq *CryptocurrencyQuery) {
 				*wq = *query
 			})
+		case "transactions":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &TransactionQuery{config: b.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			b.WithNamedTransactions(alias, func(wq *TransactionQuery) {
+				*wq = *query
+			})
 		}
 	}
 	return nil
@@ -515,6 +571,28 @@ func newBlockchainPaginateArgs(rv map[string]interface{}) *blockchainPaginateArg
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &BlockchainOrder{Field: &BlockchainOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithBlockchainOrder(order))
+			}
+		case *BlockchainOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithBlockchainOrder(v))
+			}
+		}
 	}
 	return args
 }
@@ -585,6 +663,28 @@ func newCryptocurrencyPaginateArgs(rv map[string]interface{}) *cryptocurrencyPag
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
 	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &CryptocurrencyOrder{Field: &CryptocurrencyOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithCryptocurrencyOrder(order))
+			}
+		case *CryptocurrencyOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithCryptocurrencyOrder(v))
+			}
+		}
+	}
 	return args
 }
 
@@ -641,6 +741,28 @@ func newDailyAssetPricePaginateArgs(rv map[string]interface{}) *dailyassetpriceP
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &DailyAssetPriceOrder{Field: &DailyAssetPriceOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithDailyAssetPriceOrder(order))
+			}
+		case *DailyAssetPriceOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithDailyAssetPriceOrder(v))
+			}
+		}
 	}
 	return args
 }
@@ -700,6 +822,28 @@ func newExchangePaginateArgs(rv map[string]interface{}) *exchangePaginateArgs {
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &ExchangeOrder{Field: &ExchangeOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithExchangeOrder(order))
+			}
+		case *ExchangeOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithExchangeOrder(v))
+			}
+		}
 	}
 	return args
 }
@@ -770,6 +914,28 @@ func newPortfolioPaginateArgs(rv map[string]interface{}) *portfolioPaginateArgs 
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
 	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &PortfolioOrder{Field: &PortfolioOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithPortfolioOrder(order))
+			}
+		case *PortfolioOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithPortfolioOrder(v))
+			}
+		}
+	}
 	return args
 }
 
@@ -789,7 +955,7 @@ func (sa *StaffAccountQuery) collectField(ctx context.Context, op *graphql.Opera
 	path = append([]string(nil), path...)
 	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
 		switch field.Name {
-		case "authRoles", "auth_roles":
+		case "authRoles":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -801,7 +967,7 @@ func (sa *StaffAccountQuery) collectField(ctx context.Context, op *graphql.Opera
 			sa.WithNamedAuthRoles(alias, func(wq *AuthRoleQuery) {
 				*wq = *query
 			})
-		case "authType", "auth_type":
+		case "authType":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -839,72 +1005,27 @@ func newStaffAccountPaginateArgs(rv map[string]interface{}) *staffaccountPaginat
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
 	}
-	return args
-}
-
-// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (saar *StaffAccountAuthRoleQuery) CollectFields(ctx context.Context, satisfies ...string) (*StaffAccountAuthRoleQuery, error) {
-	fc := graphql.GetFieldContext(ctx)
-	if fc == nil {
-		return saar, nil
-	}
-	if err := saar.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
-		return nil, err
-	}
-	return saar, nil
-}
-
-func (saar *StaffAccountAuthRoleQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
-	path = append([]string(nil), path...)
-	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
-		switch field.Name {
-		case "staffAccount", "staff_account":
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
 			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &StaffAccountQuery{config: saar.config}
+				err1, err2 error
+				order      = &StaffAccountOrder{Field: &StaffAccountOrderField{}}
 			)
-			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
-				return err
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
 			}
-			saar.withStaffAccount = query
-		case "authRole", "auth_role":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &AuthRoleQuery{config: saar.config}
-			)
-			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
-				return err
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
 			}
-			saar.withAuthRole = query
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithStaffAccountOrder(order))
+			}
+		case *StaffAccountOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithStaffAccountOrder(v))
+			}
 		}
-	}
-	return nil
-}
-
-type staffaccountauthrolePaginateArgs struct {
-	first, last   *int
-	after, before *Cursor
-	opts          []StaffAccountAuthRolePaginateOption
-}
-
-func newStaffAccountAuthRolePaginateArgs(rv map[string]interface{}) *staffaccountauthrolePaginateArgs {
-	args := &staffaccountauthrolePaginateArgs{}
-	if rv == nil {
-		return args
-	}
-	if v := rv[firstField]; v != nil {
-		args.first = v.(*int)
-	}
-	if v := rv[lastField]; v != nil {
-		args.last = v.(*int)
-	}
-	if v := rv[afterField]; v != nil {
-		args.after = v.(*Cursor)
-	}
-	if v := rv[beforeField]; v != nil {
-		args.before = v.(*Cursor)
 	}
 	return args
 }
@@ -925,7 +1046,7 @@ func (t *TransactionQuery) collectField(ctx context.Context, op *graphql.Operati
 	path = append([]string(nil), path...)
 	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
 		switch field.Name {
-		case "transactionType", "transaction_type":
+		case "transactionType":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -935,7 +1056,7 @@ func (t *TransactionQuery) collectField(ctx context.Context, op *graphql.Operati
 				return err
 			}
 			t.withTransactionType = query
-		case "baseAsset", "base_asset":
+		case "baseAsset":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -945,7 +1066,7 @@ func (t *TransactionQuery) collectField(ctx context.Context, op *graphql.Operati
 				return err
 			}
 			t.withBaseAsset = query
-		case "quoteAsset", "quote_asset":
+		case "quoteAsset":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
@@ -975,6 +1096,16 @@ func (t *TransactionQuery) collectField(ctx context.Context, op *graphql.Operati
 				return err
 			}
 			t.withExchange = query
+		case "blockchain":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &BlockchainQuery{config: t.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			t.withBlockchain = query
 		}
 	}
 	return nil
@@ -1002,6 +1133,28 @@ func newTransactionPaginateArgs(rv map[string]interface{}) *transactionPaginateA
 	}
 	if v := rv[beforeField]; v != nil {
 		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &TransactionOrder{Field: &TransactionOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithTransactionOrder(order))
+			}
+		case *TransactionOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithTransactionOrder(v))
+			}
+		}
 	}
 	return args
 }

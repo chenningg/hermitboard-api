@@ -65,9 +65,9 @@ func (arc *AuthRoleCreate) SetNillableDeletedAt(t *time.Time) *AuthRoleCreate {
 	return arc
 }
 
-// SetAuthRole sets the "auth_role" field.
-func (arc *AuthRoleCreate) SetAuthRole(ar authrole.AuthRole) *AuthRoleCreate {
-	arc.mutation.SetAuthRole(ar)
+// SetValue sets the "value" field.
+func (arc *AuthRoleCreate) SetValue(a authrole.Value) *AuthRoleCreate {
+	arc.mutation.SetValue(a)
 	return arc
 }
 
@@ -228,12 +228,12 @@ func (arc *AuthRoleCreate) check() error {
 	if _, ok := arc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AuthRole.updated_at"`)}
 	}
-	if _, ok := arc.mutation.AuthRole(); !ok {
-		return &ValidationError{Name: "auth_role", err: errors.New(`ent: missing required field "AuthRole.auth_role"`)}
+	if _, ok := arc.mutation.Value(); !ok {
+		return &ValidationError{Name: "value", err: errors.New(`ent: missing required field "AuthRole.value"`)}
 	}
-	if v, ok := arc.mutation.AuthRole(); ok {
-		if err := authrole.AuthRoleValidator(v); err != nil {
-			return &ValidationError{Name: "auth_role", err: fmt.Errorf(`ent: validator failed for field "AuthRole.auth_role": %w`, err)}
+	if v, ok := arc.mutation.Value(); ok {
+		if err := authrole.ValueValidator(v); err != nil {
+			return &ValidationError{Name: "value", err: fmt.Errorf(`ent: validator failed for field "AuthRole.value": %w`, err)}
 		}
 	}
 	if v, ok := arc.mutation.Description(); ok {
@@ -301,13 +301,13 @@ func (arc *AuthRoleCreate) createSpec() (*AuthRole, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := arc.mutation.AuthRole(); ok {
+	if value, ok := arc.mutation.Value(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: authrole.FieldAuthRole,
+			Column: authrole.FieldValue,
 		})
-		_node.AuthRole = value
+		_node.Value = value
 	}
 	if value, ok := arc.mutation.Description(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

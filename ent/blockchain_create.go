@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
+	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -131,6 +132,21 @@ func (bc *BlockchainCreate) AddCryptocurrencies(c ...*Cryptocurrency) *Blockchai
 		ids[i] = c[i].ID
 	}
 	return bc.AddCryptocurrencyIDs(ids...)
+}
+
+// AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
+func (bc *BlockchainCreate) AddTransactionIDs(ids ...pulid.PULID) *BlockchainCreate {
+	bc.mutation.AddTransactionIDs(ids...)
+	return bc
+}
+
+// AddTransactions adds the "transactions" edges to the Transaction entity.
+func (bc *BlockchainCreate) AddTransactions(t ...*Transaction) *BlockchainCreate {
+	ids := make([]pulid.PULID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return bc.AddTransactionIDs(ids...)
 }
 
 // Mutation returns the BlockchainMutation object of the builder.
@@ -356,6 +372,25 @@ func (bc *BlockchainCreate) createSpec() (*Blockchain, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: cryptocurrency.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.TransactionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   blockchain.TransactionsTable,
+			Columns: []string{blockchain.TransactionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: transaction.FieldID,
 				},
 			},
 		}

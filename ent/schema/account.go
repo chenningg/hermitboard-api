@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"time"
 
 	"entgo.io/ent"
@@ -32,10 +33,12 @@ func (Account) Fields() []ent.Field {
 		field.String("nickname").
 			Unique().
 			NotEmpty().
-			MinLen(3),
+			MinLen(3).
+			Annotations(entgql.OrderField("NICKNAME")),
 		field.String("email").
 			Unique().
-			NotEmpty(),
+			NotEmpty().
+			Annotations(entgql.OrderField("EMAIL")),
 		field.String("password").
 			Sensitive().
 			Comment("Hashed and salted password using Bcrypt.").
@@ -52,17 +55,23 @@ func (Account) Fields() []ent.Field {
 func (Account) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_roles", AuthRole.Type).
-			Required(),
-		edge.To("portfolios", Portfolio.Type),
+			Required().
+			Annotations(entgql.MapsTo("authRoles")),
+		edge.To("portfolios", Portfolio.Type).
+			Annotations(entgql.MapsTo("portfolios")),
 		edge.To("auth_type", AuthType.Type).
 			Required().
-			Unique(),
+			Unique().
+			Annotations(entgql.MapsTo("authType")),
 	}
 }
 
 // Check that either auth_id or password is not null.
 func (Account) Annotations() []schema.Annotation {
 	return []schema.Annotation{
+		entgql.RelayConnection(),
+		entgql.QueryField(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 		&entsql.Annotation{
 			Checks: map[string]string{
 				// Checks that if auth_type is LOCAL, password field cannot be NULL.

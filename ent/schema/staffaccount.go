@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"time"
 
 	"entgo.io/ent"
@@ -50,15 +51,20 @@ func (StaffAccount) Fields() []ent.Field {
 // Edges of the StaffAccount.
 func (StaffAccount) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("auth_roles", AuthRole.Type),
+		edge.To("auth_roles", AuthRole.Type).
+			Annotations(entgql.MapsTo("authRoles")),
 		edge.To("auth_type", AuthType.Type).
 			Required().
-			Unique(),
+			Unique().
+			Annotations(entgql.MapsTo("authType")),
 	}
 }
 
 func (StaffAccount) Annotations() []schema.Annotation {
 	return []schema.Annotation{
+		entgql.RelayConnection(),
+		entgql.QueryField(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 		&entsql.Annotation{
 			Checks: map[string]string{
 				// Checks that if auth_type is LOCAL, password field cannot be NULL.

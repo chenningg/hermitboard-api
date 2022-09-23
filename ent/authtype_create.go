@@ -65,17 +65,9 @@ func (atc *AuthTypeCreate) SetNillableDeletedAt(t *time.Time) *AuthTypeCreate {
 	return atc
 }
 
-// SetAuthType sets the "auth_type" field.
-func (atc *AuthTypeCreate) SetAuthType(at authtype.AuthType) *AuthTypeCreate {
-	atc.mutation.SetAuthType(at)
-	return atc
-}
-
-// SetNillableAuthType sets the "auth_type" field if the given value is not nil.
-func (atc *AuthTypeCreate) SetNillableAuthType(at *authtype.AuthType) *AuthTypeCreate {
-	if at != nil {
-		atc.SetAuthType(*at)
-	}
+// SetValue sets the "value" field.
+func (atc *AuthTypeCreate) SetValue(a authtype.Value) *AuthTypeCreate {
+	atc.mutation.SetValue(a)
 	return atc
 }
 
@@ -222,10 +214,6 @@ func (atc *AuthTypeCreate) defaults() {
 		v := authtype.DefaultUpdatedAt()
 		atc.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := atc.mutation.AuthType(); !ok {
-		v := authtype.DefaultAuthType
-		atc.mutation.SetAuthType(v)
-	}
 	if _, ok := atc.mutation.ID(); !ok {
 		v := authtype.DefaultID()
 		atc.mutation.SetID(v)
@@ -240,12 +228,12 @@ func (atc *AuthTypeCreate) check() error {
 	if _, ok := atc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "AuthType.updated_at"`)}
 	}
-	if _, ok := atc.mutation.AuthType(); !ok {
-		return &ValidationError{Name: "auth_type", err: errors.New(`ent: missing required field "AuthType.auth_type"`)}
+	if _, ok := atc.mutation.Value(); !ok {
+		return &ValidationError{Name: "value", err: errors.New(`ent: missing required field "AuthType.value"`)}
 	}
-	if v, ok := atc.mutation.AuthType(); ok {
-		if err := authtype.AuthTypeValidator(v); err != nil {
-			return &ValidationError{Name: "auth_type", err: fmt.Errorf(`ent: validator failed for field "AuthType.auth_type": %w`, err)}
+	if v, ok := atc.mutation.Value(); ok {
+		if err := authtype.ValueValidator(v); err != nil {
+			return &ValidationError{Name: "value", err: fmt.Errorf(`ent: validator failed for field "AuthType.value": %w`, err)}
 		}
 	}
 	if v, ok := atc.mutation.Description(); ok {
@@ -313,13 +301,13 @@ func (atc *AuthTypeCreate) createSpec() (*AuthType, *sqlgraph.CreateSpec) {
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := atc.mutation.AuthType(); ok {
+	if value, ok := atc.mutation.Value(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: authtype.FieldAuthType,
+			Column: authtype.FieldValue,
 		})
-		_node.AuthType = value
+		_node.Value = value
 	}
 	if value, ok := atc.mutation.Description(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

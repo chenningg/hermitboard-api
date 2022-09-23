@@ -22,8 +22,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldAuthRole holds the string denoting the auth_role field in the database.
-	FieldAuthRole = "auth_role"
+	// FieldValue holds the string denoting the value field in the database.
+	FieldValue = "value"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
 	// EdgeAccounts holds the string denoting the accounts edge name in mutations.
@@ -50,7 +50,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldAuthRole,
+	FieldValue,
 	FieldDescription,
 }
 
@@ -88,49 +88,49 @@ var (
 	DefaultID func() pulid.PULID
 )
 
-// AuthRole defines the type for the "auth_role" enum field.
-type AuthRole string
+// Value defines the type for the "value" enum field.
+type Value string
 
-// AuthRole values.
+// Value values.
 const (
-	AuthRoleDemo       AuthRole = "DEMO"
-	AuthRoleFree       AuthRole = "FREE"
-	AuthRolePlus       AuthRole = "PLUS"
-	AuthRolePro        AuthRole = "PRO"
-	AuthRoleEnterprise AuthRole = "ENTERPRISE"
-	AuthRoleSupport    AuthRole = "SUPPORT"
-	AuthRoleAdmin      AuthRole = "ADMIN"
-	AuthRoleSuperAdmin AuthRole = "SUPER_ADMIN"
+	ValueDemo       Value = "DEMO"
+	ValueFree       Value = "FREE"
+	ValuePlus       Value = "PLUS"
+	ValuePro        Value = "PRO"
+	ValueEnterprise Value = "ENTERPRISE"
+	ValueSupport    Value = "SUPPORT"
+	ValueAdmin      Value = "ADMIN"
+	ValueSuperAdmin Value = "SUPER_ADMIN"
 )
 
-func (ar AuthRole) String() string {
-	return string(ar)
+func (v Value) String() string {
+	return string(v)
 }
 
-// AuthRoleValidator is a validator for the "auth_role" field enum values. It is called by the builders before save.
-func AuthRoleValidator(ar AuthRole) error {
-	switch ar {
-	case AuthRoleDemo, AuthRoleFree, AuthRolePlus, AuthRolePro, AuthRoleEnterprise, AuthRoleSupport, AuthRoleAdmin, AuthRoleSuperAdmin:
+// ValueValidator is a validator for the "value" field enum values. It is called by the builders before save.
+func ValueValidator(v Value) error {
+	switch v {
+	case ValueDemo, ValueFree, ValuePlus, ValuePro, ValueEnterprise, ValueSupport, ValueAdmin, ValueSuperAdmin:
 		return nil
 	default:
-		return fmt.Errorf("authrole: invalid enum value for auth_role field: %q", ar)
+		return fmt.Errorf("authrole: invalid enum value for value field: %q", v)
 	}
 }
 
 // MarshalGQL implements graphql.Marshaler interface.
-func (e AuthRole) MarshalGQL(w io.Writer) {
+func (e Value) MarshalGQL(w io.Writer) {
 	io.WriteString(w, strconv.Quote(e.String()))
 }
 
 // UnmarshalGQL implements graphql.Unmarshaler interface.
-func (e *AuthRole) UnmarshalGQL(val interface{}) error {
+func (e *Value) UnmarshalGQL(val interface{}) error {
 	str, ok := val.(string)
 	if !ok {
 		return fmt.Errorf("enum %T must be a string", val)
 	}
-	*e = AuthRole(str)
-	if err := AuthRoleValidator(*e); err != nil {
-		return fmt.Errorf("%s is not a valid AuthRole", str)
+	*e = Value(str)
+	if err := ValueValidator(*e); err != nil {
+		return fmt.Errorf("%s is not a valid Value", str)
 	}
 	return nil
 }

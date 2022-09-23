@@ -8,14 +8,15 @@ import (
 )
 
 func seedTransactionTypes(ctx context.Context, client *ent.Client) error {
-	seedTransactionTypes := []transactiontype.TransactionType{
-		transactiontype.TransactionTypeBuy, transactiontype.TransactionTypeSell, transactiontype.TransactionTypeStake,
-		transactiontype.TransactionTypeDividendIncome, transactiontype.TransactionTypeRentPayment,
-		transactiontype.TransactionTypeRentIncome, transactiontype.TransactionTypeStockDividend,
+	seedTransactionTypes := []transactiontype.Value{
+		transactiontype.ValueBuy, transactiontype.ValueSell, transactiontype.ValueSwap, transactiontype.ValueStake,
+		transactiontype.ValueDividendIncome, transactiontype.ValueRentPayment,
+		transactiontype.ValueRentIncome, transactiontype.ValueStockDividend,
 	}
 	seedDescriptions := []string{
 		"A buy transaction.",
 		"A sell transaction.",
+		"A swap from one asset to another.",
 		"Staking of a cryptocurrency.",
 		"Income from dividends.",
 		"Outflow of cash due to rent payment.",
@@ -25,7 +26,7 @@ func seedTransactionTypes(ctx context.Context, client *ent.Client) error {
 
 	bulk := make([]*ent.TransactionTypeCreate, len(seedTransactionTypes))
 	for i := 0; i < len(seedTransactionTypes); i++ {
-		bulk[i] = client.TransactionType.Create().SetTransactionType(seedTransactionTypes[i]).SetDescription(seedDescriptions[i])
+		bulk[i] = client.TransactionType.Create().SetValue(seedTransactionTypes[i]).SetDescription(seedDescriptions[i])
 	}
 
 	// Create in bulk

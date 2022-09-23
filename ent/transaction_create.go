@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/asset"
+	"github.com/chenningg/hermitboard-api/ent/blockchain"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
@@ -160,6 +161,25 @@ func (tc *TransactionCreate) SetExchangeID(id pulid.PULID) *TransactionCreate {
 // SetExchange sets the "exchange" edge to the Exchange entity.
 func (tc *TransactionCreate) SetExchange(e *Exchange) *TransactionCreate {
 	return tc.SetExchangeID(e.ID)
+}
+
+// SetBlockchainID sets the "blockchain" edge to the Blockchain entity by ID.
+func (tc *TransactionCreate) SetBlockchainID(id pulid.PULID) *TransactionCreate {
+	tc.mutation.SetBlockchainID(id)
+	return tc
+}
+
+// SetNillableBlockchainID sets the "blockchain" edge to the Blockchain entity by ID if the given value is not nil.
+func (tc *TransactionCreate) SetNillableBlockchainID(id *pulid.PULID) *TransactionCreate {
+	if id != nil {
+		tc = tc.SetBlockchainID(*id)
+	}
+	return tc
+}
+
+// SetBlockchain sets the "blockchain" edge to the Blockchain entity.
+func (tc *TransactionCreate) SetBlockchain(b *Blockchain) *TransactionCreate {
+	return tc.SetBlockchainID(b.ID)
 }
 
 // Mutation returns the TransactionMutation object of the builder.
@@ -464,6 +484,26 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.exchange_transactions = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.BlockchainIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   transaction.BlockchainTable,
+			Columns: []string{transaction.BlockchainColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: blockchain.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.transaction_blockchain = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

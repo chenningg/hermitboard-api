@@ -64,9 +64,9 @@ func (ttc *TransactionTypeCreate) SetNillableDeletedAt(t *time.Time) *Transactio
 	return ttc
 }
 
-// SetTransactionType sets the "transaction_type" field.
-func (ttc *TransactionTypeCreate) SetTransactionType(tt transactiontype.TransactionType) *TransactionTypeCreate {
-	ttc.mutation.SetTransactionType(tt)
+// SetValue sets the "value" field.
+func (ttc *TransactionTypeCreate) SetValue(t transactiontype.Value) *TransactionTypeCreate {
+	ttc.mutation.SetValue(t)
 	return ttc
 }
 
@@ -212,12 +212,12 @@ func (ttc *TransactionTypeCreate) check() error {
 	if _, ok := ttc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TransactionType.updated_at"`)}
 	}
-	if _, ok := ttc.mutation.TransactionType(); !ok {
-		return &ValidationError{Name: "transaction_type", err: errors.New(`ent: missing required field "TransactionType.transaction_type"`)}
+	if _, ok := ttc.mutation.Value(); !ok {
+		return &ValidationError{Name: "value", err: errors.New(`ent: missing required field "TransactionType.value"`)}
 	}
-	if v, ok := ttc.mutation.TransactionType(); ok {
-		if err := transactiontype.TransactionTypeValidator(v); err != nil {
-			return &ValidationError{Name: "transaction_type", err: fmt.Errorf(`ent: validator failed for field "TransactionType.transaction_type": %w`, err)}
+	if v, ok := ttc.mutation.Value(); ok {
+		if err := transactiontype.ValueValidator(v); err != nil {
+			return &ValidationError{Name: "value", err: fmt.Errorf(`ent: validator failed for field "TransactionType.value": %w`, err)}
 		}
 	}
 	if v, ok := ttc.mutation.Description(); ok {
@@ -285,13 +285,13 @@ func (ttc *TransactionTypeCreate) createSpec() (*TransactionType, *sqlgraph.Crea
 		})
 		_node.DeletedAt = &value
 	}
-	if value, ok := ttc.mutation.TransactionType(); ok {
+	if value, ok := ttc.mutation.Value(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: transactiontype.FieldTransactionType,
+			Column: transactiontype.FieldValue,
 		})
-		_node.TransactionType = value
+		_node.Value = value
 	}
 	if value, ok := ttc.mutation.Description(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

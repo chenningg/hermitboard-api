@@ -23,8 +23,8 @@ type AssetClass struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// AssetClass holds the value of the "asset_class" field.
-	AssetClass assetclass.AssetClass `json:"asset_class,omitempty"`
+	// Value holds the value of the "value" field.
+	Value assetclass.Value `json:"value,omitempty"`
 	// Description holds the value of the "description" field.
 	Description *string `json:"description,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -61,7 +61,7 @@ func (*AssetClass) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case assetclass.FieldID:
 			values[i] = new(pulid.PULID)
-		case assetclass.FieldAssetClass, assetclass.FieldDescription:
+		case assetclass.FieldValue, assetclass.FieldDescription:
 			values[i] = new(sql.NullString)
 		case assetclass.FieldCreatedAt, assetclass.FieldUpdatedAt, assetclass.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -105,11 +105,11 @@ func (ac *AssetClass) assignValues(columns []string, values []any) error {
 				ac.DeletedAt = new(time.Time)
 				*ac.DeletedAt = value.Time
 			}
-		case assetclass.FieldAssetClass:
+		case assetclass.FieldValue:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field asset_class", values[i])
+				return fmt.Errorf("unexpected type %T for field value", values[i])
 			} else if value.Valid {
-				ac.AssetClass = assetclass.AssetClass(value.String)
+				ac.Value = assetclass.Value(value.String)
 			}
 		case assetclass.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -162,8 +162,8 @@ func (ac *AssetClass) String() string {
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("asset_class=")
-	builder.WriteString(fmt.Sprintf("%v", ac.AssetClass))
+	builder.WriteString("value=")
+	builder.WriteString(fmt.Sprintf("%v", ac.Value))
 	builder.WriteString(", ")
 	if v := ac.Description; v != nil {
 		builder.WriteString("description=")

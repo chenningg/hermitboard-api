@@ -316,39 +316,39 @@ func DeletedAtNotNil() predicate.AuthType {
 	})
 }
 
-// AuthTypeEQ applies the EQ predicate on the "auth_type" field.
-func AuthTypeEQ(v AuthType) predicate.AuthType {
+// ValueEQ applies the EQ predicate on the "value" field.
+func ValueEQ(v Value) predicate.AuthType {
 	return predicate.AuthType(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthType), v))
+		s.Where(sql.EQ(s.C(FieldValue), v))
 	})
 }
 
-// AuthTypeNEQ applies the NEQ predicate on the "auth_type" field.
-func AuthTypeNEQ(v AuthType) predicate.AuthType {
+// ValueNEQ applies the NEQ predicate on the "value" field.
+func ValueNEQ(v Value) predicate.AuthType {
 	return predicate.AuthType(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAuthType), v))
+		s.Where(sql.NEQ(s.C(FieldValue), v))
 	})
 }
 
-// AuthTypeIn applies the In predicate on the "auth_type" field.
-func AuthTypeIn(vs ...AuthType) predicate.AuthType {
+// ValueIn applies the In predicate on the "value" field.
+func ValueIn(vs ...Value) predicate.AuthType {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.AuthType(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAuthType), v...))
+		s.Where(sql.In(s.C(FieldValue), v...))
 	})
 }
 
-// AuthTypeNotIn applies the NotIn predicate on the "auth_type" field.
-func AuthTypeNotIn(vs ...AuthType) predicate.AuthType {
+// ValueNotIn applies the NotIn predicate on the "value" field.
+func ValueNotIn(vs ...Value) predicate.AuthType {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.AuthType(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAuthType), v...))
+		s.Where(sql.NotIn(s.C(FieldValue), v...))
 	})
 }
 

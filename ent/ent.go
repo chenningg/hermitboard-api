@@ -21,7 +21,6 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
-	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
 )
@@ -44,20 +43,19 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		account.Table:              account.ValidColumn,
-		asset.Table:                asset.ValidColumn,
-		assetclass.Table:           assetclass.ValidColumn,
-		authrole.Table:             authrole.ValidColumn,
-		authtype.Table:             authtype.ValidColumn,
-		blockchain.Table:           blockchain.ValidColumn,
-		cryptocurrency.Table:       cryptocurrency.ValidColumn,
-		dailyassetprice.Table:      dailyassetprice.ValidColumn,
-		exchange.Table:             exchange.ValidColumn,
-		portfolio.Table:            portfolio.ValidColumn,
-		staffaccount.Table:         staffaccount.ValidColumn,
-		staffaccountauthrole.Table: staffaccountauthrole.ValidColumn,
-		transaction.Table:          transaction.ValidColumn,
-		transactiontype.Table:      transactiontype.ValidColumn,
+		account.Table:         account.ValidColumn,
+		asset.Table:           asset.ValidColumn,
+		assetclass.Table:      assetclass.ValidColumn,
+		authrole.Table:        authrole.ValidColumn,
+		authtype.Table:        authtype.ValidColumn,
+		blockchain.Table:      blockchain.ValidColumn,
+		cryptocurrency.Table:  cryptocurrency.ValidColumn,
+		dailyassetprice.Table: dailyassetprice.ValidColumn,
+		exchange.Table:        exchange.ValidColumn,
+		portfolio.Table:       portfolio.ValidColumn,
+		staffaccount.Table:    staffaccount.ValidColumn,
+		transaction.Table:     transaction.ValidColumn,
+		transactiontype.Table: transactiontype.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

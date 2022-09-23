@@ -10,7 +10,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/migrate"
-	"github.com/chenningg/hermitboard-api/ent/staffaccountauthrole"
+	"github.com/chenningg/hermitboard-api/ent/staffaccount"
 	"github.com/go-logr/logr"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
@@ -53,13 +53,16 @@ func NewDbService(dbConfig DbConfig, logger logr.Logger) (*DbService, error) {
 		}
 	}
 	// Seed the database if database has not been seeded yet.
-	// We check whether database is seeded or not by counting the number of staff accounts (whether owner exists).
-	numStaffAccounts, err := dbService.Client().StaffAccountAuthRole.Query().Where(staffaccountauthrole.HasAuthRoleWith(authrole.AuthRoleEQ(authrole.AuthRoleSuperAdmin))).Count(ctx)
+	// We check whether database is seeded or not by counting the number of staff accounts with SuperAdmin role.
+	numStaffAccounts, err := dbService.Client().StaffAccount.Query().Where(
+		staffaccount.HasAuthRolesWith(authrole.ValueEQ(authrole.ValueSuperAdmin)),
+	).Count(ctx)
 	if err != nil {
 		return dbService, fmt.Errorf("NewDbService(): failed to check database seeding status %v", err)
 		dbService.logger.Error(err, "NewDbService(): failed to check database seeding status")
 	}
-	// If not staff account with SuperAdmin role has been created yet, then we do database seeding.
+
+	// If a staff account with SuperAdmin role has been created yet, then we do database seeding.
 	if numStaffAccounts == 0 {
 		dbService.logger.V(1).Info("NewDbService(): database is empty, conducting database seeding")
 		err = dbService.seedDb(ctx)

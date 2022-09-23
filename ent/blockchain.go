@@ -40,13 +40,16 @@ type Blockchain struct {
 type BlockchainEdges struct {
 	// Cryptocurrencies holds the value of the cryptocurrencies edge.
 	Cryptocurrencies []*Cryptocurrency `json:"cryptocurrencies,omitempty"`
+	// Transactions holds the value of the transactions edge.
+	Transactions []*Transaction `json:"transactions,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 	// totalCount holds the count of the edges above.
-	totalCount [1]map[string]int
+	totalCount [2]map[string]int
 
 	namedCryptocurrencies map[string][]*Cryptocurrency
+	namedTransactions     map[string][]*Transaction
 }
 
 // CryptocurrenciesOrErr returns the Cryptocurrencies value or an error if the edge
@@ -56,6 +59,15 @@ func (e BlockchainEdges) CryptocurrenciesOrErr() ([]*Cryptocurrency, error) {
 		return e.Cryptocurrencies, nil
 	}
 	return nil, &NotLoadedError{edge: "cryptocurrencies"}
+}
+
+// TransactionsOrErr returns the Transactions value or an error if the edge
+// was not loaded in eager-loading.
+func (e BlockchainEdges) TransactionsOrErr() ([]*Transaction, error) {
+	if e.loadedTypes[1] {
+		return e.Transactions, nil
+	}
+	return nil, &NotLoadedError{edge: "transactions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -147,6 +159,11 @@ func (b *Blockchain) QueryCryptocurrencies() *CryptocurrencyQuery {
 	return (&BlockchainClient{config: b.config}).QueryCryptocurrencies(b)
 }
 
+// QueryTransactions queries the "transactions" edge of the Blockchain entity.
+func (b *Blockchain) QueryTransactions() *TransactionQuery {
+	return (&BlockchainClient{config: b.config}).QueryTransactions(b)
+}
+
 // Update returns a builder for updating this Blockchain.
 // Note that you need to call Blockchain.Unwrap() before calling this method if this Blockchain
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -221,6 +238,30 @@ func (b *Blockchain) appendNamedCryptocurrencies(name string, edges ...*Cryptocu
 		b.Edges.namedCryptocurrencies[name] = []*Cryptocurrency{}
 	} else {
 		b.Edges.namedCryptocurrencies[name] = append(b.Edges.namedCryptocurrencies[name], edges...)
+	}
+}
+
+// NamedTransactions returns the Transactions named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (b *Blockchain) NamedTransactions(name string) ([]*Transaction, error) {
+	if b.Edges.namedTransactions == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := b.Edges.namedTransactions[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (b *Blockchain) appendNamedTransactions(name string, edges ...*Transaction) {
+	if b.Edges.namedTransactions == nil {
+		b.Edges.namedTransactions = make(map[string][]*Transaction)
+	}
+	if len(edges) == 0 {
+		b.Edges.namedTransactions[name] = []*Transaction{}
+	} else {
+		b.Edges.namedTransactions[name] = append(b.Edges.namedTransactions[name], edges...)
 	}
 }
 

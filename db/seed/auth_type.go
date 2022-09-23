@@ -8,8 +8,8 @@ import (
 )
 
 func seedAuthTypes(ctx context.Context, client *ent.Client) error {
-	seedAuthTypes := []authtype.AuthType{
-		authtype.AuthTypeLocal, authtype.AuthTypeGoogle, authtype.AuthTypeFacebook, authtype.AuthTypeApple,
+	seedAuthTypes := []authtype.Value{
+		authtype.ValueLocal, authtype.ValueGoogle, authtype.ValueFacebook, authtype.ValueApple,
 	}
 	seedDescriptions := []string{
 		"Local authentication with passwords stored in the database.", "OAuth authentication through Google.",
@@ -18,7 +18,7 @@ func seedAuthTypes(ctx context.Context, client *ent.Client) error {
 
 	bulk := make([]*ent.AuthTypeCreate, len(seedAuthTypes))
 	for i := 0; i < len(seedAuthTypes); i++ {
-		bulk[i] = client.AuthType.Create().SetAuthType(seedAuthTypes[i]).SetDescription(seedDescriptions[i])
+		bulk[i] = client.AuthType.Create().SetValue(seedAuthTypes[i]).SetDescription(seedDescriptions[i])
 	}
 
 	// Create in bulk

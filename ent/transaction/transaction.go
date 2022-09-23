@@ -35,6 +35,8 @@ const (
 	EdgePortfolio = "portfolio"
 	// EdgeExchange holds the string denoting the exchange edge name in mutations.
 	EdgeExchange = "exchange"
+	// EdgeBlockchain holds the string denoting the blockchain edge name in mutations.
+	EdgeBlockchain = "blockchain"
 	// Table holds the table name of the transaction in the database.
 	Table = "transactions"
 	// TransactionTypeTable is the table that holds the transaction_type relation/edge.
@@ -72,6 +74,13 @@ const (
 	ExchangeInverseTable = "exchanges"
 	// ExchangeColumn is the table column denoting the exchange relation/edge.
 	ExchangeColumn = "exchange_transactions"
+	// BlockchainTable is the table that holds the blockchain relation/edge.
+	BlockchainTable = "transactions"
+	// BlockchainInverseTable is the table name for the Blockchain entity.
+	// It exists in this package in order to avoid circular dependency with the "blockchain" package.
+	BlockchainInverseTable = "blockchains"
+	// BlockchainColumn is the table column denoting the blockchain relation/edge.
+	BlockchainColumn = "transaction_blockchain"
 )
 
 // Columns holds all SQL columns for transaction fields.
@@ -93,6 +102,7 @@ var ForeignKeys = []string{
 	"transaction_transaction_type",
 	"transaction_base_asset",
 	"transaction_quote_asset",
+	"transaction_blockchain",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

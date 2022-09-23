@@ -17,13 +17,13 @@ func seedStaffAccounts(ctx context.Context, client *ent.Client) error {
 	}
 
 	// Retrieve super admin role reference from database
-	superAdminRole, err := client.AuthRole.Query().Where(authrole.AuthRoleEQ(authrole.AuthRoleSuperAdmin)).Only(ctx)
+	superAdminRole, err := client.AuthRole.Query().Where(authrole.ValueEQ(authrole.ValueSuperAdmin)).Only(ctx)
 	if err != nil {
 		return fmt.Errorf("seedStaffAccounts(): could not find super admin role while seeding")
 	}
 
 	// Retrieve local authentication type reference from database
-	localAuthType, err := client.AuthType.Query().Where(authtype.AuthTypeEQ(authtype.AuthTypeLocal)).Only(ctx)
+	localAuthType, err := client.AuthType.Query().Where(authtype.ValueEQ(authtype.ValueLocal)).Only(ctx)
 	if err != nil {
 		return fmt.Errorf("seedStaffAccounts(): could not find local auth type while seeding")
 	}

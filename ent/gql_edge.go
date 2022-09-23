@@ -48,18 +48,18 @@ func (a *Asset) Cryptocurrency(ctx context.Context) (*Cryptocurrency, error) {
 	return result, MaskNotFound(err)
 }
 
-func (a *Asset) TransactionBase(ctx context.Context) ([]*Transaction, error) {
-	result, err := a.NamedTransactionBase(graphql.GetFieldContext(ctx).Field.Alias)
+func (a *Asset) TransactionBases(ctx context.Context) ([]*Transaction, error) {
+	result, err := a.NamedTransactionBases(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
-		result, err = a.QueryTransactionBase().All(ctx)
+		result, err = a.QueryTransactionBases().All(ctx)
 	}
 	return result, err
 }
 
-func (a *Asset) TransactionQuote(ctx context.Context) ([]*Transaction, error) {
-	result, err := a.NamedTransactionQuote(graphql.GetFieldContext(ctx).Field.Alias)
+func (a *Asset) TransactionQuotes(ctx context.Context) ([]*Transaction, error) {
+	result, err := a.NamedTransactionQuotes(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
-		result, err = a.QueryTransactionQuote().All(ctx)
+		result, err = a.QueryTransactionQuotes().All(ctx)
 	}
 	return result, err
 }
@@ -116,6 +116,14 @@ func (b *Blockchain) Cryptocurrencies(ctx context.Context) ([]*Cryptocurrency, e
 	result, err := b.NamedCryptocurrencies(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
 		result, err = b.QueryCryptocurrencies().All(ctx)
+	}
+	return result, err
+}
+
+func (b *Blockchain) Transactions(ctx context.Context) ([]*Transaction, error) {
+	result, err := b.NamedTransactions(graphql.GetFieldContext(ctx).Field.Alias)
+	if IsNotLoaded(err) {
+		result, err = b.QueryTransactions().All(ctx)
 	}
 	return result, err
 }
@@ -184,22 +192,6 @@ func (sa *StaffAccount) AuthType(ctx context.Context) (*AuthType, error) {
 	return result, err
 }
 
-func (saar *StaffAccountAuthRole) StaffAccount(ctx context.Context) (*StaffAccount, error) {
-	result, err := saar.Edges.StaffAccountOrErr()
-	if IsNotLoaded(err) {
-		result, err = saar.QueryStaffAccount().Only(ctx)
-	}
-	return result, err
-}
-
-func (saar *StaffAccountAuthRole) AuthRole(ctx context.Context) (*AuthRole, error) {
-	result, err := saar.Edges.AuthRoleOrErr()
-	if IsNotLoaded(err) {
-		result, err = saar.QueryAuthRole().Only(ctx)
-	}
-	return result, err
-}
-
 func (t *Transaction) TransactionType(ctx context.Context) (*TransactionType, error) {
 	result, err := t.Edges.TransactionTypeOrErr()
 	if IsNotLoaded(err) {
@@ -238,6 +230,14 @@ func (t *Transaction) Exchange(ctx context.Context) (*Exchange, error) {
 		result, err = t.QueryExchange().Only(ctx)
 	}
 	return result, err
+}
+
+func (t *Transaction) Blockchain(ctx context.Context) (*Blockchain, error) {
+	result, err := t.Edges.BlockchainOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryBlockchain().Only(ctx)
+	}
+	return result, MaskNotFound(err)
 }
 
 func (tt *TransactionType) Transactions(ctx context.Context) ([]*Transaction, error) {

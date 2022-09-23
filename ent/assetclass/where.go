@@ -316,39 +316,39 @@ func DeletedAtNotNil() predicate.AssetClass {
 	})
 }
 
-// AssetClassEQ applies the EQ predicate on the "asset_class" field.
-func AssetClassEQ(v AssetClass) predicate.AssetClass {
+// ValueEQ applies the EQ predicate on the "value" field.
+func ValueEQ(v Value) predicate.AssetClass {
 	return predicate.AssetClass(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAssetClass), v))
+		s.Where(sql.EQ(s.C(FieldValue), v))
 	})
 }
 
-// AssetClassNEQ applies the NEQ predicate on the "asset_class" field.
-func AssetClassNEQ(v AssetClass) predicate.AssetClass {
+// ValueNEQ applies the NEQ predicate on the "value" field.
+func ValueNEQ(v Value) predicate.AssetClass {
 	return predicate.AssetClass(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAssetClass), v))
+		s.Where(sql.NEQ(s.C(FieldValue), v))
 	})
 }
 
-// AssetClassIn applies the In predicate on the "asset_class" field.
-func AssetClassIn(vs ...AssetClass) predicate.AssetClass {
+// ValueIn applies the In predicate on the "value" field.
+func ValueIn(vs ...Value) predicate.AssetClass {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.AssetClass(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAssetClass), v...))
+		s.Where(sql.In(s.C(FieldValue), v...))
 	})
 }
 
-// AssetClassNotIn applies the NotIn predicate on the "asset_class" field.
-func AssetClassNotIn(vs ...AssetClass) predicate.AssetClass {
+// ValueNotIn applies the NotIn predicate on the "value" field.
+func ValueNotIn(vs ...Value) predicate.AssetClass {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.AssetClass(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAssetClass), v...))
+		s.Where(sql.NotIn(s.C(FieldValue), v...))
 	})
 }
 

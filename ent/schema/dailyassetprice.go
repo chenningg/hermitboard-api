@@ -1,6 +1,8 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
+	"entgo.io/ent/schema"
 	"time"
 
 	"entgo.io/ent"
@@ -28,7 +30,8 @@ func (DailyAssetPrice) Mixin() []ent.Mixin {
 func (DailyAssetPrice) Fields() []ent.Field {
 	return []ent.Field{
 		field.Time("time").
-			Default(time.Now),
+			Default(time.Now).
+			Annotations(entgql.OrderField("TIME")),
 		field.Float("open").
 			Optional().
 			Nillable(),
@@ -50,6 +53,15 @@ func (DailyAssetPrice) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("asset", Asset.Type).
 			Unique().
-			Ref("daily_asset_prices"),
+			Ref("daily_asset_prices").
+			Annotations(entgql.MapsTo("asset")),
+	}
+}
+
+func (DailyAssetPrice) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.RelayConnection(),
+		entgql.QueryField(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

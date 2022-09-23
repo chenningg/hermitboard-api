@@ -37,10 +37,10 @@ type AssetEdges struct {
 	AssetClass *AssetClass `json:"asset_class,omitempty"`
 	// Cryptocurrency holds the value of the cryptocurrency edge.
 	Cryptocurrency *Cryptocurrency `json:"cryptocurrency,omitempty"`
-	// TransactionBase holds the value of the transaction_base edge.
-	TransactionBase []*Transaction `json:"transaction_base,omitempty"`
-	// TransactionQuote holds the value of the transaction_quote edge.
-	TransactionQuote []*Transaction `json:"transaction_quote,omitempty"`
+	// TransactionBases holds the value of the transaction_bases edge.
+	TransactionBases []*Transaction `json:"transaction_bases,omitempty"`
+	// TransactionQuotes holds the value of the transaction_quotes edge.
+	TransactionQuotes []*Transaction `json:"transaction_quotes,omitempty"`
 	// DailyAssetPrices holds the value of the daily_asset_prices edge.
 	DailyAssetPrices []*DailyAssetPrice `json:"daily_asset_prices,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -49,9 +49,9 @@ type AssetEdges struct {
 	// totalCount holds the count of the edges above.
 	totalCount [5]map[string]int
 
-	namedTransactionBase  map[string][]*Transaction
-	namedTransactionQuote map[string][]*Transaction
-	namedDailyAssetPrices map[string][]*DailyAssetPrice
+	namedTransactionBases  map[string][]*Transaction
+	namedTransactionQuotes map[string][]*Transaction
+	namedDailyAssetPrices  map[string][]*DailyAssetPrice
 }
 
 // AssetClassOrErr returns the AssetClass value or an error if the edge
@@ -80,22 +80,22 @@ func (e AssetEdges) CryptocurrencyOrErr() (*Cryptocurrency, error) {
 	return nil, &NotLoadedError{edge: "cryptocurrency"}
 }
 
-// TransactionBaseOrErr returns the TransactionBase value or an error if the edge
+// TransactionBasesOrErr returns the TransactionBases value or an error if the edge
 // was not loaded in eager-loading.
-func (e AssetEdges) TransactionBaseOrErr() ([]*Transaction, error) {
+func (e AssetEdges) TransactionBasesOrErr() ([]*Transaction, error) {
 	if e.loadedTypes[2] {
-		return e.TransactionBase, nil
+		return e.TransactionBases, nil
 	}
-	return nil, &NotLoadedError{edge: "transaction_base"}
+	return nil, &NotLoadedError{edge: "transaction_bases"}
 }
 
-// TransactionQuoteOrErr returns the TransactionQuote value or an error if the edge
+// TransactionQuotesOrErr returns the TransactionQuotes value or an error if the edge
 // was not loaded in eager-loading.
-func (e AssetEdges) TransactionQuoteOrErr() ([]*Transaction, error) {
+func (e AssetEdges) TransactionQuotesOrErr() ([]*Transaction, error) {
 	if e.loadedTypes[3] {
-		return e.TransactionQuote, nil
+		return e.TransactionQuotes, nil
 	}
-	return nil, &NotLoadedError{edge: "transaction_quote"}
+	return nil, &NotLoadedError{edge: "transaction_quotes"}
 }
 
 // DailyAssetPricesOrErr returns the DailyAssetPrices value or an error if the edge
@@ -180,14 +180,14 @@ func (a *Asset) QueryCryptocurrency() *CryptocurrencyQuery {
 	return (&AssetClient{config: a.config}).QueryCryptocurrency(a)
 }
 
-// QueryTransactionBase queries the "transaction_base" edge of the Asset entity.
-func (a *Asset) QueryTransactionBase() *TransactionQuery {
-	return (&AssetClient{config: a.config}).QueryTransactionBase(a)
+// QueryTransactionBases queries the "transaction_bases" edge of the Asset entity.
+func (a *Asset) QueryTransactionBases() *TransactionQuery {
+	return (&AssetClient{config: a.config}).QueryTransactionBases(a)
 }
 
-// QueryTransactionQuote queries the "transaction_quote" edge of the Asset entity.
-func (a *Asset) QueryTransactionQuote() *TransactionQuery {
-	return (&AssetClient{config: a.config}).QueryTransactionQuote(a)
+// QueryTransactionQuotes queries the "transaction_quotes" edge of the Asset entity.
+func (a *Asset) QueryTransactionQuotes() *TransactionQuery {
+	return (&AssetClient{config: a.config}).QueryTransactionQuotes(a)
 }
 
 // QueryDailyAssetPrices queries the "daily_asset_prices" edge of the Asset entity.
@@ -232,51 +232,51 @@ func (a *Asset) String() string {
 	return builder.String()
 }
 
-// NamedTransactionBase returns the TransactionBase named value or an error if the edge was not
+// NamedTransactionBases returns the TransactionBases named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (a *Asset) NamedTransactionBase(name string) ([]*Transaction, error) {
-	if a.Edges.namedTransactionBase == nil {
+func (a *Asset) NamedTransactionBases(name string) ([]*Transaction, error) {
+	if a.Edges.namedTransactionBases == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := a.Edges.namedTransactionBase[name]
+	nodes, ok := a.Edges.namedTransactionBases[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (a *Asset) appendNamedTransactionBase(name string, edges ...*Transaction) {
-	if a.Edges.namedTransactionBase == nil {
-		a.Edges.namedTransactionBase = make(map[string][]*Transaction)
+func (a *Asset) appendNamedTransactionBases(name string, edges ...*Transaction) {
+	if a.Edges.namedTransactionBases == nil {
+		a.Edges.namedTransactionBases = make(map[string][]*Transaction)
 	}
 	if len(edges) == 0 {
-		a.Edges.namedTransactionBase[name] = []*Transaction{}
+		a.Edges.namedTransactionBases[name] = []*Transaction{}
 	} else {
-		a.Edges.namedTransactionBase[name] = append(a.Edges.namedTransactionBase[name], edges...)
+		a.Edges.namedTransactionBases[name] = append(a.Edges.namedTransactionBases[name], edges...)
 	}
 }
 
-// NamedTransactionQuote returns the TransactionQuote named value or an error if the edge was not
+// NamedTransactionQuotes returns the TransactionQuotes named value or an error if the edge was not
 // loaded in eager-loading with this name.
-func (a *Asset) NamedTransactionQuote(name string) ([]*Transaction, error) {
-	if a.Edges.namedTransactionQuote == nil {
+func (a *Asset) NamedTransactionQuotes(name string) ([]*Transaction, error) {
+	if a.Edges.namedTransactionQuotes == nil {
 		return nil, &NotLoadedError{edge: name}
 	}
-	nodes, ok := a.Edges.namedTransactionQuote[name]
+	nodes, ok := a.Edges.namedTransactionQuotes[name]
 	if !ok {
 		return nil, &NotLoadedError{edge: name}
 	}
 	return nodes, nil
 }
 
-func (a *Asset) appendNamedTransactionQuote(name string, edges ...*Transaction) {
-	if a.Edges.namedTransactionQuote == nil {
-		a.Edges.namedTransactionQuote = make(map[string][]*Transaction)
+func (a *Asset) appendNamedTransactionQuotes(name string, edges ...*Transaction) {
+	if a.Edges.namedTransactionQuotes == nil {
+		a.Edges.namedTransactionQuotes = make(map[string][]*Transaction)
 	}
 	if len(edges) == 0 {
-		a.Edges.namedTransactionQuote[name] = []*Transaction{}
+		a.Edges.namedTransactionQuotes[name] = []*Transaction{}
 	} else {
-		a.Edges.namedTransactionQuote[name] = append(a.Edges.namedTransactionQuote[name], edges...)
+		a.Edges.namedTransactionQuotes[name] = append(a.Edges.namedTransactionQuotes[name], edges...)
 	}
 }
 

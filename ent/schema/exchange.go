@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
@@ -26,7 +28,8 @@ func (Exchange) Mixin() []ent.Mixin {
 func (Exchange) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
-			NotEmpty(),
+			NotEmpty().
+			Annotations(entgql.OrderField("NAME")),
 		field.String("icon").
 			Optional().
 			Nillable().
@@ -42,6 +45,15 @@ func (Exchange) Fields() []ent.Field {
 // Edges of the Exchange.
 func (Exchange) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("transactions", Transaction.Type),
+		edge.To("transactions", Transaction.Type).
+			Annotations(entgql.MapsTo("transactions")),
+	}
+}
+
+func (Exchange) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.RelayConnection(),
+		entgql.QueryField(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

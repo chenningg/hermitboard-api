@@ -23,8 +23,8 @@ type AuthRole struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// AuthRole holds the value of the "auth_role" field.
-	AuthRole authrole.AuthRole `json:"auth_role,omitempty"`
+	// Value holds the value of the "value" field.
+	Value authrole.Value `json:"value,omitempty"`
 	// Description holds the value of the "description" field.
 	Description *string `json:"description,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -73,7 +73,7 @@ func (*AuthRole) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case authrole.FieldID:
 			values[i] = new(pulid.PULID)
-		case authrole.FieldAuthRole, authrole.FieldDescription:
+		case authrole.FieldValue, authrole.FieldDescription:
 			values[i] = new(sql.NullString)
 		case authrole.FieldCreatedAt, authrole.FieldUpdatedAt, authrole.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -117,11 +117,11 @@ func (ar *AuthRole) assignValues(columns []string, values []any) error {
 				ar.DeletedAt = new(time.Time)
 				*ar.DeletedAt = value.Time
 			}
-		case authrole.FieldAuthRole:
+		case authrole.FieldValue:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field auth_role", values[i])
+				return fmt.Errorf("unexpected type %T for field value", values[i])
 			} else if value.Valid {
-				ar.AuthRole = authrole.AuthRole(value.String)
+				ar.Value = authrole.Value(value.String)
 			}
 		case authrole.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -179,8 +179,8 @@ func (ar *AuthRole) String() string {
 		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
-	builder.WriteString("auth_role=")
-	builder.WriteString(fmt.Sprintf("%v", ar.AuthRole))
+	builder.WriteString("value=")
+	builder.WriteString(fmt.Sprintf("%v", ar.Value))
 	builder.WriteString(", ")
 	if v := ar.Description; v != nil {
 		builder.WriteString("description=")

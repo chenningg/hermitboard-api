@@ -48,9 +48,9 @@ func (acu *AssetClassUpdate) ClearDeletedAt() *AssetClassUpdate {
 	return acu
 }
 
-// SetAssetClass sets the "asset_class" field.
-func (acu *AssetClassUpdate) SetAssetClass(ac assetclass.AssetClass) *AssetClassUpdate {
-	acu.mutation.SetAssetClass(ac)
+// SetValue sets the "value" field.
+func (acu *AssetClassUpdate) SetValue(a assetclass.Value) *AssetClassUpdate {
+	acu.mutation.SetValue(a)
 	return acu
 }
 
@@ -190,9 +190,9 @@ func (acu *AssetClassUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (acu *AssetClassUpdate) check() error {
-	if v, ok := acu.mutation.AssetClass(); ok {
-		if err := assetclass.AssetClassValidator(v); err != nil {
-			return &ValidationError{Name: "asset_class", err: fmt.Errorf(`ent: validator failed for field "AssetClass.asset_class": %w`, err)}
+	if v, ok := acu.mutation.Value(); ok {
+		if err := assetclass.ValueValidator(v); err != nil {
+			return &ValidationError{Name: "value", err: fmt.Errorf(`ent: validator failed for field "AssetClass.value": %w`, err)}
 		}
 	}
 	if v, ok := acu.mutation.Description(); ok {
@@ -241,11 +241,11 @@ func (acu *AssetClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: assetclass.FieldDeletedAt,
 		})
 	}
-	if value, ok := acu.mutation.AssetClass(); ok {
+	if value, ok := acu.mutation.Value(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: assetclass.FieldAssetClass,
+			Column: assetclass.FieldValue,
 		})
 	}
 	if value, ok := acu.mutation.Description(); ok {
@@ -352,9 +352,9 @@ func (acuo *AssetClassUpdateOne) ClearDeletedAt() *AssetClassUpdateOne {
 	return acuo
 }
 
-// SetAssetClass sets the "asset_class" field.
-func (acuo *AssetClassUpdateOne) SetAssetClass(ac assetclass.AssetClass) *AssetClassUpdateOne {
-	acuo.mutation.SetAssetClass(ac)
+// SetValue sets the "value" field.
+func (acuo *AssetClassUpdateOne) SetValue(a assetclass.Value) *AssetClassUpdateOne {
+	acuo.mutation.SetValue(a)
 	return acuo
 }
 
@@ -507,9 +507,9 @@ func (acuo *AssetClassUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (acuo *AssetClassUpdateOne) check() error {
-	if v, ok := acuo.mutation.AssetClass(); ok {
-		if err := assetclass.AssetClassValidator(v); err != nil {
-			return &ValidationError{Name: "asset_class", err: fmt.Errorf(`ent: validator failed for field "AssetClass.asset_class": %w`, err)}
+	if v, ok := acuo.mutation.Value(); ok {
+		if err := assetclass.ValueValidator(v); err != nil {
+			return &ValidationError{Name: "value", err: fmt.Errorf(`ent: validator failed for field "AssetClass.value": %w`, err)}
 		}
 	}
 	if v, ok := acuo.mutation.Description(); ok {
@@ -575,11 +575,11 @@ func (acuo *AssetClassUpdateOne) sqlSave(ctx context.Context) (_node *AssetClass
 			Column: assetclass.FieldDeletedAt,
 		})
 	}
-	if value, ok := acuo.mutation.AssetClass(); ok {
+	if value, ok := acuo.mutation.Value(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: assetclass.FieldAssetClass,
+			Column: assetclass.FieldValue,
 		})
 	}
 	if value, ok := acuo.mutation.Description(); ok {

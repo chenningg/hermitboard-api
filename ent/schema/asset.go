@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
 )
@@ -31,13 +33,26 @@ func (Asset) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("asset_class", AssetClass.Type).
 			Unique().
-			Required(),
+			Required().
+			Annotations(entgql.MapsTo("assetClass")),
 		edge.To("cryptocurrency", Cryptocurrency.Type).
-			Unique(),
-		edge.From("transaction_base", Transaction.Type).
-			Ref("base_asset"),
-		edge.From("transaction_quote", Transaction.Type).
-			Ref("quote_asset"),
-		edge.To("daily_asset_prices", DailyAssetPrice.Type),
+			Unique().
+			Annotations(entgql.MapsTo("cryptocurrency")),
+		edge.From("transaction_bases", Transaction.Type).
+			Ref("base_asset").
+			Annotations(entgql.MapsTo("transactionBases")),
+		edge.From("transaction_quotes", Transaction.Type).
+			Ref("quote_asset").
+			Annotations(entgql.MapsTo("transactionQuotes")),
+		edge.To("daily_asset_prices", DailyAssetPrice.Type).
+			Annotations(entgql.MapsTo("dailyAssetPrices")),
+	}
+}
+
+func (Asset) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.RelayConnection(),
+		entgql.QueryField(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

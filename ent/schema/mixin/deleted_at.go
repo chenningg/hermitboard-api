@@ -1,6 +1,7 @@
 package mixin
 
 import (
+	"entgo.io/contrib/entgql"
 	"time"
 
 	"entgo.io/ent"
@@ -17,6 +18,7 @@ func (DeletedAtMixin) Fields() []ent.Field {
 		field.Time("deleted_at").
 			Optional().
 			Nillable().
-			UpdateDefault(time.Now),
+			UpdateDefault(time.Now).
+			Annotations(entgql.OrderField("DELETED_AT")),
 	}
 }

@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
@@ -26,14 +28,16 @@ func (Cryptocurrency) Mixin() []ent.Mixin {
 func (Cryptocurrency) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("symbol").
-			NotEmpty(),
+			NotEmpty().
+			Annotations(entgql.OrderField("SYMBOL")),
 		field.String("icon").
 			Optional().
 			Nillable().
 			NotEmpty().
 			Comment("A url to the image icon for this cryptocurrency."),
 		field.String("name").
-			NotEmpty(),
+			NotEmpty().
+			Annotations(entgql.OrderField("NAME")),
 	}
 }
 
@@ -43,9 +47,19 @@ func (Cryptocurrency) Edges() []ent.Edge {
 		edge.From("asset", Asset.Type).
 			Ref("cryptocurrency").
 			Unique().
-			Required(),
+			Required().
+			Annotations(entgql.MapsTo("asset")),
 		edge.From("blockchains", Blockchain.Type).
 			Ref("cryptocurrencies").
-			Required(),
+			Required().
+			Annotations(entgql.MapsTo("blockchains")),
+	}
+}
+
+func (Cryptocurrency) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.RelayConnection(),
+		entgql.QueryField(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

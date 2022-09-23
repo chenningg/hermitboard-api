@@ -3,6 +3,7 @@ package schema
 import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
@@ -26,10 +27,11 @@ func (TransactionType) Mixin() []ent.Mixin {
 // Fields of the TransactionType.
 func (TransactionType) Fields() []ent.Field {
 	return []ent.Field{
-		field.Enum("transaction_type").
+		field.Enum("value").
 			NamedValues(
 				"Buy", "BUY",
 				"Sell", "SELL",
+				"Swap", "SWAP",
 				"Stake", "STAKE",
 				"DividendIncome", "DIVIDEND_INCOME",
 				"RentPayment", "RENT_PAYMENT",
@@ -37,6 +39,7 @@ func (TransactionType) Fields() []ent.Field {
 				"StockDividend", "STOCK_DIVIDEND",
 			).
 			Annotations(
+				entgql.Type("TransactionTypeValue"),
 				entgql.OrderField("TRANSACTION_TYPE"),
 			),
 		field.String("description").
@@ -50,6 +53,15 @@ func (TransactionType) Fields() []ent.Field {
 func (TransactionType) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("transactions", Transaction.Type).
-			Ref("transaction_type"),
+			Ref("transaction_type").
+			Annotations(entgql.MapsTo("transactions")),
+	}
+}
+
+func (TransactionType) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		entgql.RelayConnection(),
+		entgql.QueryField(),
+		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

@@ -8,10 +8,10 @@ import (
 )
 
 func seedAssetClasses(ctx context.Context, client *ent.Client) error {
-	seedAssetClasses := []assetclass.AssetClass{
-		assetclass.AssetClassCashOrCashEquivalent, assetclass.AssetClassCommodity, assetclass.AssetClassCryptocurrency,
-		assetclass.AssetClassEquity, assetclass.AssetClassFixedIncome, assetclass.AssetClassFuture,
-		assetclass.AssetClassRealEstate,
+	seedAssetClasses := []assetclass.Value{
+		assetclass.ValueCashOrCashEquivalent, assetclass.ValueCommodity, assetclass.ValueCryptocurrency,
+		assetclass.ValueEquity, assetclass.ValueFixedIncome, assetclass.ValueFuture,
+		assetclass.ValueRealEstate,
 	}
 	seedDescriptions := []string{
 		"Value of assets that are cash or can be converted to cash immediately.",
@@ -25,7 +25,7 @@ func seedAssetClasses(ctx context.Context, client *ent.Client) error {
 
 	bulk := make([]*ent.AssetClassCreate, len(seedAssetClasses))
 	for i := 0; i < len(seedAssetClasses); i++ {
-		bulk[i] = client.AssetClass.Create().SetAssetClass(seedAssetClasses[i]).SetDescription(seedDescriptions[i])
+		bulk[i] = client.AssetClass.Create().SetValue(seedAssetClasses[i]).SetDescription(seedDescriptions[i])
 	}
 
 	// Create in bulk

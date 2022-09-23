@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/asset"
+	"github.com/chenningg/hermitboard-api/ent/blockchain"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
@@ -33,6 +34,7 @@ type TransactionQuery struct {
 	withQuoteAsset      *AssetQuery
 	withPortfolio       *PortfolioQuery
 	withExchange        *ExchangeQuery
+	withBlockchain      *BlockchainQuery
 	withFKs             bool
 	modifiers           []func(*sql.Selector)
 	loadTotal           []func(context.Context, []*Transaction) error
@@ -175,6 +177,28 @@ func (tq *TransactionQuery) QueryExchange() *ExchangeQuery {
 			sqlgraph.From(transaction.Table, transaction.FieldID, selector),
 			sqlgraph.To(exchange.Table, exchange.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, transaction.ExchangeTable, transaction.ExchangeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBlockchain chains the current query on the "blockchain" edge.
+func (tq *TransactionQuery) QueryBlockchain() *BlockchainQuery {
+	query := &BlockchainQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(transaction.Table, transaction.FieldID, selector),
+			sqlgraph.To(blockchain.Table, blockchain.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, transaction.BlockchainTable, transaction.BlockchainColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -368,6 +392,7 @@ func (tq *TransactionQuery) Clone() *TransactionQuery {
 		withQuoteAsset:      tq.withQuoteAsset.Clone(),
 		withPortfolio:       tq.withPortfolio.Clone(),
 		withExchange:        tq.withExchange.Clone(),
+		withBlockchain:      tq.withBlockchain.Clone(),
 		// clone intermediate query.
 		sql:    tq.sql.Clone(),
 		path:   tq.path,
@@ -427,6 +452,17 @@ func (tq *TransactionQuery) WithExchange(opts ...func(*ExchangeQuery)) *Transact
 		opt(query)
 	}
 	tq.withExchange = query
+	return tq
+}
+
+// WithBlockchain tells the query-builder to eager-load the nodes that are connected to
+// the "blockchain" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TransactionQuery) WithBlockchain(opts ...func(*BlockchainQuery)) *TransactionQuery {
+	query := &BlockchainQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withBlockchain = query
 	return tq
 }
 
@@ -499,15 +535,16 @@ func (tq *TransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 		nodes       = []*Transaction{}
 		withFKs     = tq.withFKs
 		_spec       = tq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			tq.withTransactionType != nil,
 			tq.withBaseAsset != nil,
 			tq.withQuoteAsset != nil,
 			tq.withPortfolio != nil,
 			tq.withExchange != nil,
+			tq.withBlockchain != nil,
 		}
 	)
-	if tq.withTransactionType != nil || tq.withBaseAsset != nil || tq.withQuoteAsset != nil || tq.withPortfolio != nil || tq.withExchange != nil {
+	if tq.withTransactionType != nil || tq.withBaseAsset != nil || tq.withQuoteAsset != nil || tq.withPortfolio != nil || tq.withExchange != nil || tq.withBlockchain != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -561,6 +598,12 @@ func (tq *TransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	if query := tq.withExchange; query != nil {
 		if err := tq.loadExchange(ctx, query, nodes, nil,
 			func(n *Transaction, e *Exchange) { n.Edges.Exchange = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := tq.withBlockchain; query != nil {
+		if err := tq.loadBlockchain(ctx, query, nodes, nil,
+			func(n *Transaction, e *Blockchain) { n.Edges.Blockchain = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -710,6 +753,35 @@ func (tq *TransactionQuery) loadExchange(ctx context.Context, query *ExchangeQue
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "exchange_transactions" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (tq *TransactionQuery) loadBlockchain(ctx context.Context, query *BlockchainQuery, nodes []*Transaction, init func(*Transaction), assign func(*Transaction, *Blockchain)) error {
+	ids := make([]pulid.PULID, 0, len(nodes))
+	nodeids := make(map[pulid.PULID][]*Transaction)
+	for i := range nodes {
+		if nodes[i].transaction_blockchain == nil {
+			continue
+		}
+		fk := *nodes[i].transaction_blockchain
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(blockchain.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "transaction_blockchain" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

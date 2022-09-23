@@ -8,9 +8,9 @@ import (
 )
 
 func seedAuthRoles(ctx context.Context, client *ent.Client) error {
-	seedAuthRoles := []authrole.AuthRole{
-		authrole.AuthRoleDemo, authrole.AuthRoleFree, authrole.AuthRolePlus, authrole.AuthRolePro,
-		authrole.AuthRoleEnterprise, authrole.AuthRoleSupport, authrole.AuthRoleAdmin, authrole.AuthRoleSuperAdmin,
+	seedAuthRoles := []authrole.Value{
+		authrole.ValueDemo, authrole.ValueFree, authrole.ValuePlus, authrole.ValuePro,
+		authrole.ValueEnterprise, authrole.ValueSupport, authrole.ValueAdmin, authrole.ValueSuperAdmin,
 	}
 	seedDescriptions := []string{
 		"A demo role with restricted rights.", "A free role with limited feature access.", "A paying Plus role.",
@@ -20,7 +20,7 @@ func seedAuthRoles(ctx context.Context, client *ent.Client) error {
 
 	bulk := make([]*ent.AuthRoleCreate, len(seedAuthRoles))
 	for i := 0; i < len(seedAuthRoles); i++ {
-		bulk[i] = client.AuthRole.Create().SetAuthRole(seedAuthRoles[i]).SetDescription(seedDescriptions[i])
+		bulk[i] = client.AuthRole.Create().SetValue(seedAuthRoles[i]).SetDescription(seedDescriptions[i])
 	}
 
 	// Create in bulk

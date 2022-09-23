@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/asset"
+	"github.com/chenningg/hermitboard-api/ent/blockchain"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
@@ -146,6 +147,25 @@ func (tu *TransactionUpdate) SetExchange(e *Exchange) *TransactionUpdate {
 	return tu.SetExchangeID(e.ID)
 }
 
+// SetBlockchainID sets the "blockchain" edge to the Blockchain entity by ID.
+func (tu *TransactionUpdate) SetBlockchainID(id pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetBlockchainID(id)
+	return tu
+}
+
+// SetNillableBlockchainID sets the "blockchain" edge to the Blockchain entity by ID if the given value is not nil.
+func (tu *TransactionUpdate) SetNillableBlockchainID(id *pulid.PULID) *TransactionUpdate {
+	if id != nil {
+		tu = tu.SetBlockchainID(*id)
+	}
+	return tu
+}
+
+// SetBlockchain sets the "blockchain" edge to the Blockchain entity.
+func (tu *TransactionUpdate) SetBlockchain(b *Blockchain) *TransactionUpdate {
+	return tu.SetBlockchainID(b.ID)
+}
+
 // Mutation returns the TransactionMutation object of the builder.
 func (tu *TransactionUpdate) Mutation() *TransactionMutation {
 	return tu.mutation
@@ -178,6 +198,12 @@ func (tu *TransactionUpdate) ClearPortfolio() *TransactionUpdate {
 // ClearExchange clears the "exchange" edge to the Exchange entity.
 func (tu *TransactionUpdate) ClearExchange() *TransactionUpdate {
 	tu.mutation.ClearExchange()
+	return tu
+}
+
+// ClearBlockchain clears the "blockchain" edge to the Blockchain entity.
+func (tu *TransactionUpdate) ClearBlockchain() *TransactionUpdate {
+	tu.mutation.ClearBlockchain()
 	return tu
 }
 
@@ -519,6 +545,41 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.BlockchainCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   transaction.BlockchainTable,
+			Columns: []string{transaction.BlockchainColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: blockchain.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.BlockchainIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   transaction.BlockchainTable,
+			Columns: []string{transaction.BlockchainColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: blockchain.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{transaction.Label}
@@ -651,6 +712,25 @@ func (tuo *TransactionUpdateOne) SetExchange(e *Exchange) *TransactionUpdateOne 
 	return tuo.SetExchangeID(e.ID)
 }
 
+// SetBlockchainID sets the "blockchain" edge to the Blockchain entity by ID.
+func (tuo *TransactionUpdateOne) SetBlockchainID(id pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetBlockchainID(id)
+	return tuo
+}
+
+// SetNillableBlockchainID sets the "blockchain" edge to the Blockchain entity by ID if the given value is not nil.
+func (tuo *TransactionUpdateOne) SetNillableBlockchainID(id *pulid.PULID) *TransactionUpdateOne {
+	if id != nil {
+		tuo = tuo.SetBlockchainID(*id)
+	}
+	return tuo
+}
+
+// SetBlockchain sets the "blockchain" edge to the Blockchain entity.
+func (tuo *TransactionUpdateOne) SetBlockchain(b *Blockchain) *TransactionUpdateOne {
+	return tuo.SetBlockchainID(b.ID)
+}
+
 // Mutation returns the TransactionMutation object of the builder.
 func (tuo *TransactionUpdateOne) Mutation() *TransactionMutation {
 	return tuo.mutation
@@ -683,6 +763,12 @@ func (tuo *TransactionUpdateOne) ClearPortfolio() *TransactionUpdateOne {
 // ClearExchange clears the "exchange" edge to the Exchange entity.
 func (tuo *TransactionUpdateOne) ClearExchange() *TransactionUpdateOne {
 	tuo.mutation.ClearExchange()
+	return tuo
+}
+
+// ClearBlockchain clears the "blockchain" edge to the Blockchain entity.
+func (tuo *TransactionUpdateOne) ClearBlockchain() *TransactionUpdateOne {
+	tuo.mutation.ClearBlockchain()
 	return tuo
 }
 
@@ -1046,6 +1132,41 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: exchange.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.BlockchainCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   transaction.BlockchainTable,
+			Columns: []string{transaction.BlockchainColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: blockchain.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.BlockchainIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   transaction.BlockchainTable,
+			Columns: []string{transaction.BlockchainColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: blockchain.FieldID,
 				},
 			},
 		}

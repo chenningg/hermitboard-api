@@ -1,6 +1,7 @@
 package mixin
 
 import (
+	"entgo.io/contrib/entgql"
 	"time"
 
 	"entgo.io/ent"
@@ -16,6 +17,7 @@ func (CreatedAtMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.Time("created_at").
 			Immutable().
-			Default(time.Now),
+			Default(time.Now).
+			Annotations(entgql.OrderField("CREATED_AT")),
 	}
 }

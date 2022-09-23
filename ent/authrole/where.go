@@ -316,39 +316,39 @@ func DeletedAtNotNil() predicate.AuthRole {
 	})
 }
 
-// AuthRoleEQ applies the EQ predicate on the "auth_role" field.
-func AuthRoleEQ(v AuthRole) predicate.AuthRole {
+// ValueEQ applies the EQ predicate on the "value" field.
+func ValueEQ(v Value) predicate.AuthRole {
 	return predicate.AuthRole(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldAuthRole), v))
+		s.Where(sql.EQ(s.C(FieldValue), v))
 	})
 }
 
-// AuthRoleNEQ applies the NEQ predicate on the "auth_role" field.
-func AuthRoleNEQ(v AuthRole) predicate.AuthRole {
+// ValueNEQ applies the NEQ predicate on the "value" field.
+func ValueNEQ(v Value) predicate.AuthRole {
 	return predicate.AuthRole(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldAuthRole), v))
+		s.Where(sql.NEQ(s.C(FieldValue), v))
 	})
 }
 
-// AuthRoleIn applies the In predicate on the "auth_role" field.
-func AuthRoleIn(vs ...AuthRole) predicate.AuthRole {
+// ValueIn applies the In predicate on the "value" field.
+func ValueIn(vs ...Value) predicate.AuthRole {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.AuthRole(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldAuthRole), v...))
+		s.Where(sql.In(s.C(FieldValue), v...))
 	})
 }
 
-// AuthRoleNotIn applies the NotIn predicate on the "auth_role" field.
-func AuthRoleNotIn(vs ...AuthRole) predicate.AuthRole {
+// ValueNotIn applies the NotIn predicate on the "value" field.
+func ValueNotIn(vs ...Value) predicate.AuthRole {
 	v := make([]any, len(vs))
 	for i := range v {
 		v[i] = vs[i]
 	}
 	return predicate.AuthRole(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldAuthRole), v...))
+		s.Where(sql.NotIn(s.C(FieldValue), v...))
 	})
 }
 
