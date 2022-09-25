@@ -2,10 +2,10 @@ package schema
 
 import (
 	"entgo.io/contrib/entgql"
+	"github.com/chenningg/hermitboard-api/pulid"
 	"time"
 
 	"entgo.io/ent"
-	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
@@ -45,6 +45,8 @@ func (StaffAccount) Fields() []ent.Field {
 		field.Time("password_updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now),
+		field.String("auth_type_id").
+			GoType(pulid.PULID("")),
 	}
 }
 
@@ -53,7 +55,9 @@ func (StaffAccount) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_roles", AuthRole.Type).
 			Annotations(entgql.MapsTo("authRoles")),
-		edge.To("auth_type", AuthType.Type).
+		edge.From("auth_type", AuthType.Type).
+			Ref("staff_accounts").
+			Field("auth_type_id").
 			Required().
 			Unique().
 			Annotations(entgql.MapsTo("authType")),
@@ -65,11 +69,5 @@ func (StaffAccount) Annotations() []schema.Annotation {
 		entgql.RelayConnection(),
 		entgql.QueryField(),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
-		&entsql.Annotation{
-			Checks: map[string]string{
-				// Checks that if auth_type is LOCAL, password field cannot be NULL.
-				"staff_account_chk_if_auth_type_local_then_password_not_null": "(auth_type <> 'LOCAL') OR (password IS NOT NULL)",
-			},
-		},
 	}
 }

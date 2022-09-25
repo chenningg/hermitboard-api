@@ -14,6 +14,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/account"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
+	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -22,20 +23,21 @@ import (
 // AccountQuery is the builder for querying Account entities.
 type AccountQuery struct {
 	config
-	limit               *int
-	offset              *int
-	unique              *bool
-	order               []OrderFunc
-	fields              []string
-	predicates          []predicate.Account
-	withAuthRoles       *AuthRoleQuery
-	withPortfolios      *PortfolioQuery
-	withAuthType        *AuthTypeQuery
-	withFKs             bool
-	modifiers           []func(*sql.Selector)
-	loadTotal           []func(context.Context, []*Account) error
-	withNamedAuthRoles  map[string]*AuthRoleQuery
-	withNamedPortfolios map[string]*PortfolioQuery
+	limit                *int
+	offset               *int
+	unique               *bool
+	order                []OrderFunc
+	fields               []string
+	predicates           []predicate.Account
+	withAuthRoles        *AuthRoleQuery
+	withPortfolios       *PortfolioQuery
+	withAuthType         *AuthTypeQuery
+	withConnections      *ConnectionQuery
+	modifiers            []func(*sql.Selector)
+	loadTotal            []func(context.Context, []*Account) error
+	withNamedAuthRoles   map[string]*AuthRoleQuery
+	withNamedPortfolios  map[string]*PortfolioQuery
+	withNamedConnections map[string]*ConnectionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -130,7 +132,29 @@ func (aq *AccountQuery) QueryAuthType() *AuthTypeQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(account.Table, account.FieldID, selector),
 			sqlgraph.To(authtype.Table, authtype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, account.AuthTypeTable, account.AuthTypeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, account.AuthTypeTable, account.AuthTypeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryConnections chains the current query on the "connections" edge.
+func (aq *AccountQuery) QueryConnections() *ConnectionQuery {
+	query := &ConnectionQuery{config: aq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(account.Table, account.FieldID, selector),
+			sqlgraph.To(connection.Table, connection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, account.ConnectionsTable, account.ConnectionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -314,14 +338,15 @@ func (aq *AccountQuery) Clone() *AccountQuery {
 		return nil
 	}
 	return &AccountQuery{
-		config:         aq.config,
-		limit:          aq.limit,
-		offset:         aq.offset,
-		order:          append([]OrderFunc{}, aq.order...),
-		predicates:     append([]predicate.Account{}, aq.predicates...),
-		withAuthRoles:  aq.withAuthRoles.Clone(),
-		withPortfolios: aq.withPortfolios.Clone(),
-		withAuthType:   aq.withAuthType.Clone(),
+		config:          aq.config,
+		limit:           aq.limit,
+		offset:          aq.offset,
+		order:           append([]OrderFunc{}, aq.order...),
+		predicates:      append([]predicate.Account{}, aq.predicates...),
+		withAuthRoles:   aq.withAuthRoles.Clone(),
+		withPortfolios:  aq.withPortfolios.Clone(),
+		withAuthType:    aq.withAuthType.Clone(),
+		withConnections: aq.withConnections.Clone(),
 		// clone intermediate query.
 		sql:    aq.sql.Clone(),
 		path:   aq.path,
@@ -359,6 +384,17 @@ func (aq *AccountQuery) WithAuthType(opts ...func(*AuthTypeQuery)) *AccountQuery
 		opt(query)
 	}
 	aq.withAuthType = query
+	return aq
+}
+
+// WithConnections tells the query-builder to eager-load the nodes that are connected to
+// the "connections" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AccountQuery) WithConnections(opts ...func(*ConnectionQuery)) *AccountQuery {
+	query := &ConnectionQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withConnections = query
 	return aq
 }
 
@@ -429,20 +465,14 @@ func (aq *AccountQuery) prepareQuery(ctx context.Context) error {
 func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Account, error) {
 	var (
 		nodes       = []*Account{}
-		withFKs     = aq.withFKs
 		_spec       = aq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			aq.withAuthRoles != nil,
 			aq.withPortfolios != nil,
 			aq.withAuthType != nil,
+			aq.withConnections != nil,
 		}
 	)
-	if aq.withAuthType != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, account.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Account).scanValues(nil, columns)
 	}
@@ -484,6 +514,13 @@ func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 			return nil, err
 		}
 	}
+	if query := aq.withConnections; query != nil {
+		if err := aq.loadConnections(ctx, query, nodes,
+			func(n *Account) { n.Edges.Connections = []*Connection{} },
+			func(n *Account, e *Connection) { n.Edges.Connections = append(n.Edges.Connections, e) }); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range aq.withNamedAuthRoles {
 		if err := aq.loadAuthRoles(ctx, query, nodes,
 			func(n *Account) { n.appendNamedAuthRoles(name) },
@@ -495,6 +532,13 @@ func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 		if err := aq.loadPortfolios(ctx, query, nodes,
 			func(n *Account) { n.appendNamedPortfolios(name) },
 			func(n *Account, e *Portfolio) { n.appendNamedPortfolios(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range aq.withNamedConnections {
+		if err := aq.loadConnections(ctx, query, nodes,
+			func(n *Account) { n.appendNamedConnections(name) },
+			func(n *Account, e *Connection) { n.appendNamedConnections(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -574,7 +618,6 @@ func (aq *AccountQuery) loadPortfolios(ctx context.Context, query *PortfolioQuer
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	query.Where(predicate.Portfolio(func(s *sql.Selector) {
 		s.Where(sql.InValues(account.PortfoliosColumn, fks...))
 	}))
@@ -583,13 +626,10 @@ func (aq *AccountQuery) loadPortfolios(ctx context.Context, query *PortfolioQuer
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.account_portfolios
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "account_portfolios" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.AccountID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "account_portfolios" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "account_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -599,10 +639,7 @@ func (aq *AccountQuery) loadAuthType(ctx context.Context, query *AuthTypeQuery, 
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Account)
 	for i := range nodes {
-		if nodes[i].account_auth_type == nil {
-			continue
-		}
-		fk := *nodes[i].account_auth_type
+		fk := nodes[i].AuthTypeID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -616,11 +653,38 @@ func (aq *AccountQuery) loadAuthType(ctx context.Context, query *AuthTypeQuery, 
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "account_auth_type" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "auth_type_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
+	}
+	return nil
+}
+func (aq *AccountQuery) loadConnections(ctx context.Context, query *ConnectionQuery, nodes []*Account, init func(*Account), assign func(*Account, *Connection)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[pulid.PULID]*Account)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.Where(predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.InValues(account.ConnectionsColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AccountID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "account_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }
@@ -753,6 +817,20 @@ func (aq *AccountQuery) WithNamedPortfolios(name string, opts ...func(*Portfolio
 		aq.withNamedPortfolios = make(map[string]*PortfolioQuery)
 	}
 	aq.withNamedPortfolios[name] = query
+	return aq
+}
+
+// WithNamedConnections tells the query-builder to eager-load the nodes that are connected to the "connections"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (aq *AccountQuery) WithNamedConnections(name string, opts ...func(*ConnectionQuery)) *AccountQuery {
+	query := &ConnectionQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	if aq.withNamedConnections == nil {
+		aq.withNamedConnections = make(map[string]*ConnectionQuery)
+	}
+	aq.withNamedConnections[name] = query
 	return aq
 }
 

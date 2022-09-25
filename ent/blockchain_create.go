@@ -383,7 +383,7 @@ func (bc *BlockchainCreate) createSpec() (*Blockchain, *sqlgraph.CreateSpec) {
 	if nodes := bc.mutation.TransactionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   blockchain.TransactionsTable,
 			Columns: []string{blockchain.TransactionsColumn},
 			Bidi:    false,

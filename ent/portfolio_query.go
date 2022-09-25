@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/account"
+	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
@@ -29,10 +30,11 @@ type PortfolioQuery struct {
 	predicates            []predicate.Portfolio
 	withAccount           *AccountQuery
 	withTransactions      *TransactionQuery
-	withFKs               bool
+	withConnections       *ConnectionQuery
 	modifiers             []func(*sql.Selector)
 	loadTotal             []func(context.Context, []*Portfolio) error
 	withNamedTransactions map[string]*TransactionQuery
+	withNamedConnections  map[string]*ConnectionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -106,6 +108,28 @@ func (pq *PortfolioQuery) QueryTransactions() *TransactionQuery {
 			sqlgraph.From(portfolio.Table, portfolio.FieldID, selector),
 			sqlgraph.To(transaction.Table, transaction.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, portfolio.TransactionsTable, portfolio.TransactionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryConnections chains the current query on the "connections" edge.
+func (pq *PortfolioQuery) QueryConnections() *ConnectionQuery {
+	query := &ConnectionQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(portfolio.Table, portfolio.FieldID, selector),
+			sqlgraph.To(connection.Table, connection.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, portfolio.ConnectionsTable, portfolio.ConnectionsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -296,6 +320,7 @@ func (pq *PortfolioQuery) Clone() *PortfolioQuery {
 		predicates:       append([]predicate.Portfolio{}, pq.predicates...),
 		withAccount:      pq.withAccount.Clone(),
 		withTransactions: pq.withTransactions.Clone(),
+		withConnections:  pq.withConnections.Clone(),
 		// clone intermediate query.
 		sql:    pq.sql.Clone(),
 		path:   pq.path,
@@ -322,6 +347,17 @@ func (pq *PortfolioQuery) WithTransactions(opts ...func(*TransactionQuery)) *Por
 		opt(query)
 	}
 	pq.withTransactions = query
+	return pq
+}
+
+// WithConnections tells the query-builder to eager-load the nodes that are connected to
+// the "connections" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PortfolioQuery) WithConnections(opts ...func(*ConnectionQuery)) *PortfolioQuery {
+	query := &ConnectionQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withConnections = query
 	return pq
 }
 
@@ -392,19 +428,13 @@ func (pq *PortfolioQuery) prepareQuery(ctx context.Context) error {
 func (pq *PortfolioQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Portfolio, error) {
 	var (
 		nodes       = []*Portfolio{}
-		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			pq.withAccount != nil,
 			pq.withTransactions != nil,
+			pq.withConnections != nil,
 		}
 	)
-	if pq.withAccount != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, portfolio.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Portfolio).scanValues(nil, columns)
 	}
@@ -439,10 +469,24 @@ func (pq *PortfolioQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Po
 			return nil, err
 		}
 	}
+	if query := pq.withConnections; query != nil {
+		if err := pq.loadConnections(ctx, query, nodes,
+			func(n *Portfolio) { n.Edges.Connections = []*Connection{} },
+			func(n *Portfolio, e *Connection) { n.Edges.Connections = append(n.Edges.Connections, e) }); err != nil {
+			return nil, err
+		}
+	}
 	for name, query := range pq.withNamedTransactions {
 		if err := pq.loadTransactions(ctx, query, nodes,
 			func(n *Portfolio) { n.appendNamedTransactions(name) },
 			func(n *Portfolio, e *Transaction) { n.appendNamedTransactions(name, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range pq.withNamedConnections {
+		if err := pq.loadConnections(ctx, query, nodes,
+			func(n *Portfolio) { n.appendNamedConnections(name) },
+			func(n *Portfolio, e *Connection) { n.appendNamedConnections(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -458,10 +502,7 @@ func (pq *PortfolioQuery) loadAccount(ctx context.Context, query *AccountQuery, 
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Portfolio)
 	for i := range nodes {
-		if nodes[i].account_portfolios == nil {
-			continue
-		}
-		fk := *nodes[i].account_portfolios
+		fk := nodes[i].AccountID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -475,7 +516,7 @@ func (pq *PortfolioQuery) loadAccount(ctx context.Context, query *AccountQuery, 
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "account_portfolios" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "account_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -493,7 +534,6 @@ func (pq *PortfolioQuery) loadTransactions(ctx context.Context, query *Transacti
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	query.Where(predicate.Transaction(func(s *sql.Selector) {
 		s.Where(sql.InValues(portfolio.TransactionsColumn, fks...))
 	}))
@@ -502,15 +542,70 @@ func (pq *PortfolioQuery) loadTransactions(ctx context.Context, query *Transacti
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.portfolio_transactions
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "portfolio_transactions" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.PortfolioID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "portfolio_transactions" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "portfolio_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (pq *PortfolioQuery) loadConnections(ctx context.Context, query *ConnectionQuery, nodes []*Portfolio, init func(*Portfolio), assign func(*Portfolio, *Connection)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[pulid.PULID]*Portfolio)
+	nids := make(map[pulid.PULID]map[*Portfolio]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(portfolio.ConnectionsTable)
+		s.Join(joinT).On(s.C(connection.FieldID), joinT.C(portfolio.ConnectionsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(portfolio.ConnectionsPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(portfolio.ConnectionsPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+		assign := spec.Assign
+		values := spec.ScanValues
+		spec.ScanValues = func(columns []string) ([]any, error) {
+			values, err := values(columns[1:])
+			if err != nil {
+				return nil, err
+			}
+			return append([]any{new(pulid.PULID)}, values...), nil
+		}
+		spec.Assign = func(columns []string, values []any) error {
+			outValue := *values[0].(*pulid.PULID)
+			inValue := *values[1].(*pulid.PULID)
+			if nids[inValue] == nil {
+				nids[inValue] = map[*Portfolio]struct{}{byID[outValue]: struct{}{}}
+				return assign(columns[1:], values[1:])
+			}
+			nids[inValue][byID[outValue]] = struct{}{}
+			return nil
+		}
+	})
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "connections" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
 	}
 	return nil
 }
@@ -629,6 +724,20 @@ func (pq *PortfolioQuery) WithNamedTransactions(name string, opts ...func(*Trans
 		pq.withNamedTransactions = make(map[string]*TransactionQuery)
 	}
 	pq.withNamedTransactions[name] = query
+	return pq
+}
+
+// WithNamedConnections tells the query-builder to eager-load the nodes that are connected to the "connections"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (pq *PortfolioQuery) WithNamedConnections(name string, opts ...func(*ConnectionQuery)) *PortfolioQuery {
+	query := &ConnectionQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	if pq.withNamedConnections == nil {
+		pq.withNamedConnections = make(map[string]*ConnectionQuery)
+	}
+	pq.withNamedConnections[name] = query
 	return pq
 }
 

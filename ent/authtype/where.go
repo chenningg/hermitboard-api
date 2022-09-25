@@ -471,7 +471,7 @@ func HasAccounts() predicate.AuthType {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(AccountsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, AccountsTable, AccountsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, AccountsTable, AccountsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -483,7 +483,7 @@ func HasAccountsWith(preds ...predicate.Account) predicate.AuthType {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(AccountsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, AccountsTable, AccountsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, AccountsTable, AccountsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -499,7 +499,7 @@ func HasStaffAccounts() predicate.AuthType {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(StaffAccountsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, StaffAccountsTable, StaffAccountsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, StaffAccountsTable, StaffAccountsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -511,7 +511,7 @@ func HasStaffAccountsWith(preds ...predicate.StaffAccount) predicate.AuthType {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(StaffAccountsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, StaffAccountsTable, StaffAccountsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, StaffAccountsTable, StaffAccountsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

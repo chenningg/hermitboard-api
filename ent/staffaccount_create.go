@@ -105,6 +105,12 @@ func (sac *StaffAccountCreate) SetNillablePasswordUpdatedAt(t *time.Time) *Staff
 	return sac
 }
 
+// SetAuthTypeID sets the "auth_type_id" field.
+func (sac *StaffAccountCreate) SetAuthTypeID(pu pulid.PULID) *StaffAccountCreate {
+	sac.mutation.SetAuthTypeID(pu)
+	return sac
+}
+
 // SetID sets the "id" field.
 func (sac *StaffAccountCreate) SetID(pu pulid.PULID) *StaffAccountCreate {
 	sac.mutation.SetID(pu)
@@ -132,12 +138,6 @@ func (sac *StaffAccountCreate) AddAuthRoles(a ...*AuthRole) *StaffAccountCreate 
 		ids[i] = a[i].ID
 	}
 	return sac.AddAuthRoleIDs(ids...)
-}
-
-// SetAuthTypeID sets the "auth_type" edge to the AuthType entity by ID.
-func (sac *StaffAccountCreate) SetAuthTypeID(id pulid.PULID) *StaffAccountCreate {
-	sac.mutation.SetAuthTypeID(id)
-	return sac
 }
 
 // SetAuthType sets the "auth_type" edge to the AuthType entity.
@@ -273,6 +273,9 @@ func (sac *StaffAccountCreate) check() error {
 		return &ValidationError{Name: "password_updated_at", err: errors.New(`ent: missing required field "StaffAccount.password_updated_at"`)}
 	}
 	if _, ok := sac.mutation.AuthTypeID(); !ok {
+		return &ValidationError{Name: "auth_type_id", err: errors.New(`ent: missing required field "StaffAccount.auth_type_id"`)}
+	}
+	if _, ok := sac.mutation.AuthTypeID(); !ok {
 		return &ValidationError{Name: "auth_type", err: errors.New(`ent: missing required edge "StaffAccount.auth_type"`)}
 	}
 	return nil
@@ -389,7 +392,7 @@ func (sac *StaffAccountCreate) createSpec() (*StaffAccount, *sqlgraph.CreateSpec
 	if nodes := sac.mutation.AuthTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   staffaccount.AuthTypeTable,
 			Columns: []string{staffaccount.AuthTypeColumn},
 			Bidi:    false,
@@ -403,7 +406,7 @@ func (sac *StaffAccountCreate) createSpec() (*StaffAccount, *sqlgraph.CreateSpec
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.staff_account_auth_type = &nodes[0]
+		_node.AuthTypeID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

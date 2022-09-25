@@ -25,6 +25,8 @@ const (
 	FieldIcon = "icon"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldAssetID holds the string denoting the asset_id field in the database.
+	FieldAssetID = "asset_id"
 	// EdgeAsset holds the string denoting the asset edge name in mutations.
 	EdgeAsset = "asset"
 	// EdgeBlockchains holds the string denoting the blockchains edge name in mutations.
@@ -37,7 +39,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "asset" package.
 	AssetInverseTable = "assets"
 	// AssetColumn is the table column denoting the asset relation/edge.
-	AssetColumn = "asset_cryptocurrency"
+	AssetColumn = "asset_id"
 	// BlockchainsTable is the table that holds the blockchains relation/edge. The primary key declared below.
 	BlockchainsTable = "blockchain_cryptocurrencies"
 	// BlockchainsInverseTable is the table name for the Blockchain entity.
@@ -54,12 +56,7 @@ var Columns = []string{
 	FieldSymbol,
 	FieldIcon,
 	FieldName,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "cryptocurrencies"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"asset_cryptocurrency",
+	FieldAssetID,
 }
 
 var (
@@ -72,11 +69,6 @@ var (
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}

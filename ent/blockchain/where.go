@@ -760,7 +760,7 @@ func HasTransactions() predicate.Blockchain {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TransactionsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, TransactionsTable, TransactionsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, TransactionsTable, TransactionsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -772,7 +772,7 @@ func HasTransactionsWith(preds ...predicate.Transaction) predicate.Blockchain {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TransactionsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, TransactionsTable, TransactionsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, TransactionsTable, TransactionsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

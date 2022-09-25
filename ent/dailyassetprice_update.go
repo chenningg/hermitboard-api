@@ -183,17 +183,9 @@ func (dapu *DailyAssetPriceUpdate) AddAdjustedClose(f float64) *DailyAssetPriceU
 	return dapu
 }
 
-// SetAssetID sets the "asset" edge to the Asset entity by ID.
-func (dapu *DailyAssetPriceUpdate) SetAssetID(id pulid.PULID) *DailyAssetPriceUpdate {
-	dapu.mutation.SetAssetID(id)
-	return dapu
-}
-
-// SetNillableAssetID sets the "asset" edge to the Asset entity by ID if the given value is not nil.
-func (dapu *DailyAssetPriceUpdate) SetNillableAssetID(id *pulid.PULID) *DailyAssetPriceUpdate {
-	if id != nil {
-		dapu = dapu.SetAssetID(*id)
-	}
+// SetAssetID sets the "asset_id" field.
+func (dapu *DailyAssetPriceUpdate) SetAssetID(pu pulid.PULID) *DailyAssetPriceUpdate {
+	dapu.mutation.SetAssetID(pu)
 	return dapu
 }
 
@@ -221,12 +213,18 @@ func (dapu *DailyAssetPriceUpdate) Save(ctx context.Context) (int, error) {
 	)
 	dapu.defaults()
 	if len(dapu.hooks) == 0 {
+		if err = dapu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = dapu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*DailyAssetPriceMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = dapu.check(); err != nil {
+				return 0, err
 			}
 			dapu.mutation = mutation
 			affected, err = dapu.sqlSave(ctx)
@@ -278,6 +276,14 @@ func (dapu *DailyAssetPriceUpdate) defaults() {
 		v := dailyassetprice.UpdateDefaultDeletedAt()
 		dapu.mutation.SetDeletedAt(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (dapu *DailyAssetPriceUpdate) check() error {
+	if _, ok := dapu.mutation.AssetID(); dapu.mutation.AssetCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "DailyAssetPrice.asset"`)
+	}
+	return nil
 }
 
 func (dapu *DailyAssetPriceUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -626,17 +632,9 @@ func (dapuo *DailyAssetPriceUpdateOne) AddAdjustedClose(f float64) *DailyAssetPr
 	return dapuo
 }
 
-// SetAssetID sets the "asset" edge to the Asset entity by ID.
-func (dapuo *DailyAssetPriceUpdateOne) SetAssetID(id pulid.PULID) *DailyAssetPriceUpdateOne {
-	dapuo.mutation.SetAssetID(id)
-	return dapuo
-}
-
-// SetNillableAssetID sets the "asset" edge to the Asset entity by ID if the given value is not nil.
-func (dapuo *DailyAssetPriceUpdateOne) SetNillableAssetID(id *pulid.PULID) *DailyAssetPriceUpdateOne {
-	if id != nil {
-		dapuo = dapuo.SetAssetID(*id)
-	}
+// SetAssetID sets the "asset_id" field.
+func (dapuo *DailyAssetPriceUpdateOne) SetAssetID(pu pulid.PULID) *DailyAssetPriceUpdateOne {
+	dapuo.mutation.SetAssetID(pu)
 	return dapuo
 }
 
@@ -671,12 +669,18 @@ func (dapuo *DailyAssetPriceUpdateOne) Save(ctx context.Context) (*DailyAssetPri
 	)
 	dapuo.defaults()
 	if len(dapuo.hooks) == 0 {
+		if err = dapuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = dapuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*DailyAssetPriceMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = dapuo.check(); err != nil {
+				return nil, err
 			}
 			dapuo.mutation = mutation
 			node, err = dapuo.sqlSave(ctx)
@@ -734,6 +738,14 @@ func (dapuo *DailyAssetPriceUpdateOne) defaults() {
 		v := dailyassetprice.UpdateDefaultDeletedAt()
 		dapuo.mutation.SetDeletedAt(v)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (dapuo *DailyAssetPriceUpdateOne) check() error {
+	if _, ok := dapuo.mutation.AssetID(); dapuo.mutation.AssetCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "DailyAssetPrice.asset"`)
+	}
+	return nil
 }
 
 func (dapuo *DailyAssetPriceUpdateOne) sqlSave(ctx context.Context) (_node *DailyAssetPrice, err error) {

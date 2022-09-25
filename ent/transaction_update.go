@@ -84,9 +84,67 @@ func (tu *TransactionUpdate) AddPricePerUnit(f float64) *TransactionUpdate {
 	return tu
 }
 
-// SetTransactionTypeID sets the "transaction_type" edge to the TransactionType entity by ID.
-func (tu *TransactionUpdate) SetTransactionTypeID(id pulid.PULID) *TransactionUpdate {
-	tu.mutation.SetTransactionTypeID(id)
+// SetBlockchainID sets the "blockchain_id" field.
+func (tu *TransactionUpdate) SetBlockchainID(pu pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetBlockchainID(pu)
+	return tu
+}
+
+// SetNillableBlockchainID sets the "blockchain_id" field if the given value is not nil.
+func (tu *TransactionUpdate) SetNillableBlockchainID(pu *pulid.PULID) *TransactionUpdate {
+	if pu != nil {
+		tu.SetBlockchainID(*pu)
+	}
+	return tu
+}
+
+// ClearBlockchainID clears the value of the "blockchain_id" field.
+func (tu *TransactionUpdate) ClearBlockchainID() *TransactionUpdate {
+	tu.mutation.ClearBlockchainID()
+	return tu
+}
+
+// SetTransactionTypeID sets the "transaction_type_id" field.
+func (tu *TransactionUpdate) SetTransactionTypeID(pu pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetTransactionTypeID(pu)
+	return tu
+}
+
+// SetExchangeID sets the "exchange_id" field.
+func (tu *TransactionUpdate) SetExchangeID(pu pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetExchangeID(pu)
+	return tu
+}
+
+// SetPortfolioID sets the "portfolio_id" field.
+func (tu *TransactionUpdate) SetPortfolioID(pu pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetPortfolioID(pu)
+	return tu
+}
+
+// SetBaseAssetID sets the "base_asset_id" field.
+func (tu *TransactionUpdate) SetBaseAssetID(pu pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetBaseAssetID(pu)
+	return tu
+}
+
+// SetQuoteAssetID sets the "quote_asset_id" field.
+func (tu *TransactionUpdate) SetQuoteAssetID(pu pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetQuoteAssetID(pu)
+	return tu
+}
+
+// SetNillableQuoteAssetID sets the "quote_asset_id" field if the given value is not nil.
+func (tu *TransactionUpdate) SetNillableQuoteAssetID(pu *pulid.PULID) *TransactionUpdate {
+	if pu != nil {
+		tu.SetQuoteAssetID(*pu)
+	}
+	return tu
+}
+
+// ClearQuoteAssetID clears the value of the "quote_asset_id" field.
+func (tu *TransactionUpdate) ClearQuoteAssetID() *TransactionUpdate {
+	tu.mutation.ClearQuoteAssetID()
 	return tu
 }
 
@@ -95,29 +153,9 @@ func (tu *TransactionUpdate) SetTransactionType(t *TransactionType) *Transaction
 	return tu.SetTransactionTypeID(t.ID)
 }
 
-// SetBaseAssetID sets the "base_asset" edge to the Asset entity by ID.
-func (tu *TransactionUpdate) SetBaseAssetID(id pulid.PULID) *TransactionUpdate {
-	tu.mutation.SetBaseAssetID(id)
-	return tu
-}
-
 // SetBaseAsset sets the "base_asset" edge to the Asset entity.
 func (tu *TransactionUpdate) SetBaseAsset(a *Asset) *TransactionUpdate {
 	return tu.SetBaseAssetID(a.ID)
-}
-
-// SetQuoteAssetID sets the "quote_asset" edge to the Asset entity by ID.
-func (tu *TransactionUpdate) SetQuoteAssetID(id pulid.PULID) *TransactionUpdate {
-	tu.mutation.SetQuoteAssetID(id)
-	return tu
-}
-
-// SetNillableQuoteAssetID sets the "quote_asset" edge to the Asset entity by ID if the given value is not nil.
-func (tu *TransactionUpdate) SetNillableQuoteAssetID(id *pulid.PULID) *TransactionUpdate {
-	if id != nil {
-		tu = tu.SetQuoteAssetID(*id)
-	}
-	return tu
 }
 
 // SetQuoteAsset sets the "quote_asset" edge to the Asset entity.
@@ -125,40 +163,14 @@ func (tu *TransactionUpdate) SetQuoteAsset(a *Asset) *TransactionUpdate {
 	return tu.SetQuoteAssetID(a.ID)
 }
 
-// SetPortfolioID sets the "portfolio" edge to the Portfolio entity by ID.
-func (tu *TransactionUpdate) SetPortfolioID(id pulid.PULID) *TransactionUpdate {
-	tu.mutation.SetPortfolioID(id)
-	return tu
-}
-
 // SetPortfolio sets the "portfolio" edge to the Portfolio entity.
 func (tu *TransactionUpdate) SetPortfolio(p *Portfolio) *TransactionUpdate {
 	return tu.SetPortfolioID(p.ID)
 }
 
-// SetExchangeID sets the "exchange" edge to the Exchange entity by ID.
-func (tu *TransactionUpdate) SetExchangeID(id pulid.PULID) *TransactionUpdate {
-	tu.mutation.SetExchangeID(id)
-	return tu
-}
-
 // SetExchange sets the "exchange" edge to the Exchange entity.
 func (tu *TransactionUpdate) SetExchange(e *Exchange) *TransactionUpdate {
 	return tu.SetExchangeID(e.ID)
-}
-
-// SetBlockchainID sets the "blockchain" edge to the Blockchain entity by ID.
-func (tu *TransactionUpdate) SetBlockchainID(id pulid.PULID) *TransactionUpdate {
-	tu.mutation.SetBlockchainID(id)
-	return tu
-}
-
-// SetNillableBlockchainID sets the "blockchain" edge to the Blockchain entity by ID if the given value is not nil.
-func (tu *TransactionUpdate) SetNillableBlockchainID(id *pulid.PULID) *TransactionUpdate {
-	if id != nil {
-		tu = tu.SetBlockchainID(*id)
-	}
-	return tu
 }
 
 // SetBlockchain sets the "blockchain" edge to the Blockchain entity.
@@ -373,7 +385,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if tu.mutation.TransactionTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.TransactionTypeTable,
 			Columns: []string{transaction.TransactionTypeColumn},
 			Bidi:    false,
@@ -389,7 +401,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := tu.mutation.TransactionTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.TransactionTypeTable,
 			Columns: []string{transaction.TransactionTypeColumn},
 			Bidi:    false,
@@ -408,7 +420,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if tu.mutation.BaseAssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.BaseAssetTable,
 			Columns: []string{transaction.BaseAssetColumn},
 			Bidi:    false,
@@ -424,7 +436,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := tu.mutation.BaseAssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.BaseAssetTable,
 			Columns: []string{transaction.BaseAssetColumn},
 			Bidi:    false,
@@ -443,7 +455,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if tu.mutation.QuoteAssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.QuoteAssetTable,
 			Columns: []string{transaction.QuoteAssetColumn},
 			Bidi:    false,
@@ -459,7 +471,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := tu.mutation.QuoteAssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.QuoteAssetTable,
 			Columns: []string{transaction.QuoteAssetColumn},
 			Bidi:    false,
@@ -548,7 +560,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if tu.mutation.BlockchainCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.BlockchainTable,
 			Columns: []string{transaction.BlockchainColumn},
 			Bidi:    false,
@@ -564,7 +576,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := tu.mutation.BlockchainIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.BlockchainTable,
 			Columns: []string{transaction.BlockchainColumn},
 			Bidi:    false,
@@ -649,9 +661,67 @@ func (tuo *TransactionUpdateOne) AddPricePerUnit(f float64) *TransactionUpdateOn
 	return tuo
 }
 
-// SetTransactionTypeID sets the "transaction_type" edge to the TransactionType entity by ID.
-func (tuo *TransactionUpdateOne) SetTransactionTypeID(id pulid.PULID) *TransactionUpdateOne {
-	tuo.mutation.SetTransactionTypeID(id)
+// SetBlockchainID sets the "blockchain_id" field.
+func (tuo *TransactionUpdateOne) SetBlockchainID(pu pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetBlockchainID(pu)
+	return tuo
+}
+
+// SetNillableBlockchainID sets the "blockchain_id" field if the given value is not nil.
+func (tuo *TransactionUpdateOne) SetNillableBlockchainID(pu *pulid.PULID) *TransactionUpdateOne {
+	if pu != nil {
+		tuo.SetBlockchainID(*pu)
+	}
+	return tuo
+}
+
+// ClearBlockchainID clears the value of the "blockchain_id" field.
+func (tuo *TransactionUpdateOne) ClearBlockchainID() *TransactionUpdateOne {
+	tuo.mutation.ClearBlockchainID()
+	return tuo
+}
+
+// SetTransactionTypeID sets the "transaction_type_id" field.
+func (tuo *TransactionUpdateOne) SetTransactionTypeID(pu pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetTransactionTypeID(pu)
+	return tuo
+}
+
+// SetExchangeID sets the "exchange_id" field.
+func (tuo *TransactionUpdateOne) SetExchangeID(pu pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetExchangeID(pu)
+	return tuo
+}
+
+// SetPortfolioID sets the "portfolio_id" field.
+func (tuo *TransactionUpdateOne) SetPortfolioID(pu pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetPortfolioID(pu)
+	return tuo
+}
+
+// SetBaseAssetID sets the "base_asset_id" field.
+func (tuo *TransactionUpdateOne) SetBaseAssetID(pu pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetBaseAssetID(pu)
+	return tuo
+}
+
+// SetQuoteAssetID sets the "quote_asset_id" field.
+func (tuo *TransactionUpdateOne) SetQuoteAssetID(pu pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetQuoteAssetID(pu)
+	return tuo
+}
+
+// SetNillableQuoteAssetID sets the "quote_asset_id" field if the given value is not nil.
+func (tuo *TransactionUpdateOne) SetNillableQuoteAssetID(pu *pulid.PULID) *TransactionUpdateOne {
+	if pu != nil {
+		tuo.SetQuoteAssetID(*pu)
+	}
+	return tuo
+}
+
+// ClearQuoteAssetID clears the value of the "quote_asset_id" field.
+func (tuo *TransactionUpdateOne) ClearQuoteAssetID() *TransactionUpdateOne {
+	tuo.mutation.ClearQuoteAssetID()
 	return tuo
 }
 
@@ -660,29 +730,9 @@ func (tuo *TransactionUpdateOne) SetTransactionType(t *TransactionType) *Transac
 	return tuo.SetTransactionTypeID(t.ID)
 }
 
-// SetBaseAssetID sets the "base_asset" edge to the Asset entity by ID.
-func (tuo *TransactionUpdateOne) SetBaseAssetID(id pulid.PULID) *TransactionUpdateOne {
-	tuo.mutation.SetBaseAssetID(id)
-	return tuo
-}
-
 // SetBaseAsset sets the "base_asset" edge to the Asset entity.
 func (tuo *TransactionUpdateOne) SetBaseAsset(a *Asset) *TransactionUpdateOne {
 	return tuo.SetBaseAssetID(a.ID)
-}
-
-// SetQuoteAssetID sets the "quote_asset" edge to the Asset entity by ID.
-func (tuo *TransactionUpdateOne) SetQuoteAssetID(id pulid.PULID) *TransactionUpdateOne {
-	tuo.mutation.SetQuoteAssetID(id)
-	return tuo
-}
-
-// SetNillableQuoteAssetID sets the "quote_asset" edge to the Asset entity by ID if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillableQuoteAssetID(id *pulid.PULID) *TransactionUpdateOne {
-	if id != nil {
-		tuo = tuo.SetQuoteAssetID(*id)
-	}
-	return tuo
 }
 
 // SetQuoteAsset sets the "quote_asset" edge to the Asset entity.
@@ -690,40 +740,14 @@ func (tuo *TransactionUpdateOne) SetQuoteAsset(a *Asset) *TransactionUpdateOne {
 	return tuo.SetQuoteAssetID(a.ID)
 }
 
-// SetPortfolioID sets the "portfolio" edge to the Portfolio entity by ID.
-func (tuo *TransactionUpdateOne) SetPortfolioID(id pulid.PULID) *TransactionUpdateOne {
-	tuo.mutation.SetPortfolioID(id)
-	return tuo
-}
-
 // SetPortfolio sets the "portfolio" edge to the Portfolio entity.
 func (tuo *TransactionUpdateOne) SetPortfolio(p *Portfolio) *TransactionUpdateOne {
 	return tuo.SetPortfolioID(p.ID)
 }
 
-// SetExchangeID sets the "exchange" edge to the Exchange entity by ID.
-func (tuo *TransactionUpdateOne) SetExchangeID(id pulid.PULID) *TransactionUpdateOne {
-	tuo.mutation.SetExchangeID(id)
-	return tuo
-}
-
 // SetExchange sets the "exchange" edge to the Exchange entity.
 func (tuo *TransactionUpdateOne) SetExchange(e *Exchange) *TransactionUpdateOne {
 	return tuo.SetExchangeID(e.ID)
-}
-
-// SetBlockchainID sets the "blockchain" edge to the Blockchain entity by ID.
-func (tuo *TransactionUpdateOne) SetBlockchainID(id pulid.PULID) *TransactionUpdateOne {
-	tuo.mutation.SetBlockchainID(id)
-	return tuo
-}
-
-// SetNillableBlockchainID sets the "blockchain" edge to the Blockchain entity by ID if the given value is not nil.
-func (tuo *TransactionUpdateOne) SetNillableBlockchainID(id *pulid.PULID) *TransactionUpdateOne {
-	if id != nil {
-		tuo = tuo.SetBlockchainID(*id)
-	}
-	return tuo
 }
 
 // SetBlockchain sets the "blockchain" edge to the Blockchain entity.
@@ -968,7 +992,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if tuo.mutation.TransactionTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.TransactionTypeTable,
 			Columns: []string{transaction.TransactionTypeColumn},
 			Bidi:    false,
@@ -984,7 +1008,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if nodes := tuo.mutation.TransactionTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.TransactionTypeTable,
 			Columns: []string{transaction.TransactionTypeColumn},
 			Bidi:    false,
@@ -1003,7 +1027,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if tuo.mutation.BaseAssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.BaseAssetTable,
 			Columns: []string{transaction.BaseAssetColumn},
 			Bidi:    false,
@@ -1019,7 +1043,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if nodes := tuo.mutation.BaseAssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.BaseAssetTable,
 			Columns: []string{transaction.BaseAssetColumn},
 			Bidi:    false,
@@ -1038,7 +1062,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if tuo.mutation.QuoteAssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.QuoteAssetTable,
 			Columns: []string{transaction.QuoteAssetColumn},
 			Bidi:    false,
@@ -1054,7 +1078,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if nodes := tuo.mutation.QuoteAssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.QuoteAssetTable,
 			Columns: []string{transaction.QuoteAssetColumn},
 			Bidi:    false,
@@ -1143,7 +1167,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if tuo.mutation.BlockchainCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.BlockchainTable,
 			Columns: []string{transaction.BlockchainColumn},
 			Bidi:    false,
@@ -1159,7 +1183,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if nodes := tuo.mutation.BlockchainIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   transaction.BlockchainTable,
 			Columns: []string{transaction.BlockchainColumn},
 			Bidi:    false,

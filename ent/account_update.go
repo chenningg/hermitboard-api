@@ -14,6 +14,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/account"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
+	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -88,6 +89,12 @@ func (au *AccountUpdate) SetPasswordUpdatedAt(t time.Time) *AccountUpdate {
 	return au
 }
 
+// SetAuthTypeID sets the "auth_type_id" field.
+func (au *AccountUpdate) SetAuthTypeID(pu pulid.PULID) *AccountUpdate {
+	au.mutation.SetAuthTypeID(pu)
+	return au
+}
+
 // AddAuthRoleIDs adds the "auth_roles" edge to the AuthRole entity by IDs.
 func (au *AccountUpdate) AddAuthRoleIDs(ids ...pulid.PULID) *AccountUpdate {
 	au.mutation.AddAuthRoleIDs(ids...)
@@ -118,15 +125,24 @@ func (au *AccountUpdate) AddPortfolios(p ...*Portfolio) *AccountUpdate {
 	return au.AddPortfolioIDs(ids...)
 }
 
-// SetAuthTypeID sets the "auth_type" edge to the AuthType entity by ID.
-func (au *AccountUpdate) SetAuthTypeID(id pulid.PULID) *AccountUpdate {
-	au.mutation.SetAuthTypeID(id)
-	return au
-}
-
 // SetAuthType sets the "auth_type" edge to the AuthType entity.
 func (au *AccountUpdate) SetAuthType(a *AuthType) *AccountUpdate {
 	return au.SetAuthTypeID(a.ID)
+}
+
+// AddConnectionIDs adds the "connections" edge to the Connection entity by IDs.
+func (au *AccountUpdate) AddConnectionIDs(ids ...pulid.PULID) *AccountUpdate {
+	au.mutation.AddConnectionIDs(ids...)
+	return au
+}
+
+// AddConnections adds the "connections" edges to the Connection entity.
+func (au *AccountUpdate) AddConnections(c ...*Connection) *AccountUpdate {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return au.AddConnectionIDs(ids...)
 }
 
 // Mutation returns the AccountMutation object of the builder.
@@ -180,6 +196,27 @@ func (au *AccountUpdate) RemovePortfolios(p ...*Portfolio) *AccountUpdate {
 func (au *AccountUpdate) ClearAuthType() *AccountUpdate {
 	au.mutation.ClearAuthType()
 	return au
+}
+
+// ClearConnections clears all "connections" edges to the Connection entity.
+func (au *AccountUpdate) ClearConnections() *AccountUpdate {
+	au.mutation.ClearConnections()
+	return au
+}
+
+// RemoveConnectionIDs removes the "connections" edge to Connection entities by IDs.
+func (au *AccountUpdate) RemoveConnectionIDs(ids ...pulid.PULID) *AccountUpdate {
+	au.mutation.RemoveConnectionIDs(ids...)
+	return au
+}
+
+// RemoveConnections removes "connections" edges to Connection entities.
+func (au *AccountUpdate) RemoveConnections(c ...*Connection) *AccountUpdate {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return au.RemoveConnectionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -465,7 +502,7 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if au.mutation.AuthTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -481,7 +518,7 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := au.mutation.AuthTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -489,6 +526,60 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: authtype.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if au.mutation.ConnectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.ConnectionsTable,
+			Columns: []string{account.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedConnectionsIDs(); len(nodes) > 0 && !au.mutation.ConnectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.ConnectionsTable,
+			Columns: []string{account.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.ConnectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.ConnectionsTable,
+			Columns: []string{account.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
 				},
 			},
 		}
@@ -572,6 +663,12 @@ func (auo *AccountUpdateOne) SetPasswordUpdatedAt(t time.Time) *AccountUpdateOne
 	return auo
 }
 
+// SetAuthTypeID sets the "auth_type_id" field.
+func (auo *AccountUpdateOne) SetAuthTypeID(pu pulid.PULID) *AccountUpdateOne {
+	auo.mutation.SetAuthTypeID(pu)
+	return auo
+}
+
 // AddAuthRoleIDs adds the "auth_roles" edge to the AuthRole entity by IDs.
 func (auo *AccountUpdateOne) AddAuthRoleIDs(ids ...pulid.PULID) *AccountUpdateOne {
 	auo.mutation.AddAuthRoleIDs(ids...)
@@ -602,15 +699,24 @@ func (auo *AccountUpdateOne) AddPortfolios(p ...*Portfolio) *AccountUpdateOne {
 	return auo.AddPortfolioIDs(ids...)
 }
 
-// SetAuthTypeID sets the "auth_type" edge to the AuthType entity by ID.
-func (auo *AccountUpdateOne) SetAuthTypeID(id pulid.PULID) *AccountUpdateOne {
-	auo.mutation.SetAuthTypeID(id)
-	return auo
-}
-
 // SetAuthType sets the "auth_type" edge to the AuthType entity.
 func (auo *AccountUpdateOne) SetAuthType(a *AuthType) *AccountUpdateOne {
 	return auo.SetAuthTypeID(a.ID)
+}
+
+// AddConnectionIDs adds the "connections" edge to the Connection entity by IDs.
+func (auo *AccountUpdateOne) AddConnectionIDs(ids ...pulid.PULID) *AccountUpdateOne {
+	auo.mutation.AddConnectionIDs(ids...)
+	return auo
+}
+
+// AddConnections adds the "connections" edges to the Connection entity.
+func (auo *AccountUpdateOne) AddConnections(c ...*Connection) *AccountUpdateOne {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return auo.AddConnectionIDs(ids...)
 }
 
 // Mutation returns the AccountMutation object of the builder.
@@ -664,6 +770,27 @@ func (auo *AccountUpdateOne) RemovePortfolios(p ...*Portfolio) *AccountUpdateOne
 func (auo *AccountUpdateOne) ClearAuthType() *AccountUpdateOne {
 	auo.mutation.ClearAuthType()
 	return auo
+}
+
+// ClearConnections clears all "connections" edges to the Connection entity.
+func (auo *AccountUpdateOne) ClearConnections() *AccountUpdateOne {
+	auo.mutation.ClearConnections()
+	return auo
+}
+
+// RemoveConnectionIDs removes the "connections" edge to Connection entities by IDs.
+func (auo *AccountUpdateOne) RemoveConnectionIDs(ids ...pulid.PULID) *AccountUpdateOne {
+	auo.mutation.RemoveConnectionIDs(ids...)
+	return auo
+}
+
+// RemoveConnections removes "connections" edges to Connection entities.
+func (auo *AccountUpdateOne) RemoveConnections(c ...*Connection) *AccountUpdateOne {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return auo.RemoveConnectionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -979,7 +1106,7 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 	if auo.mutation.AuthTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -995,7 +1122,7 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 	if nodes := auo.mutation.AuthTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -1003,6 +1130,60 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: authtype.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if auo.mutation.ConnectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.ConnectionsTable,
+			Columns: []string{account.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedConnectionsIDs(); len(nodes) > 0 && !auo.mutation.ConnectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.ConnectionsTable,
+			Columns: []string{account.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.ConnectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   account.ConnectionsTable,
+			Columns: []string{account.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
 				},
 			},
 		}

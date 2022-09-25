@@ -32,10 +32,11 @@ type StaffAccount struct {
 	Password *string `json:"-"`
 	// PasswordUpdatedAt holds the value of the "password_updated_at" field.
 	PasswordUpdatedAt time.Time `json:"password_updated_at,omitempty"`
+	// AuthTypeID holds the value of the "auth_type_id" field.
+	AuthTypeID pulid.PULID `json:"auth_type_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StaffAccountQuery when eager-loading is set.
-	Edges                   StaffAccountEdges `json:"edges"`
-	staff_account_auth_type *pulid.PULID
+	Edges StaffAccountEdges `json:"edges"`
 }
 
 // StaffAccountEdges holds the relations/edges for other nodes in the graph.
@@ -80,14 +81,12 @@ func (*StaffAccount) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case staffaccount.FieldID:
+		case staffaccount.FieldID, staffaccount.FieldAuthTypeID:
 			values[i] = new(pulid.PULID)
 		case staffaccount.FieldNickname, staffaccount.FieldEmail, staffaccount.FieldPassword:
 			values[i] = new(sql.NullString)
 		case staffaccount.FieldCreatedAt, staffaccount.FieldUpdatedAt, staffaccount.FieldDeletedAt, staffaccount.FieldPasswordUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case staffaccount.ForeignKeys[0]: // staff_account_auth_type
-			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type StaffAccount", columns[i])
 		}
@@ -153,12 +152,11 @@ func (sa *StaffAccount) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				sa.PasswordUpdatedAt = value.Time
 			}
-		case staffaccount.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field staff_account_auth_type", values[i])
-			} else if value.Valid {
-				sa.staff_account_auth_type = new(pulid.PULID)
-				*sa.staff_account_auth_type = *value.S.(*pulid.PULID)
+		case staffaccount.FieldAuthTypeID:
+			if value, ok := values[i].(*pulid.PULID); !ok {
+				return fmt.Errorf("unexpected type %T for field auth_type_id", values[i])
+			} else if value != nil {
+				sa.AuthTypeID = *value
 			}
 		}
 	}
@@ -219,6 +217,9 @@ func (sa *StaffAccount) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("password_updated_at=")
 	builder.WriteString(sa.PasswordUpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("auth_type_id=")
+	builder.WriteString(fmt.Sprintf("%v", sa.AuthTypeID))
 	builder.WriteByte(')')
 	return builder.String()
 }

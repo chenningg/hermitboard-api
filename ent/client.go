@@ -17,10 +17,13 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
+	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
+	"github.com/chenningg/hermitboard-api/ent/source"
+	"github.com/chenningg/hermitboard-api/ent/sourcetype"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
@@ -47,6 +50,8 @@ type Client struct {
 	AuthType *AuthTypeClient
 	// Blockchain is the client for interacting with the Blockchain builders.
 	Blockchain *BlockchainClient
+	// Connection is the client for interacting with the Connection builders.
+	Connection *ConnectionClient
 	// Cryptocurrency is the client for interacting with the Cryptocurrency builders.
 	Cryptocurrency *CryptocurrencyClient
 	// DailyAssetPrice is the client for interacting with the DailyAssetPrice builders.
@@ -55,6 +60,10 @@ type Client struct {
 	Exchange *ExchangeClient
 	// Portfolio is the client for interacting with the Portfolio builders.
 	Portfolio *PortfolioClient
+	// Source is the client for interacting with the Source builders.
+	Source *SourceClient
+	// SourceType is the client for interacting with the SourceType builders.
+	SourceType *SourceTypeClient
 	// StaffAccount is the client for interacting with the StaffAccount builders.
 	StaffAccount *StaffAccountClient
 	// Transaction is the client for interacting with the Transaction builders.
@@ -80,10 +89,13 @@ func (c *Client) init() {
 	c.AuthRole = NewAuthRoleClient(c.config)
 	c.AuthType = NewAuthTypeClient(c.config)
 	c.Blockchain = NewBlockchainClient(c.config)
+	c.Connection = NewConnectionClient(c.config)
 	c.Cryptocurrency = NewCryptocurrencyClient(c.config)
 	c.DailyAssetPrice = NewDailyAssetPriceClient(c.config)
 	c.Exchange = NewExchangeClient(c.config)
 	c.Portfolio = NewPortfolioClient(c.config)
+	c.Source = NewSourceClient(c.config)
+	c.SourceType = NewSourceTypeClient(c.config)
 	c.StaffAccount = NewStaffAccountClient(c.config)
 	c.Transaction = NewTransactionClient(c.config)
 	c.TransactionType = NewTransactionTypeClient(c.config)
@@ -126,10 +138,13 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AuthRole:        NewAuthRoleClient(cfg),
 		AuthType:        NewAuthTypeClient(cfg),
 		Blockchain:      NewBlockchainClient(cfg),
+		Connection:      NewConnectionClient(cfg),
 		Cryptocurrency:  NewCryptocurrencyClient(cfg),
 		DailyAssetPrice: NewDailyAssetPriceClient(cfg),
 		Exchange:        NewExchangeClient(cfg),
 		Portfolio:       NewPortfolioClient(cfg),
+		Source:          NewSourceClient(cfg),
+		SourceType:      NewSourceTypeClient(cfg),
 		StaffAccount:    NewStaffAccountClient(cfg),
 		Transaction:     NewTransactionClient(cfg),
 		TransactionType: NewTransactionTypeClient(cfg),
@@ -158,10 +173,13 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AuthRole:        NewAuthRoleClient(cfg),
 		AuthType:        NewAuthTypeClient(cfg),
 		Blockchain:      NewBlockchainClient(cfg),
+		Connection:      NewConnectionClient(cfg),
 		Cryptocurrency:  NewCryptocurrencyClient(cfg),
 		DailyAssetPrice: NewDailyAssetPriceClient(cfg),
 		Exchange:        NewExchangeClient(cfg),
 		Portfolio:       NewPortfolioClient(cfg),
+		Source:          NewSourceClient(cfg),
+		SourceType:      NewSourceTypeClient(cfg),
 		StaffAccount:    NewStaffAccountClient(cfg),
 		Transaction:     NewTransactionClient(cfg),
 		TransactionType: NewTransactionTypeClient(cfg),
@@ -199,10 +217,13 @@ func (c *Client) Use(hooks ...Hook) {
 	c.AuthRole.Use(hooks...)
 	c.AuthType.Use(hooks...)
 	c.Blockchain.Use(hooks...)
+	c.Connection.Use(hooks...)
 	c.Cryptocurrency.Use(hooks...)
 	c.DailyAssetPrice.Use(hooks...)
 	c.Exchange.Use(hooks...)
 	c.Portfolio.Use(hooks...)
+	c.Source.Use(hooks...)
+	c.SourceType.Use(hooks...)
 	c.StaffAccount.Use(hooks...)
 	c.Transaction.Use(hooks...)
 	c.TransactionType.Use(hooks...)
@@ -333,7 +354,23 @@ func (c *AccountClient) QueryAuthType(a *Account) *AuthTypeQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(account.Table, account.FieldID, id),
 			sqlgraph.To(authtype.Table, authtype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, account.AuthTypeTable, account.AuthTypeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, account.AuthTypeTable, account.AuthTypeColumn),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryConnections queries the connections edge of a Account.
+func (c *AccountClient) QueryConnections(a *Account) *ConnectionQuery {
+	query := &ConnectionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(account.Table, account.FieldID, id),
+			sqlgraph.To(connection.Table, connection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, account.ConnectionsTable, account.ConnectionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -439,7 +476,7 @@ func (c *AssetClient) QueryAssetClass(a *Asset) *AssetClassQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(asset.Table, asset.FieldID, id),
 			sqlgraph.To(assetclass.Table, assetclass.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, asset.AssetClassTable, asset.AssetClassColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.AssetClassTable, asset.AssetClassColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -471,7 +508,7 @@ func (c *AssetClient) QueryTransactionBases(a *Asset) *TransactionQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(asset.Table, asset.FieldID, id),
 			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, asset.TransactionBasesTable, asset.TransactionBasesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.TransactionBasesTable, asset.TransactionBasesColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -487,7 +524,7 @@ func (c *AssetClient) QueryTransactionQuotes(a *Asset) *TransactionQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(asset.Table, asset.FieldID, id),
 			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, asset.TransactionQuotesTable, asset.TransactionQuotesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.TransactionQuotesTable, asset.TransactionQuotesColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -609,7 +646,7 @@ func (c *AssetClassClient) QueryAssets(ac *AssetClass) *AssetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(assetclass.Table, assetclass.FieldID, id),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, assetclass.AssetsTable, assetclass.AssetsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, assetclass.AssetsTable, assetclass.AssetsColumn),
 		)
 		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)
 		return fromV, nil
@@ -837,7 +874,7 @@ func (c *AuthTypeClient) QueryAccounts(at *AuthType) *AccountQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(authtype.Table, authtype.FieldID, id),
 			sqlgraph.To(account.Table, account.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, authtype.AccountsTable, authtype.AccountsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, authtype.AccountsTable, authtype.AccountsColumn),
 		)
 		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
 		return fromV, nil
@@ -853,7 +890,7 @@ func (c *AuthTypeClient) QueryStaffAccounts(at *AuthType) *StaffAccountQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(authtype.Table, authtype.FieldID, id),
 			sqlgraph.To(staffaccount.Table, staffaccount.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, authtype.StaffAccountsTable, authtype.StaffAccountsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, authtype.StaffAccountsTable, authtype.StaffAccountsColumn),
 		)
 		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
 		return fromV, nil
@@ -975,7 +1012,7 @@ func (c *BlockchainClient) QueryTransactions(b *Blockchain) *TransactionQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(blockchain.Table, blockchain.FieldID, id),
 			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, blockchain.TransactionsTable, blockchain.TransactionsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, blockchain.TransactionsTable, blockchain.TransactionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
@@ -986,6 +1023,128 @@ func (c *BlockchainClient) QueryTransactions(b *Blockchain) *TransactionQuery {
 // Hooks returns the client hooks.
 func (c *BlockchainClient) Hooks() []Hook {
 	return c.hooks.Blockchain
+}
+
+// ConnectionClient is a client for the Connection schema.
+type ConnectionClient struct {
+	config
+}
+
+// NewConnectionClient returns a client for the Connection from the given config.
+func NewConnectionClient(c config) *ConnectionClient {
+	return &ConnectionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `connection.Hooks(f(g(h())))`.
+func (c *ConnectionClient) Use(hooks ...Hook) {
+	c.hooks.Connection = append(c.hooks.Connection, hooks...)
+}
+
+// Create returns a builder for creating a Connection entity.
+func (c *ConnectionClient) Create() *ConnectionCreate {
+	mutation := newConnectionMutation(c.config, OpCreate)
+	return &ConnectionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Connection entities.
+func (c *ConnectionClient) CreateBulk(builders ...*ConnectionCreate) *ConnectionCreateBulk {
+	return &ConnectionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Connection.
+func (c *ConnectionClient) Update() *ConnectionUpdate {
+	mutation := newConnectionMutation(c.config, OpUpdate)
+	return &ConnectionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ConnectionClient) UpdateOne(co *Connection) *ConnectionUpdateOne {
+	mutation := newConnectionMutation(c.config, OpUpdateOne, withConnection(co))
+	return &ConnectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ConnectionClient) UpdateOneID(id pulid.PULID) *ConnectionUpdateOne {
+	mutation := newConnectionMutation(c.config, OpUpdateOne, withConnectionID(id))
+	return &ConnectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Connection.
+func (c *ConnectionClient) Delete() *ConnectionDelete {
+	mutation := newConnectionMutation(c.config, OpDelete)
+	return &ConnectionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ConnectionClient) DeleteOne(co *Connection) *ConnectionDeleteOne {
+	return c.DeleteOneID(co.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *ConnectionClient) DeleteOneID(id pulid.PULID) *ConnectionDeleteOne {
+	builder := c.Delete().Where(connection.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ConnectionDeleteOne{builder}
+}
+
+// Query returns a query builder for Connection.
+func (c *ConnectionClient) Query() *ConnectionQuery {
+	return &ConnectionQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Connection entity by its id.
+func (c *ConnectionClient) Get(ctx context.Context, id pulid.PULID) (*Connection, error) {
+	return c.Query().Where(connection.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ConnectionClient) GetX(ctx context.Context, id pulid.PULID) *Connection {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAccount queries the account edge of a Connection.
+func (c *ConnectionClient) QueryAccount(co *Connection) *AccountQuery {
+	query := &AccountQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(connection.Table, connection.FieldID, id),
+			sqlgraph.To(account.Table, account.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, connection.AccountTable, connection.AccountColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPortfolios queries the portfolios edge of a Connection.
+func (c *ConnectionClient) QueryPortfolios(co *Connection) *PortfolioQuery {
+	query := &PortfolioQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(connection.Table, connection.FieldID, id),
+			sqlgraph.To(portfolio.Table, portfolio.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, connection.PortfoliosTable, connection.PortfoliosPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ConnectionClient) Hooks() []Hook {
+	return c.hooks.Connection
 }
 
 // CryptocurrencyClient is a client for the Cryptocurrency schema.
@@ -1439,9 +1598,237 @@ func (c *PortfolioClient) QueryTransactions(po *Portfolio) *TransactionQuery {
 	return query
 }
 
+// QueryConnections queries the connections edge of a Portfolio.
+func (c *PortfolioClient) QueryConnections(po *Portfolio) *ConnectionQuery {
+	query := &ConnectionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := po.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(portfolio.Table, portfolio.FieldID, id),
+			sqlgraph.To(connection.Table, connection.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, portfolio.ConnectionsTable, portfolio.ConnectionsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PortfolioClient) Hooks() []Hook {
 	return c.hooks.Portfolio
+}
+
+// SourceClient is a client for the Source schema.
+type SourceClient struct {
+	config
+}
+
+// NewSourceClient returns a client for the Source from the given config.
+func NewSourceClient(c config) *SourceClient {
+	return &SourceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `source.Hooks(f(g(h())))`.
+func (c *SourceClient) Use(hooks ...Hook) {
+	c.hooks.Source = append(c.hooks.Source, hooks...)
+}
+
+// Create returns a builder for creating a Source entity.
+func (c *SourceClient) Create() *SourceCreate {
+	mutation := newSourceMutation(c.config, OpCreate)
+	return &SourceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Source entities.
+func (c *SourceClient) CreateBulk(builders ...*SourceCreate) *SourceCreateBulk {
+	return &SourceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Source.
+func (c *SourceClient) Update() *SourceUpdate {
+	mutation := newSourceMutation(c.config, OpUpdate)
+	return &SourceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SourceClient) UpdateOne(s *Source) *SourceUpdateOne {
+	mutation := newSourceMutation(c.config, OpUpdateOne, withSource(s))
+	return &SourceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SourceClient) UpdateOneID(id pulid.PULID) *SourceUpdateOne {
+	mutation := newSourceMutation(c.config, OpUpdateOne, withSourceID(id))
+	return &SourceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Source.
+func (c *SourceClient) Delete() *SourceDelete {
+	mutation := newSourceMutation(c.config, OpDelete)
+	return &SourceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SourceClient) DeleteOne(s *Source) *SourceDeleteOne {
+	return c.DeleteOneID(s.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *SourceClient) DeleteOneID(id pulid.PULID) *SourceDeleteOne {
+	builder := c.Delete().Where(source.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SourceDeleteOne{builder}
+}
+
+// Query returns a query builder for Source.
+func (c *SourceClient) Query() *SourceQuery {
+	return &SourceQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Source entity by its id.
+func (c *SourceClient) Get(ctx context.Context, id pulid.PULID) (*Source, error) {
+	return c.Query().Where(source.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SourceClient) GetX(ctx context.Context, id pulid.PULID) *Source {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySourceType queries the source_type edge of a Source.
+func (c *SourceClient) QuerySourceType(s *Source) *SourceTypeQuery {
+	query := &SourceTypeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(source.Table, source.FieldID, id),
+			sqlgraph.To(sourcetype.Table, sourcetype.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, source.SourceTypeTable, source.SourceTypeColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SourceClient) Hooks() []Hook {
+	return c.hooks.Source
+}
+
+// SourceTypeClient is a client for the SourceType schema.
+type SourceTypeClient struct {
+	config
+}
+
+// NewSourceTypeClient returns a client for the SourceType from the given config.
+func NewSourceTypeClient(c config) *SourceTypeClient {
+	return &SourceTypeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `sourcetype.Hooks(f(g(h())))`.
+func (c *SourceTypeClient) Use(hooks ...Hook) {
+	c.hooks.SourceType = append(c.hooks.SourceType, hooks...)
+}
+
+// Create returns a builder for creating a SourceType entity.
+func (c *SourceTypeClient) Create() *SourceTypeCreate {
+	mutation := newSourceTypeMutation(c.config, OpCreate)
+	return &SourceTypeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SourceType entities.
+func (c *SourceTypeClient) CreateBulk(builders ...*SourceTypeCreate) *SourceTypeCreateBulk {
+	return &SourceTypeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SourceType.
+func (c *SourceTypeClient) Update() *SourceTypeUpdate {
+	mutation := newSourceTypeMutation(c.config, OpUpdate)
+	return &SourceTypeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SourceTypeClient) UpdateOne(st *SourceType) *SourceTypeUpdateOne {
+	mutation := newSourceTypeMutation(c.config, OpUpdateOne, withSourceType(st))
+	return &SourceTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SourceTypeClient) UpdateOneID(id pulid.PULID) *SourceTypeUpdateOne {
+	mutation := newSourceTypeMutation(c.config, OpUpdateOne, withSourceTypeID(id))
+	return &SourceTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SourceType.
+func (c *SourceTypeClient) Delete() *SourceTypeDelete {
+	mutation := newSourceTypeMutation(c.config, OpDelete)
+	return &SourceTypeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SourceTypeClient) DeleteOne(st *SourceType) *SourceTypeDeleteOne {
+	return c.DeleteOneID(st.ID)
+}
+
+// DeleteOne returns a builder for deleting the given entity by its id.
+func (c *SourceTypeClient) DeleteOneID(id pulid.PULID) *SourceTypeDeleteOne {
+	builder := c.Delete().Where(sourcetype.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SourceTypeDeleteOne{builder}
+}
+
+// Query returns a query builder for SourceType.
+func (c *SourceTypeClient) Query() *SourceTypeQuery {
+	return &SourceTypeQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a SourceType entity by its id.
+func (c *SourceTypeClient) Get(ctx context.Context, id pulid.PULID) (*SourceType, error) {
+	return c.Query().Where(sourcetype.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SourceTypeClient) GetX(ctx context.Context, id pulid.PULID) *SourceType {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySources queries the sources edge of a SourceType.
+func (c *SourceTypeClient) QuerySources(st *SourceType) *SourceQuery {
+	query := &SourceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := st.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sourcetype.Table, sourcetype.FieldID, id),
+			sqlgraph.To(source.Table, source.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, sourcetype.SourcesTable, sourcetype.SourcesColumn),
+		)
+		fromV = sqlgraph.Neighbors(st.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SourceTypeClient) Hooks() []Hook {
+	return c.hooks.SourceType
 }
 
 // StaffAccountClient is a client for the StaffAccount schema.
@@ -1553,7 +1940,7 @@ func (c *StaffAccountClient) QueryAuthType(sa *StaffAccount) *AuthTypeQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(staffaccount.Table, staffaccount.FieldID, id),
 			sqlgraph.To(authtype.Table, authtype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, staffaccount.AuthTypeTable, staffaccount.AuthTypeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, staffaccount.AuthTypeTable, staffaccount.AuthTypeColumn),
 		)
 		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
 		return fromV, nil
@@ -1659,7 +2046,7 @@ func (c *TransactionClient) QueryTransactionType(t *Transaction) *TransactionTyp
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transaction.Table, transaction.FieldID, id),
 			sqlgraph.To(transactiontype.Table, transactiontype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, transaction.TransactionTypeTable, transaction.TransactionTypeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, transaction.TransactionTypeTable, transaction.TransactionTypeColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -1675,7 +2062,7 @@ func (c *TransactionClient) QueryBaseAsset(t *Transaction) *AssetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transaction.Table, transaction.FieldID, id),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, transaction.BaseAssetTable, transaction.BaseAssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, transaction.BaseAssetTable, transaction.BaseAssetColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -1691,7 +2078,7 @@ func (c *TransactionClient) QueryQuoteAsset(t *Transaction) *AssetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transaction.Table, transaction.FieldID, id),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, transaction.QuoteAssetTable, transaction.QuoteAssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, transaction.QuoteAssetTable, transaction.QuoteAssetColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -1739,7 +2126,7 @@ func (c *TransactionClient) QueryBlockchain(t *Transaction) *BlockchainQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transaction.Table, transaction.FieldID, id),
 			sqlgraph.To(blockchain.Table, blockchain.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, transaction.BlockchainTable, transaction.BlockchainColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, transaction.BlockchainTable, transaction.BlockchainColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -1845,7 +2232,7 @@ func (c *TransactionTypeClient) QueryTransactions(tt *TransactionType) *Transact
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transactiontype.Table, transactiontype.FieldID, id),
 			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, transactiontype.TransactionsTable, transactiontype.TransactionsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, transactiontype.TransactionsTable, transactiontype.TransactionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(tt.driver.Dialect(), step)
 		return fromV, nil

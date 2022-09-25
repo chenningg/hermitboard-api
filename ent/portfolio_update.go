@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/account"
+	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
@@ -83,9 +84,9 @@ func (pu *PortfolioUpdate) SetNillableIsVisible(b *bool) *PortfolioUpdate {
 	return pu
 }
 
-// SetAccountID sets the "account" edge to the Account entity by ID.
-func (pu *PortfolioUpdate) SetAccountID(id pulid.PULID) *PortfolioUpdate {
-	pu.mutation.SetAccountID(id)
+// SetAccountID sets the "account_id" field.
+func (pu *PortfolioUpdate) SetAccountID(value pulid.PULID) *PortfolioUpdate {
+	pu.mutation.SetAccountID(value)
 	return pu
 }
 
@@ -107,6 +108,21 @@ func (pu *PortfolioUpdate) AddTransactions(t ...*Transaction) *PortfolioUpdate {
 		ids[i] = t[i].ID
 	}
 	return pu.AddTransactionIDs(ids...)
+}
+
+// AddConnectionIDs adds the "connections" edge to the Connection entity by IDs.
+func (pu *PortfolioUpdate) AddConnectionIDs(ids ...pulid.PULID) *PortfolioUpdate {
+	pu.mutation.AddConnectionIDs(ids...)
+	return pu
+}
+
+// AddConnections adds the "connections" edges to the Connection entity.
+func (pu *PortfolioUpdate) AddConnections(c ...*Connection) *PortfolioUpdate {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pu.AddConnectionIDs(ids...)
 }
 
 // Mutation returns the PortfolioMutation object of the builder.
@@ -139,6 +155,27 @@ func (pu *PortfolioUpdate) RemoveTransactions(t ...*Transaction) *PortfolioUpdat
 		ids[i] = t[i].ID
 	}
 	return pu.RemoveTransactionIDs(ids...)
+}
+
+// ClearConnections clears all "connections" edges to the Connection entity.
+func (pu *PortfolioUpdate) ClearConnections() *PortfolioUpdate {
+	pu.mutation.ClearConnections()
+	return pu
+}
+
+// RemoveConnectionIDs removes the "connections" edge to Connection entities by IDs.
+func (pu *PortfolioUpdate) RemoveConnectionIDs(ids ...pulid.PULID) *PortfolioUpdate {
+	pu.mutation.RemoveConnectionIDs(ids...)
+	return pu
+}
+
+// RemoveConnections removes "connections" edges to Connection entities.
+func (pu *PortfolioUpdate) RemoveConnections(c ...*Connection) *PortfolioUpdate {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pu.RemoveConnectionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -375,6 +412,60 @@ func (pu *PortfolioUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.ConnectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   portfolio.ConnectionsTable,
+			Columns: portfolio.ConnectionsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedConnectionsIDs(); len(nodes) > 0 && !pu.mutation.ConnectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   portfolio.ConnectionsTable,
+			Columns: portfolio.ConnectionsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.ConnectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   portfolio.ConnectionsTable,
+			Columns: portfolio.ConnectionsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{portfolio.Label}
@@ -446,9 +537,9 @@ func (puo *PortfolioUpdateOne) SetNillableIsVisible(b *bool) *PortfolioUpdateOne
 	return puo
 }
 
-// SetAccountID sets the "account" edge to the Account entity by ID.
-func (puo *PortfolioUpdateOne) SetAccountID(id pulid.PULID) *PortfolioUpdateOne {
-	puo.mutation.SetAccountID(id)
+// SetAccountID sets the "account_id" field.
+func (puo *PortfolioUpdateOne) SetAccountID(pu pulid.PULID) *PortfolioUpdateOne {
+	puo.mutation.SetAccountID(pu)
 	return puo
 }
 
@@ -470,6 +561,21 @@ func (puo *PortfolioUpdateOne) AddTransactions(t ...*Transaction) *PortfolioUpda
 		ids[i] = t[i].ID
 	}
 	return puo.AddTransactionIDs(ids...)
+}
+
+// AddConnectionIDs adds the "connections" edge to the Connection entity by IDs.
+func (puo *PortfolioUpdateOne) AddConnectionIDs(ids ...pulid.PULID) *PortfolioUpdateOne {
+	puo.mutation.AddConnectionIDs(ids...)
+	return puo
+}
+
+// AddConnections adds the "connections" edges to the Connection entity.
+func (puo *PortfolioUpdateOne) AddConnections(c ...*Connection) *PortfolioUpdateOne {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return puo.AddConnectionIDs(ids...)
 }
 
 // Mutation returns the PortfolioMutation object of the builder.
@@ -502,6 +608,27 @@ func (puo *PortfolioUpdateOne) RemoveTransactions(t ...*Transaction) *PortfolioU
 		ids[i] = t[i].ID
 	}
 	return puo.RemoveTransactionIDs(ids...)
+}
+
+// ClearConnections clears all "connections" edges to the Connection entity.
+func (puo *PortfolioUpdateOne) ClearConnections() *PortfolioUpdateOne {
+	puo.mutation.ClearConnections()
+	return puo
+}
+
+// RemoveConnectionIDs removes the "connections" edge to Connection entities by IDs.
+func (puo *PortfolioUpdateOne) RemoveConnectionIDs(ids ...pulid.PULID) *PortfolioUpdateOne {
+	puo.mutation.RemoveConnectionIDs(ids...)
+	return puo
+}
+
+// RemoveConnections removes "connections" edges to Connection entities.
+func (puo *PortfolioUpdateOne) RemoveConnections(c ...*Connection) *PortfolioUpdateOne {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return puo.RemoveConnectionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -760,6 +887,60 @@ func (puo *PortfolioUpdateOne) sqlSave(ctx context.Context) (_node *Portfolio, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: transaction.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.ConnectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   portfolio.ConnectionsTable,
+			Columns: portfolio.ConnectionsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedConnectionsIDs(); len(nodes) > 0 && !puo.mutation.ConnectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   portfolio.ConnectionsTable,
+			Columns: portfolio.ConnectionsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.ConnectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   portfolio.ConnectionsTable,
+			Columns: portfolio.ConnectionsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
 				},
 			},
 		}

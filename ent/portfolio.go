@@ -30,10 +30,11 @@ type Portfolio struct {
 	IsPublic bool `json:"is_public,omitempty"`
 	// Whether this portfolio is visible to the owner.
 	IsVisible bool `json:"is_visible,omitempty"`
+	// AccountID holds the value of the "account_id" field.
+	AccountID pulid.PULID `json:"account_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PortfolioQuery when eager-loading is set.
-	Edges              PortfolioEdges `json:"edges"`
-	account_portfolios *pulid.PULID
+	Edges PortfolioEdges `json:"edges"`
 }
 
 // PortfolioEdges holds the relations/edges for other nodes in the graph.
@@ -42,13 +43,16 @@ type PortfolioEdges struct {
 	Account *Account `json:"account,omitempty"`
 	// Transactions holds the value of the transactions edge.
 	Transactions []*Transaction `json:"transactions,omitempty"`
+	// Connections holds the value of the connections edge.
+	Connections []*Connection `json:"connections,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 	// totalCount holds the count of the edges above.
-	totalCount [2]map[string]int
+	totalCount [3]map[string]int
 
 	namedTransactions map[string][]*Transaction
+	namedConnections  map[string][]*Connection
 }
 
 // AccountOrErr returns the Account value or an error if the edge
@@ -73,12 +77,21 @@ func (e PortfolioEdges) TransactionsOrErr() ([]*Transaction, error) {
 	return nil, &NotLoadedError{edge: "transactions"}
 }
 
+// ConnectionsOrErr returns the Connections value or an error if the edge
+// was not loaded in eager-loading.
+func (e PortfolioEdges) ConnectionsOrErr() ([]*Connection, error) {
+	if e.loadedTypes[2] {
+		return e.Connections, nil
+	}
+	return nil, &NotLoadedError{edge: "connections"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Portfolio) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case portfolio.FieldID:
+		case portfolio.FieldID, portfolio.FieldAccountID:
 			values[i] = new(pulid.PULID)
 		case portfolio.FieldIsPublic, portfolio.FieldIsVisible:
 			values[i] = new(sql.NullBool)
@@ -86,8 +99,6 @@ func (*Portfolio) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case portfolio.FieldCreatedAt, portfolio.FieldUpdatedAt, portfolio.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case portfolio.ForeignKeys[0]: // account_portfolios
-			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Portfolio", columns[i])
 		}
@@ -146,12 +157,11 @@ func (po *Portfolio) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				po.IsVisible = value.Bool
 			}
-		case portfolio.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field account_portfolios", values[i])
-			} else if value.Valid {
-				po.account_portfolios = new(pulid.PULID)
-				*po.account_portfolios = *value.S.(*pulid.PULID)
+		case portfolio.FieldAccountID:
+			if value, ok := values[i].(*pulid.PULID); !ok {
+				return fmt.Errorf("unexpected type %T for field account_id", values[i])
+			} else if value != nil {
+				po.AccountID = *value
 			}
 		}
 	}
@@ -166,6 +176,11 @@ func (po *Portfolio) QueryAccount() *AccountQuery {
 // QueryTransactions queries the "transactions" edge of the Portfolio entity.
 func (po *Portfolio) QueryTransactions() *TransactionQuery {
 	return (&PortfolioClient{config: po.config}).QueryTransactions(po)
+}
+
+// QueryConnections queries the "connections" edge of the Portfolio entity.
+func (po *Portfolio) QueryConnections() *ConnectionQuery {
+	return (&PortfolioClient{config: po.config}).QueryConnections(po)
 }
 
 // Update returns a builder for updating this Portfolio.
@@ -210,6 +225,9 @@ func (po *Portfolio) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_visible=")
 	builder.WriteString(fmt.Sprintf("%v", po.IsVisible))
+	builder.WriteString(", ")
+	builder.WriteString("account_id=")
+	builder.WriteString(fmt.Sprintf("%v", po.AccountID))
 	builder.WriteByte(')')
 	return builder.String()
 }
@@ -235,6 +253,30 @@ func (po *Portfolio) appendNamedTransactions(name string, edges ...*Transaction)
 		po.Edges.namedTransactions[name] = []*Transaction{}
 	} else {
 		po.Edges.namedTransactions[name] = append(po.Edges.namedTransactions[name], edges...)
+	}
+}
+
+// NamedConnections returns the Connections named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (po *Portfolio) NamedConnections(name string) ([]*Connection, error) {
+	if po.Edges.namedConnections == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := po.Edges.namedConnections[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (po *Portfolio) appendNamedConnections(name string, edges ...*Connection) {
+	if po.Edges.namedConnections == nil {
+		po.Edges.namedConnections = make(map[string][]*Connection)
+	}
+	if len(edges) == 0 {
+		po.Edges.namedConnections[name] = []*Connection{}
+	} else {
+		po.Edges.namedConnections[name] = append(po.Edges.namedConnections[name], edges...)
 	}
 }
 

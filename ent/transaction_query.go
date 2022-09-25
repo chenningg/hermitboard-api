@@ -35,7 +35,6 @@ type TransactionQuery struct {
 	withPortfolio       *PortfolioQuery
 	withExchange        *ExchangeQuery
 	withBlockchain      *BlockchainQuery
-	withFKs             bool
 	modifiers           []func(*sql.Selector)
 	loadTotal           []func(context.Context, []*Transaction) error
 	// intermediate query (i.e. traversal path).
@@ -88,7 +87,7 @@ func (tq *TransactionQuery) QueryTransactionType() *TransactionTypeQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transaction.Table, transaction.FieldID, selector),
 			sqlgraph.To(transactiontype.Table, transactiontype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, transaction.TransactionTypeTable, transaction.TransactionTypeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, transaction.TransactionTypeTable, transaction.TransactionTypeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -110,7 +109,7 @@ func (tq *TransactionQuery) QueryBaseAsset() *AssetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transaction.Table, transaction.FieldID, selector),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, transaction.BaseAssetTable, transaction.BaseAssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, transaction.BaseAssetTable, transaction.BaseAssetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -132,7 +131,7 @@ func (tq *TransactionQuery) QueryQuoteAsset() *AssetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transaction.Table, transaction.FieldID, selector),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, transaction.QuoteAssetTable, transaction.QuoteAssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, transaction.QuoteAssetTable, transaction.QuoteAssetColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -198,7 +197,7 @@ func (tq *TransactionQuery) QueryBlockchain() *BlockchainQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transaction.Table, transaction.FieldID, selector),
 			sqlgraph.To(blockchain.Table, blockchain.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, transaction.BlockchainTable, transaction.BlockchainColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, transaction.BlockchainTable, transaction.BlockchainColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -533,7 +532,6 @@ func (tq *TransactionQuery) prepareQuery(ctx context.Context) error {
 func (tq *TransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Transaction, error) {
 	var (
 		nodes       = []*Transaction{}
-		withFKs     = tq.withFKs
 		_spec       = tq.querySpec()
 		loadedTypes = [6]bool{
 			tq.withTransactionType != nil,
@@ -544,12 +542,6 @@ func (tq *TransactionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 			tq.withBlockchain != nil,
 		}
 	)
-	if tq.withTransactionType != nil || tq.withBaseAsset != nil || tq.withQuoteAsset != nil || tq.withPortfolio != nil || tq.withExchange != nil || tq.withBlockchain != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, transaction.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Transaction).scanValues(nil, columns)
 	}
@@ -619,10 +611,7 @@ func (tq *TransactionQuery) loadTransactionType(ctx context.Context, query *Tran
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Transaction)
 	for i := range nodes {
-		if nodes[i].transaction_transaction_type == nil {
-			continue
-		}
-		fk := *nodes[i].transaction_transaction_type
+		fk := nodes[i].TransactionTypeID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -636,7 +625,7 @@ func (tq *TransactionQuery) loadTransactionType(ctx context.Context, query *Tran
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "transaction_transaction_type" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "transaction_type_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -648,10 +637,7 @@ func (tq *TransactionQuery) loadBaseAsset(ctx context.Context, query *AssetQuery
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Transaction)
 	for i := range nodes {
-		if nodes[i].transaction_base_asset == nil {
-			continue
-		}
-		fk := *nodes[i].transaction_base_asset
+		fk := nodes[i].BaseAssetID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -665,7 +651,7 @@ func (tq *TransactionQuery) loadBaseAsset(ctx context.Context, query *AssetQuery
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "transaction_base_asset" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "base_asset_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -677,10 +663,10 @@ func (tq *TransactionQuery) loadQuoteAsset(ctx context.Context, query *AssetQuer
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Transaction)
 	for i := range nodes {
-		if nodes[i].transaction_quote_asset == nil {
+		if nodes[i].QuoteAssetID == nil {
 			continue
 		}
-		fk := *nodes[i].transaction_quote_asset
+		fk := *nodes[i].QuoteAssetID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -694,7 +680,7 @@ func (tq *TransactionQuery) loadQuoteAsset(ctx context.Context, query *AssetQuer
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "transaction_quote_asset" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "quote_asset_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -706,10 +692,7 @@ func (tq *TransactionQuery) loadPortfolio(ctx context.Context, query *PortfolioQ
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Transaction)
 	for i := range nodes {
-		if nodes[i].portfolio_transactions == nil {
-			continue
-		}
-		fk := *nodes[i].portfolio_transactions
+		fk := nodes[i].PortfolioID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -723,7 +706,7 @@ func (tq *TransactionQuery) loadPortfolio(ctx context.Context, query *PortfolioQ
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "portfolio_transactions" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "portfolio_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -735,10 +718,7 @@ func (tq *TransactionQuery) loadExchange(ctx context.Context, query *ExchangeQue
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Transaction)
 	for i := range nodes {
-		if nodes[i].exchange_transactions == nil {
-			continue
-		}
-		fk := *nodes[i].exchange_transactions
+		fk := nodes[i].ExchangeID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -752,7 +732,7 @@ func (tq *TransactionQuery) loadExchange(ctx context.Context, query *ExchangeQue
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "exchange_transactions" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "exchange_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -764,10 +744,10 @@ func (tq *TransactionQuery) loadBlockchain(ctx context.Context, query *Blockchai
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Transaction)
 	for i := range nodes {
-		if nodes[i].transaction_blockchain == nil {
+		if nodes[i].BlockchainID == nil {
 			continue
 		}
-		fk := *nodes[i].transaction_blockchain
+		fk := *nodes[i].BlockchainID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -781,7 +761,7 @@ func (tq *TransactionQuery) loadBlockchain(ctx context.Context, query *Blockchai
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "transaction_blockchain" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "blockchain_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

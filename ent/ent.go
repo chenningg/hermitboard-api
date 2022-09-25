@@ -16,10 +16,13 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
+	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
+	"github.com/chenningg/hermitboard-api/ent/source"
+	"github.com/chenningg/hermitboard-api/ent/sourcetype"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
@@ -49,10 +52,13 @@ func columnChecker(table string) func(string) error {
 		authrole.Table:        authrole.ValidColumn,
 		authtype.Table:        authtype.ValidColumn,
 		blockchain.Table:      blockchain.ValidColumn,
+		connection.Table:      connection.ValidColumn,
 		cryptocurrency.Table:  cryptocurrency.ValidColumn,
 		dailyassetprice.Table: dailyassetprice.ValidColumn,
 		exchange.Table:        exchange.ValidColumn,
 		portfolio.Table:       portfolio.ValidColumn,
+		source.Table:          source.ValidColumn,
+		sourcetype.Table:      sourcetype.ValidColumn,
 		staffaccount.Table:    staffaccount.ValidColumn,
 		transaction.Table:     transaction.ValidColumn,
 		transactiontype.Table: transactiontype.ValidColumn,

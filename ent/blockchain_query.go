@@ -105,7 +105,7 @@ func (bq *BlockchainQuery) QueryTransactions() *TransactionQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(blockchain.Table, blockchain.FieldID, selector),
 			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, blockchain.TransactionsTable, blockchain.TransactionsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, blockchain.TransactionsTable, blockchain.TransactionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
 		return fromU, nil
@@ -523,7 +523,6 @@ func (bq *BlockchainQuery) loadTransactions(ctx context.Context, query *Transact
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	query.Where(predicate.Transaction(func(s *sql.Selector) {
 		s.Where(sql.InValues(blockchain.TransactionsColumn, fks...))
 	}))
@@ -532,13 +531,13 @@ func (bq *BlockchainQuery) loadTransactions(ctx context.Context, query *Transact
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.transaction_blockchain
+		fk := n.BlockchainID
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "transaction_blockchain" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "blockchain_id" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "transaction_blockchain" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "blockchain_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

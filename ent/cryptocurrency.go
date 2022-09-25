@@ -30,10 +30,11 @@ type Cryptocurrency struct {
 	Icon *string `json:"icon,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// AssetID holds the value of the "asset_id" field.
+	AssetID pulid.PULID `json:"asset_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CryptocurrencyQuery when eager-loading is set.
-	Edges                CryptocurrencyEdges `json:"edges"`
-	asset_cryptocurrency *pulid.PULID
+	Edges CryptocurrencyEdges `json:"edges"`
 }
 
 // CryptocurrencyEdges holds the relations/edges for other nodes in the graph.
@@ -78,14 +79,12 @@ func (*Cryptocurrency) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case cryptocurrency.FieldID:
+		case cryptocurrency.FieldID, cryptocurrency.FieldAssetID:
 			values[i] = new(pulid.PULID)
 		case cryptocurrency.FieldSymbol, cryptocurrency.FieldIcon, cryptocurrency.FieldName:
 			values[i] = new(sql.NullString)
 		case cryptocurrency.FieldCreatedAt, cryptocurrency.FieldUpdatedAt, cryptocurrency.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case cryptocurrency.ForeignKeys[0]: // asset_cryptocurrency
-			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Cryptocurrency", columns[i])
 		}
@@ -145,12 +144,11 @@ func (c *Cryptocurrency) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.Name = value.String
 			}
-		case cryptocurrency.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field asset_cryptocurrency", values[i])
-			} else if value.Valid {
-				c.asset_cryptocurrency = new(pulid.PULID)
-				*c.asset_cryptocurrency = *value.S.(*pulid.PULID)
+		case cryptocurrency.FieldAssetID:
+			if value, ok := values[i].(*pulid.PULID); !ok {
+				return fmt.Errorf("unexpected type %T for field asset_id", values[i])
+			} else if value != nil {
+				c.AssetID = *value
 			}
 		}
 	}
@@ -211,6 +209,9 @@ func (c *Cryptocurrency) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(c.Name)
+	builder.WriteString(", ")
+	builder.WriteString("asset_id=")
+	builder.WriteString(fmt.Sprintf("%v", c.AssetID))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -31,6 +31,8 @@ const (
 	FieldClose = "close"
 	// FieldAdjustedClose holds the string denoting the adjusted_close field in the database.
 	FieldAdjustedClose = "adjusted_close"
+	// FieldAssetID holds the string denoting the asset_id field in the database.
+	FieldAssetID = "asset_id"
 	// EdgeAsset holds the string denoting the asset edge name in mutations.
 	EdgeAsset = "asset"
 	// Table holds the table name of the dailyassetprice in the database.
@@ -41,7 +43,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "asset" package.
 	AssetInverseTable = "assets"
 	// AssetColumn is the table column denoting the asset relation/edge.
-	AssetColumn = "asset_daily_asset_prices"
+	AssetColumn = "asset_id"
 )
 
 // Columns holds all SQL columns for dailyassetprice fields.
@@ -56,23 +58,13 @@ var Columns = []string{
 	FieldLow,
 	FieldClose,
 	FieldAdjustedClose,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "daily_asset_prices"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"asset_daily_asset_prices",
+	FieldAssetID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}

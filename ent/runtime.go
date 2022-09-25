@@ -11,11 +11,14 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
+	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
 	"github.com/chenningg/hermitboard-api/ent/exchange"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/schema"
+	"github.com/chenningg/hermitboard-api/ent/source"
+	"github.com/chenningg/hermitboard-api/ent/sourcetype"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
@@ -256,6 +259,57 @@ func init() {
 	blockchainDescID := blockchainMixinFields0[0].Descriptor()
 	// blockchain.DefaultID holds the default value on creation for the id field.
 	blockchain.DefaultID = blockchainDescID.Default.(func() pulid.PULID)
+	connectionMixin := schema.Connection{}.Mixin()
+	connectionMixinFields0 := connectionMixin[0].Fields()
+	_ = connectionMixinFields0
+	connectionMixinFields1 := connectionMixin[1].Fields()
+	_ = connectionMixinFields1
+	connectionMixinFields2 := connectionMixin[2].Fields()
+	_ = connectionMixinFields2
+	connectionMixinFields3 := connectionMixin[3].Fields()
+	_ = connectionMixinFields3
+	connectionFields := schema.Connection{}.Fields()
+	_ = connectionFields
+	// connectionDescCreatedAt is the schema descriptor for created_at field.
+	connectionDescCreatedAt := connectionMixinFields1[0].Descriptor()
+	// connection.DefaultCreatedAt holds the default value on creation for the created_at field.
+	connection.DefaultCreatedAt = connectionDescCreatedAt.Default.(func() time.Time)
+	// connectionDescUpdatedAt is the schema descriptor for updated_at field.
+	connectionDescUpdatedAt := connectionMixinFields2[0].Descriptor()
+	// connection.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	connection.DefaultUpdatedAt = connectionDescUpdatedAt.Default.(func() time.Time)
+	// connection.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	connection.UpdateDefaultUpdatedAt = connectionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// connectionDescDeletedAt is the schema descriptor for deleted_at field.
+	connectionDescDeletedAt := connectionMixinFields3[0].Descriptor()
+	// connection.UpdateDefaultDeletedAt holds the default value on update for the deleted_at field.
+	connection.UpdateDefaultDeletedAt = connectionDescDeletedAt.UpdateDefault.(func() time.Time)
+	// connectionDescName is the schema descriptor for name field.
+	connectionDescName := connectionFields[0].Descriptor()
+	// connection.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	connection.NameValidator = func() func(string) error {
+		validators := connectionDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// connectionDescAccessToken is the schema descriptor for access_token field.
+	connectionDescAccessToken := connectionFields[1].Descriptor()
+	// connection.AccessTokenValidator is a validator for the "access_token" field. It is called by the builders before save.
+	connection.AccessTokenValidator = connectionDescAccessToken.Validators[0].(func(string) error)
+	// connectionDescID is the schema descriptor for id field.
+	connectionDescID := connectionMixinFields0[0].Descriptor()
+	// connection.DefaultID holds the default value on creation for the id field.
+	connection.DefaultID = connectionDescID.Default.(func() pulid.PULID)
 	cryptocurrencyMixin := schema.Cryptocurrency{}.Mixin()
 	cryptocurrencyMixinFields0 := cryptocurrencyMixin[0].Fields()
 	_ = cryptocurrencyMixinFields0
@@ -412,6 +466,76 @@ func init() {
 	portfolioDescID := portfolioMixinFields0[0].Descriptor()
 	// portfolio.DefaultID holds the default value on creation for the id field.
 	portfolio.DefaultID = portfolioDescID.Default.(func() pulid.PULID)
+	sourceMixin := schema.Source{}.Mixin()
+	sourceMixinFields0 := sourceMixin[0].Fields()
+	_ = sourceMixinFields0
+	sourceMixinFields1 := sourceMixin[1].Fields()
+	_ = sourceMixinFields1
+	sourceMixinFields2 := sourceMixin[2].Fields()
+	_ = sourceMixinFields2
+	sourceMixinFields3 := sourceMixin[3].Fields()
+	_ = sourceMixinFields3
+	sourceFields := schema.Source{}.Fields()
+	_ = sourceFields
+	// sourceDescCreatedAt is the schema descriptor for created_at field.
+	sourceDescCreatedAt := sourceMixinFields1[0].Descriptor()
+	// source.DefaultCreatedAt holds the default value on creation for the created_at field.
+	source.DefaultCreatedAt = sourceDescCreatedAt.Default.(func() time.Time)
+	// sourceDescUpdatedAt is the schema descriptor for updated_at field.
+	sourceDescUpdatedAt := sourceMixinFields2[0].Descriptor()
+	// source.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	source.DefaultUpdatedAt = sourceDescUpdatedAt.Default.(func() time.Time)
+	// source.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	source.UpdateDefaultUpdatedAt = sourceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// sourceDescDeletedAt is the schema descriptor for deleted_at field.
+	sourceDescDeletedAt := sourceMixinFields3[0].Descriptor()
+	// source.UpdateDefaultDeletedAt holds the default value on update for the deleted_at field.
+	source.UpdateDefaultDeletedAt = sourceDescDeletedAt.UpdateDefault.(func() time.Time)
+	// sourceDescName is the schema descriptor for name field.
+	sourceDescName := sourceFields[0].Descriptor()
+	// source.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	source.NameValidator = sourceDescName.Validators[0].(func(string) error)
+	// sourceDescIcon is the schema descriptor for icon field.
+	sourceDescIcon := sourceFields[1].Descriptor()
+	// source.IconValidator is a validator for the "icon" field. It is called by the builders before save.
+	source.IconValidator = sourceDescIcon.Validators[0].(func(string) error)
+	// sourceDescID is the schema descriptor for id field.
+	sourceDescID := sourceMixinFields0[0].Descriptor()
+	// source.DefaultID holds the default value on creation for the id field.
+	source.DefaultID = sourceDescID.Default.(func() pulid.PULID)
+	sourcetypeMixin := schema.SourceType{}.Mixin()
+	sourcetypeMixinFields0 := sourcetypeMixin[0].Fields()
+	_ = sourcetypeMixinFields0
+	sourcetypeMixinFields1 := sourcetypeMixin[1].Fields()
+	_ = sourcetypeMixinFields1
+	sourcetypeMixinFields2 := sourcetypeMixin[2].Fields()
+	_ = sourcetypeMixinFields2
+	sourcetypeMixinFields3 := sourcetypeMixin[3].Fields()
+	_ = sourcetypeMixinFields3
+	sourcetypeFields := schema.SourceType{}.Fields()
+	_ = sourcetypeFields
+	// sourcetypeDescCreatedAt is the schema descriptor for created_at field.
+	sourcetypeDescCreatedAt := sourcetypeMixinFields1[0].Descriptor()
+	// sourcetype.DefaultCreatedAt holds the default value on creation for the created_at field.
+	sourcetype.DefaultCreatedAt = sourcetypeDescCreatedAt.Default.(func() time.Time)
+	// sourcetypeDescUpdatedAt is the schema descriptor for updated_at field.
+	sourcetypeDescUpdatedAt := sourcetypeMixinFields2[0].Descriptor()
+	// sourcetype.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	sourcetype.DefaultUpdatedAt = sourcetypeDescUpdatedAt.Default.(func() time.Time)
+	// sourcetype.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	sourcetype.UpdateDefaultUpdatedAt = sourcetypeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// sourcetypeDescDeletedAt is the schema descriptor for deleted_at field.
+	sourcetypeDescDeletedAt := sourcetypeMixinFields3[0].Descriptor()
+	// sourcetype.UpdateDefaultDeletedAt holds the default value on update for the deleted_at field.
+	sourcetype.UpdateDefaultDeletedAt = sourcetypeDescDeletedAt.UpdateDefault.(func() time.Time)
+	// sourcetypeDescDescription is the schema descriptor for description field.
+	sourcetypeDescDescription := sourcetypeFields[1].Descriptor()
+	// sourcetype.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	sourcetype.DescriptionValidator = sourcetypeDescDescription.Validators[0].(func(string) error)
+	// sourcetypeDescID is the schema descriptor for id field.
+	sourcetypeDescID := sourcetypeMixinFields0[0].Descriptor()
+	// sourcetype.DefaultID holds the default value on creation for the id field.
+	sourcetype.DefaultID = sourcetypeDescID.Default.(func() pulid.PULID)
 	staffaccountMixin := schema.StaffAccount{}.Mixin()
 	staffaccountMixinFields0 := staffaccountMixin[0].Fields()
 	_ = staffaccountMixinFields0

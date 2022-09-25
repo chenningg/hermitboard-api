@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/account"
+	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -99,6 +100,12 @@ func (pc *PortfolioCreate) SetNillableIsVisible(b *bool) *PortfolioCreate {
 	return pc
 }
 
+// SetAccountID sets the "account_id" field.
+func (pc *PortfolioCreate) SetAccountID(pu pulid.PULID) *PortfolioCreate {
+	pc.mutation.SetAccountID(pu)
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *PortfolioCreate) SetID(pu pulid.PULID) *PortfolioCreate {
 	pc.mutation.SetID(pu)
@@ -110,12 +117,6 @@ func (pc *PortfolioCreate) SetNillableID(pu *pulid.PULID) *PortfolioCreate {
 	if pu != nil {
 		pc.SetID(*pu)
 	}
-	return pc
-}
-
-// SetAccountID sets the "account" edge to the Account entity by ID.
-func (pc *PortfolioCreate) SetAccountID(id pulid.PULID) *PortfolioCreate {
-	pc.mutation.SetAccountID(id)
 	return pc
 }
 
@@ -137,6 +138,21 @@ func (pc *PortfolioCreate) AddTransactions(t ...*Transaction) *PortfolioCreate {
 		ids[i] = t[i].ID
 	}
 	return pc.AddTransactionIDs(ids...)
+}
+
+// AddConnectionIDs adds the "connections" edge to the Connection entity by IDs.
+func (pc *PortfolioCreate) AddConnectionIDs(ids ...pulid.PULID) *PortfolioCreate {
+	pc.mutation.AddConnectionIDs(ids...)
+	return pc
+}
+
+// AddConnections adds the "connections" edges to the Connection entity.
+func (pc *PortfolioCreate) AddConnections(c ...*Connection) *PortfolioCreate {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pc.AddConnectionIDs(ids...)
 }
 
 // Mutation returns the PortfolioMutation object of the builder.
@@ -261,6 +277,9 @@ func (pc *PortfolioCreate) check() error {
 		return &ValidationError{Name: "is_visible", err: errors.New(`ent: missing required field "Portfolio.is_visible"`)}
 	}
 	if _, ok := pc.mutation.AccountID(); !ok {
+		return &ValidationError{Name: "account_id", err: errors.New(`ent: missing required field "Portfolio.account_id"`)}
+	}
+	if _, ok := pc.mutation.AccountID(); !ok {
 		return &ValidationError{Name: "account", err: errors.New(`ent: missing required edge "Portfolio.account"`)}
 	}
 	return nil
@@ -364,7 +383,7 @@ func (pc *PortfolioCreate) createSpec() (*Portfolio, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.account_portfolios = &nodes[0]
+		_node.AccountID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pc.mutation.TransactionsIDs(); len(nodes) > 0 {
@@ -378,6 +397,25 @@ func (pc *PortfolioCreate) createSpec() (*Portfolio, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: transaction.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.ConnectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   portfolio.ConnectionsTable,
+			Columns: portfolio.ConnectionsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
 				},
 			},
 		}

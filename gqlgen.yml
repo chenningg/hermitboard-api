@@ -51,6 +51,7 @@ autobind:
   - github.com/chenningg/hermitboard-api/ent/authrole
   - github.com/chenningg/hermitboard-api/ent/authtype
   - github.com/chenningg/hermitboard-api/ent/transactiontype
+  - github.com/chenningg/hermitboard-api/ent/sourcetype
 
 # This section declares type mapping between the GraphQL and go type systems
 #

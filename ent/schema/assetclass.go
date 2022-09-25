@@ -51,8 +51,7 @@ func (AssetClass) Fields() []ent.Field {
 // Edges of the AssetClass.
 func (AssetClass) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("assets", Asset.Type).
-			Ref("asset_class").
+		edge.To("assets", Asset.Type).
 			Annotations(entgql.MapsTo("assets")),
 	}
 }

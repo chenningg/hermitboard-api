@@ -59,6 +59,18 @@ func (a *AccountQuery) collectField(ctx context.Context, op *graphql.OperationCo
 				return err
 			}
 			a.withAuthType = query
+		case "connections":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &ConnectionQuery{config: a.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			a.WithNamedConnections(alias, func(wq *ConnectionQuery) {
+				*wq = *query
+			})
 		}
 	}
 	return nil
@@ -598,6 +610,97 @@ func newBlockchainPaginateArgs(rv map[string]interface{}) *blockchainPaginateArg
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (c *ConnectionQuery) CollectFields(ctx context.Context, satisfies ...string) (*ConnectionQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return c, nil
+	}
+	if err := c.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
+func (c *ConnectionQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
+		switch field.Name {
+		case "account":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &AccountQuery{config: c.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			c.withAccount = query
+		case "portfolios":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &PortfolioQuery{config: c.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			c.WithNamedPortfolios(alias, func(wq *PortfolioQuery) {
+				*wq = *query
+			})
+		}
+	}
+	return nil
+}
+
+type connectionPaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []ConnectionPaginateOption
+}
+
+func newConnectionPaginateArgs(rv map[string]interface{}) *connectionPaginateArgs {
+	args := &connectionPaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &ConnectionOrder{Field: &ConnectionOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithConnectionOrder(order))
+			}
+		case *ConnectionOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithConnectionOrder(v))
+			}
+		}
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (c *CryptocurrencyQuery) CollectFields(ctx context.Context, satisfies ...string) (*CryptocurrencyQuery, error) {
 	fc := graphql.GetFieldContext(ctx)
 	if fc == nil {
@@ -886,6 +989,18 @@ func (po *PortfolioQuery) collectField(ctx context.Context, op *graphql.Operatio
 			po.WithNamedTransactions(alias, func(wq *TransactionQuery) {
 				*wq = *query
 			})
+		case "connections":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &ConnectionQuery{config: po.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			po.WithNamedConnections(alias, func(wq *ConnectionQuery) {
+				*wq = *query
+			})
 		}
 	}
 	return nil
@@ -933,6 +1048,166 @@ func newPortfolioPaginateArgs(rv map[string]interface{}) *portfolioPaginateArgs 
 		case *PortfolioOrder:
 			if v != nil {
 				args.opts = append(args.opts, WithPortfolioOrder(v))
+			}
+		}
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (s *SourceQuery) CollectFields(ctx context.Context, satisfies ...string) (*SourceQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return s, nil
+	}
+	if err := s.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return s, nil
+}
+
+func (s *SourceQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
+		switch field.Name {
+		case "sourceType":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &SourceTypeQuery{config: s.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			s.withSourceType = query
+		}
+	}
+	return nil
+}
+
+type sourcePaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []SourcePaginateOption
+}
+
+func newSourcePaginateArgs(rv map[string]interface{}) *sourcePaginateArgs {
+	args := &sourcePaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &SourceOrder{Field: &SourceOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithSourceOrder(order))
+			}
+		case *SourceOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithSourceOrder(v))
+			}
+		}
+	}
+	return args
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (st *SourceTypeQuery) CollectFields(ctx context.Context, satisfies ...string) (*SourceTypeQuery, error) {
+	fc := graphql.GetFieldContext(ctx)
+	if fc == nil {
+		return st, nil
+	}
+	if err := st.collectField(ctx, graphql.GetOperationContext(ctx), fc.Field, nil, satisfies...); err != nil {
+		return nil, err
+	}
+	return st, nil
+}
+
+func (st *SourceTypeQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
+	path = append([]string(nil), path...)
+	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
+		switch field.Name {
+		case "sources":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &SourceQuery{config: st.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			st.WithNamedSources(alias, func(wq *SourceQuery) {
+				*wq = *query
+			})
+		}
+	}
+	return nil
+}
+
+type sourcetypePaginateArgs struct {
+	first, last   *int
+	after, before *Cursor
+	opts          []SourceTypePaginateOption
+}
+
+func newSourceTypePaginateArgs(rv map[string]interface{}) *sourcetypePaginateArgs {
+	args := &sourcetypePaginateArgs{}
+	if rv == nil {
+		return args
+	}
+	if v := rv[firstField]; v != nil {
+		args.first = v.(*int)
+	}
+	if v := rv[lastField]; v != nil {
+		args.last = v.(*int)
+	}
+	if v := rv[afterField]; v != nil {
+		args.after = v.(*Cursor)
+	}
+	if v := rv[beforeField]; v != nil {
+		args.before = v.(*Cursor)
+	}
+	if v, ok := rv[orderByField]; ok {
+		switch v := v.(type) {
+		case map[string]interface{}:
+			var (
+				err1, err2 error
+				order      = &SourceTypeOrder{Field: &SourceTypeOrderField{}}
+			)
+			if d, ok := v[directionField]; ok {
+				err1 = order.Direction.UnmarshalGQL(d)
+			}
+			if f, ok := v[fieldField]; ok {
+				err2 = order.Field.UnmarshalGQL(f)
+			}
+			if err1 == nil && err2 == nil {
+				args.opts = append(args.opts, WithSourceTypeOrder(order))
+			}
+		case *SourceTypeOrder:
+			if v != nil {
+				args.opts = append(args.opts, WithSourceTypeOrder(v))
 			}
 		}
 	}

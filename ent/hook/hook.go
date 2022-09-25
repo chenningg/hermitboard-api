@@ -87,6 +87,19 @@ func (f BlockchainFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The ConnectionFunc type is an adapter to allow the use of ordinary
+// function as Connection mutator.
+type ConnectionFunc func(context.Context, *ent.ConnectionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ConnectionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ConnectionMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ConnectionMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The CryptocurrencyFunc type is an adapter to allow the use of ordinary
 // function as Cryptocurrency mutator.
 type CryptocurrencyFunc func(context.Context, *ent.CryptocurrencyMutation) (ent.Value, error)
@@ -135,6 +148,32 @@ func (f PortfolioFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	mv, ok := m.(*ent.PortfolioMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PortfolioMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The SourceFunc type is an adapter to allow the use of ordinary
+// function as Source mutator.
+type SourceFunc func(context.Context, *ent.SourceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SourceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.SourceMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SourceMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The SourceTypeFunc type is an adapter to allow the use of ordinary
+// function as SourceType mutator.
+type SourceTypeFunc func(context.Context, *ent.SourceTypeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SourceTypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.SourceTypeMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SourceTypeMutation", m)
 	}
 	return f(ctx, mv)
 }

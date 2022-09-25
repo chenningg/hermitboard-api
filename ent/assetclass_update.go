@@ -264,7 +264,7 @@ func (acu *AssetClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if acu.mutation.AssetsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   assetclass.AssetsTable,
 			Columns: []string{assetclass.AssetsColumn},
 			Bidi:    false,
@@ -280,7 +280,7 @@ func (acu *AssetClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := acu.mutation.RemovedAssetsIDs(); len(nodes) > 0 && !acu.mutation.AssetsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   assetclass.AssetsTable,
 			Columns: []string{assetclass.AssetsColumn},
 			Bidi:    false,
@@ -299,7 +299,7 @@ func (acu *AssetClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := acu.mutation.AssetsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   assetclass.AssetsTable,
 			Columns: []string{assetclass.AssetsColumn},
 			Bidi:    false,
@@ -598,7 +598,7 @@ func (acuo *AssetClassUpdateOne) sqlSave(ctx context.Context) (_node *AssetClass
 	if acuo.mutation.AssetsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   assetclass.AssetsTable,
 			Columns: []string{assetclass.AssetsColumn},
 			Bidi:    false,
@@ -614,7 +614,7 @@ func (acuo *AssetClassUpdateOne) sqlSave(ctx context.Context) (_node *AssetClass
 	if nodes := acuo.mutation.RemovedAssetsIDs(); len(nodes) > 0 && !acuo.mutation.AssetsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   assetclass.AssetsTable,
 			Columns: []string{assetclass.AssetsColumn},
 			Bidi:    false,
@@ -633,7 +633,7 @@ func (acuo *AssetClassUpdateOne) sqlSave(ctx context.Context) (_node *AssetClass
 	if nodes := acuo.mutation.AssetsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   assetclass.AssetsTable,
 			Columns: []string{assetclass.AssetsColumn},
 			Bidi:    false,

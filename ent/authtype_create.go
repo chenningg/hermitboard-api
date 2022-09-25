@@ -320,7 +320,7 @@ func (atc *AuthTypeCreate) createSpec() (*AuthType, *sqlgraph.CreateSpec) {
 	if nodes := atc.mutation.AccountsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.AccountsTable,
 			Columns: []string{authtype.AccountsColumn},
 			Bidi:    false,
@@ -339,7 +339,7 @@ func (atc *AuthTypeCreate) createSpec() (*AuthType, *sqlgraph.CreateSpec) {
 	if nodes := atc.mutation.StaffAccountsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.StaffAccountsTable,
 			Columns: []string{authtype.StaffAccountsColumn},
 			Bidi:    false,

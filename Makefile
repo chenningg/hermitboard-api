@@ -92,7 +92,7 @@ install-gqlgen:
 
 .PHONY: gqlgen-gen
 gqlgen: install-gqlgen
-	go run github.com/99designs/gqlgen generate
+	go generate ./graph
 
 # ===================================
 # Server

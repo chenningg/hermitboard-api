@@ -51,9 +51,9 @@ func (au *AssetUpdate) ClearDeletedAt() *AssetUpdate {
 	return au
 }
 
-// SetAssetClassID sets the "asset_class" edge to the AssetClass entity by ID.
-func (au *AssetUpdate) SetAssetClassID(id pulid.PULID) *AssetUpdate {
-	au.mutation.SetAssetClassID(id)
+// SetAssetClassID sets the "asset_class_id" field.
+func (au *AssetUpdate) SetAssetClassID(pu pulid.PULID) *AssetUpdate {
+	au.mutation.SetAssetClassID(pu)
 	return au
 }
 
@@ -328,7 +328,7 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if au.mutation.AssetClassCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   asset.AssetClassTable,
 			Columns: []string{asset.AssetClassColumn},
 			Bidi:    false,
@@ -344,7 +344,7 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := au.mutation.AssetClassIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   asset.AssetClassTable,
 			Columns: []string{asset.AssetClassColumn},
 			Bidi:    false,
@@ -398,7 +398,7 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if au.mutation.TransactionBasesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.TransactionBasesTable,
 			Columns: []string{asset.TransactionBasesColumn},
 			Bidi:    false,
@@ -414,7 +414,7 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := au.mutation.RemovedTransactionBasesIDs(); len(nodes) > 0 && !au.mutation.TransactionBasesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.TransactionBasesTable,
 			Columns: []string{asset.TransactionBasesColumn},
 			Bidi:    false,
@@ -433,7 +433,7 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := au.mutation.TransactionBasesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.TransactionBasesTable,
 			Columns: []string{asset.TransactionBasesColumn},
 			Bidi:    false,
@@ -452,7 +452,7 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if au.mutation.TransactionQuotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.TransactionQuotesTable,
 			Columns: []string{asset.TransactionQuotesColumn},
 			Bidi:    false,
@@ -468,7 +468,7 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := au.mutation.RemovedTransactionQuotesIDs(); len(nodes) > 0 && !au.mutation.TransactionQuotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.TransactionQuotesTable,
 			Columns: []string{asset.TransactionQuotesColumn},
 			Bidi:    false,
@@ -487,7 +487,7 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := au.mutation.TransactionQuotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.TransactionQuotesTable,
 			Columns: []string{asset.TransactionQuotesColumn},
 			Bidi:    false,
@@ -594,9 +594,9 @@ func (auo *AssetUpdateOne) ClearDeletedAt() *AssetUpdateOne {
 	return auo
 }
 
-// SetAssetClassID sets the "asset_class" edge to the AssetClass entity by ID.
-func (auo *AssetUpdateOne) SetAssetClassID(id pulid.PULID) *AssetUpdateOne {
-	auo.mutation.SetAssetClassID(id)
+// SetAssetClassID sets the "asset_class_id" field.
+func (auo *AssetUpdateOne) SetAssetClassID(pu pulid.PULID) *AssetUpdateOne {
+	auo.mutation.SetAssetClassID(pu)
 	return auo
 }
 
@@ -901,7 +901,7 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	if auo.mutation.AssetClassCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   asset.AssetClassTable,
 			Columns: []string{asset.AssetClassColumn},
 			Bidi:    false,
@@ -917,7 +917,7 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	if nodes := auo.mutation.AssetClassIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: false,
+			Inverse: true,
 			Table:   asset.AssetClassTable,
 			Columns: []string{asset.AssetClassColumn},
 			Bidi:    false,
@@ -971,7 +971,7 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	if auo.mutation.TransactionBasesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.TransactionBasesTable,
 			Columns: []string{asset.TransactionBasesColumn},
 			Bidi:    false,
@@ -987,7 +987,7 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	if nodes := auo.mutation.RemovedTransactionBasesIDs(); len(nodes) > 0 && !auo.mutation.TransactionBasesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.TransactionBasesTable,
 			Columns: []string{asset.TransactionBasesColumn},
 			Bidi:    false,
@@ -1006,7 +1006,7 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	if nodes := auo.mutation.TransactionBasesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.TransactionBasesTable,
 			Columns: []string{asset.TransactionBasesColumn},
 			Bidi:    false,
@@ -1025,7 +1025,7 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	if auo.mutation.TransactionQuotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.TransactionQuotesTable,
 			Columns: []string{asset.TransactionQuotesColumn},
 			Bidi:    false,
@@ -1041,7 +1041,7 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	if nodes := auo.mutation.RemovedTransactionQuotesIDs(); len(nodes) > 0 && !auo.mutation.TransactionQuotesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.TransactionQuotesTable,
 			Columns: []string{asset.TransactionQuotesColumn},
 			Bidi:    false,
@@ -1060,7 +1060,7 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	if nodes := auo.mutation.TransactionQuotesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.TransactionQuotesTable,
 			Columns: []string{asset.TransactionQuotesColumn},
 			Bidi:    false,

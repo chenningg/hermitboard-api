@@ -38,14 +38,14 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "account" package.
 	AccountsInverseTable = "accounts"
 	// AccountsColumn is the table column denoting the accounts relation/edge.
-	AccountsColumn = "account_auth_type"
+	AccountsColumn = "auth_type_id"
 	// StaffAccountsTable is the table that holds the staff_accounts relation/edge.
 	StaffAccountsTable = "staff_accounts"
 	// StaffAccountsInverseTable is the table name for the StaffAccount entity.
 	// It exists in this package in order to avoid circular dependency with the "staffaccount" package.
 	StaffAccountsInverseTable = "staff_accounts"
 	// StaffAccountsColumn is the table column denoting the staff_accounts relation/edge.
-	StaffAccountsColumn = "staff_account_auth_type"
+	StaffAccountsColumn = "auth_type_id"
 )
 
 // Columns holds all SQL columns for authtype fields.

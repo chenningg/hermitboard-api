@@ -304,7 +304,7 @@ func (ttc *TransactionTypeCreate) createSpec() (*TransactionType, *sqlgraph.Crea
 	if nodes := ttc.mutation.TransactionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   transactiontype.TransactionsTable,
 			Columns: []string{transactiontype.TransactionsColumn},
 			Bidi:    false,

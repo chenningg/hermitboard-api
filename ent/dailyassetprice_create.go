@@ -140,6 +140,12 @@ func (dapc *DailyAssetPriceCreate) SetAdjustedClose(f float64) *DailyAssetPriceC
 	return dapc
 }
 
+// SetAssetID sets the "asset_id" field.
+func (dapc *DailyAssetPriceCreate) SetAssetID(pu pulid.PULID) *DailyAssetPriceCreate {
+	dapc.mutation.SetAssetID(pu)
+	return dapc
+}
+
 // SetID sets the "id" field.
 func (dapc *DailyAssetPriceCreate) SetID(pu pulid.PULID) *DailyAssetPriceCreate {
 	dapc.mutation.SetID(pu)
@@ -150,20 +156,6 @@ func (dapc *DailyAssetPriceCreate) SetID(pu pulid.PULID) *DailyAssetPriceCreate 
 func (dapc *DailyAssetPriceCreate) SetNillableID(pu *pulid.PULID) *DailyAssetPriceCreate {
 	if pu != nil {
 		dapc.SetID(*pu)
-	}
-	return dapc
-}
-
-// SetAssetID sets the "asset" edge to the Asset entity by ID.
-func (dapc *DailyAssetPriceCreate) SetAssetID(id pulid.PULID) *DailyAssetPriceCreate {
-	dapc.mutation.SetAssetID(id)
-	return dapc
-}
-
-// SetNillableAssetID sets the "asset" edge to the Asset entity by ID if the given value is not nil.
-func (dapc *DailyAssetPriceCreate) SetNillableAssetID(id *pulid.PULID) *DailyAssetPriceCreate {
-	if id != nil {
-		dapc = dapc.SetAssetID(*id)
 	}
 	return dapc
 }
@@ -281,6 +273,12 @@ func (dapc *DailyAssetPriceCreate) check() error {
 	}
 	if _, ok := dapc.mutation.AdjustedClose(); !ok {
 		return &ValidationError{Name: "adjusted_close", err: errors.New(`ent: missing required field "DailyAssetPrice.adjusted_close"`)}
+	}
+	if _, ok := dapc.mutation.AssetID(); !ok {
+		return &ValidationError{Name: "asset_id", err: errors.New(`ent: missing required field "DailyAssetPrice.asset_id"`)}
+	}
+	if _, ok := dapc.mutation.AssetID(); !ok {
+		return &ValidationError{Name: "asset", err: errors.New(`ent: missing required edge "DailyAssetPrice.asset"`)}
 	}
 	return nil
 }
@@ -407,7 +405,7 @@ func (dapc *DailyAssetPriceCreate) createSpec() (*DailyAssetPrice, *sqlgraph.Cre
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.asset_daily_asset_prices = &nodes[0]
+		_node.AssetID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

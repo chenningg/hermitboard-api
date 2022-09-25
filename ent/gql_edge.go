@@ -32,6 +32,14 @@ func (a *Account) AuthType(ctx context.Context) (*AuthType, error) {
 	return result, err
 }
 
+func (a *Account) Connections(ctx context.Context) ([]*Connection, error) {
+	result, err := a.NamedConnections(graphql.GetFieldContext(ctx).Field.Alias)
+	if IsNotLoaded(err) {
+		result, err = a.QueryConnections().All(ctx)
+	}
+	return result, err
+}
+
 func (a *Asset) AssetClass(ctx context.Context) (*AssetClass, error) {
 	result, err := a.Edges.AssetClassOrErr()
 	if IsNotLoaded(err) {
@@ -128,6 +136,22 @@ func (b *Blockchain) Transactions(ctx context.Context) ([]*Transaction, error) {
 	return result, err
 }
 
+func (c *Connection) Account(ctx context.Context) (*Account, error) {
+	result, err := c.Edges.AccountOrErr()
+	if IsNotLoaded(err) {
+		result, err = c.QueryAccount().Only(ctx)
+	}
+	return result, err
+}
+
+func (c *Connection) Portfolios(ctx context.Context) ([]*Portfolio, error) {
+	result, err := c.NamedPortfolios(graphql.GetFieldContext(ctx).Field.Alias)
+	if IsNotLoaded(err) {
+		result, err = c.QueryPortfolios().All(ctx)
+	}
+	return result, err
+}
+
 func (c *Cryptocurrency) Asset(ctx context.Context) (*Asset, error) {
 	result, err := c.Edges.AssetOrErr()
 	if IsNotLoaded(err) {
@@ -149,7 +173,7 @@ func (dap *DailyAssetPrice) Asset(ctx context.Context) (*Asset, error) {
 	if IsNotLoaded(err) {
 		result, err = dap.QueryAsset().Only(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
 }
 
 func (e *Exchange) Transactions(ctx context.Context) ([]*Transaction, error) {
@@ -172,6 +196,30 @@ func (po *Portfolio) Transactions(ctx context.Context) ([]*Transaction, error) {
 	result, err := po.NamedTransactions(graphql.GetFieldContext(ctx).Field.Alias)
 	if IsNotLoaded(err) {
 		result, err = po.QueryTransactions().All(ctx)
+	}
+	return result, err
+}
+
+func (po *Portfolio) Connections(ctx context.Context) ([]*Connection, error) {
+	result, err := po.NamedConnections(graphql.GetFieldContext(ctx).Field.Alias)
+	if IsNotLoaded(err) {
+		result, err = po.QueryConnections().All(ctx)
+	}
+	return result, err
+}
+
+func (s *Source) SourceType(ctx context.Context) (*SourceType, error) {
+	result, err := s.Edges.SourceTypeOrErr()
+	if IsNotLoaded(err) {
+		result, err = s.QuerySourceType().Only(ctx)
+	}
+	return result, err
+}
+
+func (st *SourceType) Sources(ctx context.Context) ([]*Source, error) {
+	result, err := st.NamedSources(graphql.GetFieldContext(ctx).Field.Alias)
+	if IsNotLoaded(err) {
+		result, err = st.QuerySources().All(ctx)
 	}
 	return result, err
 }

@@ -24,6 +24,9 @@ type AuthType func(*sql.Selector)
 // Blockchain is the predicate function for blockchain builders.
 type Blockchain func(*sql.Selector)
 
+// Connection is the predicate function for connection builders.
+type Connection func(*sql.Selector)
+
 // Cryptocurrency is the predicate function for cryptocurrency builders.
 type Cryptocurrency func(*sql.Selector)
 
@@ -35,6 +38,12 @@ type Exchange func(*sql.Selector)
 
 // Portfolio is the predicate function for portfolio builders.
 type Portfolio func(*sql.Selector)
+
+// Source is the predicate function for source builders.
+type Source func(*sql.Selector)
+
+// SourceType is the predicate function for sourcetype builders.
+type SourceType func(*sql.Selector)
 
 // StaffAccount is the predicate function for staffaccount builders.
 type StaffAccount func(*sql.Selector)

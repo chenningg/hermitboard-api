@@ -25,10 +25,11 @@ type Asset struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	// AssetClassID holds the value of the "asset_class_id" field.
+	AssetClassID pulid.PULID `json:"asset_class_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetQuery when eager-loading is set.
-	Edges             AssetEdges `json:"edges"`
-	asset_asset_class *pulid.PULID
+	Edges AssetEdges `json:"edges"`
 }
 
 // AssetEdges holds the relations/edges for other nodes in the graph.
@@ -112,12 +113,10 @@ func (*Asset) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case asset.FieldID:
+		case asset.FieldID, asset.FieldAssetClassID:
 			values[i] = new(pulid.PULID)
 		case asset.FieldCreatedAt, asset.FieldUpdatedAt, asset.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
-		case asset.ForeignKeys[0]: // asset_asset_class
-			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Asset", columns[i])
 		}
@@ -158,12 +157,11 @@ func (a *Asset) assignValues(columns []string, values []any) error {
 				a.DeletedAt = new(time.Time)
 				*a.DeletedAt = value.Time
 			}
-		case asset.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field asset_asset_class", values[i])
-			} else if value.Valid {
-				a.asset_asset_class = new(pulid.PULID)
-				*a.asset_asset_class = *value.S.(*pulid.PULID)
+		case asset.FieldAssetClassID:
+			if value, ok := values[i].(*pulid.PULID); !ok {
+				return fmt.Errorf("unexpected type %T for field asset_class_id", values[i])
+			} else if value != nil {
+				a.AssetClassID = *value
 			}
 		}
 	}
@@ -228,6 +226,9 @@ func (a *Asset) String() string {
 		builder.WriteString("deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("asset_class_id=")
+	builder.WriteString(fmt.Sprintf("%v", a.AssetClassID))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -29,7 +29,6 @@ type CryptocurrencyQuery struct {
 	predicates           []predicate.Cryptocurrency
 	withAsset            *AssetQuery
 	withBlockchains      *BlockchainQuery
-	withFKs              bool
 	modifiers            []func(*sql.Selector)
 	loadTotal            []func(context.Context, []*Cryptocurrency) error
 	withNamedBlockchains map[string]*BlockchainQuery
@@ -392,19 +391,12 @@ func (cq *CryptocurrencyQuery) prepareQuery(ctx context.Context) error {
 func (cq *CryptocurrencyQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cryptocurrency, error) {
 	var (
 		nodes       = []*Cryptocurrency{}
-		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
 		loadedTypes = [2]bool{
 			cq.withAsset != nil,
 			cq.withBlockchains != nil,
 		}
 	)
-	if cq.withAsset != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, cryptocurrency.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Cryptocurrency).scanValues(nil, columns)
 	}
@@ -458,10 +450,7 @@ func (cq *CryptocurrencyQuery) loadAsset(ctx context.Context, query *AssetQuery,
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Cryptocurrency)
 	for i := range nodes {
-		if nodes[i].asset_cryptocurrency == nil {
-			continue
-		}
-		fk := *nodes[i].asset_cryptocurrency
+		fk := nodes[i].AssetID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -475,7 +464,7 @@ func (cq *CryptocurrencyQuery) loadAsset(ctx context.Context, query *AssetQuery,
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "asset_cryptocurrency" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "asset_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

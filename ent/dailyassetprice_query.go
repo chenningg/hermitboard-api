@@ -26,7 +26,6 @@ type DailyAssetPriceQuery struct {
 	fields     []string
 	predicates []predicate.DailyAssetPrice
 	withAsset  *AssetQuery
-	withFKs    bool
 	modifiers  []func(*sql.Selector)
 	loadTotal  []func(context.Context, []*DailyAssetPrice) error
 	// intermediate query (i.e. traversal path).
@@ -354,18 +353,11 @@ func (dapq *DailyAssetPriceQuery) prepareQuery(ctx context.Context) error {
 func (dapq *DailyAssetPriceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*DailyAssetPrice, error) {
 	var (
 		nodes       = []*DailyAssetPrice{}
-		withFKs     = dapq.withFKs
 		_spec       = dapq.querySpec()
 		loadedTypes = [1]bool{
 			dapq.withAsset != nil,
 		}
 	)
-	if dapq.withAsset != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, dailyassetprice.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*DailyAssetPrice).scanValues(nil, columns)
 	}
@@ -405,10 +397,7 @@ func (dapq *DailyAssetPriceQuery) loadAsset(ctx context.Context, query *AssetQue
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*DailyAssetPrice)
 	for i := range nodes {
-		if nodes[i].asset_daily_asset_prices == nil {
-			continue
-		}
-		fk := *nodes[i].asset_daily_asset_prices
+		fk := nodes[i].AssetID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -422,7 +411,7 @@ func (dapq *DailyAssetPriceQuery) loadAsset(ctx context.Context, query *AssetQue
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "asset_daily_asset_prices" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "asset_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

@@ -49,8 +49,7 @@ func (Blockchain) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("cryptocurrencies", Cryptocurrency.Type).
 			Annotations(entgql.MapsTo("cryptocurrencies")),
-		edge.From("transactions", Transaction.Type).
-			Ref("blockchain").
+		edge.To("transactions", Transaction.Type).
 			Annotations(entgql.MapsTo("transactions")),
 	}
 }

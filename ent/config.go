@@ -30,10 +30,13 @@ type hooks struct {
 	AuthRole        []ent.Hook
 	AuthType        []ent.Hook
 	Blockchain      []ent.Hook
+	Connection      []ent.Hook
 	Cryptocurrency  []ent.Hook
 	DailyAssetPrice []ent.Hook
 	Exchange        []ent.Hook
 	Portfolio       []ent.Hook
+	Source          []ent.Hook
+	SourceType      []ent.Hook
 	StaffAccount    []ent.Hook
 	Transaction     []ent.Hook
 	TransactionType []ent.Hook

@@ -81,9 +81,9 @@ func (cu *CryptocurrencyUpdate) SetName(s string) *CryptocurrencyUpdate {
 	return cu
 }
 
-// SetAssetID sets the "asset" edge to the Asset entity by ID.
-func (cu *CryptocurrencyUpdate) SetAssetID(id pulid.PULID) *CryptocurrencyUpdate {
-	cu.mutation.SetAssetID(id)
+// SetAssetID sets the "asset_id" field.
+func (cu *CryptocurrencyUpdate) SetAssetID(pu pulid.PULID) *CryptocurrencyUpdate {
+	cu.mutation.SetAssetID(pu)
 	return cu
 }
 
@@ -458,9 +458,9 @@ func (cuo *CryptocurrencyUpdateOne) SetName(s string) *CryptocurrencyUpdateOne {
 	return cuo
 }
 
-// SetAssetID sets the "asset" edge to the Asset entity by ID.
-func (cuo *CryptocurrencyUpdateOne) SetAssetID(id pulid.PULID) *CryptocurrencyUpdateOne {
-	cuo.mutation.SetAssetID(id)
+// SetAssetID sets the "asset_id" field.
+func (cuo *CryptocurrencyUpdateOne) SetAssetID(pu pulid.PULID) *CryptocurrencyUpdateOne {
+	cuo.mutation.SetAssetID(pu)
 	return cuo
 }
 

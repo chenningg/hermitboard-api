@@ -36,10 +36,11 @@ type DailyAssetPrice struct {
 	Close *float64 `json:"close,omitempty"`
 	// AdjustedClose holds the value of the "adjusted_close" field.
 	AdjustedClose float64 `json:"adjusted_close,omitempty"`
+	// AssetID holds the value of the "asset_id" field.
+	AssetID pulid.PULID `json:"asset_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DailyAssetPriceQuery when eager-loading is set.
-	Edges                    DailyAssetPriceEdges `json:"edges"`
-	asset_daily_asset_prices *pulid.PULID
+	Edges DailyAssetPriceEdges `json:"edges"`
 }
 
 // DailyAssetPriceEdges holds the relations/edges for other nodes in the graph.
@@ -71,14 +72,12 @@ func (*DailyAssetPrice) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case dailyassetprice.FieldID:
+		case dailyassetprice.FieldID, dailyassetprice.FieldAssetID:
 			values[i] = new(pulid.PULID)
 		case dailyassetprice.FieldOpen, dailyassetprice.FieldHigh, dailyassetprice.FieldLow, dailyassetprice.FieldClose, dailyassetprice.FieldAdjustedClose:
 			values[i] = new(sql.NullFloat64)
 		case dailyassetprice.FieldCreatedAt, dailyassetprice.FieldUpdatedAt, dailyassetprice.FieldDeletedAt, dailyassetprice.FieldTime:
 			values[i] = new(sql.NullTime)
-		case dailyassetprice.ForeignKeys[0]: // asset_daily_asset_prices
-			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type DailyAssetPrice", columns[i])
 		}
@@ -159,12 +158,11 @@ func (dap *DailyAssetPrice) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				dap.AdjustedClose = value.Float64
 			}
-		case dailyassetprice.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullScanner); !ok {
-				return fmt.Errorf("unexpected type %T for field asset_daily_asset_prices", values[i])
-			} else if value.Valid {
-				dap.asset_daily_asset_prices = new(pulid.PULID)
-				*dap.asset_daily_asset_prices = *value.S.(*pulid.PULID)
+		case dailyassetprice.FieldAssetID:
+			if value, ok := values[i].(*pulid.PULID); !ok {
+				return fmt.Errorf("unexpected type %T for field asset_id", values[i])
+			} else if value != nil {
+				dap.AssetID = *value
 			}
 		}
 	}
@@ -235,6 +233,9 @@ func (dap *DailyAssetPrice) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("adjusted_close=")
 	builder.WriteString(fmt.Sprintf("%v", dap.AdjustedClose))
+	builder.WriteString(", ")
+	builder.WriteString("asset_id=")
+	builder.WriteString(fmt.Sprintf("%v", dap.AssetID))
 	builder.WriteByte(')')
 	return builder.String()
 }

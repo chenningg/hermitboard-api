@@ -27,12 +27,16 @@ const (
 	FieldPassword = "password"
 	// FieldPasswordUpdatedAt holds the string denoting the password_updated_at field in the database.
 	FieldPasswordUpdatedAt = "password_updated_at"
+	// FieldAuthTypeID holds the string denoting the auth_type_id field in the database.
+	FieldAuthTypeID = "auth_type_id"
 	// EdgeAuthRoles holds the string denoting the auth_roles edge name in mutations.
 	EdgeAuthRoles = "auth_roles"
 	// EdgePortfolios holds the string denoting the portfolios edge name in mutations.
 	EdgePortfolios = "portfolios"
 	// EdgeAuthType holds the string denoting the auth_type edge name in mutations.
 	EdgeAuthType = "auth_type"
+	// EdgeConnections holds the string denoting the connections edge name in mutations.
+	EdgeConnections = "connections"
 	// Table holds the table name of the account in the database.
 	Table = "accounts"
 	// AuthRolesTable is the table that holds the auth_roles relation/edge. The primary key declared below.
@@ -46,14 +50,21 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "portfolio" package.
 	PortfoliosInverseTable = "portfolios"
 	// PortfoliosColumn is the table column denoting the portfolios relation/edge.
-	PortfoliosColumn = "account_portfolios"
+	PortfoliosColumn = "account_id"
 	// AuthTypeTable is the table that holds the auth_type relation/edge.
 	AuthTypeTable = "accounts"
 	// AuthTypeInverseTable is the table name for the AuthType entity.
 	// It exists in this package in order to avoid circular dependency with the "authtype" package.
 	AuthTypeInverseTable = "auth_types"
 	// AuthTypeColumn is the table column denoting the auth_type relation/edge.
-	AuthTypeColumn = "account_auth_type"
+	AuthTypeColumn = "auth_type_id"
+	// ConnectionsTable is the table that holds the connections relation/edge.
+	ConnectionsTable = "connections"
+	// ConnectionsInverseTable is the table name for the Connection entity.
+	// It exists in this package in order to avoid circular dependency with the "connection" package.
+	ConnectionsInverseTable = "connections"
+	// ConnectionsColumn is the table column denoting the connections relation/edge.
+	ConnectionsColumn = "account_id"
 )
 
 // Columns holds all SQL columns for account fields.
@@ -66,12 +77,7 @@ var Columns = []string{
 	FieldEmail,
 	FieldPassword,
 	FieldPasswordUpdatedAt,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "accounts"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"account_auth_type",
+	FieldAuthTypeID,
 }
 
 var (
@@ -84,11 +90,6 @@ var (
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}

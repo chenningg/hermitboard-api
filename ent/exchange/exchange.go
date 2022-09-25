@@ -35,7 +35,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "transaction" package.
 	TransactionsInverseTable = "transactions"
 	// TransactionsColumn is the table column denoting the transactions relation/edge.
-	TransactionsColumn = "exchange_transactions"
+	TransactionsColumn = "exchange_id"
 )
 
 // Columns holds all SQL columns for exchange fields.

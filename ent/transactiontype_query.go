@@ -80,7 +80,7 @@ func (ttq *TransactionTypeQuery) QueryTransactions() *TransactionQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transactiontype.Table, transactiontype.FieldID, selector),
 			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, transactiontype.TransactionsTable, transactiontype.TransactionsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, transactiontype.TransactionsTable, transactiontype.TransactionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ttq.driver.Dialect(), step)
 		return fromU, nil
@@ -413,7 +413,6 @@ func (ttq *TransactionTypeQuery) loadTransactions(ctx context.Context, query *Tr
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	query.Where(predicate.Transaction(func(s *sql.Selector) {
 		s.Where(sql.InValues(transactiontype.TransactionsColumn, fks...))
 	}))
@@ -422,13 +421,10 @@ func (ttq *TransactionTypeQuery) loadTransactions(ctx context.Context, query *Tr
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.transaction_transaction_type
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "transaction_transaction_type" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.TransactionTypeID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "transaction_transaction_type" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "transaction_type_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

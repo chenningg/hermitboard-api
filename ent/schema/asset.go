@@ -5,7 +5,9 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
+	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // Asset holds the schema definition for the Asset entity.
@@ -25,24 +27,27 @@ func (Asset) Mixin() []ent.Mixin {
 
 // Fields of the Asset.
 func (Asset) Fields() []ent.Field {
-	return nil
+	return []ent.Field{
+		field.String("asset_class_id").
+			GoType(pulid.PULID("")),
+	}
 }
 
 // Edges of the Asset.
 func (Asset) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("asset_class", AssetClass.Type).
+		edge.From("asset_class", AssetClass.Type).
+			Ref("assets").
+			Field("asset_class_id").
 			Unique().
 			Required().
 			Annotations(entgql.MapsTo("assetClass")),
 		edge.To("cryptocurrency", Cryptocurrency.Type).
 			Unique().
 			Annotations(entgql.MapsTo("cryptocurrency")),
-		edge.From("transaction_bases", Transaction.Type).
-			Ref("base_asset").
+		edge.To("transaction_bases", Transaction.Type).
 			Annotations(entgql.MapsTo("transactionBases")),
-		edge.From("transaction_quotes", Transaction.Type).
-			Ref("quote_asset").
+		edge.To("transaction_quotes", Transaction.Type).
 			Annotations(entgql.MapsTo("transactionQuotes")),
 		edge.To("daily_asset_prices", DailyAssetPrice.Type).
 			Annotations(entgql.MapsTo("dailyAssetPrices")),

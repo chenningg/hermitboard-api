@@ -24,6 +24,8 @@ type Tx struct {
 	AuthType *AuthTypeClient
 	// Blockchain is the client for interacting with the Blockchain builders.
 	Blockchain *BlockchainClient
+	// Connection is the client for interacting with the Connection builders.
+	Connection *ConnectionClient
 	// Cryptocurrency is the client for interacting with the Cryptocurrency builders.
 	Cryptocurrency *CryptocurrencyClient
 	// DailyAssetPrice is the client for interacting with the DailyAssetPrice builders.
@@ -32,6 +34,10 @@ type Tx struct {
 	Exchange *ExchangeClient
 	// Portfolio is the client for interacting with the Portfolio builders.
 	Portfolio *PortfolioClient
+	// Source is the client for interacting with the Source builders.
+	Source *SourceClient
+	// SourceType is the client for interacting with the SourceType builders.
+	SourceType *SourceTypeClient
 	// StaffAccount is the client for interacting with the StaffAccount builders.
 	StaffAccount *StaffAccountClient
 	// Transaction is the client for interacting with the Transaction builders.
@@ -179,10 +185,13 @@ func (tx *Tx) init() {
 	tx.AuthRole = NewAuthRoleClient(tx.config)
 	tx.AuthType = NewAuthTypeClient(tx.config)
 	tx.Blockchain = NewBlockchainClient(tx.config)
+	tx.Connection = NewConnectionClient(tx.config)
 	tx.Cryptocurrency = NewCryptocurrencyClient(tx.config)
 	tx.DailyAssetPrice = NewDailyAssetPriceClient(tx.config)
 	tx.Exchange = NewExchangeClient(tx.config)
 	tx.Portfolio = NewPortfolioClient(tx.config)
+	tx.Source = NewSourceClient(tx.config)
+	tx.SourceType = NewSourceTypeClient(tx.config)
 	tx.StaffAccount = NewStaffAccountClient(tx.config)
 	tx.Transaction = NewTransactionClient(tx.config)
 	tx.TransactionType = NewTransactionTypeClient(tx.config)

@@ -420,7 +420,7 @@ func (bu *BlockchainUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if bu.mutation.TransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   blockchain.TransactionsTable,
 			Columns: []string{blockchain.TransactionsColumn},
 			Bidi:    false,
@@ -436,7 +436,7 @@ func (bu *BlockchainUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := bu.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !bu.mutation.TransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   blockchain.TransactionsTable,
 			Columns: []string{blockchain.TransactionsColumn},
 			Bidi:    false,
@@ -455,7 +455,7 @@ func (bu *BlockchainUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := bu.mutation.TransactionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   blockchain.TransactionsTable,
 			Columns: []string{blockchain.TransactionsColumn},
 			Bidi:    false,
@@ -909,7 +909,7 @@ func (buo *BlockchainUpdateOne) sqlSave(ctx context.Context) (_node *Blockchain,
 	if buo.mutation.TransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   blockchain.TransactionsTable,
 			Columns: []string{blockchain.TransactionsColumn},
 			Bidi:    false,
@@ -925,7 +925,7 @@ func (buo *BlockchainUpdateOne) sqlSave(ctx context.Context) (_node *Blockchain,
 	if nodes := buo.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !buo.mutation.TransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   blockchain.TransactionsTable,
 			Columns: []string{blockchain.TransactionsColumn},
 			Bidi:    false,
@@ -944,7 +944,7 @@ func (buo *BlockchainUpdateOne) sqlSave(ctx context.Context) (_node *Blockchain,
 	if nodes := buo.mutation.TransactionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   blockchain.TransactionsTable,
 			Columns: []string{blockchain.TransactionsColumn},
 			Bidi:    false,

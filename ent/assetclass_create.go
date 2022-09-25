@@ -304,7 +304,7 @@ func (acc *AssetClassCreate) createSpec() (*AssetClass, *sqlgraph.CreateSpec) {
 	if nodes := acc.mutation.AssetsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   assetclass.AssetsTable,
 			Columns: []string{assetclass.AssetsColumn},
 			Bidi:    false,

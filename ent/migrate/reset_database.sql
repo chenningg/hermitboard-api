@@ -15,5 +15,8 @@ DROP TABLE IF EXISTS exchanges;
 DROP TABLE IF EXISTS cryptocurrencies;
 DROP TABLE IF EXISTS assets;
 DROP TABLE IF EXISTS asset_classes;
+DROP TABLE IF EXISTS connections;
+DROP TABLE IF EXISTS sources;
+DROP TABLE IF EXISTS source_types;
 
 DROP TABLE IF EXISTS atlas_schema_revisions.atlas_schema_revisions;

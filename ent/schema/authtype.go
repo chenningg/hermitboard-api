@@ -17,7 +17,7 @@ type AuthType struct {
 // Adds id, created_at and updated_at fields.
 func (AuthType) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.PULIDMixinWithPrefix("ASC"),
+		mixin.PULIDMixinWithPrefix("AHT"),
 		mixin.CreatedAtMixin{},
 		mixin.UpdatedAtMixin{},
 		mixin.DeletedAtMixin{},
@@ -48,11 +48,9 @@ func (AuthType) Fields() []ent.Field {
 // Edges of the AuthType.
 func (AuthType) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("accounts", Account.Type).
-			Ref("auth_type").
+		edge.To("accounts", Account.Type).
 			Annotations(entgql.MapsTo("accounts")),
-		edge.From("staff_accounts", StaffAccount.Type).
-			Ref("auth_type").
+		edge.To("staff_accounts", StaffAccount.Type).
 			Annotations(entgql.MapsTo("staffAccounts")),
 	}
 }

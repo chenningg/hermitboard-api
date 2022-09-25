@@ -264,7 +264,7 @@ func (ttu *TransactionTypeUpdate) sqlSave(ctx context.Context) (n int, err error
 	if ttu.mutation.TransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   transactiontype.TransactionsTable,
 			Columns: []string{transactiontype.TransactionsColumn},
 			Bidi:    false,
@@ -280,7 +280,7 @@ func (ttu *TransactionTypeUpdate) sqlSave(ctx context.Context) (n int, err error
 	if nodes := ttu.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !ttu.mutation.TransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   transactiontype.TransactionsTable,
 			Columns: []string{transactiontype.TransactionsColumn},
 			Bidi:    false,
@@ -299,7 +299,7 @@ func (ttu *TransactionTypeUpdate) sqlSave(ctx context.Context) (n int, err error
 	if nodes := ttu.mutation.TransactionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   transactiontype.TransactionsTable,
 			Columns: []string{transactiontype.TransactionsColumn},
 			Bidi:    false,
@@ -598,7 +598,7 @@ func (ttuo *TransactionTypeUpdateOne) sqlSave(ctx context.Context) (_node *Trans
 	if ttuo.mutation.TransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   transactiontype.TransactionsTable,
 			Columns: []string{transactiontype.TransactionsColumn},
 			Bidi:    false,
@@ -614,7 +614,7 @@ func (ttuo *TransactionTypeUpdateOne) sqlSave(ctx context.Context) (_node *Trans
 	if nodes := ttuo.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !ttuo.mutation.TransactionsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   transactiontype.TransactionsTable,
 			Columns: []string{transactiontype.TransactionsColumn},
 			Bidi:    false,
@@ -633,7 +633,7 @@ func (ttuo *TransactionTypeUpdateOne) sqlSave(ctx context.Context) (_node *Trans
 	if nodes := ttuo.mutation.TransactionsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   transactiontype.TransactionsTable,
 			Columns: []string{transactiontype.TransactionsColumn},
 			Bidi:    false,

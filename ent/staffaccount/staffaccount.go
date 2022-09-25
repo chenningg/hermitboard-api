@@ -27,6 +27,8 @@ const (
 	FieldPassword = "password"
 	// FieldPasswordUpdatedAt holds the string denoting the password_updated_at field in the database.
 	FieldPasswordUpdatedAt = "password_updated_at"
+	// FieldAuthTypeID holds the string denoting the auth_type_id field in the database.
+	FieldAuthTypeID = "auth_type_id"
 	// EdgeAuthRoles holds the string denoting the auth_roles edge name in mutations.
 	EdgeAuthRoles = "auth_roles"
 	// EdgeAuthType holds the string denoting the auth_type edge name in mutations.
@@ -44,7 +46,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "authtype" package.
 	AuthTypeInverseTable = "auth_types"
 	// AuthTypeColumn is the table column denoting the auth_type relation/edge.
-	AuthTypeColumn = "staff_account_auth_type"
+	AuthTypeColumn = "auth_type_id"
 )
 
 // Columns holds all SQL columns for staffaccount fields.
@@ -57,12 +59,7 @@ var Columns = []string{
 	FieldEmail,
 	FieldPassword,
 	FieldPasswordUpdatedAt,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "staff_accounts"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"staff_account_auth_type",
+	FieldAuthTypeID,
 }
 
 var (
@@ -75,11 +72,6 @@ var (
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}

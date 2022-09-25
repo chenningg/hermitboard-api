@@ -34,7 +34,6 @@ type AssetQuery struct {
 	withTransactionBases       *TransactionQuery
 	withTransactionQuotes      *TransactionQuery
 	withDailyAssetPrices       *DailyAssetPriceQuery
-	withFKs                    bool
 	modifiers                  []func(*sql.Selector)
 	loadTotal                  []func(context.Context, []*Asset) error
 	withNamedTransactionBases  map[string]*TransactionQuery
@@ -90,7 +89,7 @@ func (aq *AssetQuery) QueryAssetClass() *AssetClassQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(asset.Table, asset.FieldID, selector),
 			sqlgraph.To(assetclass.Table, assetclass.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, asset.AssetClassTable, asset.AssetClassColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, asset.AssetClassTable, asset.AssetClassColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -134,7 +133,7 @@ func (aq *AssetQuery) QueryTransactionBases() *TransactionQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(asset.Table, asset.FieldID, selector),
 			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, asset.TransactionBasesTable, asset.TransactionBasesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.TransactionBasesTable, asset.TransactionBasesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -156,7 +155,7 @@ func (aq *AssetQuery) QueryTransactionQuotes() *TransactionQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(asset.Table, asset.FieldID, selector),
 			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, asset.TransactionQuotesTable, asset.TransactionQuotesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, asset.TransactionQuotesTable, asset.TransactionQuotesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -501,7 +500,6 @@ func (aq *AssetQuery) prepareQuery(ctx context.Context) error {
 func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset, error) {
 	var (
 		nodes       = []*Asset{}
-		withFKs     = aq.withFKs
 		_spec       = aq.querySpec()
 		loadedTypes = [5]bool{
 			aq.withAssetClass != nil,
@@ -511,12 +509,6 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			aq.withDailyAssetPrices != nil,
 		}
 	)
-	if aq.withAssetClass != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, asset.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Asset).scanValues(nil, columns)
 	}
@@ -604,10 +596,7 @@ func (aq *AssetQuery) loadAssetClass(ctx context.Context, query *AssetClassQuery
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Asset)
 	for i := range nodes {
-		if nodes[i].asset_asset_class == nil {
-			continue
-		}
-		fk := *nodes[i].asset_asset_class
+		fk := nodes[i].AssetClassID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -621,7 +610,7 @@ func (aq *AssetQuery) loadAssetClass(ctx context.Context, query *AssetClassQuery
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "asset_asset_class" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "asset_class_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -636,7 +625,6 @@ func (aq *AssetQuery) loadCryptocurrency(ctx context.Context, query *Cryptocurre
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
 	}
-	query.withFKs = true
 	query.Where(predicate.Cryptocurrency(func(s *sql.Selector) {
 		s.Where(sql.InValues(asset.CryptocurrencyColumn, fks...))
 	}))
@@ -645,13 +633,10 @@ func (aq *AssetQuery) loadCryptocurrency(ctx context.Context, query *Cryptocurre
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.asset_cryptocurrency
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "asset_cryptocurrency" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.AssetID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "asset_cryptocurrency" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -667,7 +652,6 @@ func (aq *AssetQuery) loadTransactionBases(ctx context.Context, query *Transacti
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	query.Where(predicate.Transaction(func(s *sql.Selector) {
 		s.Where(sql.InValues(asset.TransactionBasesColumn, fks...))
 	}))
@@ -676,13 +660,10 @@ func (aq *AssetQuery) loadTransactionBases(ctx context.Context, query *Transacti
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.transaction_base_asset
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "transaction_base_asset" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.BaseAssetID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "transaction_base_asset" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "base_asset_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -698,7 +679,6 @@ func (aq *AssetQuery) loadTransactionQuotes(ctx context.Context, query *Transact
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	query.Where(predicate.Transaction(func(s *sql.Selector) {
 		s.Where(sql.InValues(asset.TransactionQuotesColumn, fks...))
 	}))
@@ -707,13 +687,13 @@ func (aq *AssetQuery) loadTransactionQuotes(ctx context.Context, query *Transact
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.transaction_quote_asset
+		fk := n.QuoteAssetID
 		if fk == nil {
-			return fmt.Errorf(`foreign-key "transaction_quote_asset" is nil for node %v`, n.ID)
+			return fmt.Errorf(`foreign-key "quote_asset_id" is nil for node %v`, n.ID)
 		}
 		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "transaction_quote_asset" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "quote_asset_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -729,7 +709,6 @@ func (aq *AssetQuery) loadDailyAssetPrices(ctx context.Context, query *DailyAsse
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	query.Where(predicate.DailyAssetPrice(func(s *sql.Selector) {
 		s.Where(sql.InValues(asset.DailyAssetPricesColumn, fks...))
 	}))
@@ -738,13 +717,10 @@ func (aq *AssetQuery) loadDailyAssetPrices(ctx context.Context, query *DailyAsse
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.asset_daily_asset_prices
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "asset_daily_asset_prices" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.AssetID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "asset_daily_asset_prices" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

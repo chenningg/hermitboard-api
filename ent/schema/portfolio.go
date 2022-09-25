@@ -6,7 +6,9 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // Portfolio holds the schema definition for the Portfolio entity.
@@ -28,13 +30,18 @@ func (Portfolio) Mixin() []ent.Mixin {
 func (Portfolio) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
-			NotEmpty(),
+			NotEmpty().
+			Annotations(entgql.OrderField("NAME")),
 		field.Bool("is_public").
 			Default(false).
-			Comment("Whether this portfolio is visible to others."),
+			Comment("Whether this portfolio is visible to others.").
+			Annotations(entgql.OrderField("IS_PUBLIC")),
 		field.Bool("is_visible").
 			Default(true).
-			Comment("Whether this portfolio is visible to the owner."),
+			Comment("Whether this portfolio is visible to the owner.").
+			Annotations(entgql.OrderField("IS_VISIBLE")),
+		field.String("account_id").
+			GoType(pulid.PULID("")),
 	}
 }
 
@@ -43,11 +50,14 @@ func (Portfolio) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("account", Account.Type).
 			Ref("portfolios").
+			Field("account_id").
 			Unique().
 			Required().
 			Annotations(entgql.MapsTo("account")),
 		edge.To("transactions", Transaction.Type).
 			Annotations(entgql.MapsTo("transactions")),
+		edge.To("connections", Connection.Type).
+			Annotations(entgql.MapsTo("connections")),
 	}
 }
 
@@ -56,5 +66,12 @@ func (Portfolio) Annotations() []schema.Annotation {
 		entgql.RelayConnection(),
 		entgql.QueryField(),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
+	}
+}
+
+func (Portfolio) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("account_id", "name").
+			Unique(),
 	}
 }

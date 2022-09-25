@@ -36,7 +36,7 @@ func seedStaffAccounts(ctx context.Context, client *ent.Client) error {
 		AddAuthRoles(superAdminRole).
 		Save(ctx)
 	if err != nil {
-		return fmt.Errorf("seedAuthRoles(): failed to create owner account")
+		return fmt.Errorf("seedStaffAccounts(): failed to create owner account")
 	}
 
 	return nil

@@ -52,8 +52,7 @@ func (TransactionType) Fields() []ent.Field {
 // Edges of the TransactionType.
 func (TransactionType) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("transactions", Transaction.Type).
-			Ref("transaction_type").
+		edge.To("transactions", Transaction.Type).
 			Annotations(entgql.MapsTo("transactions")),
 	}
 }

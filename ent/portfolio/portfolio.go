@@ -25,10 +25,14 @@ const (
 	FieldIsPublic = "is_public"
 	// FieldIsVisible holds the string denoting the is_visible field in the database.
 	FieldIsVisible = "is_visible"
+	// FieldAccountID holds the string denoting the account_id field in the database.
+	FieldAccountID = "account_id"
 	// EdgeAccount holds the string denoting the account edge name in mutations.
 	EdgeAccount = "account"
 	// EdgeTransactions holds the string denoting the transactions edge name in mutations.
 	EdgeTransactions = "transactions"
+	// EdgeConnections holds the string denoting the connections edge name in mutations.
+	EdgeConnections = "connections"
 	// Table holds the table name of the portfolio in the database.
 	Table = "portfolios"
 	// AccountTable is the table that holds the account relation/edge.
@@ -37,14 +41,19 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "account" package.
 	AccountInverseTable = "accounts"
 	// AccountColumn is the table column denoting the account relation/edge.
-	AccountColumn = "account_portfolios"
+	AccountColumn = "account_id"
 	// TransactionsTable is the table that holds the transactions relation/edge.
 	TransactionsTable = "transactions"
 	// TransactionsInverseTable is the table name for the Transaction entity.
 	// It exists in this package in order to avoid circular dependency with the "transaction" package.
 	TransactionsInverseTable = "transactions"
 	// TransactionsColumn is the table column denoting the transactions relation/edge.
-	TransactionsColumn = "portfolio_transactions"
+	TransactionsColumn = "portfolio_id"
+	// ConnectionsTable is the table that holds the connections relation/edge. The primary key declared below.
+	ConnectionsTable = "portfolio_connections"
+	// ConnectionsInverseTable is the table name for the Connection entity.
+	// It exists in this package in order to avoid circular dependency with the "connection" package.
+	ConnectionsInverseTable = "connections"
 )
 
 // Columns holds all SQL columns for portfolio fields.
@@ -56,23 +65,19 @@ var Columns = []string{
 	FieldName,
 	FieldIsPublic,
 	FieldIsVisible,
+	FieldAccountID,
 }
 
-// ForeignKeys holds the SQL foreign-keys that are owned by the "portfolios"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"account_portfolios",
-}
+var (
+	// ConnectionsPrimaryKey and ConnectionsColumn2 are the table columns denoting the
+	// primary key for the connections relation (M2M).
+	ConnectionsPrimaryKey = []string{"portfolio_id", "connection_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}

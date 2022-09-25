@@ -83,7 +83,7 @@ func (atq *AuthTypeQuery) QueryAccounts() *AccountQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(authtype.Table, authtype.FieldID, selector),
 			sqlgraph.To(account.Table, account.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, authtype.AccountsTable, authtype.AccountsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, authtype.AccountsTable, authtype.AccountsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
 		return fromU, nil
@@ -105,7 +105,7 @@ func (atq *AuthTypeQuery) QueryStaffAccounts() *StaffAccountQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(authtype.Table, authtype.FieldID, selector),
 			sqlgraph.To(staffaccount.Table, staffaccount.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, true, authtype.StaffAccountsTable, authtype.StaffAccountsColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, authtype.StaffAccountsTable, authtype.StaffAccountsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
 		return fromU, nil
@@ -465,7 +465,6 @@ func (atq *AuthTypeQuery) loadAccounts(ctx context.Context, query *AccountQuery,
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	query.Where(predicate.Account(func(s *sql.Selector) {
 		s.Where(sql.InValues(authtype.AccountsColumn, fks...))
 	}))
@@ -474,13 +473,10 @@ func (atq *AuthTypeQuery) loadAccounts(ctx context.Context, query *AccountQuery,
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.account_auth_type
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "account_auth_type" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.AuthTypeID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "account_auth_type" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "auth_type_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -496,7 +492,6 @@ func (atq *AuthTypeQuery) loadStaffAccounts(ctx context.Context, query *StaffAcc
 			init(nodes[i])
 		}
 	}
-	query.withFKs = true
 	query.Where(predicate.StaffAccount(func(s *sql.Selector) {
 		s.Where(sql.InValues(authtype.StaffAccountsColumn, fks...))
 	}))
@@ -505,13 +500,10 @@ func (atq *AuthTypeQuery) loadStaffAccounts(ctx context.Context, query *StaffAcc
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.staff_account_auth_type
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "staff_account_auth_type" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
+		fk := n.AuthTypeID
+		node, ok := nodeids[fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "staff_account_auth_type" returned %v for node %v`, *fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "auth_type_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

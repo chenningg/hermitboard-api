@@ -301,7 +301,7 @@ func (atu *AuthTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if atu.mutation.AccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.AccountsTable,
 			Columns: []string{authtype.AccountsColumn},
 			Bidi:    false,
@@ -317,7 +317,7 @@ func (atu *AuthTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := atu.mutation.RemovedAccountsIDs(); len(nodes) > 0 && !atu.mutation.AccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.AccountsTable,
 			Columns: []string{authtype.AccountsColumn},
 			Bidi:    false,
@@ -336,7 +336,7 @@ func (atu *AuthTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := atu.mutation.AccountsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.AccountsTable,
 			Columns: []string{authtype.AccountsColumn},
 			Bidi:    false,
@@ -355,7 +355,7 @@ func (atu *AuthTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if atu.mutation.StaffAccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.StaffAccountsTable,
 			Columns: []string{authtype.StaffAccountsColumn},
 			Bidi:    false,
@@ -371,7 +371,7 @@ func (atu *AuthTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := atu.mutation.RemovedStaffAccountsIDs(); len(nodes) > 0 && !atu.mutation.StaffAccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.StaffAccountsTable,
 			Columns: []string{authtype.StaffAccountsColumn},
 			Bidi:    false,
@@ -390,7 +390,7 @@ func (atu *AuthTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := atu.mutation.StaffAccountsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.StaffAccountsTable,
 			Columns: []string{authtype.StaffAccountsColumn},
 			Bidi:    false,
@@ -725,7 +725,7 @@ func (atuo *AuthTypeUpdateOne) sqlSave(ctx context.Context) (_node *AuthType, er
 	if atuo.mutation.AccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.AccountsTable,
 			Columns: []string{authtype.AccountsColumn},
 			Bidi:    false,
@@ -741,7 +741,7 @@ func (atuo *AuthTypeUpdateOne) sqlSave(ctx context.Context) (_node *AuthType, er
 	if nodes := atuo.mutation.RemovedAccountsIDs(); len(nodes) > 0 && !atuo.mutation.AccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.AccountsTable,
 			Columns: []string{authtype.AccountsColumn},
 			Bidi:    false,
@@ -760,7 +760,7 @@ func (atuo *AuthTypeUpdateOne) sqlSave(ctx context.Context) (_node *AuthType, er
 	if nodes := atuo.mutation.AccountsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.AccountsTable,
 			Columns: []string{authtype.AccountsColumn},
 			Bidi:    false,
@@ -779,7 +779,7 @@ func (atuo *AuthTypeUpdateOne) sqlSave(ctx context.Context) (_node *AuthType, er
 	if atuo.mutation.StaffAccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.StaffAccountsTable,
 			Columns: []string{authtype.StaffAccountsColumn},
 			Bidi:    false,
@@ -795,7 +795,7 @@ func (atuo *AuthTypeUpdateOne) sqlSave(ctx context.Context) (_node *AuthType, er
 	if nodes := atuo.mutation.RemovedStaffAccountsIDs(); len(nodes) > 0 && !atuo.mutation.StaffAccountsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.StaffAccountsTable,
 			Columns: []string{authtype.StaffAccountsColumn},
 			Bidi:    false,
@@ -814,7 +814,7 @@ func (atuo *AuthTypeUpdateOne) sqlSave(ctx context.Context) (_node *AuthType, er
 	if nodes := atuo.mutation.StaffAccountsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
-			Inverse: true,
+			Inverse: false,
 			Table:   authtype.StaffAccountsTable,
 			Columns: []string{authtype.StaffAccountsColumn},
 			Bidi:    false,
