@@ -51,7 +51,7 @@ func (Connection) Edges() []ent.Edge {
 			Annotations(entgql.MapsTo("account")),
 		edge.From("portfolios", Portfolio.Type).
 			Ref("connections").
-			Annotations(entgql.MapsTo("portfolios")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("portfolios")),
 	}
 }
 

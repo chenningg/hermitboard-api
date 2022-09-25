@@ -46,11 +46,11 @@ func (Asset) Edges() []ent.Edge {
 			Unique().
 			Annotations(entgql.MapsTo("cryptocurrency")),
 		edge.To("transaction_bases", Transaction.Type).
-			Annotations(entgql.MapsTo("transactionBases")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("transactionBases")),
 		edge.To("transaction_quotes", Transaction.Type).
-			Annotations(entgql.MapsTo("transactionQuotes")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("transactionQuotes")),
 		edge.To("daily_asset_prices", DailyAssetPrice.Type).
-			Annotations(entgql.MapsTo("dailyAssetPrices")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("dailyAssetPrices")),
 	}
 }
 

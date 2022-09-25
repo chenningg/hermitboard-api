@@ -52,7 +52,7 @@ func (AssetClass) Fields() []ent.Field {
 func (AssetClass) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("assets", Asset.Type).
-			Annotations(entgql.MapsTo("assets")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("assets")),
 	}
 }
 

@@ -48,7 +48,7 @@ func (SourceType) Fields() []ent.Field {
 func (SourceType) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("sources", Source.Type).
-			Annotations(entgql.MapsTo("sources")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("sources")),
 	}
 }
 

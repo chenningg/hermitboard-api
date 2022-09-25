@@ -49,9 +49,9 @@ func (AuthType) Fields() []ent.Field {
 func (AuthType) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("accounts", Account.Type).
-			Annotations(entgql.MapsTo("accounts")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("accounts")),
 		edge.To("staff_accounts", StaffAccount.Type).
-			Annotations(entgql.MapsTo("staffAccounts")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("staffAccounts")),
 	}
 }
 

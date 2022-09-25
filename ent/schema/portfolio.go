@@ -55,9 +55,9 @@ func (Portfolio) Edges() []ent.Edge {
 			Required().
 			Annotations(entgql.MapsTo("account")),
 		edge.To("transactions", Transaction.Type).
-			Annotations(entgql.MapsTo("transactions")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("transactions")),
 		edge.To("connections", Connection.Type).
-			Annotations(entgql.MapsTo("connections")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("connections")),
 	}
 }
 

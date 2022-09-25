@@ -53,7 +53,7 @@ func (TransactionType) Fields() []ent.Field {
 func (TransactionType) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("transactions", Transaction.Type).
-			Annotations(entgql.MapsTo("transactions")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("transactions")),
 	}
 }
 

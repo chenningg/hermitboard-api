@@ -8,20 +8,44 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 )
 
-func (a *Account) AuthRoles(ctx context.Context) ([]*AuthRole, error) {
-	result, err := a.NamedAuthRoles(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = a.QueryAuthRoles().All(ctx)
+func (a *Account) AuthRoles(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AuthRoleOrder,
+) (*AuthRoleConnection, error) {
+	opts := []AuthRolePaginateOption{
+		WithAuthRoleOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := a.Edges.totalCount[0][alias]
+	if nodes, err := a.NamedAuthRoles(alias); err == nil || hasTotalCount {
+		pager, err := newAuthRolePager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &AuthRoleConnection{Edges: []*AuthRoleEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return a.QueryAuthRoles().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (a *Account) Portfolios(ctx context.Context) ([]*Portfolio, error) {
-	result, err := a.NamedPortfolios(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = a.QueryPortfolios().All(ctx)
+func (a *Account) Portfolios(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *PortfolioOrder,
+) (*PortfolioConnection, error) {
+	opts := []PortfolioPaginateOption{
+		WithPortfolioOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := a.Edges.totalCount[1][alias]
+	if nodes, err := a.NamedPortfolios(alias); err == nil || hasTotalCount {
+		pager, err := newPortfolioPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &PortfolioConnection{Edges: []*PortfolioEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return a.QueryPortfolios().Paginate(ctx, after, first, before, last, opts...)
 }
 
 func (a *Account) AuthType(ctx context.Context) (*AuthType, error) {
@@ -32,12 +56,24 @@ func (a *Account) AuthType(ctx context.Context) (*AuthType, error) {
 	return result, err
 }
 
-func (a *Account) Connections(ctx context.Context) ([]*Connection, error) {
-	result, err := a.NamedConnections(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = a.QueryConnections().All(ctx)
+func (a *Account) Connections(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *ConnectionOrder,
+) (*ConnectionConnection, error) {
+	opts := []ConnectionPaginateOption{
+		WithConnectionOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := a.Edges.totalCount[3][alias]
+	if nodes, err := a.NamedConnections(alias); err == nil || hasTotalCount {
+		pager, err := newConnectionPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &ConnectionConnection{Edges: []*ConnectionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return a.QueryConnections().Paginate(ctx, after, first, before, last, opts...)
 }
 
 func (a *Asset) AssetClass(ctx context.Context) (*AssetClass, error) {
@@ -56,84 +92,204 @@ func (a *Asset) Cryptocurrency(ctx context.Context) (*Cryptocurrency, error) {
 	return result, MaskNotFound(err)
 }
 
-func (a *Asset) TransactionBases(ctx context.Context) ([]*Transaction, error) {
-	result, err := a.NamedTransactionBases(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = a.QueryTransactionBases().All(ctx)
+func (a *Asset) TransactionBases(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder,
+) (*TransactionConnection, error) {
+	opts := []TransactionPaginateOption{
+		WithTransactionOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := a.Edges.totalCount[2][alias]
+	if nodes, err := a.NamedTransactionBases(alias); err == nil || hasTotalCount {
+		pager, err := newTransactionPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &TransactionConnection{Edges: []*TransactionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return a.QueryTransactionBases().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (a *Asset) TransactionQuotes(ctx context.Context) ([]*Transaction, error) {
-	result, err := a.NamedTransactionQuotes(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = a.QueryTransactionQuotes().All(ctx)
+func (a *Asset) TransactionQuotes(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder,
+) (*TransactionConnection, error) {
+	opts := []TransactionPaginateOption{
+		WithTransactionOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := a.Edges.totalCount[3][alias]
+	if nodes, err := a.NamedTransactionQuotes(alias); err == nil || hasTotalCount {
+		pager, err := newTransactionPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &TransactionConnection{Edges: []*TransactionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return a.QueryTransactionQuotes().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (a *Asset) DailyAssetPrices(ctx context.Context) ([]*DailyAssetPrice, error) {
-	result, err := a.NamedDailyAssetPrices(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = a.QueryDailyAssetPrices().All(ctx)
+func (a *Asset) DailyAssetPrices(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *DailyAssetPriceOrder,
+) (*DailyAssetPriceConnection, error) {
+	opts := []DailyAssetPricePaginateOption{
+		WithDailyAssetPriceOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := a.Edges.totalCount[4][alias]
+	if nodes, err := a.NamedDailyAssetPrices(alias); err == nil || hasTotalCount {
+		pager, err := newDailyAssetPricePager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &DailyAssetPriceConnection{Edges: []*DailyAssetPriceEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return a.QueryDailyAssetPrices().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (ac *AssetClass) Assets(ctx context.Context) ([]*Asset, error) {
-	result, err := ac.NamedAssets(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = ac.QueryAssets().All(ctx)
+func (ac *AssetClass) Assets(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AssetOrder,
+) (*AssetConnection, error) {
+	opts := []AssetPaginateOption{
+		WithAssetOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := ac.Edges.totalCount[0][alias]
+	if nodes, err := ac.NamedAssets(alias); err == nil || hasTotalCount {
+		pager, err := newAssetPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &AssetConnection{Edges: []*AssetEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return ac.QueryAssets().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (ar *AuthRole) Accounts(ctx context.Context) ([]*Account, error) {
-	result, err := ar.NamedAccounts(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = ar.QueryAccounts().All(ctx)
+func (ar *AuthRole) Accounts(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AccountOrder,
+) (*AccountConnection, error) {
+	opts := []AccountPaginateOption{
+		WithAccountOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := ar.Edges.totalCount[0][alias]
+	if nodes, err := ar.NamedAccounts(alias); err == nil || hasTotalCount {
+		pager, err := newAccountPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &AccountConnection{Edges: []*AccountEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return ar.QueryAccounts().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (ar *AuthRole) StaffAccounts(ctx context.Context) ([]*StaffAccount, error) {
-	result, err := ar.NamedStaffAccounts(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = ar.QueryStaffAccounts().All(ctx)
+func (ar *AuthRole) StaffAccounts(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *StaffAccountOrder,
+) (*StaffAccountConnection, error) {
+	opts := []StaffAccountPaginateOption{
+		WithStaffAccountOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := ar.Edges.totalCount[1][alias]
+	if nodes, err := ar.NamedStaffAccounts(alias); err == nil || hasTotalCount {
+		pager, err := newStaffAccountPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &StaffAccountConnection{Edges: []*StaffAccountEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return ar.QueryStaffAccounts().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (at *AuthType) Accounts(ctx context.Context) ([]*Account, error) {
-	result, err := at.NamedAccounts(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = at.QueryAccounts().All(ctx)
+func (at *AuthType) Accounts(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AccountOrder,
+) (*AccountConnection, error) {
+	opts := []AccountPaginateOption{
+		WithAccountOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := at.Edges.totalCount[0][alias]
+	if nodes, err := at.NamedAccounts(alias); err == nil || hasTotalCount {
+		pager, err := newAccountPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &AccountConnection{Edges: []*AccountEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return at.QueryAccounts().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (at *AuthType) StaffAccounts(ctx context.Context) ([]*StaffAccount, error) {
-	result, err := at.NamedStaffAccounts(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = at.QueryStaffAccounts().All(ctx)
+func (at *AuthType) StaffAccounts(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *StaffAccountOrder,
+) (*StaffAccountConnection, error) {
+	opts := []StaffAccountPaginateOption{
+		WithStaffAccountOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := at.Edges.totalCount[1][alias]
+	if nodes, err := at.NamedStaffAccounts(alias); err == nil || hasTotalCount {
+		pager, err := newStaffAccountPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &StaffAccountConnection{Edges: []*StaffAccountEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return at.QueryStaffAccounts().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (b *Blockchain) Cryptocurrencies(ctx context.Context) ([]*Cryptocurrency, error) {
-	result, err := b.NamedCryptocurrencies(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = b.QueryCryptocurrencies().All(ctx)
+func (b *Blockchain) Cryptocurrencies(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *CryptocurrencyOrder,
+) (*CryptocurrencyConnection, error) {
+	opts := []CryptocurrencyPaginateOption{
+		WithCryptocurrencyOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := b.Edges.totalCount[0][alias]
+	if nodes, err := b.NamedCryptocurrencies(alias); err == nil || hasTotalCount {
+		pager, err := newCryptocurrencyPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &CryptocurrencyConnection{Edges: []*CryptocurrencyEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return b.QueryCryptocurrencies().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (b *Blockchain) Transactions(ctx context.Context) ([]*Transaction, error) {
-	result, err := b.NamedTransactions(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = b.QueryTransactions().All(ctx)
+func (b *Blockchain) Transactions(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder,
+) (*TransactionConnection, error) {
+	opts := []TransactionPaginateOption{
+		WithTransactionOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := b.Edges.totalCount[1][alias]
+	if nodes, err := b.NamedTransactions(alias); err == nil || hasTotalCount {
+		pager, err := newTransactionPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &TransactionConnection{Edges: []*TransactionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return b.QueryTransactions().Paginate(ctx, after, first, before, last, opts...)
 }
 
 func (c *Connection) Account(ctx context.Context) (*Account, error) {
@@ -144,12 +300,24 @@ func (c *Connection) Account(ctx context.Context) (*Account, error) {
 	return result, err
 }
 
-func (c *Connection) Portfolios(ctx context.Context) ([]*Portfolio, error) {
-	result, err := c.NamedPortfolios(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = c.QueryPortfolios().All(ctx)
+func (c *Connection) Portfolios(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *PortfolioOrder,
+) (*PortfolioConnection, error) {
+	opts := []PortfolioPaginateOption{
+		WithPortfolioOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := c.Edges.totalCount[1][alias]
+	if nodes, err := c.NamedPortfolios(alias); err == nil || hasTotalCount {
+		pager, err := newPortfolioPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &PortfolioConnection{Edges: []*PortfolioEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return c.QueryPortfolios().Paginate(ctx, after, first, before, last, opts...)
 }
 
 func (c *Cryptocurrency) Asset(ctx context.Context) (*Asset, error) {
@@ -160,12 +328,24 @@ func (c *Cryptocurrency) Asset(ctx context.Context) (*Asset, error) {
 	return result, err
 }
 
-func (c *Cryptocurrency) Blockchains(ctx context.Context) ([]*Blockchain, error) {
-	result, err := c.NamedBlockchains(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = c.QueryBlockchains().All(ctx)
+func (c *Cryptocurrency) Blockchains(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *BlockchainOrder,
+) (*BlockchainConnection, error) {
+	opts := []BlockchainPaginateOption{
+		WithBlockchainOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := c.Edges.totalCount[1][alias]
+	if nodes, err := c.NamedBlockchains(alias); err == nil || hasTotalCount {
+		pager, err := newBlockchainPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &BlockchainConnection{Edges: []*BlockchainEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return c.QueryBlockchains().Paginate(ctx, after, first, before, last, opts...)
 }
 
 func (dap *DailyAssetPrice) Asset(ctx context.Context) (*Asset, error) {
@@ -176,12 +356,24 @@ func (dap *DailyAssetPrice) Asset(ctx context.Context) (*Asset, error) {
 	return result, err
 }
 
-func (e *Exchange) Transactions(ctx context.Context) ([]*Transaction, error) {
-	result, err := e.NamedTransactions(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = e.QueryTransactions().All(ctx)
+func (e *Exchange) Transactions(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder,
+) (*TransactionConnection, error) {
+	opts := []TransactionPaginateOption{
+		WithTransactionOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := e.Edges.totalCount[0][alias]
+	if nodes, err := e.NamedTransactions(alias); err == nil || hasTotalCount {
+		pager, err := newTransactionPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &TransactionConnection{Edges: []*TransactionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return e.QueryTransactions().Paginate(ctx, after, first, before, last, opts...)
 }
 
 func (po *Portfolio) Account(ctx context.Context) (*Account, error) {
@@ -192,20 +384,44 @@ func (po *Portfolio) Account(ctx context.Context) (*Account, error) {
 	return result, err
 }
 
-func (po *Portfolio) Transactions(ctx context.Context) ([]*Transaction, error) {
-	result, err := po.NamedTransactions(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = po.QueryTransactions().All(ctx)
+func (po *Portfolio) Transactions(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder,
+) (*TransactionConnection, error) {
+	opts := []TransactionPaginateOption{
+		WithTransactionOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := po.Edges.totalCount[1][alias]
+	if nodes, err := po.NamedTransactions(alias); err == nil || hasTotalCount {
+		pager, err := newTransactionPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &TransactionConnection{Edges: []*TransactionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return po.QueryTransactions().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (po *Portfolio) Connections(ctx context.Context) ([]*Connection, error) {
-	result, err := po.NamedConnections(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = po.QueryConnections().All(ctx)
+func (po *Portfolio) Connections(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *ConnectionOrder,
+) (*ConnectionConnection, error) {
+	opts := []ConnectionPaginateOption{
+		WithConnectionOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := po.Edges.totalCount[2][alias]
+	if nodes, err := po.NamedConnections(alias); err == nil || hasTotalCount {
+		pager, err := newConnectionPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &ConnectionConnection{Edges: []*ConnectionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return po.QueryConnections().Paginate(ctx, after, first, before, last, opts...)
 }
 
 func (s *Source) SourceType(ctx context.Context) (*SourceType, error) {
@@ -216,20 +432,44 @@ func (s *Source) SourceType(ctx context.Context) (*SourceType, error) {
 	return result, err
 }
 
-func (st *SourceType) Sources(ctx context.Context) ([]*Source, error) {
-	result, err := st.NamedSources(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = st.QuerySources().All(ctx)
+func (st *SourceType) Sources(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *SourceOrder,
+) (*SourceConnection, error) {
+	opts := []SourcePaginateOption{
+		WithSourceOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := st.Edges.totalCount[0][alias]
+	if nodes, err := st.NamedSources(alias); err == nil || hasTotalCount {
+		pager, err := newSourcePager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &SourceConnection{Edges: []*SourceEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return st.QuerySources().Paginate(ctx, after, first, before, last, opts...)
 }
 
-func (sa *StaffAccount) AuthRoles(ctx context.Context) ([]*AuthRole, error) {
-	result, err := sa.NamedAuthRoles(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = sa.QueryAuthRoles().All(ctx)
+func (sa *StaffAccount) AuthRoles(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AuthRoleOrder,
+) (*AuthRoleConnection, error) {
+	opts := []AuthRolePaginateOption{
+		WithAuthRoleOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := sa.Edges.totalCount[0][alias]
+	if nodes, err := sa.NamedAuthRoles(alias); err == nil || hasTotalCount {
+		pager, err := newAuthRolePager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &AuthRoleConnection{Edges: []*AuthRoleEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return sa.QueryAuthRoles().Paginate(ctx, after, first, before, last, opts...)
 }
 
 func (sa *StaffAccount) AuthType(ctx context.Context) (*AuthType, error) {
@@ -288,10 +528,22 @@ func (t *Transaction) Blockchain(ctx context.Context) (*Blockchain, error) {
 	return result, MaskNotFound(err)
 }
 
-func (tt *TransactionType) Transactions(ctx context.Context) ([]*Transaction, error) {
-	result, err := tt.NamedTransactions(graphql.GetFieldContext(ctx).Field.Alias)
-	if IsNotLoaded(err) {
-		result, err = tt.QueryTransactions().All(ctx)
+func (tt *TransactionType) Transactions(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder,
+) (*TransactionConnection, error) {
+	opts := []TransactionPaginateOption{
+		WithTransactionOrder(orderBy),
 	}
-	return result, err
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := tt.Edges.totalCount[0][alias]
+	if nodes, err := tt.NamedTransactions(alias); err == nil || hasTotalCount {
+		pager, err := newTransactionPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &TransactionConnection{Edges: []*TransactionEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return tt.QueryTransactions().Paginate(ctx, after, first, before, last, opts...)
 }

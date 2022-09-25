@@ -58,9 +58,9 @@ func (Account) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_roles", AuthRole.Type).
 			Required().
-			Annotations(entgql.MapsTo("authRoles")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("authRoles")),
 		edge.To("portfolios", Portfolio.Type).
-			Annotations(entgql.MapsTo("portfolios")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("portfolios")),
 		edge.From("auth_type", AuthType.Type).
 			Ref("accounts").
 			Field("auth_type_id").
@@ -68,11 +68,10 @@ func (Account) Edges() []ent.Edge {
 			Unique().
 			Annotations(entgql.MapsTo("authType")),
 		edge.To("connections", Connection.Type).
-			Annotations(entgql.MapsTo("connections")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("connections")),
 	}
 }
 
-// Check that either auth_id or password is not null.
 func (Account) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),

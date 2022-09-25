@@ -3,6 +3,9 @@ type Query
 
 type Mutation
 
+# Custom scalars
+scalar Time
+
 # Ordering direction
 enum OrderDirection {
     ASC

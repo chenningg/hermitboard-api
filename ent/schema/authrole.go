@@ -54,10 +54,10 @@ func (AuthRole) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("accounts", Account.Type).
 			Ref("auth_roles").
-			Annotations(entgql.MapsTo("accounts")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("accounts")),
 		edge.From("staff_accounts", StaffAccount.Type).
 			Ref("auth_roles").
-			Annotations(entgql.MapsTo("staffAccounts")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("staffAccounts")),
 	}
 }
 

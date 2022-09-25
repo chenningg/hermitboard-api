@@ -56,7 +56,7 @@ func (Cryptocurrency) Edges() []ent.Edge {
 		edge.From("blockchains", Blockchain.Type).
 			Ref("cryptocurrencies").
 			Required().
-			Annotations(entgql.MapsTo("blockchains")),
+			Annotations(entgql.RelayConnection(), entgql.MapsTo("blockchains")),
 	}
 }
 
