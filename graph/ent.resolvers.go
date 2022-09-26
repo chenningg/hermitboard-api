@@ -8,7 +8,6 @@ import (
 	"fmt"
 
 	"github.com/chenningg/hermitboard-api/ent"
-	"github.com/chenningg/hermitboard-api/graph/generated"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -102,7 +101,7 @@ func (r *queryResolver) Transactiontypes(ctx context.Context, after *ent.Cursor,
 	panic(fmt.Errorf("not implemented"))
 }
 
-// Query returns generated.QueryResolver implementation.
-func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
+// Query returns QueryResolver implementation.
+func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type queryResolver struct{ *Resolver }

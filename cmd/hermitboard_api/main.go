@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/chenningg/hermitboard-api/db"
+	"github.com/chenningg/hermitboard-api/graph"
 	"net/http"
 	"os"
 
@@ -43,12 +44,13 @@ func main() {
 	// Defer closing of database connection till end of main function.
 	defer dbService.Close()
 
-	// Run the web server
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &resolver.Resolver{}}))
+	// Initialize the web server and routes.
+	srv := handler.NewDefaultServer(graph.NewSchema(dbService.Client()))
 
-	http.Handle("/playground", playground.Handler("GraphQL playground", "/api"))
+	http.Handle("/playground", playground.Handler("Hermitboard API", "/api"))
 	http.Handle("/api", srv)
 
+	// Start the server.
 	logger.Info(
 		fmt.Sprintf(
 			"connect to http://%s:%s/playground for GraphQL playground", config.Server.Host, config.Server.Port,
@@ -56,5 +58,13 @@ func main() {
 		"host", config.Server.Host,
 		"port", config.Server.Port,
 	)
-	logger.Error(http.ListenAndServe(config.Server.Host+":"+config.Server.Port, nil), "main(): server error")
+
+	err = http.ListenAndServe(config.Server.Host+":"+config.Server.Port, nil)
+	if err != nil {
+		logger.Error(
+			err, "main(): server error",
+			"host", config.Server.Host,
+			"port", config.Server.Port,
+		)
+	}
 }

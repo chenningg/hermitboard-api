@@ -6,8 +6,8 @@ schema:
 # Where should the generated server code go?
 exec:
   layout: follow-schema
-  dir: graph/generated
-  package: generated
+  dir: graph
+  package: graph
 
 # Uncomment to enable federation
 # federation:
