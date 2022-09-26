@@ -25,7 +25,7 @@ func NewConfigService(logger logr.Logger) (*ConfigService, error) {
 
 	// Load in configuration from .env or environment variables.
 	configService.logger = logger
-	configService.logger.V(2).Info("initializing config service")
+	configService.logger.V(2).Info("NewConfigService(): initializing config service")
 
 	// Load in environment variables.
 	if err := configService.loadEnv(); err != nil {

@@ -14,7 +14,8 @@ func seedAuthRoles(ctx context.Context, client *ent.Client) error {
 	}
 	seedDescriptions := []string{
 		"A demo role with restricted rights.", "A free role with limited feature access.", "A paying Plus role.",
-		"A paying Pro role.", "A customer support role with limited permissions.",
+		"A paying Pro role.", "An Enterprise role, generally with a contract.",
+		"A customer support role with limited permissions.",
 		"An administrative role with elevated permissions.", "A super administrative role with full rights.",
 	}
 
