@@ -25,7 +25,7 @@ func main() {
 	zerologr.NameFieldName = "logger"
 	zerologr.NameSeparator = "/"
 	zl := zerolog.New(os.Stderr).With().Timestamp().Logger()
-	var logger logr.Logger = zerologr.New(&zl).WithName("hermitboard-api").WithName("migrate")
+	var logger logr.Logger = zerologr.New(&zl).WithName("hermitboard-api").WithName("atlas-migrate")
 
 	// Load in configuration.
 	configService, err := config.NewConfigService(logger.WithName("config"))
@@ -66,7 +66,7 @@ func main() {
 	// Generate migrations using Atlas support for Postgres
 	err = migrate.NamedDiff(ctx, config.Db.Url, os.Args[1], opts...)
 	if err != nil {
-		logger.Error(err, "failed generating migration file", "migrationFilename", os.Args[1])
+		logger.Error(err, "migrate: failed generating migration file", "migrationFilename", os.Args[1])
 		os.Exit(1)
 	}
 }

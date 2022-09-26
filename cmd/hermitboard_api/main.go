@@ -13,8 +13,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/chenningg/hermitboard-api/graph/generated"
-	"github.com/chenningg/hermitboard-api/graph/resolver"
 )
 
 func main() {

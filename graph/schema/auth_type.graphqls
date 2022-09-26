@@ -1,7 +1,0 @@
-type Account {
-    id: ID!
-    authTypeId: ID!
-    nickname: String!
-    email: Boolean!
-
-}

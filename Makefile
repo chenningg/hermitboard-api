@@ -14,17 +14,12 @@ install-ent:
 
 # Creates a new Ent entity.
 .PHONY: ent-new
-ent-new:
+ent-new: install-ent
 	go run -mod=mod entgo.io/ent/cmd/ent init $(name)
-
-# Runs Ent codegen.
-.PHONY: ent-gen
-ent-gen:
-	go generate ./ent
 
 # Get database schema
 .PHONY: ent-schema
-ent-schema:
+ent-schema: install-ent
 	go run -mod=mod entgo.io/ent/cmd/ent describe ./ent/schema
 
 # Installs Atlas migration
@@ -34,7 +29,7 @@ install-atlas:
 
 # Runs Ent Atlas migration.
 .PHONY: atlas-gen
-atlas-gen:
+atlas-gen: install-atlas
 	go run -mod=mod ent/migrate/main.go $(name)
 
 # Lints Atlas migration.
@@ -90,9 +85,12 @@ atlas-apply-dry:
 install-gqlgen:
 	go install github.com/99designs/gqlgen@latest
 
-.PHONY: gqlgen-gen
-gqlgen: install-gqlgen
-	go generate ./graph
+# ===================================
+# Codegen
+# ===================================
+.PHONY: gen
+gen: install-ent install-gqlgen
+	go generate ./...
 
 # ===================================
 # Server

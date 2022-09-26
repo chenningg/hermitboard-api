@@ -9,10 +9,11 @@ import (
 )
 
 func (a *Account) AuthRoles(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AuthRoleOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AuthRoleOrder, where *AuthRoleWhereInput,
 ) (*AuthRoleConnection, error) {
 	opts := []AuthRolePaginateOption{
 		WithAuthRoleOrder(orderBy),
+		WithAuthRoleFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := a.Edges.totalCount[0][alias]
@@ -29,10 +30,11 @@ func (a *Account) AuthRoles(
 }
 
 func (a *Account) Portfolios(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *PortfolioOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *PortfolioOrder, where *PortfolioWhereInput,
 ) (*PortfolioConnection, error) {
 	opts := []PortfolioPaginateOption{
 		WithPortfolioOrder(orderBy),
+		WithPortfolioFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := a.Edges.totalCount[1][alias]
@@ -57,10 +59,11 @@ func (a *Account) AuthType(ctx context.Context) (*AuthType, error) {
 }
 
 func (a *Account) Connections(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *ConnectionOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *ConnectionOrder, where *ConnectionWhereInput,
 ) (*ConnectionConnection, error) {
 	opts := []ConnectionPaginateOption{
 		WithConnectionOrder(orderBy),
+		WithConnectionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := a.Edges.totalCount[3][alias]
@@ -93,10 +96,11 @@ func (a *Asset) Cryptocurrency(ctx context.Context) (*Cryptocurrency, error) {
 }
 
 func (a *Asset) TransactionBases(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder, where *TransactionWhereInput,
 ) (*TransactionConnection, error) {
 	opts := []TransactionPaginateOption{
 		WithTransactionOrder(orderBy),
+		WithTransactionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := a.Edges.totalCount[2][alias]
@@ -113,10 +117,11 @@ func (a *Asset) TransactionBases(
 }
 
 func (a *Asset) TransactionQuotes(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder, where *TransactionWhereInput,
 ) (*TransactionConnection, error) {
 	opts := []TransactionPaginateOption{
 		WithTransactionOrder(orderBy),
+		WithTransactionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := a.Edges.totalCount[3][alias]
@@ -133,10 +138,11 @@ func (a *Asset) TransactionQuotes(
 }
 
 func (a *Asset) DailyAssetPrices(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *DailyAssetPriceOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *DailyAssetPriceOrder, where *DailyAssetPriceWhereInput,
 ) (*DailyAssetPriceConnection, error) {
 	opts := []DailyAssetPricePaginateOption{
 		WithDailyAssetPriceOrder(orderBy),
+		WithDailyAssetPriceFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := a.Edges.totalCount[4][alias]
@@ -153,10 +159,11 @@ func (a *Asset) DailyAssetPrices(
 }
 
 func (ac *AssetClass) Assets(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AssetOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AssetOrder, where *AssetWhereInput,
 ) (*AssetConnection, error) {
 	opts := []AssetPaginateOption{
 		WithAssetOrder(orderBy),
+		WithAssetFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := ac.Edges.totalCount[0][alias]
@@ -173,10 +180,11 @@ func (ac *AssetClass) Assets(
 }
 
 func (ar *AuthRole) Accounts(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AccountOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AccountOrder, where *AccountWhereInput,
 ) (*AccountConnection, error) {
 	opts := []AccountPaginateOption{
 		WithAccountOrder(orderBy),
+		WithAccountFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := ar.Edges.totalCount[0][alias]
@@ -193,10 +201,11 @@ func (ar *AuthRole) Accounts(
 }
 
 func (ar *AuthRole) StaffAccounts(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *StaffAccountOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *StaffAccountOrder, where *StaffAccountWhereInput,
 ) (*StaffAccountConnection, error) {
 	opts := []StaffAccountPaginateOption{
 		WithStaffAccountOrder(orderBy),
+		WithStaffAccountFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := ar.Edges.totalCount[1][alias]
@@ -213,10 +222,11 @@ func (ar *AuthRole) StaffAccounts(
 }
 
 func (at *AuthType) Accounts(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AccountOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AccountOrder, where *AccountWhereInput,
 ) (*AccountConnection, error) {
 	opts := []AccountPaginateOption{
 		WithAccountOrder(orderBy),
+		WithAccountFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := at.Edges.totalCount[0][alias]
@@ -233,10 +243,11 @@ func (at *AuthType) Accounts(
 }
 
 func (at *AuthType) StaffAccounts(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *StaffAccountOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *StaffAccountOrder, where *StaffAccountWhereInput,
 ) (*StaffAccountConnection, error) {
 	opts := []StaffAccountPaginateOption{
 		WithStaffAccountOrder(orderBy),
+		WithStaffAccountFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := at.Edges.totalCount[1][alias]
@@ -253,10 +264,11 @@ func (at *AuthType) StaffAccounts(
 }
 
 func (b *Blockchain) Cryptocurrencies(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *CryptocurrencyOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *CryptocurrencyOrder, where *CryptocurrencyWhereInput,
 ) (*CryptocurrencyConnection, error) {
 	opts := []CryptocurrencyPaginateOption{
 		WithCryptocurrencyOrder(orderBy),
+		WithCryptocurrencyFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := b.Edges.totalCount[0][alias]
@@ -273,10 +285,11 @@ func (b *Blockchain) Cryptocurrencies(
 }
 
 func (b *Blockchain) Transactions(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder, where *TransactionWhereInput,
 ) (*TransactionConnection, error) {
 	opts := []TransactionPaginateOption{
 		WithTransactionOrder(orderBy),
+		WithTransactionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := b.Edges.totalCount[1][alias]
@@ -301,10 +314,11 @@ func (c *Connection) Account(ctx context.Context) (*Account, error) {
 }
 
 func (c *Connection) Portfolios(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *PortfolioOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *PortfolioOrder, where *PortfolioWhereInput,
 ) (*PortfolioConnection, error) {
 	opts := []PortfolioPaginateOption{
 		WithPortfolioOrder(orderBy),
+		WithPortfolioFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := c.Edges.totalCount[1][alias]
@@ -329,10 +343,11 @@ func (c *Cryptocurrency) Asset(ctx context.Context) (*Asset, error) {
 }
 
 func (c *Cryptocurrency) Blockchains(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *BlockchainOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *BlockchainOrder, where *BlockchainWhereInput,
 ) (*BlockchainConnection, error) {
 	opts := []BlockchainPaginateOption{
 		WithBlockchainOrder(orderBy),
+		WithBlockchainFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := c.Edges.totalCount[1][alias]
@@ -357,10 +372,11 @@ func (dap *DailyAssetPrice) Asset(ctx context.Context) (*Asset, error) {
 }
 
 func (e *Exchange) Transactions(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder, where *TransactionWhereInput,
 ) (*TransactionConnection, error) {
 	opts := []TransactionPaginateOption{
 		WithTransactionOrder(orderBy),
+		WithTransactionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := e.Edges.totalCount[0][alias]
@@ -385,10 +401,11 @@ func (po *Portfolio) Account(ctx context.Context) (*Account, error) {
 }
 
 func (po *Portfolio) Transactions(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder, where *TransactionWhereInput,
 ) (*TransactionConnection, error) {
 	opts := []TransactionPaginateOption{
 		WithTransactionOrder(orderBy),
+		WithTransactionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := po.Edges.totalCount[1][alias]
@@ -405,10 +422,11 @@ func (po *Portfolio) Transactions(
 }
 
 func (po *Portfolio) Connections(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *ConnectionOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *ConnectionOrder, where *ConnectionWhereInput,
 ) (*ConnectionConnection, error) {
 	opts := []ConnectionPaginateOption{
 		WithConnectionOrder(orderBy),
+		WithConnectionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := po.Edges.totalCount[2][alias]
@@ -433,10 +451,11 @@ func (s *Source) SourceType(ctx context.Context) (*SourceType, error) {
 }
 
 func (st *SourceType) Sources(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *SourceOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *SourceOrder, where *SourceWhereInput,
 ) (*SourceConnection, error) {
 	opts := []SourcePaginateOption{
 		WithSourceOrder(orderBy),
+		WithSourceFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := st.Edges.totalCount[0][alias]
@@ -453,10 +472,11 @@ func (st *SourceType) Sources(
 }
 
 func (sa *StaffAccount) AuthRoles(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AuthRoleOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AuthRoleOrder, where *AuthRoleWhereInput,
 ) (*AuthRoleConnection, error) {
 	opts := []AuthRolePaginateOption{
 		WithAuthRoleOrder(orderBy),
+		WithAuthRoleFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := sa.Edges.totalCount[0][alias]
@@ -529,10 +549,11 @@ func (t *Transaction) Blockchain(ctx context.Context) (*Blockchain, error) {
 }
 
 func (tt *TransactionType) Transactions(
-	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder,
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *TransactionOrder, where *TransactionWhereInput,
 ) (*TransactionConnection, error) {
 	opts := []TransactionPaginateOption{
 		WithTransactionOrder(orderBy),
+		WithTransactionFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
 	totalCount, hasTotalCount := tt.Edges.totalCount[0][alias]

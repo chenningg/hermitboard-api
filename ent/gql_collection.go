@@ -47,7 +47,7 @@ func (a *AccountQuery) collectField(ctx context.Context, op *graphql.OperationCo
 				path  = append(path, alias)
 				query = &AuthRoleQuery{config: a.config}
 			)
-			args := newAuthRolePaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newAuthRolePaginateArgs(fieldArgs(ctx, new(AuthRoleWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -134,7 +134,7 @@ func (a *AccountQuery) collectField(ctx context.Context, op *graphql.OperationCo
 				path  = append(path, alias)
 				query = &PortfolioQuery{config: a.config}
 			)
-			args := newPortfolioPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newPortfolioPaginateArgs(fieldArgs(ctx, new(PortfolioWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -227,7 +227,7 @@ func (a *AccountQuery) collectField(ctx context.Context, op *graphql.OperationCo
 				path  = append(path, alias)
 				query = &ConnectionQuery{config: a.config}
 			)
-			args := newConnectionPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newConnectionPaginateArgs(fieldArgs(ctx, new(ConnectionWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -354,6 +354,9 @@ func newAccountPaginateArgs(rv map[string]interface{}) *accountPaginateArgs {
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*AccountWhereInput); ok {
+		args.opts = append(args.opts, WithAccountFilter(v.Filter))
+	}
 	return args
 }
 
@@ -399,7 +402,7 @@ func (a *AssetQuery) collectField(ctx context.Context, op *graphql.OperationCont
 				path  = append(path, alias)
 				query = &TransactionQuery{config: a.config}
 			)
-			args := newTransactionPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newTransactionPaginateArgs(fieldArgs(ctx, new(TransactionWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -482,7 +485,7 @@ func (a *AssetQuery) collectField(ctx context.Context, op *graphql.OperationCont
 				path  = append(path, alias)
 				query = &TransactionQuery{config: a.config}
 			)
-			args := newTransactionPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newTransactionPaginateArgs(fieldArgs(ctx, new(TransactionWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -565,7 +568,7 @@ func (a *AssetQuery) collectField(ctx context.Context, op *graphql.OperationCont
 				path  = append(path, alias)
 				query = &DailyAssetPriceQuery{config: a.config}
 			)
-			args := newDailyAssetPricePaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newDailyAssetPricePaginateArgs(fieldArgs(ctx, new(DailyAssetPriceWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -692,6 +695,9 @@ func newAssetPaginateArgs(rv map[string]interface{}) *assetPaginateArgs {
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*AssetWhereInput); ok {
+		args.opts = append(args.opts, WithAssetFilter(v.Filter))
+	}
 	return args
 }
 
@@ -717,7 +723,7 @@ func (ac *AssetClassQuery) collectField(ctx context.Context, op *graphql.Operati
 				path  = append(path, alias)
 				query = &AssetQuery{config: ac.config}
 			)
-			args := newAssetPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newAssetPaginateArgs(fieldArgs(ctx, new(AssetWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -844,6 +850,9 @@ func newAssetClassPaginateArgs(rv map[string]interface{}) *assetclassPaginateArg
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*AssetClassWhereInput); ok {
+		args.opts = append(args.opts, WithAssetClassFilter(v.Filter))
+	}
 	return args
 }
 
@@ -869,7 +878,7 @@ func (ar *AuthRoleQuery) collectField(ctx context.Context, op *graphql.Operation
 				path  = append(path, alias)
 				query = &AccountQuery{config: ar.config}
 			)
-			args := newAccountPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newAccountPaginateArgs(fieldArgs(ctx, new(AccountWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -956,7 +965,7 @@ func (ar *AuthRoleQuery) collectField(ctx context.Context, op *graphql.Operation
 				path  = append(path, alias)
 				query = &StaffAccountQuery{config: ar.config}
 			)
-			args := newStaffAccountPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newStaffAccountPaginateArgs(fieldArgs(ctx, new(StaffAccountWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -1087,6 +1096,9 @@ func newAuthRolePaginateArgs(rv map[string]interface{}) *authrolePaginateArgs {
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*AuthRoleWhereInput); ok {
+		args.opts = append(args.opts, WithAuthRoleFilter(v.Filter))
+	}
 	return args
 }
 
@@ -1112,7 +1124,7 @@ func (at *AuthTypeQuery) collectField(ctx context.Context, op *graphql.Operation
 				path  = append(path, alias)
 				query = &AccountQuery{config: at.config}
 			)
-			args := newAccountPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newAccountPaginateArgs(fieldArgs(ctx, new(AccountWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -1195,7 +1207,7 @@ func (at *AuthTypeQuery) collectField(ctx context.Context, op *graphql.Operation
 				path  = append(path, alias)
 				query = &StaffAccountQuery{config: at.config}
 			)
-			args := newStaffAccountPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newStaffAccountPaginateArgs(fieldArgs(ctx, new(StaffAccountWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -1322,6 +1334,9 @@ func newAuthTypePaginateArgs(rv map[string]interface{}) *authtypePaginateArgs {
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*AuthTypeWhereInput); ok {
+		args.opts = append(args.opts, WithAuthTypeFilter(v.Filter))
+	}
 	return args
 }
 
@@ -1347,7 +1362,7 @@ func (b *BlockchainQuery) collectField(ctx context.Context, op *graphql.Operatio
 				path  = append(path, alias)
 				query = &CryptocurrencyQuery{config: b.config}
 			)
-			args := newCryptocurrencyPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newCryptocurrencyPaginateArgs(fieldArgs(ctx, new(CryptocurrencyWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -1434,7 +1449,7 @@ func (b *BlockchainQuery) collectField(ctx context.Context, op *graphql.Operatio
 				path  = append(path, alias)
 				query = &TransactionQuery{config: b.config}
 			)
-			args := newTransactionPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newTransactionPaginateArgs(fieldArgs(ctx, new(TransactionWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -1561,6 +1576,9 @@ func newBlockchainPaginateArgs(rv map[string]interface{}) *blockchainPaginateArg
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*BlockchainWhereInput); ok {
+		args.opts = append(args.opts, WithBlockchainFilter(v.Filter))
+	}
 	return args
 }
 
@@ -1596,7 +1614,7 @@ func (c *ConnectionQuery) collectField(ctx context.Context, op *graphql.Operatio
 				path  = append(path, alias)
 				query = &PortfolioQuery{config: c.config}
 			)
-			args := newPortfolioPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newPortfolioPaginateArgs(fieldArgs(ctx, new(PortfolioWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -1727,6 +1745,9 @@ func newConnectionPaginateArgs(rv map[string]interface{}) *connectionPaginateArg
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*ConnectionWhereInput); ok {
+		args.opts = append(args.opts, WithConnectionFilter(v.Filter))
+	}
 	return args
 }
 
@@ -1762,7 +1783,7 @@ func (c *CryptocurrencyQuery) collectField(ctx context.Context, op *graphql.Oper
 				path  = append(path, alias)
 				query = &BlockchainQuery{config: c.config}
 			)
-			args := newBlockchainPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newBlockchainPaginateArgs(fieldArgs(ctx, new(BlockchainWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -1893,6 +1914,9 @@ func newCryptocurrencyPaginateArgs(rv map[string]interface{}) *cryptocurrencyPag
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*CryptocurrencyWhereInput); ok {
+		args.opts = append(args.opts, WithCryptocurrencyFilter(v.Filter))
+	}
 	return args
 }
 
@@ -1972,6 +1996,9 @@ func newDailyAssetPricePaginateArgs(rv map[string]interface{}) *dailyassetpriceP
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*DailyAssetPriceWhereInput); ok {
+		args.opts = append(args.opts, WithDailyAssetPriceFilter(v.Filter))
+	}
 	return args
 }
 
@@ -1997,7 +2024,7 @@ func (e *ExchangeQuery) collectField(ctx context.Context, op *graphql.OperationC
 				path  = append(path, alias)
 				query = &TransactionQuery{config: e.config}
 			)
-			args := newTransactionPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newTransactionPaginateArgs(fieldArgs(ctx, new(TransactionWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -2124,6 +2151,9 @@ func newExchangePaginateArgs(rv map[string]interface{}) *exchangePaginateArgs {
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*ExchangeWhereInput); ok {
+		args.opts = append(args.opts, WithExchangeFilter(v.Filter))
+	}
 	return args
 }
 
@@ -2159,7 +2189,7 @@ func (po *PortfolioQuery) collectField(ctx context.Context, op *graphql.Operatio
 				path  = append(path, alias)
 				query = &TransactionQuery{config: po.config}
 			)
-			args := newTransactionPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newTransactionPaginateArgs(fieldArgs(ctx, new(TransactionWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -2242,7 +2272,7 @@ func (po *PortfolioQuery) collectField(ctx context.Context, op *graphql.Operatio
 				path  = append(path, alias)
 				query = &ConnectionQuery{config: po.config}
 			)
-			args := newConnectionPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newConnectionPaginateArgs(fieldArgs(ctx, new(ConnectionWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -2373,6 +2403,9 @@ func newPortfolioPaginateArgs(rv map[string]interface{}) *portfolioPaginateArgs 
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*PortfolioWhereInput); ok {
+		args.opts = append(args.opts, WithPortfolioFilter(v.Filter))
+	}
 	return args
 }
 
@@ -2452,6 +2485,9 @@ func newSourcePaginateArgs(rv map[string]interface{}) *sourcePaginateArgs {
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*SourceWhereInput); ok {
+		args.opts = append(args.opts, WithSourceFilter(v.Filter))
+	}
 	return args
 }
 
@@ -2477,7 +2513,7 @@ func (st *SourceTypeQuery) collectField(ctx context.Context, op *graphql.Operati
 				path  = append(path, alias)
 				query = &SourceQuery{config: st.config}
 			)
-			args := newSourcePaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newSourcePaginateArgs(fieldArgs(ctx, new(SourceWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -2604,6 +2640,9 @@ func newSourceTypePaginateArgs(rv map[string]interface{}) *sourcetypePaginateArg
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*SourceTypeWhereInput); ok {
+		args.opts = append(args.opts, WithSourceTypeFilter(v.Filter))
+	}
 	return args
 }
 
@@ -2629,7 +2668,7 @@ func (sa *StaffAccountQuery) collectField(ctx context.Context, op *graphql.Opera
 				path  = append(path, alias)
 				query = &AuthRoleQuery{config: sa.config}
 			)
-			args := newAuthRolePaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newAuthRolePaginateArgs(fieldArgs(ctx, new(AuthRoleWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -2770,6 +2809,9 @@ func newStaffAccountPaginateArgs(rv map[string]interface{}) *staffaccountPaginat
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*StaffAccountWhereInput); ok {
+		args.opts = append(args.opts, WithStaffAccountFilter(v.Filter))
+	}
 	return args
 }
 
@@ -2899,6 +2941,9 @@ func newTransactionPaginateArgs(rv map[string]interface{}) *transactionPaginateA
 			}
 		}
 	}
+	if v, ok := rv[whereField].(*TransactionWhereInput); ok {
+		args.opts = append(args.opts, WithTransactionFilter(v.Filter))
+	}
 	return args
 }
 
@@ -2924,7 +2969,7 @@ func (tt *TransactionTypeQuery) collectField(ctx context.Context, op *graphql.Op
 				path  = append(path, alias)
 				query = &TransactionQuery{config: tt.config}
 			)
-			args := newTransactionPaginateArgs(fieldArgs(ctx, nil, path...))
+			args := newTransactionPaginateArgs(fieldArgs(ctx, new(TransactionWhereInput), path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -3050,6 +3095,9 @@ func newTransactionTypePaginateArgs(rv map[string]interface{}) *transactiontypeP
 				args.opts = append(args.opts, WithTransactionTypeOrder(v))
 			}
 		}
+	}
+	if v, ok := rv[whereField].(*TransactionTypeWhereInput); ok {
+		args.opts = append(args.opts, WithTransactionTypeFilter(v.Filter))
 	}
 	return args
 }
