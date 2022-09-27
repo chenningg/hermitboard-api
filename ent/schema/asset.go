@@ -5,9 +5,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
-	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
-	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // Asset holds the schema definition for the Asset entity.
@@ -27,30 +25,29 @@ func (Asset) Mixin() []ent.Mixin {
 
 // Fields of the Asset.
 func (Asset) Fields() []ent.Field {
-	return []ent.Field{
-		field.String("asset_class_id").
-			GoType(pulid.PULID("")),
-	}
+	return nil
 }
 
 // Edges of the Asset.
 func (Asset) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("asset_class", AssetClass.Type).
-			Ref("assets").
-			Field("asset_class_id").
+		edge.To("asset_class", AssetClass.Type).
 			Unique().
 			Required().
-			Annotations(entgql.MapsTo("assetClass")),
+			Annotations(
+				entgql.MapsTo("assetClass"),
+			),
 		edge.To("cryptocurrency", Cryptocurrency.Type).
 			Unique().
-			Annotations(entgql.MapsTo("cryptocurrency")),
-		edge.To("transaction_bases", Transaction.Type).
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("transactionBases")),
-		edge.To("transaction_quotes", Transaction.Type).
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("transactionQuotes")),
+			Annotations(
+				entgql.MapsTo("cryptocurrency"),
+				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput|entgql.SkipOrderField),
+			),
 		edge.To("daily_asset_prices", DailyAssetPrice.Type).
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("dailyAssetPrices")),
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("dailyAssetPrices"),
+				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput|entgql.SkipOrderField),
+			),
 	}
 }
 

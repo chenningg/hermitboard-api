@@ -33868,6 +33868,11 @@ func (ec *executionContext) unmarshalNConnectionWhereInput2ᚖgithubᚗcomᚋche
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateAccountInput2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCreateAccountInput(ctx context.Context, v interface{}) (ent.CreateAccountInput, error) {
+	res, err := ec.unmarshalInputCreateAccountInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNCryptocurrencyConnection2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCryptocurrencyConnection(ctx context.Context, sel ast.SelectionSet, v ent.CryptocurrencyConnection) graphql.Marshaler {
 	return ec._CryptocurrencyConnection(ctx, sel, &v)
 }

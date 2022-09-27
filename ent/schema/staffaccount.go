@@ -1,9 +1,9 @@
 package schema
 
 import (
-	"entgo.io/contrib/entgql"
-	"github.com/chenningg/hermitboard-api/pulid"
 	"time"
+
+	"entgo.io/contrib/entgql"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
@@ -38,15 +38,14 @@ func (StaffAccount) Fields() []ent.Field {
 			NotEmpty(),
 		field.String("password").
 			Sensitive().
-			Comment("Hashed and salted password using Bcrypt.").
 			Optional().
 			Nillable().
-			NotEmpty(),
+			NotEmpty().
+			Annotations(entgql.Skip(entgql.SkipType | entgql.SkipWhereInput | entgql.SkipOrderField)),
 		field.Time("password_updated_at").
 			Default(time.Now).
-			UpdateDefault(time.Now),
-		field.String("auth_type_id").
-			GoType(pulid.PULID("")),
+			UpdateDefault(time.Now).
+			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
 	}
 }
 
@@ -54,10 +53,11 @@ func (StaffAccount) Fields() []ent.Field {
 func (StaffAccount) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_roles", AuthRole.Type).
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("authRoles")),
-		edge.From("auth_type", AuthType.Type).
-			Ref("staff_accounts").
-			Field("auth_type_id").
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("authRoles"),
+				entgql.Skip(entgql.SkipMutationCreateInput),
+			),
+		edge.To("auth_type", AuthType.Type).
 			Required().
 			Unique().
 			Annotations(entgql.MapsTo("authType")),

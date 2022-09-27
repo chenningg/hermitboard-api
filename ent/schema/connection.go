@@ -19,7 +19,7 @@ type Connection struct {
 // Adds id, created_at and updated_at fields.
 func (Connection) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.PULIDMixinWithPrefix("PTF"),
+		mixin.PULIDMixinWithPrefix("CNN"),
 		mixin.CreatedAtMixin{},
 		mixin.UpdatedAtMixin{},
 		mixin.DeletedAtMixin{},

@@ -15,65 +15,53 @@ import (
 type PULID string
 
 // Separator between prefix and the ULID.
-const separator = '_'
+const PrefixLength = 3
+const Separator = '_'
 
 // ErrIncorrectPULIDFormat is returned when the PULID is not in the correct format.
 var ErrIncorrectPULIDFormat = fmt.Errorf("pulid: incorrect format")
 
 // Creates a new PULID.
 func NewPULID(prefix string) PULID {
-	return PULID(fmt.Sprintf("%s%c%s", strings.ToUpper(prefix), separator, ulid.Make().String()))
+	return PULID(fmt.Sprintf("%s%c%s", strings.ToUpper(prefix), Separator, ulid.Make().String()))
 }
 
-// ParsePrefix returns the prefix from a Prefixed-ULID.
-func ParsePrefix(pulid PULID) (string, error) {
-	separatorIdx := strings.IndexRune(pulid.String(), separator)
+// ParsePULID returns the prefix and ULID from a PULID.
+func ParsePULID(pulid PULID) (string, string, error) {
+	separatorIdx := strings.IndexRune(pulid.String(), Separator)
 
 	// If separator is not found, return error
 	if separatorIdx == -1 {
-		return "", fmt.Errorf("pulid.ParsePrefix(): missing separator '%c': %w", separator, ErrIncorrectPULIDFormat)
+		return "", "", fmt.Errorf("pulid.ParsePULID(): missing separator '%c': %w", Separator, ErrIncorrectPULIDFormat)
 	}
 
-	return string(pulid[:separatorIdx]), nil
-}
-
-// ParseULID returns the ULID from a Prefixed-ULID.
-func ParseULID(pulid PULID) (string, error) {
-	separatorIdx := strings.IndexRune(pulid.String(), separator)
-
-	// If separator is not found, return error
-	if separatorIdx == -1 {
-		return "", fmt.Errorf("pulid.ParseULID(): missing separator '%c': %w", separator, ErrIncorrectPULIDFormat)
-	}
-
-	return string(pulid[separatorIdx:]), nil
+	return string(pulid[:separatorIdx]), string(pulid[separatorIdx+1:]), nil
 }
 
 // IsAPULID checks if this is a valid PULID.
 func IsAPULID(pulid PULID) error {
-	prefix, err := ParsePrefix(pulid)
+	prefix, id, err := ParsePULID(pulid)
 	if err != nil {
 		return fmt.Errorf("pulid.IsAPULID(): %w, %v", ErrIncorrectPULIDFormat, err)
 	}
 
-	id, err := ParseULID(pulid)
-	if err != nil {
-		return fmt.Errorf("pulid.IsAPULID(): %w, %v", ErrIncorrectPULIDFormat, err)
-	}
-
-	if len(prefix) != 3 {
-		return fmt.Errorf("pulid.IsAPULID(): prefix must be 3 alphabetic characters: %w", ErrIncorrectPULIDFormat)
+	if len(prefix) != PrefixLength {
+		return fmt.Errorf(
+			"pulid.IsAPULID(): prefix must be %d alphabetic characters: %w", PrefixLength, ErrIncorrectPULIDFormat,
+		)
 	}
 
 	for _, chr := range prefix {
 		if !unicode.IsLetter(chr) {
-			return fmt.Errorf("pulid.IsAPULID(): prefix must be 3 alphabetic characters: %w", ErrIncorrectPULIDFormat)
+			return fmt.Errorf(
+				"pulid.IsAPULID(): prefix must be %d alphabetic characters: %w", PrefixLength, ErrIncorrectPULIDFormat,
+			)
 		}
 	}
 
 	_, err = ulid.ParseStrict(id)
 	if err != nil {
-		return fmt.Errorf("pulid.IsAPULID(): ulid is not valid: %v", err)
+		return fmt.Errorf("pulid.IsAPULID(): ulid portion of the PULID is not valid: %v", err)
 	}
 
 	return nil

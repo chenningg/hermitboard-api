@@ -35,8 +35,6 @@ func (Transaction) Fields() []ent.Field {
 			GoType(pulid.PULID("")).
 			Optional().
 			Nillable(),
-		field.String("transaction_type_id").
-			GoType(pulid.PULID("")),
 		field.String("exchange_id").
 			GoType(pulid.PULID("")),
 		field.String("portfolio_id").
@@ -53,20 +51,16 @@ func (Transaction) Fields() []ent.Field {
 // Edges of the Transaction.
 func (Transaction) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("transaction_type", TransactionType.Type).
-			Ref("transactions").
-			Field("transaction_type_id").
+		edge.To("transaction_type", TransactionType.Type).
 			Unique().
 			Required().
 			Annotations(entgql.MapsTo("transactionType")),
-		edge.From("base_asset", Asset.Type).
-			Ref("transaction_bases").
+		edge.To("base_asset", Asset.Type).
 			Field("base_asset_id").
 			Required().
 			Unique().
 			Annotations(entgql.MapsTo("baseAsset")),
-		edge.From("quote_asset", Asset.Type).
-			Ref("transaction_quotes").
+		edge.To("quote_asset", Asset.Type).
 			Field("quote_asset_id").
 			Unique().
 			Annotations(entgql.MapsTo("quoteAsset")),

@@ -1,8 +1,9 @@
 package mixin
 
 import (
-	"github.com/chenningg/hermitboard-api/pulid"
 	"strings"
+
+	"github.com/chenningg/hermitboard-api/pulid"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema"

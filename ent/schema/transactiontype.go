@@ -4,7 +4,6 @@ import (
 	"entgo.io/contrib/entgql"
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
-	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
 )
@@ -51,10 +50,7 @@ func (TransactionType) Fields() []ent.Field {
 
 // Edges of the TransactionType.
 func (TransactionType) Edges() []ent.Edge {
-	return []ent.Edge{
-		edge.To("transactions", Transaction.Type).
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("transactions")),
-	}
+	return nil
 }
 
 func (TransactionType) Annotations() []schema.Annotation {

@@ -1,9 +1,9 @@
 package schema
 
 import (
-	"entgo.io/contrib/entgql"
-	"github.com/chenningg/hermitboard-api/pulid"
 	"time"
+
+	"entgo.io/contrib/entgql"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
@@ -41,15 +41,14 @@ func (Account) Fields() []ent.Field {
 			Annotations(entgql.OrderField("EMAIL")),
 		field.String("password").
 			Sensitive().
-			Comment("Hashed and salted password using Bcrypt.").
 			Optional().
 			Nillable().
-			NotEmpty(),
+			NotEmpty().
+			Annotations(entgql.Skip(entgql.SkipType | entgql.SkipWhereInput | entgql.SkipOrderField)),
 		field.Time("password_updated_at").
 			Default(time.Now).
-			UpdateDefault(time.Now),
-		field.String("auth_type_id").
-			GoType(pulid.PULID("")),
+			UpdateDefault(time.Now).
+			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
 	}
 }
 
@@ -58,17 +57,26 @@ func (Account) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_roles", AuthRole.Type).
 			Required().
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("authRoles")),
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("authRoles"),
+				entgql.Skip(entgql.SkipMutationCreateInput),
+			),
 		edge.To("portfolios", Portfolio.Type).
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("portfolios")),
-		edge.From("auth_type", AuthType.Type).
-			Ref("accounts").
-			Field("auth_type_id").
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("portfolios"),
+				entgql.Skip(entgql.SkipMutationCreateInput),
+			),
+		edge.To("auth_type", AuthType.Type).
 			Required().
 			Unique().
-			Annotations(entgql.MapsTo("authType")),
+			Annotations(
+				entgql.MapsTo("authType"),
+			),
 		edge.To("connections", Connection.Type).
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("connections")),
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("connections"),
+				entgql.Skip(entgql.SkipMutationCreateInput),
+			),
 	}
 }
 
