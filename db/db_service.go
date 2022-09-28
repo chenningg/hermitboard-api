@@ -3,9 +3,10 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
+
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
-	"fmt"
 	"github.com/chenningg/hermitboard-api/db/seed"
 	"github.com/chenningg/hermitboard-api/ent"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
@@ -17,7 +18,7 @@ import (
 
 type DbServicer interface {
 	Client() *ent.Client
-	Close()
+	Close() error
 }
 
 type DbService struct {
@@ -94,6 +95,9 @@ func (dbService *DbService) Client() *ent.Client {
 	return dbService.client
 }
 
-func (dbService *DbService) Close() {
-	dbService.Client().Close()
+func (dbService *DbService) Close() error {
+	if err := dbService.Client().Close(); err != nil {
+		return fmt.Errorf("db.Close(): failed to properly close database connection: %v", err)
+	}
+	return nil
 }

@@ -2,10 +2,15 @@ package main
 
 import (
 	"fmt"
-	"github.com/chenningg/hermitboard-api/db"
-	"github.com/chenningg/hermitboard-api/graph"
 	"net/http"
 	"os"
+
+	"github.com/chenningg/hermitboard-api/db"
+	"github.com/chenningg/hermitboard-api/graph/resolver"
+	"github.com/chenningg/hermitboard-api/log"
+	"github.com/chenningg/hermitboard-api/redis"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/chenningg/hermitboard-api/config"
 	"github.com/go-logr/logr"
@@ -31,10 +36,10 @@ func main() {
 		logger.Error(err, "main(): config could not be loaded")
 		os.Exit(1)
 	}
-	config := configService.Config()
+	cfg := configService.Config()
 
-	// Open database connection
-	dbService, err := db.NewDbService(config.Db, logger.WithName("db"))
+	// Open database connection.
+	dbService, err := db.NewDbService(cfg.Db, logger.WithName("db"))
 	if err != nil {
 		// Log database error and panic.
 		logger.Error(err, "main(): database setup could not be completed")
@@ -42,29 +47,68 @@ func main() {
 	}
 
 	// Defer closing of database connection till end of main function.
-	defer dbService.Close()
+	defer func(dbService *db.DbService) {
+		err := dbService.Close()
+		if err != nil {
+			logger.Error(err, "main(): could not close database properly")
+			os.Exit(1)
+		}
+	}(dbService)
+
+	// Open Redis connection for session storage.
+	redisService, err := redis.NewRedisService(cfg.Redis, logger.WithName("redis"))
+	if err != nil {
+		logger.Error(err, "main(): problem connecting to redis database")
+		os.Exit(1)
+	}
+
+	// Defer closing of Redis connection till end of main function.
+	defer func(redisService *redis.RedisService) {
+		err := redisService.Close()
+		if err != nil {
+			logger.Error(err, "main(): could not close Redis database properly")
+			os.Exit(1)
+		}
+	}(redisService)
+
+	// Create router
+	router := chi.NewRouter()
+
+	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
+	router.Use(log.Middleware(logger.WithName("router")))
+	router.Use(middleware.Recoverer)
 
 	// Initialize the web server and routes.
-	srv := handler.NewDefaultServer(graph.NewSchema(dbService.Client()))
+	srv := handler.NewDefaultServer(resolver.NewSchema(dbService.Client(), redisService.Client()))
 
-	http.Handle("/playground", playground.Handler("Hermitboard API", "/api"))
-	http.Handle("/api", srv)
-
-	// Start the server.
-	logger.Info(
-		fmt.Sprintf(
-			"connect to http://%s:%s/playground for GraphQL playground", config.Server.Host, config.Server.Port,
-		),
-		"host", config.Server.Host,
-		"port", config.Server.Port,
+	// Routes for healthcheck, GraphQL playground and API.
+	router.Get(
+		"/health", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("Healthy! ^-^"))
+		},
 	)
 
-	err = http.ListenAndServe(config.Server.Host+":"+config.Server.Port, nil)
+	// Only show playground if in development.
+	if cfg.App.Env == config.Development {
+		router.Handle("/playground", playground.Handler("Hermitboard API", "/api"))
+	}
+	router.Handle("/api", srv)
+
+	// Start the server.
+	err = http.ListenAndServe(cfg.Server.Host+":"+cfg.Server.Port, router)
 	if err != nil {
 		logger.Error(
 			err, "main(): server error",
-			"host", config.Server.Host,
-			"port", config.Server.Port,
+			"host", cfg.Server.Host,
+			"port", cfg.Server.Port,
 		)
 	}
+	logger.Info(
+		fmt.Sprintf(
+			"connect to http://%s:%s/playground for GraphQL playground", cfg.Server.Host, cfg.Server.Port,
+		),
+		"host", cfg.Server.Host,
+		"port", cfg.Server.Port,
+	)
 }
