@@ -1,4 +1,4 @@
-package log
+package middleware
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/go-logr/logr"
 )
 
-func Middleware(logger logr.Logger) func(next http.Handler) http.Handler {
+func Logger(logger logr.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
@@ -25,12 +25,13 @@ func Middleware(logger logr.Logger) func(next http.Handler) http.Handler {
 						fmt.Errorf("internal server error"), "server error occurred", "recoverInfo", rec, "debugStack",
 						debug.Stack(),
 					)
+					// Return internal server error as HTTP error.
 					http.Error(ww, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 				}
 
 				// Log request.
 				logger.Info(
-					"incoming request", "requestID", middleware.GetReqID(r.Context()), "remoteIP",
+					"HTTP request", "requestID", middleware.GetReqID(r.Context()), "remoteIP",
 					r.RemoteAddr, "url",
 					r.URL.Path, "proto", r.Proto, "method",
 					r.Method, "userAgent", r.Header.Get("User-Agent"), "status", ww.Status(), "latencyMs",

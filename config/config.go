@@ -25,3 +25,8 @@ func (config Config) Validate() error {
 		validation.Field(&config.Auth, validation.Required),
 	)
 }
+
+// Loader has a Load function that is called for each config struct.
+type Loader interface {
+	Load() error
+}

@@ -13,12 +13,12 @@ import (
 
 // Node is the resolver for the node field.
 func (r *queryResolver) Node(ctx context.Context, id pulid.PULID) (ent.Noder, error) {
-	return r.client.Noder(ctx, id, ent.WithNodeType(ent.IDToType))
+	return r.db.Client().Noder(ctx, id, ent.WithNodeType(ent.IDToType))
 }
 
 // Nodes is the resolver for the nodes field.
 func (r *queryResolver) Nodes(ctx context.Context, ids []pulid.PULID) ([]ent.Noder, error) {
-	return r.client.Noders(ctx, ids, ent.WithNodeType(ent.IDToType))
+	return r.db.Client().Noders(ctx, ids, ent.WithNodeType(ent.IDToType))
 }
 
 // Accounts is the resolver for the accounts field.
@@ -26,7 +26,7 @@ func (r *queryResolver) Accounts(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AccountOrder,
 	where *ent.AccountWhereInput,
 ) (*ent.AccountConnection, error) {
-	return r.client.Account.Query().
+	return r.db.Client().Account.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithAccountOrder(orderBy),
@@ -39,7 +39,7 @@ func (r *queryResolver) Assets(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetOrder,
 	where *ent.AssetWhereInput,
 ) (*ent.AssetConnection, error) {
-	return r.client.Asset.Query().
+	return r.db.Client().Asset.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithAssetOrder(orderBy),
@@ -52,7 +52,7 @@ func (r *queryResolver) Assetclasses(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetClassOrder,
 	where *ent.AssetClassWhereInput,
 ) (*ent.AssetClassConnection, error) {
-	return r.client.AssetClass.Query().
+	return r.db.Client().AssetClass.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithAssetClassOrder(orderBy),
@@ -65,7 +65,7 @@ func (r *queryResolver) Authroles(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthRoleOrder,
 	where *ent.AuthRoleWhereInput,
 ) (*ent.AuthRoleConnection, error) {
-	return r.client.AuthRole.Query().
+	return r.db.Client().AuthRole.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithAuthRoleOrder(orderBy),
@@ -78,7 +78,7 @@ func (r *queryResolver) Authtypes(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthTypeOrder,
 	where *ent.AuthTypeWhereInput,
 ) (*ent.AuthTypeConnection, error) {
-	return r.client.AuthType.Query().
+	return r.db.Client().AuthType.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithAuthTypeOrder(orderBy),
@@ -91,7 +91,7 @@ func (r *queryResolver) Blockchains(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.BlockchainOrder,
 	where *ent.BlockchainWhereInput,
 ) (*ent.BlockchainConnection, error) {
-	return r.client.Blockchain.Query().
+	return r.db.Client().Blockchain.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithBlockchainOrder(orderBy),
@@ -104,7 +104,7 @@ func (r *queryResolver) Connections(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ConnectionOrder,
 	where *ent.ConnectionWhereInput,
 ) (*ent.ConnectionConnection, error) {
-	return r.client.Connection.Query().
+	return r.db.Client().Connection.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithConnectionOrder(orderBy),
@@ -117,7 +117,7 @@ func (r *queryResolver) Cryptocurrencies(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.CryptocurrencyOrder,
 	where *ent.CryptocurrencyWhereInput,
 ) (*ent.CryptocurrencyConnection, error) {
-	return r.client.Cryptocurrency.Query().
+	return r.db.Client().Cryptocurrency.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithCryptocurrencyOrder(orderBy),
@@ -130,7 +130,7 @@ func (r *queryResolver) Dailyassetprices(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int,
 	orderBy *ent.DailyAssetPriceOrder, where *ent.DailyAssetPriceWhereInput,
 ) (*ent.DailyAssetPriceConnection, error) {
-	return r.client.DailyAssetPrice.Query().
+	return r.db.Client().DailyAssetPrice.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithDailyAssetPriceOrder(orderBy),
@@ -143,7 +143,7 @@ func (r *queryResolver) Exchanges(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ExchangeOrder,
 	where *ent.ExchangeWhereInput,
 ) (*ent.ExchangeConnection, error) {
-	return r.client.Exchange.Query().
+	return r.db.Client().Exchange.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithExchangeOrder(orderBy),
@@ -156,7 +156,7 @@ func (r *queryResolver) Portfolios(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PortfolioOrder,
 	where *ent.PortfolioWhereInput,
 ) (*ent.PortfolioConnection, error) {
-	return r.client.Portfolio.Query().
+	return r.db.Client().Portfolio.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithPortfolioOrder(orderBy),
@@ -169,7 +169,7 @@ func (r *queryResolver) Sources(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceOrder,
 	where *ent.SourceWhereInput,
 ) (*ent.SourceConnection, error) {
-	return r.client.Source.Query().
+	return r.db.Client().Source.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithSourceOrder(orderBy),
@@ -182,7 +182,7 @@ func (r *queryResolver) Sourcetypes(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceTypeOrder,
 	where *ent.SourceTypeWhereInput,
 ) (*ent.SourceTypeConnection, error) {
-	return r.client.SourceType.Query().
+	return r.db.Client().SourceType.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithSourceTypeOrder(orderBy),
@@ -195,7 +195,7 @@ func (r *queryResolver) Staffaccounts(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffAccountOrder,
 	where *ent.StaffAccountWhereInput,
 ) (*ent.StaffAccountConnection, error) {
-	return r.client.StaffAccount.Query().
+	return r.db.Client().StaffAccount.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithStaffAccountOrder(orderBy),
@@ -208,7 +208,7 @@ func (r *queryResolver) Transactions(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder,
 	where *ent.TransactionWhereInput,
 ) (*ent.TransactionConnection, error) {
-	return r.client.Transaction.Query().
+	return r.db.Client().Transaction.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithTransactionOrder(orderBy),
@@ -221,7 +221,7 @@ func (r *queryResolver) Transactiontypes(
 	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int,
 	orderBy *ent.TransactionTypeOrder, where *ent.TransactionTypeWhereInput,
 ) (*ent.TransactionTypeConnection, error) {
-	return r.client.TransactionType.Query().
+	return r.db.Client().TransactionType.Query().
 		Paginate(
 			ctx, after, first, before, last,
 			ent.WithTransactionTypeOrder(orderBy),

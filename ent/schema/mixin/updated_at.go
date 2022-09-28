@@ -1,8 +1,9 @@
 package mixin
 
 import (
-	"entgo.io/contrib/entgql"
 	"time"
+
+	"entgo.io/contrib/entgql"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
@@ -18,6 +19,9 @@ func (UpdatedAtMixin) Fields() []ent.Field {
 		field.Time("updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now).
-			Annotations(entgql.OrderField("UPDATED_AT")),
+			Annotations(
+				entgql.OrderField("UPDATED_AT"),
+				entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput),
+			),
 	}
 }

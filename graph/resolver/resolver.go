@@ -2,9 +2,9 @@ package resolver
 
 import (
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/chenningg/hermitboard-api/ent"
+	"github.com/chenningg/hermitboard-api/db"
 	"github.com/chenningg/hermitboard-api/graph"
-	"github.com/go-redis/redis/v9"
+	"github.com/chenningg/hermitboard-api/redis"
 )
 
 // This file will not be regenerated automatically.
@@ -12,15 +12,15 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	dbClient    *ent.Client
-	redisClient *redis.Client
+	db    db.DbServicer
+	redis redis.RedisServicer
 }
 
 // NewSchema creates a graphql executable schema.
-func NewSchema(dbClient *ent.Client, redisClient *redis.Client) graphql.ExecutableSchema {
+func NewSchema(db db.DbServicer, redis redis.RedisServicer) graphql.ExecutableSchema {
 	return graph.NewExecutableSchema(
 		graph.Config{
-			Resolvers: &Resolver{dbClient, redisClient},
+			Resolvers: &Resolver{db, redis},
 		},
 	)
 }

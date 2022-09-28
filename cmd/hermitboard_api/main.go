@@ -5,12 +5,14 @@ import (
 	"net/http"
 	"os"
 
+	"entgo.io/contrib/entgql"
+	"github.com/chenningg/hermitboard-api/auth"
 	"github.com/chenningg/hermitboard-api/db"
 	"github.com/chenningg/hermitboard-api/graph/resolver"
-	"github.com/chenningg/hermitboard-api/log"
+	"github.com/chenningg/hermitboard-api/middleware"
 	"github.com/chenningg/hermitboard-api/redis"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 
 	"github.com/chenningg/hermitboard-api/config"
 	"github.com/go-logr/logr"
@@ -71,24 +73,28 @@ func main() {
 		}
 	}(redisService)
 
+	// Create other services.
+	authService := auth.NewAuthService(cfg.Auth, logger.WithName("auth"), dbService, redisService)
+
 	// Create router
 	router := chi.NewRouter()
 
-	router.Use(middleware.RequestID)
-	router.Use(middleware.RealIP)
-	router.Use(log.Middleware(logger.WithName("router")))
-	router.Use(middleware.Recoverer)
+	// Add middlewares.
+	router.Use(chiMiddleware.RequestID)
+	router.Use(chiMiddleware.RealIP)
+	router.Use(middleware.Logger(logger.WithName("router")))
+	router.Use(chiMiddleware.Logger)
+	router.Use(chiMiddleware.Recoverer)
+	router.Use(chiMiddleware.Heartbeat("/health"))
+	router.Use(middleware.Auth(redisService, authService))
 
-	// Initialize the web server and routes.
-	srv := handler.NewDefaultServer(resolver.NewSchema(dbService.Client(), redisService.Client()))
+	// Initialize the web server.
+	srv := handler.NewDefaultServer(resolver.NewSchema(dbService, redisService))
 
-	// Routes for healthcheck, GraphQL playground and API.
-	router.Get(
-		"/health", func(w http.ResponseWriter, r *http.Request) {
-			w.Write([]byte("Healthy! ^-^"))
-		},
-	)
+	// Create a database transactional client for GraphQL resolvers (stored in context).
+	srv.Use(entgql.Transactioner{TxOpener: dbService.Client()})
 
+	// Routes.
 	// Only show playground if in development.
 	if cfg.App.Env == config.Development {
 		router.Handle("/playground", playground.Handler("Hermitboard API", "/api"))

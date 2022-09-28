@@ -3,6 +3,7 @@ package mixin
 import (
 	"strings"
 
+	"entgo.io/contrib/entgql"
 	"github.com/chenningg/hermitboard-api/pulid"
 
 	"entgo.io/ent"
@@ -25,7 +26,10 @@ func (m PULIDMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
 			GoType(pulid.PULID("")).
-			DefaultFunc(func() pulid.PULID { return pulid.NewPULID(m.prefix) }),
+			DefaultFunc(func() pulid.PULID { return pulid.NewPULID(m.prefix) }).
+			Annotations(
+				entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput, entgql.SkipOrderField),
+			),
 	}
 }
 
