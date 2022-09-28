@@ -70,3 +70,6 @@ models:
   Node:
     model:
       - github.com/chenningg/hermitboard-api/ent.Noder
+  SessionID:
+    model:
+      - github.com/chenningg/hermitboard-api/auth.SessionID

@@ -12,9 +12,9 @@ import (
 )
 
 // Session ID key type for context
-type ctxKeySession int
+type sessionContextKey int
 
-const SessionContextKey ctxKeySession = 0
+const SessionContextKey sessionContextKey = 0
 
 // AuthorizationHeader is the name of the HTTP Header which contains the session id.
 // Exported so that it can be changed by developers.
@@ -25,14 +25,21 @@ func Auth(redisService redis.RedisServicer, authService auth.AuthServicer) func(
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			// Check for session ID in Authorization header.
-			sessionID := r.Header.Get("Authorization")
+			sessionIDStr := r.Header.Get("Authorization")
 			ctx := r.Context()
 
 			// If sessionID exists, hydrate the request context with the authorization scopes.
-			if sessionID != "" {
+			if sessionIDStr != "" {
+				// Check if session ID is a valid format.
+				sessionID, err := auth.ParseSessionID(sessionIDStr)
+				if err != nil {
+					http.Error(w, "invalid session ID format", http.StatusUnauthorized)
+					panic(err)
+				}
+
 				// Retrieve authorization scopes from Redis.
-				res := redisService.Client().HGetAll(ctx, fmt.Sprintf("session:%s", sessionID))
-				if err := res.Err(); err != nil {
+				res := redisService.Client().HGetAll(ctx, fmt.Sprintf("%s:%s", auth.SessionRedisKey, sessionID))
+				if err = res.Err(); err != nil {
 					// Session key not found, probably expired. Redirect to log in.
 					if errors.Is(err, goRedis.Nil) {
 						http.Error(w, "session ID not found or expired", http.StatusUnauthorized)
