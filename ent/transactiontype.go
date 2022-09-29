@@ -27,31 +27,6 @@ type TransactionType struct {
 	Value transactiontype.Value `json:"value,omitempty"`
 	// Description holds the value of the "description" field.
 	Description *string `json:"description,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the TransactionTypeQuery when eager-loading is set.
-	Edges TransactionTypeEdges `json:"edges"`
-}
-
-// TransactionTypeEdges holds the relations/edges for other nodes in the graph.
-type TransactionTypeEdges struct {
-	// Transactions holds the value of the transactions edge.
-	Transactions []*Transaction `json:"transactions,omitempty"`
-	// loadedTypes holds the information for reporting if a
-	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
-	// totalCount holds the count of the edges above.
-	totalCount [1]map[string]int
-
-	namedTransactions map[string][]*Transaction
-}
-
-// TransactionsOrErr returns the Transactions value or an error if the edge
-// was not loaded in eager-loading.
-func (e TransactionTypeEdges) TransactionsOrErr() ([]*Transaction, error) {
-	if e.loadedTypes[0] {
-		return e.Transactions, nil
-	}
-	return nil, &NotLoadedError{edge: "transactions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -123,11 +98,6 @@ func (tt *TransactionType) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// QueryTransactions queries the "transactions" edge of the TransactionType entity.
-func (tt *TransactionType) QueryTransactions() *TransactionQuery {
-	return (&TransactionTypeClient{config: tt.config}).QueryTransactions(tt)
-}
-
 // Update returns a builder for updating this TransactionType.
 // Note that you need to call TransactionType.Unwrap() before calling this method if this TransactionType
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -171,30 +141,6 @@ func (tt *TransactionType) String() string {
 	}
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedTransactions returns the Transactions named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (tt *TransactionType) NamedTransactions(name string) ([]*Transaction, error) {
-	if tt.Edges.namedTransactions == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := tt.Edges.namedTransactions[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (tt *TransactionType) appendNamedTransactions(name string, edges ...*Transaction) {
-	if tt.Edges.namedTransactions == nil {
-		tt.Edges.namedTransactions = make(map[string][]*Transaction)
-	}
-	if len(edges) == 0 {
-		tt.Edges.namedTransactions[name] = []*Transaction{}
-	} else {
-		tt.Edges.namedTransactions[name] = append(tt.Edges.namedTransactions[name], edges...)
-	}
 }
 
 // TransactionTypes is a parsable slice of TransactionType.

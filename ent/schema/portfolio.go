@@ -39,9 +39,13 @@ func (Portfolio) Fields() []ent.Field {
 		field.Bool("is_visible").
 			Default(true).
 			Comment("Whether this portfolio is visible to the owner.").
-			Annotations(entgql.OrderField("IS_VISIBLE")),
+			Annotations(
+				entgql.OrderField("IS_VISIBLE"),
+				entgql.Skip(entgql.SkipMutationCreateInput),
+			),
 		field.String("account_id").
-			GoType(pulid.PULID("")),
+			GoType(pulid.PULID("")).
+			Annotations(entgql.Skip(entgql.SkipMutationUpdateInput)),
 	}
 }
 
@@ -53,9 +57,15 @@ func (Portfolio) Edges() []ent.Edge {
 			Field("account_id").
 			Unique().
 			Required().
-			Annotations(entgql.MapsTo("account")),
+			Annotations(
+				entgql.MapsTo("account"),
+				entgql.Skip(entgql.SkipMutationUpdateInput),
+			),
 		edge.To("transactions", Transaction.Type).
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("transactions")),
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("transactions"),
+				entgql.Skip(entgql.SkipWhereInput|entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
+			),
 		edge.To("connections", Connection.Type).
 			Annotations(entgql.RelayConnection(), entgql.MapsTo("connections")),
 	}

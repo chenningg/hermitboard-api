@@ -28,15 +28,14 @@ type Account struct {
 	Nickname string `json:"nickname,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
-	// Hashed and salted password using Bcrypt.
+	// Password holds the value of the "password" field.
 	Password *string `json:"-"`
 	// PasswordUpdatedAt holds the value of the "password_updated_at" field.
 	PasswordUpdatedAt time.Time `json:"password_updated_at,omitempty"`
-	// AuthTypeID holds the value of the "auth_type_id" field.
-	AuthTypeID pulid.PULID `json:"auth_type_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AccountQuery when eager-loading is set.
-	Edges AccountEdges `json:"edges"`
+	Edges             AccountEdges `json:"edges"`
+	account_auth_type *pulid.PULID
 }
 
 // AccountEdges holds the relations/edges for other nodes in the graph.
@@ -105,12 +104,14 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case account.FieldID, account.FieldAuthTypeID:
+		case account.FieldID:
 			values[i] = new(pulid.PULID)
 		case account.FieldNickname, account.FieldEmail, account.FieldPassword:
 			values[i] = new(sql.NullString)
 		case account.FieldCreatedAt, account.FieldUpdatedAt, account.FieldDeletedAt, account.FieldPasswordUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case account.ForeignKeys[0]: // account_auth_type
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Account", columns[i])
 		}
@@ -176,11 +177,12 @@ func (a *Account) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.PasswordUpdatedAt = value.Time
 			}
-		case account.FieldAuthTypeID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field auth_type_id", values[i])
-			} else if value != nil {
-				a.AuthTypeID = *value
+		case account.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field account_auth_type", values[i])
+			} else if value.Valid {
+				a.account_auth_type = new(pulid.PULID)
+				*a.account_auth_type = *value.S.(*pulid.PULID)
 			}
 		}
 	}
@@ -251,9 +253,6 @@ func (a *Account) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("password_updated_at=")
 	builder.WriteString(a.PasswordUpdatedAt.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("auth_type_id=")
-	builder.WriteString(fmt.Sprintf("%v", a.AuthTypeID))
 	builder.WriteByte(')')
 	return builder.String()
 }

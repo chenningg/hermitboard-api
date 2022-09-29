@@ -25,11 +25,10 @@ type Asset struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt *time.Time `json:"deleted_at,omitempty"`
-	// AssetClassID holds the value of the "asset_class_id" field.
-	AssetClassID pulid.PULID `json:"asset_class_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetQuery when eager-loading is set.
-	Edges AssetEdges `json:"edges"`
+	Edges             AssetEdges `json:"edges"`
+	asset_asset_class *pulid.PULID
 }
 
 // AssetEdges holds the relations/edges for other nodes in the graph.
@@ -38,21 +37,15 @@ type AssetEdges struct {
 	AssetClass *AssetClass `json:"asset_class,omitempty"`
 	// Cryptocurrency holds the value of the cryptocurrency edge.
 	Cryptocurrency *Cryptocurrency `json:"cryptocurrency,omitempty"`
-	// TransactionBases holds the value of the transaction_bases edge.
-	TransactionBases []*Transaction `json:"transaction_bases,omitempty"`
-	// TransactionQuotes holds the value of the transaction_quotes edge.
-	TransactionQuotes []*Transaction `json:"transaction_quotes,omitempty"`
 	// DailyAssetPrices holds the value of the daily_asset_prices edge.
 	DailyAssetPrices []*DailyAssetPrice `json:"daily_asset_prices,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [3]bool
 	// totalCount holds the count of the edges above.
-	totalCount [5]map[string]int
+	totalCount [3]map[string]int
 
-	namedTransactionBases  map[string][]*Transaction
-	namedTransactionQuotes map[string][]*Transaction
-	namedDailyAssetPrices  map[string][]*DailyAssetPrice
+	namedDailyAssetPrices map[string][]*DailyAssetPrice
 }
 
 // AssetClassOrErr returns the AssetClass value or an error if the edge
@@ -81,28 +74,10 @@ func (e AssetEdges) CryptocurrencyOrErr() (*Cryptocurrency, error) {
 	return nil, &NotLoadedError{edge: "cryptocurrency"}
 }
 
-// TransactionBasesOrErr returns the TransactionBases value or an error if the edge
-// was not loaded in eager-loading.
-func (e AssetEdges) TransactionBasesOrErr() ([]*Transaction, error) {
-	if e.loadedTypes[2] {
-		return e.TransactionBases, nil
-	}
-	return nil, &NotLoadedError{edge: "transaction_bases"}
-}
-
-// TransactionQuotesOrErr returns the TransactionQuotes value or an error if the edge
-// was not loaded in eager-loading.
-func (e AssetEdges) TransactionQuotesOrErr() ([]*Transaction, error) {
-	if e.loadedTypes[3] {
-		return e.TransactionQuotes, nil
-	}
-	return nil, &NotLoadedError{edge: "transaction_quotes"}
-}
-
 // DailyAssetPricesOrErr returns the DailyAssetPrices value or an error if the edge
 // was not loaded in eager-loading.
 func (e AssetEdges) DailyAssetPricesOrErr() ([]*DailyAssetPrice, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[2] {
 		return e.DailyAssetPrices, nil
 	}
 	return nil, &NotLoadedError{edge: "daily_asset_prices"}
@@ -113,10 +88,12 @@ func (*Asset) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case asset.FieldID, asset.FieldAssetClassID:
+		case asset.FieldID:
 			values[i] = new(pulid.PULID)
 		case asset.FieldCreatedAt, asset.FieldUpdatedAt, asset.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
+		case asset.ForeignKeys[0]: // asset_asset_class
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Asset", columns[i])
 		}
@@ -157,11 +134,12 @@ func (a *Asset) assignValues(columns []string, values []any) error {
 				a.DeletedAt = new(time.Time)
 				*a.DeletedAt = value.Time
 			}
-		case asset.FieldAssetClassID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field asset_class_id", values[i])
-			} else if value != nil {
-				a.AssetClassID = *value
+		case asset.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field asset_asset_class", values[i])
+			} else if value.Valid {
+				a.asset_asset_class = new(pulid.PULID)
+				*a.asset_asset_class = *value.S.(*pulid.PULID)
 			}
 		}
 	}
@@ -176,16 +154,6 @@ func (a *Asset) QueryAssetClass() *AssetClassQuery {
 // QueryCryptocurrency queries the "cryptocurrency" edge of the Asset entity.
 func (a *Asset) QueryCryptocurrency() *CryptocurrencyQuery {
 	return (&AssetClient{config: a.config}).QueryCryptocurrency(a)
-}
-
-// QueryTransactionBases queries the "transaction_bases" edge of the Asset entity.
-func (a *Asset) QueryTransactionBases() *TransactionQuery {
-	return (&AssetClient{config: a.config}).QueryTransactionBases(a)
-}
-
-// QueryTransactionQuotes queries the "transaction_quotes" edge of the Asset entity.
-func (a *Asset) QueryTransactionQuotes() *TransactionQuery {
-	return (&AssetClient{config: a.config}).QueryTransactionQuotes(a)
 }
 
 // QueryDailyAssetPrices queries the "daily_asset_prices" edge of the Asset entity.
@@ -226,59 +194,8 @@ func (a *Asset) String() string {
 		builder.WriteString("deleted_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
-	builder.WriteString(", ")
-	builder.WriteString("asset_class_id=")
-	builder.WriteString(fmt.Sprintf("%v", a.AssetClassID))
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedTransactionBases returns the TransactionBases named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (a *Asset) NamedTransactionBases(name string) ([]*Transaction, error) {
-	if a.Edges.namedTransactionBases == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := a.Edges.namedTransactionBases[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (a *Asset) appendNamedTransactionBases(name string, edges ...*Transaction) {
-	if a.Edges.namedTransactionBases == nil {
-		a.Edges.namedTransactionBases = make(map[string][]*Transaction)
-	}
-	if len(edges) == 0 {
-		a.Edges.namedTransactionBases[name] = []*Transaction{}
-	} else {
-		a.Edges.namedTransactionBases[name] = append(a.Edges.namedTransactionBases[name], edges...)
-	}
-}
-
-// NamedTransactionQuotes returns the TransactionQuotes named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (a *Asset) NamedTransactionQuotes(name string) ([]*Transaction, error) {
-	if a.Edges.namedTransactionQuotes == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := a.Edges.namedTransactionQuotes[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (a *Asset) appendNamedTransactionQuotes(name string, edges ...*Transaction) {
-	if a.Edges.namedTransactionQuotes == nil {
-		a.Edges.namedTransactionQuotes = make(map[string][]*Transaction)
-	}
-	if len(edges) == 0 {
-		a.Edges.namedTransactionQuotes[name] = []*Transaction{}
-	} else {
-		a.Edges.namedTransactionQuotes[name] = append(a.Edges.namedTransactionQuotes[name], edges...)
-	}
 }
 
 // NamedDailyAssetPrices returns the DailyAssetPrices named value or an error if the edge was not

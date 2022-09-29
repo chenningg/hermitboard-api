@@ -523,6 +523,7 @@ func (bq *BlockchainQuery) loadTransactions(ctx context.Context, query *Transact
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	query.Where(predicate.Transaction(func(s *sql.Selector) {
 		s.Where(sql.InValues(blockchain.TransactionsColumn, fks...))
 	}))

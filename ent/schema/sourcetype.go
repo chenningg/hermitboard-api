@@ -35,7 +35,7 @@ func (SourceType) Fields() []ent.Field {
 			).
 			Annotations(
 				entgql.Type("SourceTypeValue"),
-				entgql.OrderField("SOURCE_TYPE"),
+				entgql.OrderField("SOURCE_TYPE_VALUE"),
 			),
 		field.String("description").
 			Optional().
@@ -48,7 +48,10 @@ func (SourceType) Fields() []ent.Field {
 func (SourceType) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("sources", Source.Type).
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("sources")),
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("sources"),
+				entgql.Skip(entgql.SkipWhereInput|entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
+			),
 	}
 }
 

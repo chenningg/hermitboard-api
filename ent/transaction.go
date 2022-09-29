@@ -36,8 +36,6 @@ type Transaction struct {
 	PricePerUnit float64 `json:"price_per_unit,omitempty"`
 	// BlockchainID holds the value of the "blockchain_id" field.
 	BlockchainID *pulid.PULID `json:"blockchain_id,omitempty"`
-	// TransactionTypeID holds the value of the "transaction_type_id" field.
-	TransactionTypeID pulid.PULID `json:"transaction_type_id,omitempty"`
 	// ExchangeID holds the value of the "exchange_id" field.
 	ExchangeID pulid.PULID `json:"exchange_id,omitempty"`
 	// PortfolioID holds the value of the "portfolio_id" field.
@@ -48,7 +46,8 @@ type Transaction struct {
 	QuoteAssetID *pulid.PULID `json:"quote_asset_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TransactionQuery when eager-loading is set.
-	Edges TransactionEdges `json:"edges"`
+	Edges                        TransactionEdges `json:"edges"`
+	transaction_transaction_type *pulid.PULID
 }
 
 // TransactionEdges holds the relations/edges for other nodes in the graph.
@@ -157,7 +156,7 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case transaction.FieldBlockchainID, transaction.FieldQuoteAssetID:
 			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
-		case transaction.FieldID, transaction.FieldTransactionTypeID, transaction.FieldExchangeID, transaction.FieldPortfolioID, transaction.FieldBaseAssetID:
+		case transaction.FieldID, transaction.FieldExchangeID, transaction.FieldPortfolioID, transaction.FieldBaseAssetID:
 			values[i] = new(pulid.PULID)
 		case transaction.FieldPricePerUnit:
 			values[i] = new(sql.NullFloat64)
@@ -165,6 +164,8 @@ func (*Transaction) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case transaction.FieldCreatedAt, transaction.FieldUpdatedAt, transaction.FieldDeletedAt, transaction.FieldTime:
 			values[i] = new(sql.NullTime)
+		case transaction.ForeignKeys[0]: // transaction_transaction_type
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Transaction", columns[i])
 		}
@@ -230,12 +231,6 @@ func (t *Transaction) assignValues(columns []string, values []any) error {
 				t.BlockchainID = new(pulid.PULID)
 				*t.BlockchainID = *value.S.(*pulid.PULID)
 			}
-		case transaction.FieldTransactionTypeID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field transaction_type_id", values[i])
-			} else if value != nil {
-				t.TransactionTypeID = *value
-			}
 		case transaction.FieldExchangeID:
 			if value, ok := values[i].(*pulid.PULID); !ok {
 				return fmt.Errorf("unexpected type %T for field exchange_id", values[i])
@@ -260,6 +255,13 @@ func (t *Transaction) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				t.QuoteAssetID = new(pulid.PULID)
 				*t.QuoteAssetID = *value.S.(*pulid.PULID)
+			}
+		case transaction.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field transaction_transaction_type", values[i])
+			} else if value.Valid {
+				t.transaction_transaction_type = new(pulid.PULID)
+				*t.transaction_transaction_type = *value.S.(*pulid.PULID)
 			}
 		}
 	}
@@ -343,9 +345,6 @@ func (t *Transaction) String() string {
 		builder.WriteString("blockchain_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
-	builder.WriteString(", ")
-	builder.WriteString("transaction_type_id=")
-	builder.WriteString(fmt.Sprintf("%v", t.TransactionTypeID))
 	builder.WriteString(", ")
 	builder.WriteString("exchange_id=")
 	builder.WriteString(fmt.Sprintf("%v", t.ExchangeID))

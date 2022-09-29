@@ -534,6 +534,7 @@ func (pq *PortfolioQuery) loadTransactions(ctx context.Context, query *Transacti
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	query.Where(predicate.Transaction(func(s *sql.Selector) {
 		s.Where(sql.InValues(portfolio.TransactionsColumn, fks...))
 	}))

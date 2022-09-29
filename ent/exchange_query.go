@@ -413,6 +413,7 @@ func (eq *ExchangeQuery) loadTransactions(ctx context.Context, query *Transactio
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	query.Where(predicate.Transaction(func(s *sql.Selector) {
 		s.Where(sql.InValues(exchange.TransactionsColumn, fks...))
 	}))

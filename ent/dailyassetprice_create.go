@@ -70,14 +70,6 @@ func (dapc *DailyAssetPriceCreate) SetTime(t time.Time) *DailyAssetPriceCreate {
 	return dapc
 }
 
-// SetNillableTime sets the "time" field if the given value is not nil.
-func (dapc *DailyAssetPriceCreate) SetNillableTime(t *time.Time) *DailyAssetPriceCreate {
-	if t != nil {
-		dapc.SetTime(*t)
-	}
-	return dapc
-}
-
 // SetOpen sets the "open" field.
 func (dapc *DailyAssetPriceCreate) SetOpen(f float64) *DailyAssetPriceCreate {
 	dapc.mutation.SetOpen(f)
@@ -249,10 +241,6 @@ func (dapc *DailyAssetPriceCreate) defaults() {
 	if _, ok := dapc.mutation.UpdatedAt(); !ok {
 		v := dailyassetprice.DefaultUpdatedAt()
 		dapc.mutation.SetUpdatedAt(v)
-	}
-	if _, ok := dapc.mutation.Time(); !ok {
-		v := dailyassetprice.DefaultTime()
-		dapc.mutation.SetTime(v)
 	}
 	if _, ok := dapc.mutation.ID(); !ok {
 		v := dailyassetprice.DefaultID()

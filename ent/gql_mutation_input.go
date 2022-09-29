@@ -15,47 +15,21 @@ import (
 
 // CreateAccountInput represents a mutation input for creating accounts.
 type CreateAccountInput struct {
-	CreatedAt         *time.Time
-	UpdatedAt         *time.Time
-	DeletedAt         *time.Time
-	Nickname          string
-	Email             string
-	Password          *string
-	PasswordUpdatedAt *time.Time
-	AuthRoleIDs       []pulid.PULID
-	PortfolioIDs      []pulid.PULID
-	AuthTypeID        pulid.PULID
-	ConnectionIDs     []pulid.PULID
+	Nickname    string
+	Email       string
+	Password    *string
+	AuthRoleIDs []pulid.PULID
 }
 
 // Mutate applies the CreateAccountInput on the AccountMutation builder.
 func (i *CreateAccountInput) Mutate(m *AccountMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetNickname(i.Nickname)
 	m.SetEmail(i.Email)
 	if v := i.Password; v != nil {
 		m.SetPassword(*v)
 	}
-	if v := i.PasswordUpdatedAt; v != nil {
-		m.SetPasswordUpdatedAt(*v)
-	}
 	if v := i.AuthRoleIDs; len(v) > 0 {
 		m.AddAuthRoleIDs(v...)
-	}
-	if v := i.PortfolioIDs; len(v) > 0 {
-		m.AddPortfolioIDs(v...)
-	}
-	m.SetAuthTypeID(i.AuthTypeID)
-	if v := i.ConnectionIDs; len(v) > 0 {
-		m.AddConnectionIDs(v...)
 	}
 }
 
@@ -67,29 +41,20 @@ func (c *AccountCreate) SetInput(i CreateAccountInput) *AccountCreate {
 
 // UpdateAccountInput represents a mutation input for updating accounts.
 type UpdateAccountInput struct {
-	UpdatedAt           *time.Time
-	ClearDeletedAt      bool
-	DeletedAt           *time.Time
-	Nickname            *string
-	Email               *string
-	ClearPassword       bool
-	Password            *string
-	PasswordUpdatedAt   *time.Time
-	AddAuthRoleIDs      []pulid.PULID
-	RemoveAuthRoleIDs   []pulid.PULID
-	AddPortfolioIDs     []pulid.PULID
-	RemovePortfolioIDs  []pulid.PULID
-	ClearAuthType       bool
-	AuthTypeID          *pulid.PULID
-	AddConnectionIDs    []pulid.PULID
-	RemoveConnectionIDs []pulid.PULID
+	ClearDeletedAt    bool
+	DeletedAt         *time.Time
+	Nickname          *string
+	Email             *string
+	ClearPassword     bool
+	Password          *string
+	AddAuthRoleIDs    []pulid.PULID
+	RemoveAuthRoleIDs []pulid.PULID
+	ClearAuthType     bool
+	AuthTypeID        *pulid.PULID
 }
 
 // Mutate applies the UpdateAccountInput on the AccountMutation builder.
 func (i *UpdateAccountInput) Mutate(m *AccountMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -108,32 +73,17 @@ func (i *UpdateAccountInput) Mutate(m *AccountMutation) {
 	if v := i.Password; v != nil {
 		m.SetPassword(*v)
 	}
-	if v := i.PasswordUpdatedAt; v != nil {
-		m.SetPasswordUpdatedAt(*v)
-	}
 	if v := i.AddAuthRoleIDs; len(v) > 0 {
 		m.AddAuthRoleIDs(v...)
 	}
 	if v := i.RemoveAuthRoleIDs; len(v) > 0 {
 		m.RemoveAuthRoleIDs(v...)
 	}
-	if v := i.AddPortfolioIDs; len(v) > 0 {
-		m.AddPortfolioIDs(v...)
-	}
-	if v := i.RemovePortfolioIDs; len(v) > 0 {
-		m.RemovePortfolioIDs(v...)
-	}
 	if i.ClearAuthType {
 		m.ClearAuthType()
 	}
 	if v := i.AuthTypeID; v != nil {
 		m.SetAuthTypeID(*v)
-	}
-	if v := i.AddConnectionIDs; len(v) > 0 {
-		m.AddConnectionIDs(v...)
-	}
-	if v := i.RemoveConnectionIDs; len(v) > 0 {
-		m.RemoveConnectionIDs(v...)
 	}
 }
 
@@ -149,72 +99,16 @@ func (c *AccountUpdateOne) SetInput(i UpdateAccountInput) *AccountUpdateOne {
 	return c
 }
 
-// CreateAssetInput represents a mutation input for creating assets.
-type CreateAssetInput struct {
-	CreatedAt           *time.Time
-	UpdatedAt           *time.Time
-	DeletedAt           *time.Time
-	AssetClassID        pulid.PULID
-	CryptocurrencyID    *pulid.PULID
-	TransactionBasisIDs []pulid.PULID
-	TransactionQuoteIDs []pulid.PULID
-	DailyAssetPriceIDs  []pulid.PULID
-}
-
-// Mutate applies the CreateAssetInput on the AssetMutation builder.
-func (i *CreateAssetInput) Mutate(m *AssetMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
-	m.SetAssetClassID(i.AssetClassID)
-	if v := i.CryptocurrencyID; v != nil {
-		m.SetCryptocurrencyID(*v)
-	}
-	if v := i.TransactionBasisIDs; len(v) > 0 {
-		m.AddTransactionBasisIDs(v...)
-	}
-	if v := i.TransactionQuoteIDs; len(v) > 0 {
-		m.AddTransactionQuoteIDs(v...)
-	}
-	if v := i.DailyAssetPriceIDs; len(v) > 0 {
-		m.AddDailyAssetPriceIDs(v...)
-	}
-}
-
-// SetInput applies the change-set in the CreateAssetInput on the AssetCreate builder.
-func (c *AssetCreate) SetInput(i CreateAssetInput) *AssetCreate {
-	i.Mutate(c.Mutation())
-	return c
-}
-
 // UpdateAssetInput represents a mutation input for updating assets.
 type UpdateAssetInput struct {
-	UpdatedAt                 *time.Time
-	ClearDeletedAt            bool
-	DeletedAt                 *time.Time
-	ClearAssetClass           bool
-	AssetClassID              *pulid.PULID
-	ClearCryptocurrency       bool
-	CryptocurrencyID          *pulid.PULID
-	AddTransactionBasisIDs    []pulid.PULID
-	RemoveTransactionBasisIDs []pulid.PULID
-	AddTransactionQuoteIDs    []pulid.PULID
-	RemoveTransactionQuoteIDs []pulid.PULID
-	AddDailyAssetPriceIDs     []pulid.PULID
-	RemoveDailyAssetPriceIDs  []pulid.PULID
+	ClearDeletedAt  bool
+	DeletedAt       *time.Time
+	ClearAssetClass bool
+	AssetClassID    *pulid.PULID
 }
 
 // Mutate applies the UpdateAssetInput on the AssetMutation builder.
 func (i *UpdateAssetInput) Mutate(m *AssetMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -226,30 +120,6 @@ func (i *UpdateAssetInput) Mutate(m *AssetMutation) {
 	}
 	if v := i.AssetClassID; v != nil {
 		m.SetAssetClassID(*v)
-	}
-	if i.ClearCryptocurrency {
-		m.ClearCryptocurrency()
-	}
-	if v := i.CryptocurrencyID; v != nil {
-		m.SetCryptocurrencyID(*v)
-	}
-	if v := i.AddTransactionBasisIDs; len(v) > 0 {
-		m.AddTransactionBasisIDs(v...)
-	}
-	if v := i.RemoveTransactionBasisIDs; len(v) > 0 {
-		m.RemoveTransactionBasisIDs(v...)
-	}
-	if v := i.AddTransactionQuoteIDs; len(v) > 0 {
-		m.AddTransactionQuoteIDs(v...)
-	}
-	if v := i.RemoveTransactionQuoteIDs; len(v) > 0 {
-		m.RemoveTransactionQuoteIDs(v...)
-	}
-	if v := i.AddDailyAssetPriceIDs; len(v) > 0 {
-		m.AddDailyAssetPriceIDs(v...)
-	}
-	if v := i.RemoveDailyAssetPriceIDs; len(v) > 0 {
-		m.RemoveDailyAssetPriceIDs(v...)
 	}
 }
 
@@ -267,31 +137,15 @@ func (c *AssetUpdateOne) SetInput(i UpdateAssetInput) *AssetUpdateOne {
 
 // CreateAssetClassInput represents a mutation input for creating assetclasses.
 type CreateAssetClassInput struct {
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
-	DeletedAt   *time.Time
 	Value       assetclass.Value
 	Description *string
-	AssetIDs    []pulid.PULID
 }
 
 // Mutate applies the CreateAssetClassInput on the AssetClassMutation builder.
 func (i *CreateAssetClassInput) Mutate(m *AssetClassMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetValue(i.Value)
 	if v := i.Description; v != nil {
 		m.SetDescription(*v)
-	}
-	if v := i.AssetIDs; len(v) > 0 {
-		m.AddAssetIDs(v...)
 	}
 }
 
@@ -303,21 +157,15 @@ func (c *AssetClassCreate) SetInput(i CreateAssetClassInput) *AssetClassCreate {
 
 // UpdateAssetClassInput represents a mutation input for updating assetclasses.
 type UpdateAssetClassInput struct {
-	UpdatedAt        *time.Time
 	ClearDeletedAt   bool
 	DeletedAt        *time.Time
 	Value            *assetclass.Value
 	ClearDescription bool
 	Description      *string
-	AddAssetIDs      []pulid.PULID
-	RemoveAssetIDs   []pulid.PULID
 }
 
 // Mutate applies the UpdateAssetClassInput on the AssetClassMutation builder.
 func (i *UpdateAssetClassInput) Mutate(m *AssetClassMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -332,12 +180,6 @@ func (i *UpdateAssetClassInput) Mutate(m *AssetClassMutation) {
 	}
 	if v := i.Description; v != nil {
 		m.SetDescription(*v)
-	}
-	if v := i.AddAssetIDs; len(v) > 0 {
-		m.AddAssetIDs(v...)
-	}
-	if v := i.RemoveAssetIDs; len(v) > 0 {
-		m.RemoveAssetIDs(v...)
 	}
 }
 
@@ -355,35 +197,15 @@ func (c *AssetClassUpdateOne) SetInput(i UpdateAssetClassInput) *AssetClassUpdat
 
 // CreateAuthRoleInput represents a mutation input for creating authroles.
 type CreateAuthRoleInput struct {
-	CreatedAt       *time.Time
-	UpdatedAt       *time.Time
-	DeletedAt       *time.Time
-	Value           authrole.Value
-	Description     *string
-	AccountIDs      []pulid.PULID
-	StaffAccountIDs []pulid.PULID
+	Value       authrole.Value
+	Description *string
 }
 
 // Mutate applies the CreateAuthRoleInput on the AuthRoleMutation builder.
 func (i *CreateAuthRoleInput) Mutate(m *AuthRoleMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetValue(i.Value)
 	if v := i.Description; v != nil {
 		m.SetDescription(*v)
-	}
-	if v := i.AccountIDs; len(v) > 0 {
-		m.AddAccountIDs(v...)
-	}
-	if v := i.StaffAccountIDs; len(v) > 0 {
-		m.AddStaffAccountIDs(v...)
 	}
 }
 
@@ -395,23 +217,15 @@ func (c *AuthRoleCreate) SetInput(i CreateAuthRoleInput) *AuthRoleCreate {
 
 // UpdateAuthRoleInput represents a mutation input for updating authroles.
 type UpdateAuthRoleInput struct {
-	UpdatedAt             *time.Time
-	ClearDeletedAt        bool
-	DeletedAt             *time.Time
-	Value                 *authrole.Value
-	ClearDescription      bool
-	Description           *string
-	AddAccountIDs         []pulid.PULID
-	RemoveAccountIDs      []pulid.PULID
-	AddStaffAccountIDs    []pulid.PULID
-	RemoveStaffAccountIDs []pulid.PULID
+	ClearDeletedAt   bool
+	DeletedAt        *time.Time
+	Value            *authrole.Value
+	ClearDescription bool
+	Description      *string
 }
 
 // Mutate applies the UpdateAuthRoleInput on the AuthRoleMutation builder.
 func (i *UpdateAuthRoleInput) Mutate(m *AuthRoleMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -426,18 +240,6 @@ func (i *UpdateAuthRoleInput) Mutate(m *AuthRoleMutation) {
 	}
 	if v := i.Description; v != nil {
 		m.SetDescription(*v)
-	}
-	if v := i.AddAccountIDs; len(v) > 0 {
-		m.AddAccountIDs(v...)
-	}
-	if v := i.RemoveAccountIDs; len(v) > 0 {
-		m.RemoveAccountIDs(v...)
-	}
-	if v := i.AddStaffAccountIDs; len(v) > 0 {
-		m.AddStaffAccountIDs(v...)
-	}
-	if v := i.RemoveStaffAccountIDs; len(v) > 0 {
-		m.RemoveStaffAccountIDs(v...)
 	}
 }
 
@@ -455,35 +257,15 @@ func (c *AuthRoleUpdateOne) SetInput(i UpdateAuthRoleInput) *AuthRoleUpdateOne {
 
 // CreateAuthTypeInput represents a mutation input for creating authtypes.
 type CreateAuthTypeInput struct {
-	CreatedAt       *time.Time
-	UpdatedAt       *time.Time
-	DeletedAt       *time.Time
-	Value           authtype.Value
-	Description     *string
-	AccountIDs      []pulid.PULID
-	StaffAccountIDs []pulid.PULID
+	Value       authtype.Value
+	Description *string
 }
 
 // Mutate applies the CreateAuthTypeInput on the AuthTypeMutation builder.
 func (i *CreateAuthTypeInput) Mutate(m *AuthTypeMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetValue(i.Value)
 	if v := i.Description; v != nil {
 		m.SetDescription(*v)
-	}
-	if v := i.AccountIDs; len(v) > 0 {
-		m.AddAccountIDs(v...)
-	}
-	if v := i.StaffAccountIDs; len(v) > 0 {
-		m.AddStaffAccountIDs(v...)
 	}
 }
 
@@ -495,23 +277,15 @@ func (c *AuthTypeCreate) SetInput(i CreateAuthTypeInput) *AuthTypeCreate {
 
 // UpdateAuthTypeInput represents a mutation input for updating authtypes.
 type UpdateAuthTypeInput struct {
-	UpdatedAt             *time.Time
-	ClearDeletedAt        bool
-	DeletedAt             *time.Time
-	Value                 *authtype.Value
-	ClearDescription      bool
-	Description           *string
-	AddAccountIDs         []pulid.PULID
-	RemoveAccountIDs      []pulid.PULID
-	AddStaffAccountIDs    []pulid.PULID
-	RemoveStaffAccountIDs []pulid.PULID
+	ClearDeletedAt   bool
+	DeletedAt        *time.Time
+	Value            *authtype.Value
+	ClearDescription bool
+	Description      *string
 }
 
 // Mutate applies the UpdateAuthTypeInput on the AuthTypeMutation builder.
 func (i *UpdateAuthTypeInput) Mutate(m *AuthTypeMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -526,18 +300,6 @@ func (i *UpdateAuthTypeInput) Mutate(m *AuthTypeMutation) {
 	}
 	if v := i.Description; v != nil {
 		m.SetDescription(*v)
-	}
-	if v := i.AddAccountIDs; len(v) > 0 {
-		m.AddAccountIDs(v...)
-	}
-	if v := i.RemoveAccountIDs; len(v) > 0 {
-		m.RemoveAccountIDs(v...)
-	}
-	if v := i.AddStaffAccountIDs; len(v) > 0 {
-		m.AddStaffAccountIDs(v...)
-	}
-	if v := i.RemoveStaffAccountIDs; len(v) > 0 {
-		m.RemoveStaffAccountIDs(v...)
 	}
 }
 
@@ -555,28 +317,14 @@ func (c *AuthTypeUpdateOne) SetInput(i UpdateAuthTypeInput) *AuthTypeUpdateOne {
 
 // CreateBlockchainInput represents a mutation input for creating blockchains.
 type CreateBlockchainInput struct {
-	CreatedAt         *time.Time
-	UpdatedAt         *time.Time
-	DeletedAt         *time.Time
-	Name              string
-	Symbol            string
-	Icon              *string
-	ChainID           *int64
-	CryptocurrencyIDs []pulid.PULID
-	TransactionIDs    []pulid.PULID
+	Name    string
+	Symbol  string
+	Icon    *string
+	ChainID *int64
 }
 
 // Mutate applies the CreateBlockchainInput on the BlockchainMutation builder.
 func (i *CreateBlockchainInput) Mutate(m *BlockchainMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetName(i.Name)
 	m.SetSymbol(i.Symbol)
 	if v := i.Icon; v != nil {
@@ -584,12 +332,6 @@ func (i *CreateBlockchainInput) Mutate(m *BlockchainMutation) {
 	}
 	if v := i.ChainID; v != nil {
 		m.SetChainID(*v)
-	}
-	if v := i.CryptocurrencyIDs; len(v) > 0 {
-		m.AddCryptocurrencyIDs(v...)
-	}
-	if v := i.TransactionIDs; len(v) > 0 {
-		m.AddTransactionIDs(v...)
 	}
 }
 
@@ -601,26 +343,18 @@ func (c *BlockchainCreate) SetInput(i CreateBlockchainInput) *BlockchainCreate {
 
 // UpdateBlockchainInput represents a mutation input for updating blockchains.
 type UpdateBlockchainInput struct {
-	UpdatedAt               *time.Time
-	ClearDeletedAt          bool
-	DeletedAt               *time.Time
-	Name                    *string
-	Symbol                  *string
-	ClearIcon               bool
-	Icon                    *string
-	ClearChainID            bool
-	ChainID                 *int64
-	AddCryptocurrencyIDs    []pulid.PULID
-	RemoveCryptocurrencyIDs []pulid.PULID
-	AddTransactionIDs       []pulid.PULID
-	RemoveTransactionIDs    []pulid.PULID
+	ClearDeletedAt bool
+	DeletedAt      *time.Time
+	Name           *string
+	Symbol         *string
+	ClearIcon      bool
+	Icon           *string
+	ClearChainID   bool
+	ChainID        *int64
 }
 
 // Mutate applies the UpdateBlockchainInput on the BlockchainMutation builder.
 func (i *UpdateBlockchainInput) Mutate(m *BlockchainMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -645,18 +379,6 @@ func (i *UpdateBlockchainInput) Mutate(m *BlockchainMutation) {
 	if v := i.ChainID; v != nil {
 		m.SetChainID(*v)
 	}
-	if v := i.AddCryptocurrencyIDs; len(v) > 0 {
-		m.AddCryptocurrencyIDs(v...)
-	}
-	if v := i.RemoveCryptocurrencyIDs; len(v) > 0 {
-		m.RemoveCryptocurrencyIDs(v...)
-	}
-	if v := i.AddTransactionIDs; len(v) > 0 {
-		m.AddTransactionIDs(v...)
-	}
-	if v := i.RemoveTransactionIDs; len(v) > 0 {
-		m.RemoveTransactionIDs(v...)
-	}
 }
 
 // SetInput applies the change-set in the UpdateBlockchainInput on the BlockchainUpdate builder.
@@ -673,9 +395,6 @@ func (c *BlockchainUpdateOne) SetInput(i UpdateBlockchainInput) *BlockchainUpdat
 
 // CreateConnectionInput represents a mutation input for creating connections.
 type CreateConnectionInput struct {
-	CreatedAt    *time.Time
-	UpdatedAt    *time.Time
-	DeletedAt    *time.Time
 	Name         string
 	AccessToken  string
 	AccountID    pulid.PULID
@@ -684,15 +403,6 @@ type CreateConnectionInput struct {
 
 // Mutate applies the CreateConnectionInput on the ConnectionMutation builder.
 func (i *CreateConnectionInput) Mutate(m *ConnectionMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetName(i.Name)
 	m.SetAccessToken(i.AccessToken)
 	m.SetAccountID(i.AccountID)
@@ -709,7 +419,6 @@ func (c *ConnectionCreate) SetInput(i CreateConnectionInput) *ConnectionCreate {
 
 // UpdateConnectionInput represents a mutation input for updating connections.
 type UpdateConnectionInput struct {
-	UpdatedAt          *time.Time
 	ClearDeletedAt     bool
 	DeletedAt          *time.Time
 	Name               *string
@@ -722,9 +431,6 @@ type UpdateConnectionInput struct {
 
 // Mutate applies the UpdateConnectionInput on the ConnectionMutation builder.
 func (i *UpdateConnectionInput) Mutate(m *ConnectionMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -765,9 +471,6 @@ func (c *ConnectionUpdateOne) SetInput(i UpdateConnectionInput) *ConnectionUpdat
 
 // CreateCryptocurrencyInput represents a mutation input for creating cryptocurrencies.
 type CreateCryptocurrencyInput struct {
-	CreatedAt     *time.Time
-	UpdatedAt     *time.Time
-	DeletedAt     *time.Time
 	Symbol        string
 	Icon          *string
 	Name          string
@@ -777,15 +480,6 @@ type CreateCryptocurrencyInput struct {
 
 // Mutate applies the CreateCryptocurrencyInput on the CryptocurrencyMutation builder.
 func (i *CreateCryptocurrencyInput) Mutate(m *CryptocurrencyMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetSymbol(i.Symbol)
 	if v := i.Icon; v != nil {
 		m.SetIcon(*v)
@@ -805,7 +499,6 @@ func (c *CryptocurrencyCreate) SetInput(i CreateCryptocurrencyInput) *Cryptocurr
 
 // UpdateCryptocurrencyInput represents a mutation input for updating cryptocurrencies.
 type UpdateCryptocurrencyInput struct {
-	UpdatedAt           *time.Time
 	ClearDeletedAt      bool
 	DeletedAt           *time.Time
 	Symbol              *string
@@ -820,9 +513,6 @@ type UpdateCryptocurrencyInput struct {
 
 // Mutate applies the UpdateCryptocurrencyInput on the CryptocurrencyMutation builder.
 func (i *UpdateCryptocurrencyInput) Mutate(m *CryptocurrencyMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -869,10 +559,7 @@ func (c *CryptocurrencyUpdateOne) SetInput(i UpdateCryptocurrencyInput) *Cryptoc
 
 // CreateDailyAssetPriceInput represents a mutation input for creating dailyassetprices.
 type CreateDailyAssetPriceInput struct {
-	CreatedAt     *time.Time
-	UpdatedAt     *time.Time
-	DeletedAt     *time.Time
-	Time          *time.Time
+	Time          time.Time
 	Open          *float64
 	High          *float64
 	Low           *float64
@@ -883,18 +570,7 @@ type CreateDailyAssetPriceInput struct {
 
 // Mutate applies the CreateDailyAssetPriceInput on the DailyAssetPriceMutation builder.
 func (i *CreateDailyAssetPriceInput) Mutate(m *DailyAssetPriceMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
-	if v := i.Time; v != nil {
-		m.SetTime(*v)
-	}
+	m.SetTime(i.Time)
 	if v := i.Open; v != nil {
 		m.SetOpen(*v)
 	}
@@ -919,7 +595,6 @@ func (c *DailyAssetPriceCreate) SetInput(i CreateDailyAssetPriceInput) *DailyAss
 
 // UpdateDailyAssetPriceInput represents a mutation input for updating dailyassetprices.
 type UpdateDailyAssetPriceInput struct {
-	UpdatedAt      *time.Time
 	ClearDeletedAt bool
 	DeletedAt      *time.Time
 	Time           *time.Time
@@ -938,9 +613,6 @@ type UpdateDailyAssetPriceInput struct {
 
 // Mutate applies the UpdateDailyAssetPriceInput on the DailyAssetPriceMutation builder.
 func (i *UpdateDailyAssetPriceInput) Mutate(m *DailyAssetPriceMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -999,35 +671,19 @@ func (c *DailyAssetPriceUpdateOne) SetInput(i UpdateDailyAssetPriceInput) *Daily
 
 // CreateExchangeInput represents a mutation input for creating exchanges.
 type CreateExchangeInput struct {
-	CreatedAt      *time.Time
-	UpdatedAt      *time.Time
-	DeletedAt      *time.Time
-	Name           string
-	Icon           *string
-	URL            *string
-	TransactionIDs []pulid.PULID
+	Name string
+	Icon *string
+	URL  *string
 }
 
 // Mutate applies the CreateExchangeInput on the ExchangeMutation builder.
 func (i *CreateExchangeInput) Mutate(m *ExchangeMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetName(i.Name)
 	if v := i.Icon; v != nil {
 		m.SetIcon(*v)
 	}
 	if v := i.URL; v != nil {
 		m.SetURL(*v)
-	}
-	if v := i.TransactionIDs; len(v) > 0 {
-		m.AddTransactionIDs(v...)
 	}
 }
 
@@ -1039,23 +695,17 @@ func (c *ExchangeCreate) SetInput(i CreateExchangeInput) *ExchangeCreate {
 
 // UpdateExchangeInput represents a mutation input for updating exchanges.
 type UpdateExchangeInput struct {
-	UpdatedAt            *time.Time
-	ClearDeletedAt       bool
-	DeletedAt            *time.Time
-	Name                 *string
-	ClearIcon            bool
-	Icon                 *string
-	ClearURL             bool
-	URL                  *string
-	AddTransactionIDs    []pulid.PULID
-	RemoveTransactionIDs []pulid.PULID
+	ClearDeletedAt bool
+	DeletedAt      *time.Time
+	Name           *string
+	ClearIcon      bool
+	Icon           *string
+	ClearURL       bool
+	URL            *string
 }
 
 // Mutate applies the UpdateExchangeInput on the ExchangeMutation builder.
 func (i *UpdateExchangeInput) Mutate(m *ExchangeMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -1077,12 +727,6 @@ func (i *UpdateExchangeInput) Mutate(m *ExchangeMutation) {
 	if v := i.URL; v != nil {
 		m.SetURL(*v)
 	}
-	if v := i.AddTransactionIDs; len(v) > 0 {
-		m.AddTransactionIDs(v...)
-	}
-	if v := i.RemoveTransactionIDs; len(v) > 0 {
-		m.RemoveTransactionIDs(v...)
-	}
 }
 
 // SetInput applies the change-set in the UpdateExchangeInput on the ExchangeUpdate builder.
@@ -1099,39 +743,19 @@ func (c *ExchangeUpdateOne) SetInput(i UpdateExchangeInput) *ExchangeUpdateOne {
 
 // CreatePortfolioInput represents a mutation input for creating portfolios.
 type CreatePortfolioInput struct {
-	CreatedAt      *time.Time
-	UpdatedAt      *time.Time
-	DeletedAt      *time.Time
-	Name           string
-	IsPublic       *bool
-	IsVisible      *bool
-	AccountID      pulid.PULID
-	TransactionIDs []pulid.PULID
-	ConnectionIDs  []pulid.PULID
+	Name          string
+	IsPublic      *bool
+	AccountID     pulid.PULID
+	ConnectionIDs []pulid.PULID
 }
 
 // Mutate applies the CreatePortfolioInput on the PortfolioMutation builder.
 func (i *CreatePortfolioInput) Mutate(m *PortfolioMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetName(i.Name)
 	if v := i.IsPublic; v != nil {
 		m.SetIsPublic(*v)
 	}
-	if v := i.IsVisible; v != nil {
-		m.SetIsVisible(*v)
-	}
 	m.SetAccountID(i.AccountID)
-	if v := i.TransactionIDs; len(v) > 0 {
-		m.AddTransactionIDs(v...)
-	}
 	if v := i.ConnectionIDs; len(v) > 0 {
 		m.AddConnectionIDs(v...)
 	}
@@ -1145,25 +769,17 @@ func (c *PortfolioCreate) SetInput(i CreatePortfolioInput) *PortfolioCreate {
 
 // UpdatePortfolioInput represents a mutation input for updating portfolios.
 type UpdatePortfolioInput struct {
-	UpdatedAt            *time.Time
-	ClearDeletedAt       bool
-	DeletedAt            *time.Time
-	Name                 *string
-	IsPublic             *bool
-	IsVisible            *bool
-	ClearAccount         bool
-	AccountID            *pulid.PULID
-	AddTransactionIDs    []pulid.PULID
-	RemoveTransactionIDs []pulid.PULID
-	AddConnectionIDs     []pulid.PULID
-	RemoveConnectionIDs  []pulid.PULID
+	ClearDeletedAt      bool
+	DeletedAt           *time.Time
+	Name                *string
+	IsPublic            *bool
+	IsVisible           *bool
+	AddConnectionIDs    []pulid.PULID
+	RemoveConnectionIDs []pulid.PULID
 }
 
 // Mutate applies the UpdatePortfolioInput on the PortfolioMutation builder.
 func (i *UpdatePortfolioInput) Mutate(m *PortfolioMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -1178,18 +794,6 @@ func (i *UpdatePortfolioInput) Mutate(m *PortfolioMutation) {
 	}
 	if v := i.IsVisible; v != nil {
 		m.SetIsVisible(*v)
-	}
-	if i.ClearAccount {
-		m.ClearAccount()
-	}
-	if v := i.AccountID; v != nil {
-		m.SetAccountID(*v)
-	}
-	if v := i.AddTransactionIDs; len(v) > 0 {
-		m.AddTransactionIDs(v...)
-	}
-	if v := i.RemoveTransactionIDs; len(v) > 0 {
-		m.RemoveTransactionIDs(v...)
 	}
 	if v := i.AddConnectionIDs; len(v) > 0 {
 		m.AddConnectionIDs(v...)
@@ -1213,9 +817,6 @@ func (c *PortfolioUpdateOne) SetInput(i UpdatePortfolioInput) *PortfolioUpdateOn
 
 // CreateSourceInput represents a mutation input for creating sources.
 type CreateSourceInput struct {
-	CreatedAt    *time.Time
-	UpdatedAt    *time.Time
-	DeletedAt    *time.Time
 	Name         string
 	Icon         *string
 	SourceTypeID pulid.PULID
@@ -1223,15 +824,6 @@ type CreateSourceInput struct {
 
 // Mutate applies the CreateSourceInput on the SourceMutation builder.
 func (i *CreateSourceInput) Mutate(m *SourceMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetName(i.Name)
 	if v := i.Icon; v != nil {
 		m.SetIcon(*v)
@@ -1247,7 +839,6 @@ func (c *SourceCreate) SetInput(i CreateSourceInput) *SourceCreate {
 
 // UpdateSourceInput represents a mutation input for updating sources.
 type UpdateSourceInput struct {
-	UpdatedAt       *time.Time
 	ClearDeletedAt  bool
 	DeletedAt       *time.Time
 	Name            *string
@@ -1259,9 +850,6 @@ type UpdateSourceInput struct {
 
 // Mutate applies the UpdateSourceInput on the SourceMutation builder.
 func (i *UpdateSourceInput) Mutate(m *SourceMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -1299,31 +887,15 @@ func (c *SourceUpdateOne) SetInput(i UpdateSourceInput) *SourceUpdateOne {
 
 // CreateSourceTypeInput represents a mutation input for creating sourcetypes.
 type CreateSourceTypeInput struct {
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
-	DeletedAt   *time.Time
 	Value       sourcetype.Value
 	Description *string
-	SourceIDs   []pulid.PULID
 }
 
 // Mutate applies the CreateSourceTypeInput on the SourceTypeMutation builder.
 func (i *CreateSourceTypeInput) Mutate(m *SourceTypeMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetValue(i.Value)
 	if v := i.Description; v != nil {
 		m.SetDescription(*v)
-	}
-	if v := i.SourceIDs; len(v) > 0 {
-		m.AddSourceIDs(v...)
 	}
 }
 
@@ -1335,21 +907,15 @@ func (c *SourceTypeCreate) SetInput(i CreateSourceTypeInput) *SourceTypeCreate {
 
 // UpdateSourceTypeInput represents a mutation input for updating sourcetypes.
 type UpdateSourceTypeInput struct {
-	UpdatedAt        *time.Time
 	ClearDeletedAt   bool
 	DeletedAt        *time.Time
 	Value            *sourcetype.Value
 	ClearDescription bool
 	Description      *string
-	AddSourceIDs     []pulid.PULID
-	RemoveSourceIDs  []pulid.PULID
 }
 
 // Mutate applies the UpdateSourceTypeInput on the SourceTypeMutation builder.
 func (i *UpdateSourceTypeInput) Mutate(m *SourceTypeMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -1364,12 +930,6 @@ func (i *UpdateSourceTypeInput) Mutate(m *SourceTypeMutation) {
 	}
 	if v := i.Description; v != nil {
 		m.SetDescription(*v)
-	}
-	if v := i.AddSourceIDs; len(v) > 0 {
-		m.AddSourceIDs(v...)
-	}
-	if v := i.RemoveSourceIDs; len(v) > 0 {
-		m.RemoveSourceIDs(v...)
 	}
 }
 
@@ -1387,40 +947,22 @@ func (c *SourceTypeUpdateOne) SetInput(i UpdateSourceTypeInput) *SourceTypeUpdat
 
 // CreateStaffAccountInput represents a mutation input for creating staffaccounts.
 type CreateStaffAccountInput struct {
-	CreatedAt         *time.Time
-	UpdatedAt         *time.Time
-	DeletedAt         *time.Time
-	Nickname          string
-	Email             string
-	Password          *string
-	PasswordUpdatedAt *time.Time
-	AuthRoleIDs       []pulid.PULID
-	AuthTypeID        pulid.PULID
+	Nickname    string
+	Email       string
+	Password    *string
+	AuthRoleIDs []pulid.PULID
 }
 
 // Mutate applies the CreateStaffAccountInput on the StaffAccountMutation builder.
 func (i *CreateStaffAccountInput) Mutate(m *StaffAccountMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetNickname(i.Nickname)
 	m.SetEmail(i.Email)
 	if v := i.Password; v != nil {
 		m.SetPassword(*v)
 	}
-	if v := i.PasswordUpdatedAt; v != nil {
-		m.SetPasswordUpdatedAt(*v)
-	}
 	if v := i.AuthRoleIDs; len(v) > 0 {
 		m.AddAuthRoleIDs(v...)
 	}
-	m.SetAuthTypeID(i.AuthTypeID)
 }
 
 // SetInput applies the change-set in the CreateStaffAccountInput on the StaffAccountCreate builder.
@@ -1431,14 +973,12 @@ func (c *StaffAccountCreate) SetInput(i CreateStaffAccountInput) *StaffAccountCr
 
 // UpdateStaffAccountInput represents a mutation input for updating staffaccounts.
 type UpdateStaffAccountInput struct {
-	UpdatedAt         *time.Time
 	ClearDeletedAt    bool
 	DeletedAt         *time.Time
 	Nickname          *string
 	Email             *string
 	ClearPassword     bool
 	Password          *string
-	PasswordUpdatedAt *time.Time
 	AddAuthRoleIDs    []pulid.PULID
 	RemoveAuthRoleIDs []pulid.PULID
 	ClearAuthType     bool
@@ -1447,9 +987,6 @@ type UpdateStaffAccountInput struct {
 
 // Mutate applies the UpdateStaffAccountInput on the StaffAccountMutation builder.
 func (i *UpdateStaffAccountInput) Mutate(m *StaffAccountMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -1467,9 +1004,6 @@ func (i *UpdateStaffAccountInput) Mutate(m *StaffAccountMutation) {
 	}
 	if v := i.Password; v != nil {
 		m.SetPassword(*v)
-	}
-	if v := i.PasswordUpdatedAt; v != nil {
-		m.SetPasswordUpdatedAt(*v)
 	}
 	if v := i.AddAuthRoleIDs; len(v) > 0 {
 		m.AddAuthRoleIDs(v...)
@@ -1499,9 +1033,6 @@ func (c *StaffAccountUpdateOne) SetInput(i UpdateStaffAccountInput) *StaffAccoun
 
 // CreateTransactionInput represents a mutation input for creating transactions.
 type CreateTransactionInput struct {
-	CreatedAt         *time.Time
-	UpdatedAt         *time.Time
-	DeletedAt         *time.Time
 	Time              time.Time
 	Units             int
 	PricePerUnit      float64
@@ -1515,15 +1046,6 @@ type CreateTransactionInput struct {
 
 // Mutate applies the CreateTransactionInput on the TransactionMutation builder.
 func (i *CreateTransactionInput) Mutate(m *TransactionMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetTime(i.Time)
 	m.SetUnits(i.Units)
 	m.SetPricePerUnit(i.PricePerUnit)
@@ -1547,7 +1069,6 @@ func (c *TransactionCreate) SetInput(i CreateTransactionInput) *TransactionCreat
 
 // UpdateTransactionInput represents a mutation input for updating transactions.
 type UpdateTransactionInput struct {
-	UpdatedAt            *time.Time
 	ClearDeletedAt       bool
 	DeletedAt            *time.Time
 	Time                 *time.Time
@@ -1569,9 +1090,6 @@ type UpdateTransactionInput struct {
 
 // Mutate applies the UpdateTransactionInput on the TransactionMutation builder.
 func (i *UpdateTransactionInput) Mutate(m *TransactionMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -1639,31 +1157,15 @@ func (c *TransactionUpdateOne) SetInput(i UpdateTransactionInput) *TransactionUp
 
 // CreateTransactionTypeInput represents a mutation input for creating transactiontypes.
 type CreateTransactionTypeInput struct {
-	CreatedAt      *time.Time
-	UpdatedAt      *time.Time
-	DeletedAt      *time.Time
-	Value          transactiontype.Value
-	Description    *string
-	TransactionIDs []pulid.PULID
+	Value       transactiontype.Value
+	Description *string
 }
 
 // Mutate applies the CreateTransactionTypeInput on the TransactionTypeMutation builder.
 func (i *CreateTransactionTypeInput) Mutate(m *TransactionTypeMutation) {
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
-	if v := i.DeletedAt; v != nil {
-		m.SetDeletedAt(*v)
-	}
 	m.SetValue(i.Value)
 	if v := i.Description; v != nil {
 		m.SetDescription(*v)
-	}
-	if v := i.TransactionIDs; len(v) > 0 {
-		m.AddTransactionIDs(v...)
 	}
 }
 
@@ -1675,21 +1177,15 @@ func (c *TransactionTypeCreate) SetInput(i CreateTransactionTypeInput) *Transact
 
 // UpdateTransactionTypeInput represents a mutation input for updating transactiontypes.
 type UpdateTransactionTypeInput struct {
-	UpdatedAt            *time.Time
-	ClearDeletedAt       bool
-	DeletedAt            *time.Time
-	Value                *transactiontype.Value
-	ClearDescription     bool
-	Description          *string
-	AddTransactionIDs    []pulid.PULID
-	RemoveTransactionIDs []pulid.PULID
+	ClearDeletedAt   bool
+	DeletedAt        *time.Time
+	Value            *transactiontype.Value
+	ClearDescription bool
+	Description      *string
 }
 
 // Mutate applies the UpdateTransactionTypeInput on the TransactionTypeMutation builder.
 func (i *UpdateTransactionTypeInput) Mutate(m *TransactionTypeMutation) {
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
-	}
 	if i.ClearDeletedAt {
 		m.ClearDeletedAt()
 	}
@@ -1704,12 +1200,6 @@ func (i *UpdateTransactionTypeInput) Mutate(m *TransactionTypeMutation) {
 	}
 	if v := i.Description; v != nil {
 		m.SetDescription(*v)
-	}
-	if v := i.AddTransactionIDs; len(v) > 0 {
-		m.AddTransactionIDs(v...)
-	}
-	if v := i.RemoveTransactionIDs; len(v) > 0 {
-		m.RemoveTransactionIDs(v...)
 	}
 }
 

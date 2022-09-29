@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 
@@ -12,7 +11,6 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
-	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
@@ -20,16 +18,14 @@ import (
 // TransactionTypeQuery is the builder for querying TransactionType entities.
 type TransactionTypeQuery struct {
 	config
-	limit                 *int
-	offset                *int
-	unique                *bool
-	order                 []OrderFunc
-	fields                []string
-	predicates            []predicate.TransactionType
-	withTransactions      *TransactionQuery
-	modifiers             []func(*sql.Selector)
-	loadTotal             []func(context.Context, []*TransactionType) error
-	withNamedTransactions map[string]*TransactionQuery
+	limit      *int
+	offset     *int
+	unique     *bool
+	order      []OrderFunc
+	fields     []string
+	predicates []predicate.TransactionType
+	modifiers  []func(*sql.Selector)
+	loadTotal  []func(context.Context, []*TransactionType) error
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -64,28 +60,6 @@ func (ttq *TransactionTypeQuery) Unique(unique bool) *TransactionTypeQuery {
 func (ttq *TransactionTypeQuery) Order(o ...OrderFunc) *TransactionTypeQuery {
 	ttq.order = append(ttq.order, o...)
 	return ttq
-}
-
-// QueryTransactions chains the current query on the "transactions" edge.
-func (ttq *TransactionTypeQuery) QueryTransactions() *TransactionQuery {
-	query := &TransactionQuery{config: ttq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := ttq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := ttq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(transactiontype.Table, transactiontype.FieldID, selector),
-			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, transactiontype.TransactionsTable, transactiontype.TransactionsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(ttq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // First returns the first TransactionType entity from the query.
@@ -264,28 +238,16 @@ func (ttq *TransactionTypeQuery) Clone() *TransactionTypeQuery {
 		return nil
 	}
 	return &TransactionTypeQuery{
-		config:           ttq.config,
-		limit:            ttq.limit,
-		offset:           ttq.offset,
-		order:            append([]OrderFunc{}, ttq.order...),
-		predicates:       append([]predicate.TransactionType{}, ttq.predicates...),
-		withTransactions: ttq.withTransactions.Clone(),
+		config:     ttq.config,
+		limit:      ttq.limit,
+		offset:     ttq.offset,
+		order:      append([]OrderFunc{}, ttq.order...),
+		predicates: append([]predicate.TransactionType{}, ttq.predicates...),
 		// clone intermediate query.
 		sql:    ttq.sql.Clone(),
 		path:   ttq.path,
 		unique: ttq.unique,
 	}
-}
-
-// WithTransactions tells the query-builder to eager-load the nodes that are connected to
-// the "transactions" edge. The optional arguments are used to configure the query builder of the edge.
-func (ttq *TransactionTypeQuery) WithTransactions(opts ...func(*TransactionQuery)) *TransactionTypeQuery {
-	query := &TransactionQuery{config: ttq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	ttq.withTransactions = query
-	return ttq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -354,11 +316,8 @@ func (ttq *TransactionTypeQuery) prepareQuery(ctx context.Context) error {
 
 func (ttq *TransactionTypeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*TransactionType, error) {
 	var (
-		nodes       = []*TransactionType{}
-		_spec       = ttq.querySpec()
-		loadedTypes = [1]bool{
-			ttq.withTransactions != nil,
-		}
+		nodes = []*TransactionType{}
+		_spec = ttq.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*TransactionType).scanValues(nil, columns)
@@ -366,7 +325,6 @@ func (ttq *TransactionTypeQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &TransactionType{config: ttq.config}
 		nodes = append(nodes, node)
-		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(ttq.modifiers) > 0 {
@@ -381,54 +339,12 @@ func (ttq *TransactionTypeQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := ttq.withTransactions; query != nil {
-		if err := ttq.loadTransactions(ctx, query, nodes,
-			func(n *TransactionType) { n.Edges.Transactions = []*Transaction{} },
-			func(n *TransactionType, e *Transaction) { n.Edges.Transactions = append(n.Edges.Transactions, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range ttq.withNamedTransactions {
-		if err := ttq.loadTransactions(ctx, query, nodes,
-			func(n *TransactionType) { n.appendNamedTransactions(name) },
-			func(n *TransactionType, e *Transaction) { n.appendNamedTransactions(name, e) }); err != nil {
-			return nil, err
-		}
-	}
 	for i := range ttq.loadTotal {
 		if err := ttq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
-}
-
-func (ttq *TransactionTypeQuery) loadTransactions(ctx context.Context, query *TransactionQuery, nodes []*TransactionType, init func(*TransactionType), assign func(*TransactionType, *Transaction)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[pulid.PULID]*TransactionType)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.Where(predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.InValues(transactiontype.TransactionsColumn, fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.TransactionTypeID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "transaction_type_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
 }
 
 func (ttq *TransactionTypeQuery) sqlCount(ctx context.Context) (int, error) {
@@ -532,20 +448,6 @@ func (ttq *TransactionTypeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
-}
-
-// WithNamedTransactions tells the query-builder to eager-load the nodes that are connected to the "transactions"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (ttq *TransactionTypeQuery) WithNamedTransactions(name string, opts ...func(*TransactionQuery)) *TransactionTypeQuery {
-	query := &TransactionQuery{config: ttq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	if ttq.withNamedTransactions == nil {
-		ttq.withNamedTransactions = make(map[string]*TransactionQuery)
-	}
-	ttq.withNamedTransactions[name] = query
-	return ttq
 }
 
 // TransactionTypeGroupBy is the group-by builder for TransactionType entities.

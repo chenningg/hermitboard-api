@@ -44,14 +44,12 @@ type ComplexityRoot struct {
 	Account struct {
 		AuthRoles         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthRoleOrder, where *ent.AuthRoleWhereInput) int
 		AuthType          func(childComplexity int) int
-		AuthTypeID        func(childComplexity int) int
-		Connections       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ConnectionOrder, where *ent.ConnectionWhereInput) int
+		Connections       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ConnectionOrder) int
 		CreatedAt         func(childComplexity int) int
 		DeletedAt         func(childComplexity int) int
 		Email             func(childComplexity int) int
 		ID                func(childComplexity int) int
 		Nickname          func(childComplexity int) int
-		Password          func(childComplexity int) int
 		PasswordUpdatedAt func(childComplexity int) int
 		Portfolios        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PortfolioOrder, where *ent.PortfolioWhereInput) int
 		UpdatedAt         func(childComplexity int) int
@@ -69,20 +67,16 @@ type ComplexityRoot struct {
 	}
 
 	Asset struct {
-		AssetClass        func(childComplexity int) int
-		AssetClassID      func(childComplexity int) int
-		CreatedAt         func(childComplexity int) int
-		Cryptocurrency    func(childComplexity int) int
-		DailyAssetPrices  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.DailyAssetPriceOrder, where *ent.DailyAssetPriceWhereInput) int
-		DeletedAt         func(childComplexity int) int
-		ID                func(childComplexity int) int
-		TransactionBases  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) int
-		TransactionQuotes func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) int
-		UpdatedAt         func(childComplexity int) int
+		AssetClass       func(childComplexity int) int
+		CreatedAt        func(childComplexity int) int
+		Cryptocurrency   func(childComplexity int) int
+		DailyAssetPrices func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.DailyAssetPriceOrder) int
+		DeletedAt        func(childComplexity int) int
+		ID               func(childComplexity int) int
+		UpdatedAt        func(childComplexity int) int
 	}
 
 	AssetClass struct {
-		Assets      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetOrder, where *ent.AssetWhereInput) int
 		CreatedAt   func(childComplexity int) int
 		DeletedAt   func(childComplexity int) int
 		Description func(childComplexity int) int
@@ -114,12 +108,12 @@ type ComplexityRoot struct {
 	}
 
 	AuthRole struct {
-		Accounts      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AccountOrder, where *ent.AccountWhereInput) int
+		Accounts      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AccountOrder) int
 		CreatedAt     func(childComplexity int) int
 		DeletedAt     func(childComplexity int) int
 		Description   func(childComplexity int) int
 		ID            func(childComplexity int) int
-		StaffAccounts func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffAccountOrder, where *ent.StaffAccountWhereInput) int
+		StaffAccounts func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffAccountOrder) int
 		UpdatedAt     func(childComplexity int) int
 		Value         func(childComplexity int) int
 	}
@@ -136,14 +130,12 @@ type ComplexityRoot struct {
 	}
 
 	AuthType struct {
-		Accounts      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AccountOrder, where *ent.AccountWhereInput) int
-		CreatedAt     func(childComplexity int) int
-		DeletedAt     func(childComplexity int) int
-		Description   func(childComplexity int) int
-		ID            func(childComplexity int) int
-		StaffAccounts func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffAccountOrder, where *ent.StaffAccountWhereInput) int
-		UpdatedAt     func(childComplexity int) int
-		Value         func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		DeletedAt   func(childComplexity int) int
+		Description func(childComplexity int) int
+		ID          func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+		Value       func(childComplexity int) int
 	}
 
 	AuthTypeConnection struct {
@@ -160,13 +152,13 @@ type ComplexityRoot struct {
 	Blockchain struct {
 		ChainID          func(childComplexity int) int
 		CreatedAt        func(childComplexity int) int
-		Cryptocurrencies func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.CryptocurrencyOrder, where *ent.CryptocurrencyWhereInput) int
+		Cryptocurrencies func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.CryptocurrencyOrder) int
 		DeletedAt        func(childComplexity int) int
 		ID               func(childComplexity int) int
 		Icon             func(childComplexity int) int
 		Name             func(childComplexity int) int
 		Symbol           func(childComplexity int) int
-		Transactions     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) int
+		Transactions     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder) int
 		UpdatedAt        func(childComplexity int) int
 	}
 
@@ -189,7 +181,7 @@ type ComplexityRoot struct {
 		DeletedAt   func(childComplexity int) int
 		ID          func(childComplexity int) int
 		Name        func(childComplexity int) int
-		Portfolios  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PortfolioOrder, where *ent.PortfolioWhereInput) int
+		Portfolios  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PortfolioOrder) int
 		UpdatedAt   func(childComplexity int) int
 	}
 
@@ -297,7 +289,7 @@ type ComplexityRoot struct {
 		IsPublic     func(childComplexity int) int
 		IsVisible    func(childComplexity int) int
 		Name         func(childComplexity int) int
-		Transactions func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) int
+		Transactions func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder) int
 		UpdatedAt    func(childComplexity int) int
 	}
 
@@ -360,7 +352,7 @@ type ComplexityRoot struct {
 		DeletedAt   func(childComplexity int) int
 		Description func(childComplexity int) int
 		ID          func(childComplexity int) int
-		Sources     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceOrder, where *ent.SourceWhereInput) int
+		Sources     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceOrder) int
 		UpdatedAt   func(childComplexity int) int
 		Value       func(childComplexity int) int
 	}
@@ -379,13 +371,11 @@ type ComplexityRoot struct {
 	StaffAccount struct {
 		AuthRoles         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthRoleOrder, where *ent.AuthRoleWhereInput) int
 		AuthType          func(childComplexity int) int
-		AuthTypeID        func(childComplexity int) int
 		CreatedAt         func(childComplexity int) int
 		DeletedAt         func(childComplexity int) int
 		Email             func(childComplexity int) int
 		ID                func(childComplexity int) int
 		Nickname          func(childComplexity int) int
-		Password          func(childComplexity int) int
 		PasswordUpdatedAt func(childComplexity int) int
 		UpdatedAt         func(childComplexity int) int
 	}
@@ -402,25 +392,24 @@ type ComplexityRoot struct {
 	}
 
 	Transaction struct {
-		BaseAsset         func(childComplexity int) int
-		BaseAssetID       func(childComplexity int) int
-		Blockchain        func(childComplexity int) int
-		BlockchainID      func(childComplexity int) int
-		CreatedAt         func(childComplexity int) int
-		DeletedAt         func(childComplexity int) int
-		Exchange          func(childComplexity int) int
-		ExchangeID        func(childComplexity int) int
-		ID                func(childComplexity int) int
-		Portfolio         func(childComplexity int) int
-		PortfolioID       func(childComplexity int) int
-		PricePerUnit      func(childComplexity int) int
-		QuoteAsset        func(childComplexity int) int
-		QuoteAssetID      func(childComplexity int) int
-		Time              func(childComplexity int) int
-		TransactionType   func(childComplexity int) int
-		TransactionTypeID func(childComplexity int) int
-		Units             func(childComplexity int) int
-		UpdatedAt         func(childComplexity int) int
+		BaseAsset       func(childComplexity int) int
+		BaseAssetID     func(childComplexity int) int
+		Blockchain      func(childComplexity int) int
+		BlockchainID    func(childComplexity int) int
+		CreatedAt       func(childComplexity int) int
+		DeletedAt       func(childComplexity int) int
+		Exchange        func(childComplexity int) int
+		ExchangeID      func(childComplexity int) int
+		ID              func(childComplexity int) int
+		Portfolio       func(childComplexity int) int
+		PortfolioID     func(childComplexity int) int
+		PricePerUnit    func(childComplexity int) int
+		QuoteAsset      func(childComplexity int) int
+		QuoteAssetID    func(childComplexity int) int
+		Time            func(childComplexity int) int
+		TransactionType func(childComplexity int) int
+		Units           func(childComplexity int) int
+		UpdatedAt       func(childComplexity int) int
 	}
 
 	TransactionConnection struct {
@@ -435,13 +424,12 @@ type ComplexityRoot struct {
 	}
 
 	TransactionType struct {
-		CreatedAt    func(childComplexity int) int
-		DeletedAt    func(childComplexity int) int
-		Description  func(childComplexity int) int
-		ID           func(childComplexity int) int
-		Transactions func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) int
-		UpdatedAt    func(childComplexity int) int
-		Value        func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		DeletedAt   func(childComplexity int) int
+		Description func(childComplexity int) int
+		ID          func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+		Value       func(childComplexity int) int
 	}
 
 	TransactionTypeConnection struct {
@@ -490,13 +478,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Account.AuthType(childComplexity), true
 
-	case "Account.authTypeID":
-		if e.complexity.Account.AuthTypeID == nil {
-			break
-		}
-
-		return e.complexity.Account.AuthTypeID(childComplexity), true
-
 	case "Account.connections":
 		if e.complexity.Account.Connections == nil {
 			break
@@ -507,7 +488,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Account.Connections(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.ConnectionOrder), args["where"].(*ent.ConnectionWhereInput)), true
+		return e.complexity.Account.Connections(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.ConnectionOrder)), true
 
 	case "Account.createdAt":
 		if e.complexity.Account.CreatedAt == nil {
@@ -543,13 +524,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Account.Nickname(childComplexity), true
-
-	case "Account.password":
-		if e.complexity.Account.Password == nil {
-			break
-		}
-
-		return e.complexity.Account.Password(childComplexity), true
 
 	case "Account.passwordUpdatedAt":
 		if e.complexity.Account.PasswordUpdatedAt == nil {
@@ -619,13 +593,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Asset.AssetClass(childComplexity), true
 
-	case "Asset.assetClassID":
-		if e.complexity.Asset.AssetClassID == nil {
-			break
-		}
-
-		return e.complexity.Asset.AssetClassID(childComplexity), true
-
 	case "Asset.createdAt":
 		if e.complexity.Asset.CreatedAt == nil {
 			break
@@ -650,7 +617,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Asset.DailyAssetPrices(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.DailyAssetPriceOrder), args["where"].(*ent.DailyAssetPriceWhereInput)), true
+		return e.complexity.Asset.DailyAssetPrices(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.DailyAssetPriceOrder)), true
 
 	case "Asset.deletedAt":
 		if e.complexity.Asset.DeletedAt == nil {
@@ -666,48 +633,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Asset.ID(childComplexity), true
 
-	case "Asset.transactionBases":
-		if e.complexity.Asset.TransactionBases == nil {
-			break
-		}
-
-		args, err := ec.field_Asset_transactionBases_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Asset.TransactionBases(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.TransactionOrder), args["where"].(*ent.TransactionWhereInput)), true
-
-	case "Asset.transactionQuotes":
-		if e.complexity.Asset.TransactionQuotes == nil {
-			break
-		}
-
-		args, err := ec.field_Asset_transactionQuotes_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Asset.TransactionQuotes(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.TransactionOrder), args["where"].(*ent.TransactionWhereInput)), true
-
 	case "Asset.updatedAt":
 		if e.complexity.Asset.UpdatedAt == nil {
 			break
 		}
 
 		return e.complexity.Asset.UpdatedAt(childComplexity), true
-
-	case "AssetClass.assets":
-		if e.complexity.AssetClass.Assets == nil {
-			break
-		}
-
-		args, err := ec.field_AssetClass_assets_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.AssetClass.Assets(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AssetOrder), args["where"].(*ent.AssetWhereInput)), true
 
 	case "AssetClass.createdAt":
 		if e.complexity.AssetClass.CreatedAt == nil {
@@ -831,7 +762,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.AuthRole.Accounts(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AccountOrder), args["where"].(*ent.AccountWhereInput)), true
+		return e.complexity.AuthRole.Accounts(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AccountOrder)), true
 
 	case "AuthRole.createdAt":
 		if e.complexity.AuthRole.CreatedAt == nil {
@@ -871,7 +802,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.AuthRole.StaffAccounts(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.StaffAccountOrder), args["where"].(*ent.StaffAccountWhereInput)), true
+		return e.complexity.AuthRole.StaffAccounts(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.StaffAccountOrder)), true
 
 	case "AuthRole.updatedAt":
 		if e.complexity.AuthRole.UpdatedAt == nil {
@@ -922,18 +853,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.AuthRoleEdge.Node(childComplexity), true
 
-	case "AuthType.accounts":
-		if e.complexity.AuthType.Accounts == nil {
-			break
-		}
-
-		args, err := ec.field_AuthType_accounts_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.AuthType.Accounts(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AccountOrder), args["where"].(*ent.AccountWhereInput)), true
-
 	case "AuthType.createdAt":
 		if e.complexity.AuthType.CreatedAt == nil {
 			break
@@ -961,18 +880,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.AuthType.ID(childComplexity), true
-
-	case "AuthType.staffAccounts":
-		if e.complexity.AuthType.StaffAccounts == nil {
-			break
-		}
-
-		args, err := ec.field_AuthType_staffAccounts_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.AuthType.StaffAccounts(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.StaffAccountOrder), args["where"].(*ent.StaffAccountWhereInput)), true
 
 	case "AuthType.updatedAt":
 		if e.complexity.AuthType.UpdatedAt == nil {
@@ -1047,7 +954,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Blockchain.Cryptocurrencies(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.CryptocurrencyOrder), args["where"].(*ent.CryptocurrencyWhereInput)), true
+		return e.complexity.Blockchain.Cryptocurrencies(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.CryptocurrencyOrder)), true
 
 	case "Blockchain.deletedAt":
 		if e.complexity.Blockchain.DeletedAt == nil {
@@ -1094,7 +1001,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Blockchain.Transactions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.TransactionOrder), args["where"].(*ent.TransactionWhereInput)), true
+		return e.complexity.Blockchain.Transactions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.TransactionOrder)), true
 
 	case "Blockchain.updatedAt":
 		if e.complexity.Blockchain.UpdatedAt == nil {
@@ -1197,7 +1104,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Connection.Portfolios(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.PortfolioOrder), args["where"].(*ent.PortfolioWhereInput)), true
+		return e.complexity.Connection.Portfolios(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.PortfolioOrder)), true
 
 	case "Connection.updatedAt":
 		if e.complexity.Connection.UpdatedAt == nil {
@@ -1684,7 +1591,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Portfolio.Transactions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.TransactionOrder), args["where"].(*ent.TransactionWhereInput)), true
+		return e.complexity.Portfolio.Transactions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.TransactionOrder)), true
 
 	case "Portfolio.updatedAt":
 		if e.complexity.Portfolio.UpdatedAt == nil {
@@ -2073,7 +1980,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.SourceType.Sources(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.SourceOrder), args["where"].(*ent.SourceWhereInput)), true
+		return e.complexity.SourceType.Sources(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.SourceOrder)), true
 
 	case "SourceType.updatedAt":
 		if e.complexity.SourceType.UpdatedAt == nil {
@@ -2143,13 +2050,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.StaffAccount.AuthType(childComplexity), true
 
-	case "StaffAccount.authTypeID":
-		if e.complexity.StaffAccount.AuthTypeID == nil {
-			break
-		}
-
-		return e.complexity.StaffAccount.AuthTypeID(childComplexity), true
-
 	case "StaffAccount.createdAt":
 		if e.complexity.StaffAccount.CreatedAt == nil {
 			break
@@ -2184,13 +2084,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.StaffAccount.Nickname(childComplexity), true
-
-	case "StaffAccount.password":
-		if e.complexity.StaffAccount.Password == nil {
-			break
-		}
-
-		return e.complexity.StaffAccount.Password(childComplexity), true
 
 	case "StaffAccount.passwordUpdatedAt":
 		if e.complexity.StaffAccount.PasswordUpdatedAt == nil {
@@ -2353,13 +2246,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Transaction.TransactionType(childComplexity), true
 
-	case "Transaction.transactionTypeID":
-		if e.complexity.Transaction.TransactionTypeID == nil {
-			break
-		}
-
-		return e.complexity.Transaction.TransactionTypeID(childComplexity), true
-
 	case "Transaction.units":
 		if e.complexity.Transaction.Units == nil {
 			break
@@ -2437,18 +2323,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.TransactionType.ID(childComplexity), true
 
-	case "TransactionType.transactions":
-		if e.complexity.TransactionType.Transactions == nil {
-			break
-		}
-
-		args, err := ec.field_TransactionType_transactions_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.TransactionType.Transactions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.TransactionOrder), args["where"].(*ent.TransactionWhereInput)), true
-
 	case "TransactionType.updatedAt":
 		if e.complexity.TransactionType.UpdatedAt == nil {
 			break
@@ -2522,7 +2396,6 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputConnectionWhereInput,
 		ec.unmarshalInputCreateAccountInput,
 		ec.unmarshalInputCreateAssetClassInput,
-		ec.unmarshalInputCreateAssetInput,
 		ec.unmarshalInputCreateAuthRoleInput,
 		ec.unmarshalInputCreateAuthTypeInput,
 		ec.unmarshalInputCreateBlockchainInput,

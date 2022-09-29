@@ -16,29 +16,25 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
-	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // AssetQuery is the builder for querying Asset entities.
 type AssetQuery struct {
 	config
-	limit                      *int
-	offset                     *int
-	unique                     *bool
-	order                      []OrderFunc
-	fields                     []string
-	predicates                 []predicate.Asset
-	withAssetClass             *AssetClassQuery
-	withCryptocurrency         *CryptocurrencyQuery
-	withTransactionBases       *TransactionQuery
-	withTransactionQuotes      *TransactionQuery
-	withDailyAssetPrices       *DailyAssetPriceQuery
-	modifiers                  []func(*sql.Selector)
-	loadTotal                  []func(context.Context, []*Asset) error
-	withNamedTransactionBases  map[string]*TransactionQuery
-	withNamedTransactionQuotes map[string]*TransactionQuery
-	withNamedDailyAssetPrices  map[string]*DailyAssetPriceQuery
+	limit                     *int
+	offset                    *int
+	unique                    *bool
+	order                     []OrderFunc
+	fields                    []string
+	predicates                []predicate.Asset
+	withAssetClass            *AssetClassQuery
+	withCryptocurrency        *CryptocurrencyQuery
+	withDailyAssetPrices      *DailyAssetPriceQuery
+	withFKs                   bool
+	modifiers                 []func(*sql.Selector)
+	loadTotal                 []func(context.Context, []*Asset) error
+	withNamedDailyAssetPrices map[string]*DailyAssetPriceQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -89,7 +85,7 @@ func (aq *AssetQuery) QueryAssetClass() *AssetClassQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(asset.Table, asset.FieldID, selector),
 			sqlgraph.To(assetclass.Table, assetclass.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, asset.AssetClassTable, asset.AssetClassColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, asset.AssetClassTable, asset.AssetClassColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -112,50 +108,6 @@ func (aq *AssetQuery) QueryCryptocurrency() *CryptocurrencyQuery {
 			sqlgraph.From(asset.Table, asset.FieldID, selector),
 			sqlgraph.To(cryptocurrency.Table, cryptocurrency.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, asset.CryptocurrencyTable, asset.CryptocurrencyColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryTransactionBases chains the current query on the "transaction_bases" edge.
-func (aq *AssetQuery) QueryTransactionBases() *TransactionQuery {
-	query := &TransactionQuery{config: aq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(asset.Table, asset.FieldID, selector),
-			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, asset.TransactionBasesTable, asset.TransactionBasesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryTransactionQuotes chains the current query on the "transaction_quotes" edge.
-func (aq *AssetQuery) QueryTransactionQuotes() *TransactionQuery {
-	query := &TransactionQuery{config: aq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := aq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := aq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(asset.Table, asset.FieldID, selector),
-			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, asset.TransactionQuotesTable, asset.TransactionQuotesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -361,16 +313,14 @@ func (aq *AssetQuery) Clone() *AssetQuery {
 		return nil
 	}
 	return &AssetQuery{
-		config:                aq.config,
-		limit:                 aq.limit,
-		offset:                aq.offset,
-		order:                 append([]OrderFunc{}, aq.order...),
-		predicates:            append([]predicate.Asset{}, aq.predicates...),
-		withAssetClass:        aq.withAssetClass.Clone(),
-		withCryptocurrency:    aq.withCryptocurrency.Clone(),
-		withTransactionBases:  aq.withTransactionBases.Clone(),
-		withTransactionQuotes: aq.withTransactionQuotes.Clone(),
-		withDailyAssetPrices:  aq.withDailyAssetPrices.Clone(),
+		config:               aq.config,
+		limit:                aq.limit,
+		offset:               aq.offset,
+		order:                append([]OrderFunc{}, aq.order...),
+		predicates:           append([]predicate.Asset{}, aq.predicates...),
+		withAssetClass:       aq.withAssetClass.Clone(),
+		withCryptocurrency:   aq.withCryptocurrency.Clone(),
+		withDailyAssetPrices: aq.withDailyAssetPrices.Clone(),
 		// clone intermediate query.
 		sql:    aq.sql.Clone(),
 		path:   aq.path,
@@ -397,28 +347,6 @@ func (aq *AssetQuery) WithCryptocurrency(opts ...func(*CryptocurrencyQuery)) *As
 		opt(query)
 	}
 	aq.withCryptocurrency = query
-	return aq
-}
-
-// WithTransactionBases tells the query-builder to eager-load the nodes that are connected to
-// the "transaction_bases" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AssetQuery) WithTransactionBases(opts ...func(*TransactionQuery)) *AssetQuery {
-	query := &TransactionQuery{config: aq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withTransactionBases = query
-	return aq
-}
-
-// WithTransactionQuotes tells the query-builder to eager-load the nodes that are connected to
-// the "transaction_quotes" edge. The optional arguments are used to configure the query builder of the edge.
-func (aq *AssetQuery) WithTransactionQuotes(opts ...func(*TransactionQuery)) *AssetQuery {
-	query := &TransactionQuery{config: aq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	aq.withTransactionQuotes = query
 	return aq
 }
 
@@ -500,15 +428,20 @@ func (aq *AssetQuery) prepareQuery(ctx context.Context) error {
 func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset, error) {
 	var (
 		nodes       = []*Asset{}
+		withFKs     = aq.withFKs
 		_spec       = aq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [3]bool{
 			aq.withAssetClass != nil,
 			aq.withCryptocurrency != nil,
-			aq.withTransactionBases != nil,
-			aq.withTransactionQuotes != nil,
 			aq.withDailyAssetPrices != nil,
 		}
 	)
+	if aq.withAssetClass != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, asset.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Asset).scanValues(nil, columns)
 	}
@@ -542,38 +475,10 @@ func (aq *AssetQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Asset,
 			return nil, err
 		}
 	}
-	if query := aq.withTransactionBases; query != nil {
-		if err := aq.loadTransactionBases(ctx, query, nodes,
-			func(n *Asset) { n.Edges.TransactionBases = []*Transaction{} },
-			func(n *Asset, e *Transaction) { n.Edges.TransactionBases = append(n.Edges.TransactionBases, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := aq.withTransactionQuotes; query != nil {
-		if err := aq.loadTransactionQuotes(ctx, query, nodes,
-			func(n *Asset) { n.Edges.TransactionQuotes = []*Transaction{} },
-			func(n *Asset, e *Transaction) { n.Edges.TransactionQuotes = append(n.Edges.TransactionQuotes, e) }); err != nil {
-			return nil, err
-		}
-	}
 	if query := aq.withDailyAssetPrices; query != nil {
 		if err := aq.loadDailyAssetPrices(ctx, query, nodes,
 			func(n *Asset) { n.Edges.DailyAssetPrices = []*DailyAssetPrice{} },
 			func(n *Asset, e *DailyAssetPrice) { n.Edges.DailyAssetPrices = append(n.Edges.DailyAssetPrices, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range aq.withNamedTransactionBases {
-		if err := aq.loadTransactionBases(ctx, query, nodes,
-			func(n *Asset) { n.appendNamedTransactionBases(name) },
-			func(n *Asset, e *Transaction) { n.appendNamedTransactionBases(name, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range aq.withNamedTransactionQuotes {
-		if err := aq.loadTransactionQuotes(ctx, query, nodes,
-			func(n *Asset) { n.appendNamedTransactionQuotes(name) },
-			func(n *Asset, e *Transaction) { n.appendNamedTransactionQuotes(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -596,7 +501,10 @@ func (aq *AssetQuery) loadAssetClass(ctx context.Context, query *AssetClassQuery
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Asset)
 	for i := range nodes {
-		fk := nodes[i].AssetClassID
+		if nodes[i].asset_asset_class == nil {
+			continue
+		}
+		fk := *nodes[i].asset_asset_class
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -610,7 +518,7 @@ func (aq *AssetQuery) loadAssetClass(ctx context.Context, query *AssetClassQuery
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "asset_class_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "asset_asset_class" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -637,63 +545,6 @@ func (aq *AssetQuery) loadCryptocurrency(ctx context.Context, query *Cryptocurre
 		node, ok := nodeids[fk]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "asset_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (aq *AssetQuery) loadTransactionBases(ctx context.Context, query *TransactionQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *Transaction)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[pulid.PULID]*Asset)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.Where(predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.InValues(asset.TransactionBasesColumn, fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.BaseAssetID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "base_asset_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (aq *AssetQuery) loadTransactionQuotes(ctx context.Context, query *TransactionQuery, nodes []*Asset, init func(*Asset), assign func(*Asset, *Transaction)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[pulid.PULID]*Asset)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.Where(predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.InValues(asset.TransactionQuotesColumn, fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.QuoteAssetID
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "quote_asset_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "quote_asset_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}
@@ -828,34 +679,6 @@ func (aq *AssetQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
-}
-
-// WithNamedTransactionBases tells the query-builder to eager-load the nodes that are connected to the "transaction_bases"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (aq *AssetQuery) WithNamedTransactionBases(name string, opts ...func(*TransactionQuery)) *AssetQuery {
-	query := &TransactionQuery{config: aq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	if aq.withNamedTransactionBases == nil {
-		aq.withNamedTransactionBases = make(map[string]*TransactionQuery)
-	}
-	aq.withNamedTransactionBases[name] = query
-	return aq
-}
-
-// WithNamedTransactionQuotes tells the query-builder to eager-load the nodes that are connected to the "transaction_quotes"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (aq *AssetQuery) WithNamedTransactionQuotes(name string, opts ...func(*TransactionQuery)) *AssetQuery {
-	query := &TransactionQuery{config: aq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	if aq.withNamedTransactionQuotes == nil {
-		aq.withNamedTransactionQuotes = make(map[string]*TransactionQuery)
-	}
-	aq.withNamedTransactionQuotes[name] = query
-	return aq
 }
 
 // WithNamedDailyAssetPrices tells the query-builder to eager-load the nodes that are connected to the "daily_asset_prices"

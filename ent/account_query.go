@@ -33,6 +33,7 @@ type AccountQuery struct {
 	withPortfolios       *PortfolioQuery
 	withAuthType         *AuthTypeQuery
 	withConnections      *ConnectionQuery
+	withFKs              bool
 	modifiers            []func(*sql.Selector)
 	loadTotal            []func(context.Context, []*Account) error
 	withNamedAuthRoles   map[string]*AuthRoleQuery
@@ -132,7 +133,7 @@ func (aq *AccountQuery) QueryAuthType() *AuthTypeQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(account.Table, account.FieldID, selector),
 			sqlgraph.To(authtype.Table, authtype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, account.AuthTypeTable, account.AuthTypeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, account.AuthTypeTable, account.AuthTypeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
 		return fromU, nil
@@ -465,6 +466,7 @@ func (aq *AccountQuery) prepareQuery(ctx context.Context) error {
 func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Account, error) {
 	var (
 		nodes       = []*Account{}
+		withFKs     = aq.withFKs
 		_spec       = aq.querySpec()
 		loadedTypes = [4]bool{
 			aq.withAuthRoles != nil,
@@ -473,6 +475,12 @@ func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 			aq.withConnections != nil,
 		}
 	)
+	if aq.withAuthType != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, account.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Account).scanValues(nil, columns)
 	}
@@ -639,7 +647,10 @@ func (aq *AccountQuery) loadAuthType(ctx context.Context, query *AuthTypeQuery, 
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Account)
 	for i := range nodes {
-		fk := nodes[i].AuthTypeID
+		if nodes[i].account_auth_type == nil {
+			continue
+		}
+		fk := *nodes[i].account_auth_type
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -653,7 +664,7 @@ func (aq *AccountQuery) loadAuthType(ctx context.Context, query *AuthTypeQuery, 
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "auth_type_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "account_auth_type" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

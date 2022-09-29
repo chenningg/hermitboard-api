@@ -16,7 +16,6 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
-	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -51,9 +50,9 @@ func (au *AssetUpdate) ClearDeletedAt() *AssetUpdate {
 	return au
 }
 
-// SetAssetClassID sets the "asset_class_id" field.
-func (au *AssetUpdate) SetAssetClassID(pu pulid.PULID) *AssetUpdate {
-	au.mutation.SetAssetClassID(pu)
+// SetAssetClassID sets the "asset_class" edge to the AssetClass entity by ID.
+func (au *AssetUpdate) SetAssetClassID(id pulid.PULID) *AssetUpdate {
+	au.mutation.SetAssetClassID(id)
 	return au
 }
 
@@ -79,36 +78,6 @@ func (au *AssetUpdate) SetNillableCryptocurrencyID(id *pulid.PULID) *AssetUpdate
 // SetCryptocurrency sets the "cryptocurrency" edge to the Cryptocurrency entity.
 func (au *AssetUpdate) SetCryptocurrency(c *Cryptocurrency) *AssetUpdate {
 	return au.SetCryptocurrencyID(c.ID)
-}
-
-// AddTransactionBasisIDs adds the "transaction_bases" edge to the Transaction entity by IDs.
-func (au *AssetUpdate) AddTransactionBasisIDs(ids ...pulid.PULID) *AssetUpdate {
-	au.mutation.AddTransactionBasisIDs(ids...)
-	return au
-}
-
-// AddTransactionBases adds the "transaction_bases" edges to the Transaction entity.
-func (au *AssetUpdate) AddTransactionBases(t ...*Transaction) *AssetUpdate {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return au.AddTransactionBasisIDs(ids...)
-}
-
-// AddTransactionQuoteIDs adds the "transaction_quotes" edge to the Transaction entity by IDs.
-func (au *AssetUpdate) AddTransactionQuoteIDs(ids ...pulid.PULID) *AssetUpdate {
-	au.mutation.AddTransactionQuoteIDs(ids...)
-	return au
-}
-
-// AddTransactionQuotes adds the "transaction_quotes" edges to the Transaction entity.
-func (au *AssetUpdate) AddTransactionQuotes(t ...*Transaction) *AssetUpdate {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return au.AddTransactionQuoteIDs(ids...)
 }
 
 // AddDailyAssetPriceIDs adds the "daily_asset_prices" edge to the DailyAssetPrice entity by IDs.
@@ -141,48 +110,6 @@ func (au *AssetUpdate) ClearAssetClass() *AssetUpdate {
 func (au *AssetUpdate) ClearCryptocurrency() *AssetUpdate {
 	au.mutation.ClearCryptocurrency()
 	return au
-}
-
-// ClearTransactionBases clears all "transaction_bases" edges to the Transaction entity.
-func (au *AssetUpdate) ClearTransactionBases() *AssetUpdate {
-	au.mutation.ClearTransactionBases()
-	return au
-}
-
-// RemoveTransactionBasisIDs removes the "transaction_bases" edge to Transaction entities by IDs.
-func (au *AssetUpdate) RemoveTransactionBasisIDs(ids ...pulid.PULID) *AssetUpdate {
-	au.mutation.RemoveTransactionBasisIDs(ids...)
-	return au
-}
-
-// RemoveTransactionBases removes "transaction_bases" edges to Transaction entities.
-func (au *AssetUpdate) RemoveTransactionBases(t ...*Transaction) *AssetUpdate {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return au.RemoveTransactionBasisIDs(ids...)
-}
-
-// ClearTransactionQuotes clears all "transaction_quotes" edges to the Transaction entity.
-func (au *AssetUpdate) ClearTransactionQuotes() *AssetUpdate {
-	au.mutation.ClearTransactionQuotes()
-	return au
-}
-
-// RemoveTransactionQuoteIDs removes the "transaction_quotes" edge to Transaction entities by IDs.
-func (au *AssetUpdate) RemoveTransactionQuoteIDs(ids ...pulid.PULID) *AssetUpdate {
-	au.mutation.RemoveTransactionQuoteIDs(ids...)
-	return au
-}
-
-// RemoveTransactionQuotes removes "transaction_quotes" edges to Transaction entities.
-func (au *AssetUpdate) RemoveTransactionQuotes(t ...*Transaction) *AssetUpdate {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return au.RemoveTransactionQuoteIDs(ids...)
 }
 
 // ClearDailyAssetPrices clears all "daily_asset_prices" edges to the DailyAssetPrice entity.
@@ -328,7 +255,7 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if au.mutation.AssetClassCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.AssetClassTable,
 			Columns: []string{asset.AssetClassColumn},
 			Bidi:    false,
@@ -344,7 +271,7 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := au.mutation.AssetClassIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.AssetClassTable,
 			Columns: []string{asset.AssetClassColumn},
 			Bidi:    false,
@@ -387,114 +314,6 @@ func (au *AssetUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: cryptocurrency.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.TransactionBasesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionBasesTable,
-			Columns: []string{asset.TransactionBasesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.RemovedTransactionBasesIDs(); len(nodes) > 0 && !au.mutation.TransactionBasesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionBasesTable,
-			Columns: []string{asset.TransactionBasesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.TransactionBasesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionBasesTable,
-			Columns: []string{asset.TransactionBasesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if au.mutation.TransactionQuotesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionQuotesTable,
-			Columns: []string{asset.TransactionQuotesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.RemovedTransactionQuotesIDs(); len(nodes) > 0 && !au.mutation.TransactionQuotesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionQuotesTable,
-			Columns: []string{asset.TransactionQuotesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := au.mutation.TransactionQuotesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionQuotesTable,
-			Columns: []string{asset.TransactionQuotesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
 				},
 			},
 		}
@@ -594,9 +413,9 @@ func (auo *AssetUpdateOne) ClearDeletedAt() *AssetUpdateOne {
 	return auo
 }
 
-// SetAssetClassID sets the "asset_class_id" field.
-func (auo *AssetUpdateOne) SetAssetClassID(pu pulid.PULID) *AssetUpdateOne {
-	auo.mutation.SetAssetClassID(pu)
+// SetAssetClassID sets the "asset_class" edge to the AssetClass entity by ID.
+func (auo *AssetUpdateOne) SetAssetClassID(id pulid.PULID) *AssetUpdateOne {
+	auo.mutation.SetAssetClassID(id)
 	return auo
 }
 
@@ -622,36 +441,6 @@ func (auo *AssetUpdateOne) SetNillableCryptocurrencyID(id *pulid.PULID) *AssetUp
 // SetCryptocurrency sets the "cryptocurrency" edge to the Cryptocurrency entity.
 func (auo *AssetUpdateOne) SetCryptocurrency(c *Cryptocurrency) *AssetUpdateOne {
 	return auo.SetCryptocurrencyID(c.ID)
-}
-
-// AddTransactionBasisIDs adds the "transaction_bases" edge to the Transaction entity by IDs.
-func (auo *AssetUpdateOne) AddTransactionBasisIDs(ids ...pulid.PULID) *AssetUpdateOne {
-	auo.mutation.AddTransactionBasisIDs(ids...)
-	return auo
-}
-
-// AddTransactionBases adds the "transaction_bases" edges to the Transaction entity.
-func (auo *AssetUpdateOne) AddTransactionBases(t ...*Transaction) *AssetUpdateOne {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return auo.AddTransactionBasisIDs(ids...)
-}
-
-// AddTransactionQuoteIDs adds the "transaction_quotes" edge to the Transaction entity by IDs.
-func (auo *AssetUpdateOne) AddTransactionQuoteIDs(ids ...pulid.PULID) *AssetUpdateOne {
-	auo.mutation.AddTransactionQuoteIDs(ids...)
-	return auo
-}
-
-// AddTransactionQuotes adds the "transaction_quotes" edges to the Transaction entity.
-func (auo *AssetUpdateOne) AddTransactionQuotes(t ...*Transaction) *AssetUpdateOne {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return auo.AddTransactionQuoteIDs(ids...)
 }
 
 // AddDailyAssetPriceIDs adds the "daily_asset_prices" edge to the DailyAssetPrice entity by IDs.
@@ -684,48 +473,6 @@ func (auo *AssetUpdateOne) ClearAssetClass() *AssetUpdateOne {
 func (auo *AssetUpdateOne) ClearCryptocurrency() *AssetUpdateOne {
 	auo.mutation.ClearCryptocurrency()
 	return auo
-}
-
-// ClearTransactionBases clears all "transaction_bases" edges to the Transaction entity.
-func (auo *AssetUpdateOne) ClearTransactionBases() *AssetUpdateOne {
-	auo.mutation.ClearTransactionBases()
-	return auo
-}
-
-// RemoveTransactionBasisIDs removes the "transaction_bases" edge to Transaction entities by IDs.
-func (auo *AssetUpdateOne) RemoveTransactionBasisIDs(ids ...pulid.PULID) *AssetUpdateOne {
-	auo.mutation.RemoveTransactionBasisIDs(ids...)
-	return auo
-}
-
-// RemoveTransactionBases removes "transaction_bases" edges to Transaction entities.
-func (auo *AssetUpdateOne) RemoveTransactionBases(t ...*Transaction) *AssetUpdateOne {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return auo.RemoveTransactionBasisIDs(ids...)
-}
-
-// ClearTransactionQuotes clears all "transaction_quotes" edges to the Transaction entity.
-func (auo *AssetUpdateOne) ClearTransactionQuotes() *AssetUpdateOne {
-	auo.mutation.ClearTransactionQuotes()
-	return auo
-}
-
-// RemoveTransactionQuoteIDs removes the "transaction_quotes" edge to Transaction entities by IDs.
-func (auo *AssetUpdateOne) RemoveTransactionQuoteIDs(ids ...pulid.PULID) *AssetUpdateOne {
-	auo.mutation.RemoveTransactionQuoteIDs(ids...)
-	return auo
-}
-
-// RemoveTransactionQuotes removes "transaction_quotes" edges to Transaction entities.
-func (auo *AssetUpdateOne) RemoveTransactionQuotes(t ...*Transaction) *AssetUpdateOne {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return auo.RemoveTransactionQuoteIDs(ids...)
 }
 
 // ClearDailyAssetPrices clears all "daily_asset_prices" edges to the DailyAssetPrice entity.
@@ -901,7 +648,7 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	if auo.mutation.AssetClassCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.AssetClassTable,
 			Columns: []string{asset.AssetClassColumn},
 			Bidi:    false,
@@ -917,7 +664,7 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 	if nodes := auo.mutation.AssetClassIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.AssetClassTable,
 			Columns: []string{asset.AssetClassColumn},
 			Bidi:    false,
@@ -960,114 +707,6 @@ func (auo *AssetUpdateOne) sqlSave(ctx context.Context) (_node *Asset, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: cryptocurrency.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.TransactionBasesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionBasesTable,
-			Columns: []string{asset.TransactionBasesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.RemovedTransactionBasesIDs(); len(nodes) > 0 && !auo.mutation.TransactionBasesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionBasesTable,
-			Columns: []string{asset.TransactionBasesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.TransactionBasesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionBasesTable,
-			Columns: []string{asset.TransactionBasesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if auo.mutation.TransactionQuotesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionQuotesTable,
-			Columns: []string{asset.TransactionQuotesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.RemovedTransactionQuotesIDs(); len(nodes) > 0 && !auo.mutation.TransactionQuotesCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionQuotesTable,
-			Columns: []string{asset.TransactionQuotesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := auo.mutation.TransactionQuotesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionQuotesTable,
-			Columns: []string{asset.TransactionQuotesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
 				},
 			},
 		}

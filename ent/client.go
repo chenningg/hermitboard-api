@@ -354,7 +354,7 @@ func (c *AccountClient) QueryAuthType(a *Account) *AuthTypeQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(account.Table, account.FieldID, id),
 			sqlgraph.To(authtype.Table, authtype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, account.AuthTypeTable, account.AuthTypeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, account.AuthTypeTable, account.AuthTypeColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -476,7 +476,7 @@ func (c *AssetClient) QueryAssetClass(a *Asset) *AssetClassQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(asset.Table, asset.FieldID, id),
 			sqlgraph.To(assetclass.Table, assetclass.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, asset.AssetClassTable, asset.AssetClassColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, asset.AssetClassTable, asset.AssetClassColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -493,38 +493,6 @@ func (c *AssetClient) QueryCryptocurrency(a *Asset) *CryptocurrencyQuery {
 			sqlgraph.From(asset.Table, asset.FieldID, id),
 			sqlgraph.To(cryptocurrency.Table, cryptocurrency.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, asset.CryptocurrencyTable, asset.CryptocurrencyColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryTransactionBases queries the transaction_bases edge of a Asset.
-func (c *AssetClient) QueryTransactionBases(a *Asset) *TransactionQuery {
-	query := &TransactionQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(asset.Table, asset.FieldID, id),
-			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, asset.TransactionBasesTable, asset.TransactionBasesColumn),
-		)
-		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryTransactionQuotes queries the transaction_quotes edge of a Asset.
-func (c *AssetClient) QueryTransactionQuotes(a *Asset) *TransactionQuery {
-	query := &TransactionQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := a.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(asset.Table, asset.FieldID, id),
-			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, asset.TransactionQuotesTable, asset.TransactionQuotesColumn),
 		)
 		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
 		return fromV, nil
@@ -636,22 +604,6 @@ func (c *AssetClassClient) GetX(ctx context.Context, id pulid.PULID) *AssetClass
 		panic(err)
 	}
 	return obj
-}
-
-// QueryAssets queries the assets edge of a AssetClass.
-func (c *AssetClassClient) QueryAssets(ac *AssetClass) *AssetQuery {
-	query := &AssetQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ac.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(assetclass.Table, assetclass.FieldID, id),
-			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, assetclass.AssetsTable, assetclass.AssetsColumn),
-		)
-		fromV = sqlgraph.Neighbors(ac.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
 }
 
 // Hooks returns the client hooks.
@@ -864,38 +816,6 @@ func (c *AuthTypeClient) GetX(ctx context.Context, id pulid.PULID) *AuthType {
 		panic(err)
 	}
 	return obj
-}
-
-// QueryAccounts queries the accounts edge of a AuthType.
-func (c *AuthTypeClient) QueryAccounts(at *AuthType) *AccountQuery {
-	query := &AccountQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := at.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(authtype.Table, authtype.FieldID, id),
-			sqlgraph.To(account.Table, account.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, authtype.AccountsTable, authtype.AccountsColumn),
-		)
-		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryStaffAccounts queries the staff_accounts edge of a AuthType.
-func (c *AuthTypeClient) QueryStaffAccounts(at *AuthType) *StaffAccountQuery {
-	query := &StaffAccountQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := at.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(authtype.Table, authtype.FieldID, id),
-			sqlgraph.To(staffaccount.Table, staffaccount.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, authtype.StaffAccountsTable, authtype.StaffAccountsColumn),
-		)
-		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
 }
 
 // Hooks returns the client hooks.
@@ -1940,7 +1860,7 @@ func (c *StaffAccountClient) QueryAuthType(sa *StaffAccount) *AuthTypeQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(staffaccount.Table, staffaccount.FieldID, id),
 			sqlgraph.To(authtype.Table, authtype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, staffaccount.AuthTypeTable, staffaccount.AuthTypeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, staffaccount.AuthTypeTable, staffaccount.AuthTypeColumn),
 		)
 		fromV = sqlgraph.Neighbors(sa.driver.Dialect(), step)
 		return fromV, nil
@@ -2046,7 +1966,7 @@ func (c *TransactionClient) QueryTransactionType(t *Transaction) *TransactionTyp
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transaction.Table, transaction.FieldID, id),
 			sqlgraph.To(transactiontype.Table, transactiontype.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, transaction.TransactionTypeTable, transaction.TransactionTypeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, transaction.TransactionTypeTable, transaction.TransactionTypeColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -2062,7 +1982,7 @@ func (c *TransactionClient) QueryBaseAsset(t *Transaction) *AssetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transaction.Table, transaction.FieldID, id),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, transaction.BaseAssetTable, transaction.BaseAssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, transaction.BaseAssetTable, transaction.BaseAssetColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -2078,7 +1998,7 @@ func (c *TransactionClient) QueryQuoteAsset(t *Transaction) *AssetQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(transaction.Table, transaction.FieldID, id),
 			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, transaction.QuoteAssetTable, transaction.QuoteAssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, transaction.QuoteAssetTable, transaction.QuoteAssetColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -2222,22 +2142,6 @@ func (c *TransactionTypeClient) GetX(ctx context.Context, id pulid.PULID) *Trans
 		panic(err)
 	}
 	return obj
-}
-
-// QueryTransactions queries the transactions edge of a TransactionType.
-func (c *TransactionTypeClient) QueryTransactions(tt *TransactionType) *TransactionQuery {
-	query := &TransactionQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := tt.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(transactiontype.Table, transactiontype.FieldID, id),
-			sqlgraph.To(transaction.Table, transaction.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, transactiontype.TransactionsTable, transactiontype.TransactionsColumn),
-		)
-		fromV = sqlgraph.Neighbors(tt.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
 }
 
 // Hooks returns the client hooks.

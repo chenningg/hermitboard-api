@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
@@ -462,34 +461,6 @@ func DescriptionEqualFold(v string) predicate.TransactionType {
 func DescriptionContainsFold(v string) predicate.TransactionType {
 	return predicate.TransactionType(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldDescription), v))
-	})
-}
-
-// HasTransactions applies the HasEdge predicate on the "transactions" edge.
-func HasTransactions() predicate.TransactionType {
-	return predicate.TransactionType(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TransactionsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, TransactionsTable, TransactionsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasTransactionsWith applies the HasEdge predicate on the "transactions" edge with a given conditions (other predicates).
-func HasTransactionsWith(preds ...predicate.Transaction) predicate.TransactionType {
-	return predicate.TransactionType(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TransactionsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, TransactionsTable, TransactionsColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
 	})
 }
 

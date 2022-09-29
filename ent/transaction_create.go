@@ -100,12 +100,6 @@ func (tc *TransactionCreate) SetNillableBlockchainID(pu *pulid.PULID) *Transacti
 	return tc
 }
 
-// SetTransactionTypeID sets the "transaction_type_id" field.
-func (tc *TransactionCreate) SetTransactionTypeID(pu pulid.PULID) *TransactionCreate {
-	tc.mutation.SetTransactionTypeID(pu)
-	return tc
-}
-
 // SetExchangeID sets the "exchange_id" field.
 func (tc *TransactionCreate) SetExchangeID(pu pulid.PULID) *TransactionCreate {
 	tc.mutation.SetExchangeID(pu)
@@ -149,6 +143,12 @@ func (tc *TransactionCreate) SetNillableID(pu *pulid.PULID) *TransactionCreate {
 	if pu != nil {
 		tc.SetID(*pu)
 	}
+	return tc
+}
+
+// SetTransactionTypeID sets the "transaction_type" edge to the TransactionType entity by ID.
+func (tc *TransactionCreate) SetTransactionTypeID(id pulid.PULID) *TransactionCreate {
+	tc.mutation.SetTransactionTypeID(id)
 	return tc
 }
 
@@ -290,9 +290,6 @@ func (tc *TransactionCreate) check() error {
 	if _, ok := tc.mutation.PricePerUnit(); !ok {
 		return &ValidationError{Name: "price_per_unit", err: errors.New(`ent: missing required field "Transaction.price_per_unit"`)}
 	}
-	if _, ok := tc.mutation.TransactionTypeID(); !ok {
-		return &ValidationError{Name: "transaction_type_id", err: errors.New(`ent: missing required field "Transaction.transaction_type_id"`)}
-	}
 	if _, ok := tc.mutation.ExchangeID(); !ok {
 		return &ValidationError{Name: "exchange_id", err: errors.New(`ent: missing required field "Transaction.exchange_id"`)}
 	}
@@ -401,7 +398,7 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 	if nodes := tc.mutation.TransactionTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.TransactionTypeTable,
 			Columns: []string{transaction.TransactionTypeColumn},
 			Bidi:    false,
@@ -415,13 +412,13 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.TransactionTypeID = nodes[0]
+		_node.transaction_transaction_type = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tc.mutation.BaseAssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.BaseAssetTable,
 			Columns: []string{transaction.BaseAssetColumn},
 			Bidi:    false,
@@ -441,7 +438,7 @@ func (tc *TransactionCreate) createSpec() (*Transaction, *sqlgraph.CreateSpec) {
 	if nodes := tc.mutation.QuoteAssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.QuoteAssetTable,
 			Columns: []string{transaction.QuoteAssetColumn},
 			Bidi:    false,

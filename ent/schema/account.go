@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"entgo.io/contrib/entgql"
-
 	"entgo.io/ent"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -44,11 +43,14 @@ func (Account) Fields() []ent.Field {
 			Optional().
 			Nillable().
 			NotEmpty().
-			Annotations(entgql.Skip(entgql.SkipType | entgql.SkipWhereInput | entgql.SkipOrderField)),
+			Annotations(entgql.Skip(entgql.SkipType | entgql.SkipWhereInput)),
 		field.Time("password_updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now).
-			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
+			Annotations(
+				entgql.OrderField("PASSWORD_UPDATED_AT"),
+				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
+			),
 	}
 }
 
@@ -59,23 +61,23 @@ func (Account) Edges() []ent.Edge {
 			Required().
 			Annotations(
 				entgql.RelayConnection(), entgql.MapsTo("authRoles"),
-				entgql.Skip(entgql.SkipMutationCreateInput),
 			),
 		edge.To("portfolios", Portfolio.Type).
 			Annotations(
 				entgql.RelayConnection(), entgql.MapsTo("portfolios"),
-				entgql.Skip(entgql.SkipMutationCreateInput),
+				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
 			),
 		edge.To("auth_type", AuthType.Type).
 			Required().
 			Unique().
 			Annotations(
 				entgql.MapsTo("authType"),
+				entgql.Skip(entgql.SkipMutationCreateInput),
 			),
 		edge.To("connections", Connection.Type).
 			Annotations(
 				entgql.RelayConnection(), entgql.MapsTo("connections"),
-				entgql.Skip(entgql.SkipMutationCreateInput),
+				entgql.Skip(entgql.SkipWhereInput|entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
 			),
 	}
 }

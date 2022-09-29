@@ -89,12 +89,6 @@ func (au *AccountUpdate) SetPasswordUpdatedAt(t time.Time) *AccountUpdate {
 	return au
 }
 
-// SetAuthTypeID sets the "auth_type_id" field.
-func (au *AccountUpdate) SetAuthTypeID(pu pulid.PULID) *AccountUpdate {
-	au.mutation.SetAuthTypeID(pu)
-	return au
-}
-
 // AddAuthRoleIDs adds the "auth_roles" edge to the AuthRole entity by IDs.
 func (au *AccountUpdate) AddAuthRoleIDs(ids ...pulid.PULID) *AccountUpdate {
 	au.mutation.AddAuthRoleIDs(ids...)
@@ -123,6 +117,12 @@ func (au *AccountUpdate) AddPortfolios(p ...*Portfolio) *AccountUpdate {
 		ids[i] = p[i].ID
 	}
 	return au.AddPortfolioIDs(ids...)
+}
+
+// SetAuthTypeID sets the "auth_type" edge to the AuthType entity by ID.
+func (au *AccountUpdate) SetAuthTypeID(id pulid.PULID) *AccountUpdate {
+	au.mutation.SetAuthTypeID(id)
+	return au
 }
 
 // SetAuthType sets the "auth_type" edge to the AuthType entity.
@@ -502,7 +502,7 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if au.mutation.AuthTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -518,7 +518,7 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := au.mutation.AuthTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -663,12 +663,6 @@ func (auo *AccountUpdateOne) SetPasswordUpdatedAt(t time.Time) *AccountUpdateOne
 	return auo
 }
 
-// SetAuthTypeID sets the "auth_type_id" field.
-func (auo *AccountUpdateOne) SetAuthTypeID(pu pulid.PULID) *AccountUpdateOne {
-	auo.mutation.SetAuthTypeID(pu)
-	return auo
-}
-
 // AddAuthRoleIDs adds the "auth_roles" edge to the AuthRole entity by IDs.
 func (auo *AccountUpdateOne) AddAuthRoleIDs(ids ...pulid.PULID) *AccountUpdateOne {
 	auo.mutation.AddAuthRoleIDs(ids...)
@@ -697,6 +691,12 @@ func (auo *AccountUpdateOne) AddPortfolios(p ...*Portfolio) *AccountUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return auo.AddPortfolioIDs(ids...)
+}
+
+// SetAuthTypeID sets the "auth_type" edge to the AuthType entity by ID.
+func (auo *AccountUpdateOne) SetAuthTypeID(id pulid.PULID) *AccountUpdateOne {
+	auo.mutation.SetAuthTypeID(id)
+	return auo
 }
 
 // SetAuthType sets the "auth_type" edge to the AuthType entity.
@@ -1106,7 +1106,7 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 	if auo.mutation.AuthTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -1122,7 +1122,7 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 	if nodes := auo.mutation.AuthTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,

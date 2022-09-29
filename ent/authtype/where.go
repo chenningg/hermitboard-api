@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
@@ -462,62 +461,6 @@ func DescriptionEqualFold(v string) predicate.AuthType {
 func DescriptionContainsFold(v string) predicate.AuthType {
 	return predicate.AuthType(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldDescription), v))
-	})
-}
-
-// HasAccounts applies the HasEdge predicate on the "accounts" edge.
-func HasAccounts() predicate.AuthType {
-	return predicate.AuthType(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AccountsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AccountsTable, AccountsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasAccountsWith applies the HasEdge predicate on the "accounts" edge with a given conditions (other predicates).
-func HasAccountsWith(preds ...predicate.Account) predicate.AuthType {
-	return predicate.AuthType(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AccountsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AccountsTable, AccountsColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasStaffAccounts applies the HasEdge predicate on the "staff_accounts" edge.
-func HasStaffAccounts() predicate.AuthType {
-	return predicate.AuthType(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StaffAccountsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, StaffAccountsTable, StaffAccountsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasStaffAccountsWith applies the HasEdge predicate on the "staff_accounts" edge with a given conditions (other predicates).
-func HasStaffAccountsWith(preds ...predicate.StaffAccount) predicate.AuthType {
-	return predicate.AuthType(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(StaffAccountsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, StaffAccountsTable, StaffAccountsColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
 	})
 }
 

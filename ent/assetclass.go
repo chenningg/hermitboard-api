@@ -27,31 +27,6 @@ type AssetClass struct {
 	Value assetclass.Value `json:"value,omitempty"`
 	// Description holds the value of the "description" field.
 	Description *string `json:"description,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the AssetClassQuery when eager-loading is set.
-	Edges AssetClassEdges `json:"edges"`
-}
-
-// AssetClassEdges holds the relations/edges for other nodes in the graph.
-type AssetClassEdges struct {
-	// Assets holds the value of the assets edge.
-	Assets []*Asset `json:"assets,omitempty"`
-	// loadedTypes holds the information for reporting if a
-	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
-	// totalCount holds the count of the edges above.
-	totalCount [1]map[string]int
-
-	namedAssets map[string][]*Asset
-}
-
-// AssetsOrErr returns the Assets value or an error if the edge
-// was not loaded in eager-loading.
-func (e AssetClassEdges) AssetsOrErr() ([]*Asset, error) {
-	if e.loadedTypes[0] {
-		return e.Assets, nil
-	}
-	return nil, &NotLoadedError{edge: "assets"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -123,11 +98,6 @@ func (ac *AssetClass) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// QueryAssets queries the "assets" edge of the AssetClass entity.
-func (ac *AssetClass) QueryAssets() *AssetQuery {
-	return (&AssetClassClient{config: ac.config}).QueryAssets(ac)
-}
-
 // Update returns a builder for updating this AssetClass.
 // Note that you need to call AssetClass.Unwrap() before calling this method if this AssetClass
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -171,30 +141,6 @@ func (ac *AssetClass) String() string {
 	}
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedAssets returns the Assets named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (ac *AssetClass) NamedAssets(name string) ([]*Asset, error) {
-	if ac.Edges.namedAssets == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := ac.Edges.namedAssets[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (ac *AssetClass) appendNamedAssets(name string, edges ...*Asset) {
-	if ac.Edges.namedAssets == nil {
-		ac.Edges.namedAssets = make(map[string][]*Asset)
-	}
-	if len(edges) == 0 {
-		ac.Edges.namedAssets[name] = []*Asset{}
-	} else {
-		ac.Edges.namedAssets[name] = append(ac.Edges.namedAssets[name], edges...)
-	}
 }
 
 // AssetClasses is a parsable slice of AssetClass.

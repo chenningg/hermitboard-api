@@ -2,14 +2,12 @@ package schema
 
 import (
 	"entgo.io/contrib/entgql"
-	"entgo.io/ent/schema"
-	"github.com/chenningg/hermitboard-api/pulid"
-	"time"
-
 	"entgo.io/ent"
+	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // DailyAssetPrice holds the schema definition for the DailyAssetPrice entity.
@@ -31,7 +29,6 @@ func (DailyAssetPrice) Mixin() []ent.Mixin {
 func (DailyAssetPrice) Fields() []ent.Field {
 	return []ent.Field{
 		field.Time("time").
-			Default(time.Now).
 			Annotations(entgql.OrderField("TIME")),
 		field.Float("open").
 			Optional().

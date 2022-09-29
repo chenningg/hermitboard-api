@@ -104,12 +104,6 @@ func (tu *TransactionUpdate) ClearBlockchainID() *TransactionUpdate {
 	return tu
 }
 
-// SetTransactionTypeID sets the "transaction_type_id" field.
-func (tu *TransactionUpdate) SetTransactionTypeID(pu pulid.PULID) *TransactionUpdate {
-	tu.mutation.SetTransactionTypeID(pu)
-	return tu
-}
-
 // SetExchangeID sets the "exchange_id" field.
 func (tu *TransactionUpdate) SetExchangeID(pu pulid.PULID) *TransactionUpdate {
 	tu.mutation.SetExchangeID(pu)
@@ -145,6 +139,12 @@ func (tu *TransactionUpdate) SetNillableQuoteAssetID(pu *pulid.PULID) *Transacti
 // ClearQuoteAssetID clears the value of the "quote_asset_id" field.
 func (tu *TransactionUpdate) ClearQuoteAssetID() *TransactionUpdate {
 	tu.mutation.ClearQuoteAssetID()
+	return tu
+}
+
+// SetTransactionTypeID sets the "transaction_type" edge to the TransactionType entity by ID.
+func (tu *TransactionUpdate) SetTransactionTypeID(id pulid.PULID) *TransactionUpdate {
+	tu.mutation.SetTransactionTypeID(id)
 	return tu
 }
 
@@ -385,7 +385,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if tu.mutation.TransactionTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.TransactionTypeTable,
 			Columns: []string{transaction.TransactionTypeColumn},
 			Bidi:    false,
@@ -401,7 +401,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := tu.mutation.TransactionTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.TransactionTypeTable,
 			Columns: []string{transaction.TransactionTypeColumn},
 			Bidi:    false,
@@ -420,7 +420,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if tu.mutation.BaseAssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.BaseAssetTable,
 			Columns: []string{transaction.BaseAssetColumn},
 			Bidi:    false,
@@ -436,7 +436,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := tu.mutation.BaseAssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.BaseAssetTable,
 			Columns: []string{transaction.BaseAssetColumn},
 			Bidi:    false,
@@ -455,7 +455,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if tu.mutation.QuoteAssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.QuoteAssetTable,
 			Columns: []string{transaction.QuoteAssetColumn},
 			Bidi:    false,
@@ -471,7 +471,7 @@ func (tu *TransactionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := tu.mutation.QuoteAssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.QuoteAssetTable,
 			Columns: []string{transaction.QuoteAssetColumn},
 			Bidi:    false,
@@ -681,12 +681,6 @@ func (tuo *TransactionUpdateOne) ClearBlockchainID() *TransactionUpdateOne {
 	return tuo
 }
 
-// SetTransactionTypeID sets the "transaction_type_id" field.
-func (tuo *TransactionUpdateOne) SetTransactionTypeID(pu pulid.PULID) *TransactionUpdateOne {
-	tuo.mutation.SetTransactionTypeID(pu)
-	return tuo
-}
-
 // SetExchangeID sets the "exchange_id" field.
 func (tuo *TransactionUpdateOne) SetExchangeID(pu pulid.PULID) *TransactionUpdateOne {
 	tuo.mutation.SetExchangeID(pu)
@@ -722,6 +716,12 @@ func (tuo *TransactionUpdateOne) SetNillableQuoteAssetID(pu *pulid.PULID) *Trans
 // ClearQuoteAssetID clears the value of the "quote_asset_id" field.
 func (tuo *TransactionUpdateOne) ClearQuoteAssetID() *TransactionUpdateOne {
 	tuo.mutation.ClearQuoteAssetID()
+	return tuo
+}
+
+// SetTransactionTypeID sets the "transaction_type" edge to the TransactionType entity by ID.
+func (tuo *TransactionUpdateOne) SetTransactionTypeID(id pulid.PULID) *TransactionUpdateOne {
+	tuo.mutation.SetTransactionTypeID(id)
 	return tuo
 }
 
@@ -992,7 +992,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if tuo.mutation.TransactionTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.TransactionTypeTable,
 			Columns: []string{transaction.TransactionTypeColumn},
 			Bidi:    false,
@@ -1008,7 +1008,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if nodes := tuo.mutation.TransactionTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.TransactionTypeTable,
 			Columns: []string{transaction.TransactionTypeColumn},
 			Bidi:    false,
@@ -1027,7 +1027,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if tuo.mutation.BaseAssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.BaseAssetTable,
 			Columns: []string{transaction.BaseAssetColumn},
 			Bidi:    false,
@@ -1043,7 +1043,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if nodes := tuo.mutation.BaseAssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.BaseAssetTable,
 			Columns: []string{transaction.BaseAssetColumn},
 			Bidi:    false,
@@ -1062,7 +1062,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if tuo.mutation.QuoteAssetCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.QuoteAssetTable,
 			Columns: []string{transaction.QuoteAssetColumn},
 			Bidi:    false,
@@ -1078,7 +1078,7 @@ func (tuo *TransactionUpdateOne) sqlSave(ctx context.Context) (_node *Transactio
 	if nodes := tuo.mutation.QuoteAssetIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   transaction.QuoteAssetTable,
 			Columns: []string{transaction.QuoteAssetColumn},
 			Bidi:    false,

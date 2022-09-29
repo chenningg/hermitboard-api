@@ -21,7 +21,7 @@ func (UpdatedAtMixin) Fields() []ent.Field {
 			UpdateDefault(time.Now).
 			Annotations(
 				entgql.OrderField("UPDATED_AT"),
-				entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput),
+				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
 			),
 	}
 }

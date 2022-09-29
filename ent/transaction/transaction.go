@@ -27,8 +27,6 @@ const (
 	FieldPricePerUnit = "price_per_unit"
 	// FieldBlockchainID holds the string denoting the blockchain_id field in the database.
 	FieldBlockchainID = "blockchain_id"
-	// FieldTransactionTypeID holds the string denoting the transaction_type_id field in the database.
-	FieldTransactionTypeID = "transaction_type_id"
 	// FieldExchangeID holds the string denoting the exchange_id field in the database.
 	FieldExchangeID = "exchange_id"
 	// FieldPortfolioID holds the string denoting the portfolio_id field in the database.
@@ -57,7 +55,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "transactiontype" package.
 	TransactionTypeInverseTable = "transaction_types"
 	// TransactionTypeColumn is the table column denoting the transaction_type relation/edge.
-	TransactionTypeColumn = "transaction_type_id"
+	TransactionTypeColumn = "transaction_transaction_type"
 	// BaseAssetTable is the table that holds the base_asset relation/edge.
 	BaseAssetTable = "transactions"
 	// BaseAssetInverseTable is the table name for the Asset entity.
@@ -105,17 +103,27 @@ var Columns = []string{
 	FieldUnits,
 	FieldPricePerUnit,
 	FieldBlockchainID,
-	FieldTransactionTypeID,
 	FieldExchangeID,
 	FieldPortfolioID,
 	FieldBaseAssetID,
 	FieldQuoteAssetID,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "transactions"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"transaction_transaction_type",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

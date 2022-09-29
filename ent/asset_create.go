@@ -14,7 +14,6 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
 	"github.com/chenningg/hermitboard-api/ent/dailyassetprice"
-	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -67,12 +66,6 @@ func (ac *AssetCreate) SetNillableDeletedAt(t *time.Time) *AssetCreate {
 	return ac
 }
 
-// SetAssetClassID sets the "asset_class_id" field.
-func (ac *AssetCreate) SetAssetClassID(pu pulid.PULID) *AssetCreate {
-	ac.mutation.SetAssetClassID(pu)
-	return ac
-}
-
 // SetID sets the "id" field.
 func (ac *AssetCreate) SetID(pu pulid.PULID) *AssetCreate {
 	ac.mutation.SetID(pu)
@@ -84,6 +77,12 @@ func (ac *AssetCreate) SetNillableID(pu *pulid.PULID) *AssetCreate {
 	if pu != nil {
 		ac.SetID(*pu)
 	}
+	return ac
+}
+
+// SetAssetClassID sets the "asset_class" edge to the AssetClass entity by ID.
+func (ac *AssetCreate) SetAssetClassID(id pulid.PULID) *AssetCreate {
+	ac.mutation.SetAssetClassID(id)
 	return ac
 }
 
@@ -109,36 +108,6 @@ func (ac *AssetCreate) SetNillableCryptocurrencyID(id *pulid.PULID) *AssetCreate
 // SetCryptocurrency sets the "cryptocurrency" edge to the Cryptocurrency entity.
 func (ac *AssetCreate) SetCryptocurrency(c *Cryptocurrency) *AssetCreate {
 	return ac.SetCryptocurrencyID(c.ID)
-}
-
-// AddTransactionBasisIDs adds the "transaction_bases" edge to the Transaction entity by IDs.
-func (ac *AssetCreate) AddTransactionBasisIDs(ids ...pulid.PULID) *AssetCreate {
-	ac.mutation.AddTransactionBasisIDs(ids...)
-	return ac
-}
-
-// AddTransactionBases adds the "transaction_bases" edges to the Transaction entity.
-func (ac *AssetCreate) AddTransactionBases(t ...*Transaction) *AssetCreate {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return ac.AddTransactionBasisIDs(ids...)
-}
-
-// AddTransactionQuoteIDs adds the "transaction_quotes" edge to the Transaction entity by IDs.
-func (ac *AssetCreate) AddTransactionQuoteIDs(ids ...pulid.PULID) *AssetCreate {
-	ac.mutation.AddTransactionQuoteIDs(ids...)
-	return ac
-}
-
-// AddTransactionQuotes adds the "transaction_quotes" edges to the Transaction entity.
-func (ac *AssetCreate) AddTransactionQuotes(t ...*Transaction) *AssetCreate {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return ac.AddTransactionQuoteIDs(ids...)
 }
 
 // AddDailyAssetPriceIDs adds the "daily_asset_prices" edge to the DailyAssetPrice entity by IDs.
@@ -256,9 +225,6 @@ func (ac *AssetCreate) check() error {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Asset.updated_at"`)}
 	}
 	if _, ok := ac.mutation.AssetClassID(); !ok {
-		return &ValidationError{Name: "asset_class_id", err: errors.New(`ent: missing required field "Asset.asset_class_id"`)}
-	}
-	if _, ok := ac.mutation.AssetClassID(); !ok {
 		return &ValidationError{Name: "asset_class", err: errors.New(`ent: missing required edge "Asset.asset_class"`)}
 	}
 	return nil
@@ -324,7 +290,7 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 	if nodes := ac.mutation.AssetClassIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   asset.AssetClassTable,
 			Columns: []string{asset.AssetClassColumn},
 			Bidi:    false,
@@ -338,7 +304,7 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.AssetClassID = nodes[0]
+		_node.asset_asset_class = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ac.mutation.CryptocurrencyIDs(); len(nodes) > 0 {
@@ -352,44 +318,6 @@ func (ac *AssetCreate) createSpec() (*Asset, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: cryptocurrency.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.TransactionBasesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionBasesTable,
-			Columns: []string{asset.TransactionBasesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := ac.mutation.TransactionQuotesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   asset.TransactionQuotesTable,
-			Columns: []string{asset.TransactionQuotesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
 				},
 			},
 		}

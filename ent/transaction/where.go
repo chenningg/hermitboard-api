@@ -131,13 +131,6 @@ func BlockchainID(v pulid.PULID) predicate.Transaction {
 	})
 }
 
-// TransactionTypeID applies equality check predicate on the "transaction_type_id" field. It's identical to TransactionTypeIDEQ.
-func TransactionTypeID(v pulid.PULID) predicate.Transaction {
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTransactionTypeID), v))
-	})
-}
-
 // ExchangeID applies equality check predicate on the "exchange_id" field. It's identical to ExchangeIDEQ.
 func ExchangeID(v pulid.PULID) predicate.Transaction {
 	return predicate.Transaction(func(s *sql.Selector) {
@@ -682,110 +675,6 @@ func BlockchainIDContainsFold(v pulid.PULID) predicate.Transaction {
 	})
 }
 
-// TransactionTypeIDEQ applies the EQ predicate on the "transaction_type_id" field.
-func TransactionTypeIDEQ(v pulid.PULID) predicate.Transaction {
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTransactionTypeID), v))
-	})
-}
-
-// TransactionTypeIDNEQ applies the NEQ predicate on the "transaction_type_id" field.
-func TransactionTypeIDNEQ(v pulid.PULID) predicate.Transaction {
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldTransactionTypeID), v))
-	})
-}
-
-// TransactionTypeIDIn applies the In predicate on the "transaction_type_id" field.
-func TransactionTypeIDIn(vs ...pulid.PULID) predicate.Transaction {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldTransactionTypeID), v...))
-	})
-}
-
-// TransactionTypeIDNotIn applies the NotIn predicate on the "transaction_type_id" field.
-func TransactionTypeIDNotIn(vs ...pulid.PULID) predicate.Transaction {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldTransactionTypeID), v...))
-	})
-}
-
-// TransactionTypeIDGT applies the GT predicate on the "transaction_type_id" field.
-func TransactionTypeIDGT(v pulid.PULID) predicate.Transaction {
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldTransactionTypeID), v))
-	})
-}
-
-// TransactionTypeIDGTE applies the GTE predicate on the "transaction_type_id" field.
-func TransactionTypeIDGTE(v pulid.PULID) predicate.Transaction {
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldTransactionTypeID), v))
-	})
-}
-
-// TransactionTypeIDLT applies the LT predicate on the "transaction_type_id" field.
-func TransactionTypeIDLT(v pulid.PULID) predicate.Transaction {
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldTransactionTypeID), v))
-	})
-}
-
-// TransactionTypeIDLTE applies the LTE predicate on the "transaction_type_id" field.
-func TransactionTypeIDLTE(v pulid.PULID) predicate.Transaction {
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldTransactionTypeID), v))
-	})
-}
-
-// TransactionTypeIDContains applies the Contains predicate on the "transaction_type_id" field.
-func TransactionTypeIDContains(v pulid.PULID) predicate.Transaction {
-	vc := string(v)
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldTransactionTypeID), vc))
-	})
-}
-
-// TransactionTypeIDHasPrefix applies the HasPrefix predicate on the "transaction_type_id" field.
-func TransactionTypeIDHasPrefix(v pulid.PULID) predicate.Transaction {
-	vc := string(v)
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldTransactionTypeID), vc))
-	})
-}
-
-// TransactionTypeIDHasSuffix applies the HasSuffix predicate on the "transaction_type_id" field.
-func TransactionTypeIDHasSuffix(v pulid.PULID) predicate.Transaction {
-	vc := string(v)
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldTransactionTypeID), vc))
-	})
-}
-
-// TransactionTypeIDEqualFold applies the EqualFold predicate on the "transaction_type_id" field.
-func TransactionTypeIDEqualFold(v pulid.PULID) predicate.Transaction {
-	vc := string(v)
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldTransactionTypeID), vc))
-	})
-}
-
-// TransactionTypeIDContainsFold applies the ContainsFold predicate on the "transaction_type_id" field.
-func TransactionTypeIDContainsFold(v pulid.PULID) predicate.Transaction {
-	vc := string(v)
-	return predicate.Transaction(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldTransactionTypeID), vc))
-	})
-}
-
 // ExchangeIDEQ applies the EQ predicate on the "exchange_id" field.
 func ExchangeIDEQ(v pulid.PULID) predicate.Transaction {
 	return predicate.Transaction(func(s *sql.Selector) {
@@ -1222,7 +1111,7 @@ func HasTransactionType() predicate.Transaction {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TransactionTypeTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, TransactionTypeTable, TransactionTypeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, TransactionTypeTable, TransactionTypeColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -1234,7 +1123,7 @@ func HasTransactionTypeWith(preds ...predicate.TransactionType) predicate.Transa
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TransactionTypeInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, TransactionTypeTable, TransactionTypeColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, TransactionTypeTable, TransactionTypeColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -1250,7 +1139,7 @@ func HasBaseAsset() predicate.Transaction {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(BaseAssetTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, BaseAssetTable, BaseAssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, BaseAssetTable, BaseAssetColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -1262,7 +1151,7 @@ func HasBaseAssetWith(preds ...predicate.Asset) predicate.Transaction {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(BaseAssetInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, BaseAssetTable, BaseAssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, BaseAssetTable, BaseAssetColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -1278,7 +1167,7 @@ func HasQuoteAsset() predicate.Transaction {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(QuoteAssetTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, QuoteAssetTable, QuoteAssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, QuoteAssetTable, QuoteAssetColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -1290,7 +1179,7 @@ func HasQuoteAssetWith(preds ...predicate.Asset) predicate.Transaction {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(QuoteAssetInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, QuoteAssetTable, QuoteAssetColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, QuoteAssetTable, QuoteAssetColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -505,6 +505,16 @@ var (
 			}
 		},
 	}
+	// AccountOrderFieldPasswordUpdatedAt orders Account by password_updated_at.
+	AccountOrderFieldPasswordUpdatedAt = &AccountOrderField{
+		field: account.FieldPasswordUpdatedAt,
+		toCursor: func(a *Account) Cursor {
+			return Cursor{
+				ID:    a.ID,
+				Value: a.PasswordUpdatedAt,
+			}
+		},
+	}
 )
 
 // String implement fmt.Stringer interface.
@@ -521,6 +531,8 @@ func (f AccountOrderField) String() string {
 		str = "NICKNAME"
 	case account.FieldEmail:
 		str = "EMAIL"
+	case account.FieldPasswordUpdatedAt:
+		str = "PASSWORD_UPDATED_AT"
 	}
 	return str
 }
@@ -547,6 +559,8 @@ func (f *AccountOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *AccountOrderFieldNickname
 	case "EMAIL":
 		*f = *AccountOrderFieldEmail
+	case "PASSWORD_UPDATED_AT":
+		*f = *AccountOrderFieldPasswordUpdatedAt
 	default:
 		return fmt.Errorf("%s is not a valid AccountOrderField", str)
 	}
@@ -1140,7 +1154,7 @@ func (f AssetClassOrderField) String() string {
 	case assetclass.FieldDeletedAt:
 		str = "DELETED_AT"
 	case assetclass.FieldValue:
-		str = "ASSET_CLASS"
+		str = "ASSET_CLASS_VALUE"
 	}
 	return str
 }
@@ -1163,7 +1177,7 @@ func (f *AssetClassOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *AssetClassOrderFieldUpdatedAt
 	case "DELETED_AT":
 		*f = *AssetClassOrderFieldDeletedAt
-	case "ASSET_CLASS":
+	case "ASSET_CLASS_VALUE":
 		*f = *AssetClassOrderFieldValue
 	default:
 		return fmt.Errorf("%s is not a valid AssetClassOrderField", str)
@@ -1456,7 +1470,7 @@ func (f AuthRoleOrderField) String() string {
 	case authrole.FieldDeletedAt:
 		str = "DELETED_AT"
 	case authrole.FieldValue:
-		str = "AUTH_ROLE"
+		str = "AUTH_ROLE_VALUE"
 	}
 	return str
 }
@@ -1479,7 +1493,7 @@ func (f *AuthRoleOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *AuthRoleOrderFieldUpdatedAt
 	case "DELETED_AT":
 		*f = *AuthRoleOrderFieldDeletedAt
-	case "AUTH_ROLE":
+	case "AUTH_ROLE_VALUE":
 		*f = *AuthRoleOrderFieldValue
 	default:
 		return fmt.Errorf("%s is not a valid AuthRoleOrderField", str)
@@ -1772,7 +1786,7 @@ func (f AuthTypeOrderField) String() string {
 	case authtype.FieldDeletedAt:
 		str = "DELETED_AT"
 	case authtype.FieldValue:
-		str = "AUTH_TYPE"
+		str = "AUTH_TYPE_VALUE"
 	}
 	return str
 }
@@ -1795,7 +1809,7 @@ func (f *AuthTypeOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *AuthTypeOrderFieldUpdatedAt
 	case "DELETED_AT":
 		*f = *AuthTypeOrderFieldDeletedAt
-	case "AUTH_TYPE":
+	case "AUTH_TYPE_VALUE":
 		*f = *AuthTypeOrderFieldValue
 	default:
 		return fmt.Errorf("%s is not a valid AuthTypeOrderField", str)
@@ -4370,7 +4384,7 @@ func (f SourceTypeOrderField) String() string {
 	case sourcetype.FieldDeletedAt:
 		str = "DELETED_AT"
 	case sourcetype.FieldValue:
-		str = "SOURCE_TYPE"
+		str = "SOURCE_TYPE_VALUE"
 	}
 	return str
 }
@@ -4393,7 +4407,7 @@ func (f *SourceTypeOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *SourceTypeOrderFieldUpdatedAt
 	case "DELETED_AT":
 		*f = *SourceTypeOrderFieldDeletedAt
-	case "SOURCE_TYPE":
+	case "SOURCE_TYPE_VALUE":
 		*f = *SourceTypeOrderFieldValue
 	default:
 		return fmt.Errorf("%s is not a valid SourceTypeOrderField", str)
@@ -5290,7 +5304,7 @@ func (f TransactionTypeOrderField) String() string {
 	case transactiontype.FieldDeletedAt:
 		str = "DELETED_AT"
 	case transactiontype.FieldValue:
-		str = "TRANSACTION_TYPE"
+		str = "TRANSACTION_TYPE_VALUE"
 	}
 	return str
 }
@@ -5313,7 +5327,7 @@ func (f *TransactionTypeOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *TransactionTypeOrderFieldUpdatedAt
 	case "DELETED_AT":
 		*f = *TransactionTypeOrderFieldDeletedAt
-	case "TRANSACTION_TYPE":
+	case "TRANSACTION_TYPE_VALUE":
 		*f = *TransactionTypeOrderFieldValue
 	default:
 		return fmt.Errorf("%s is not a valid TransactionTypeOrderField", str)

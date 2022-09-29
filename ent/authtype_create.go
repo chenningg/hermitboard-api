@@ -10,9 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/chenningg/hermitboard-api/ent/account"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
-	"github.com/chenningg/hermitboard-api/ent/staffaccount"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -97,36 +95,6 @@ func (atc *AuthTypeCreate) SetNillableID(pu *pulid.PULID) *AuthTypeCreate {
 		atc.SetID(*pu)
 	}
 	return atc
-}
-
-// AddAccountIDs adds the "accounts" edge to the Account entity by IDs.
-func (atc *AuthTypeCreate) AddAccountIDs(ids ...pulid.PULID) *AuthTypeCreate {
-	atc.mutation.AddAccountIDs(ids...)
-	return atc
-}
-
-// AddAccounts adds the "accounts" edges to the Account entity.
-func (atc *AuthTypeCreate) AddAccounts(a ...*Account) *AuthTypeCreate {
-	ids := make([]pulid.PULID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return atc.AddAccountIDs(ids...)
-}
-
-// AddStaffAccountIDs adds the "staff_accounts" edge to the StaffAccount entity by IDs.
-func (atc *AuthTypeCreate) AddStaffAccountIDs(ids ...pulid.PULID) *AuthTypeCreate {
-	atc.mutation.AddStaffAccountIDs(ids...)
-	return atc
-}
-
-// AddStaffAccounts adds the "staff_accounts" edges to the StaffAccount entity.
-func (atc *AuthTypeCreate) AddStaffAccounts(s ...*StaffAccount) *AuthTypeCreate {
-	ids := make([]pulid.PULID, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
-	}
-	return atc.AddStaffAccountIDs(ids...)
 }
 
 // Mutation returns the AuthTypeMutation object of the builder.
@@ -316,44 +284,6 @@ func (atc *AuthTypeCreate) createSpec() (*AuthType, *sqlgraph.CreateSpec) {
 			Column: authtype.FieldDescription,
 		})
 		_node.Description = &value
-	}
-	if nodes := atc.mutation.AccountsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   authtype.AccountsTable,
-			Columns: []string{authtype.AccountsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: account.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := atc.mutation.StaffAccountsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   authtype.StaffAccountsTable,
-			Columns: []string{authtype.StaffAccountsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: staffaccount.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

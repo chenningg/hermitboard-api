@@ -7,7 +7,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent"
 )
 
-func (authService AuthService) RegisterAccount(ctx context.Context, input ent.CreateAccountInput) (
+func (authService AuthService) CreateAccount(ctx context.Context, input ent.CreateAccountInput) (
 	*ent.Account, error,
 ) {
 	dbClient := ent.FromContext(ctx)
@@ -20,7 +20,7 @@ func (authService AuthService) RegisterAccount(ctx context.Context, input ent.Cr
 	return acc, nil
 }
 
-func (authService AuthService) RegisterStaffAccount(
+func (authService AuthService) CreateStaffAccount(
 	ctx context.Context, input ent.CreateStaffAccountInput,
 ) (*ent.StaffAccount, error) {
 	return nil, nil

@@ -40,7 +40,7 @@ func (AuthRole) Fields() []ent.Field {
 			).
 			Annotations(
 				entgql.Type("AuthRoleValue"),
-				entgql.OrderField("AUTH_ROLE"),
+				entgql.OrderField("AUTH_ROLE_VALUE"),
 			),
 		field.String("description").
 			Optional().
@@ -54,10 +54,16 @@ func (AuthRole) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("accounts", Account.Type).
 			Ref("auth_roles").
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("accounts")),
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("accounts"),
+				entgql.Skip(entgql.SkipWhereInput|entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
+			),
 		edge.From("staff_accounts", StaffAccount.Type).
 			Ref("auth_roles").
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("staffAccounts")),
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("staffAccounts"),
+				entgql.Skip(entgql.SkipWhereInput|entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
+			),
 	}
 }
 

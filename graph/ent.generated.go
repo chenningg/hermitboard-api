@@ -158,15 +158,6 @@ func (ec *executionContext) field_Account_connections_args(ctx context.Context, 
 		}
 	}
 	args["orderBy"] = arg4
-	var arg5 *ent.ConnectionWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOConnectionWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐConnectionWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
 	return args, nil
 }
 
@@ -230,66 +221,6 @@ func (ec *executionContext) field_Account_portfolios_args(ctx context.Context, r
 	return args, nil
 }
 
-func (ec *executionContext) field_AssetClass_assets_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *ent.Cursor
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *ent.Cursor
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.AssetOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOAssetOrder2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAssetOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.AssetWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOAssetWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAssetWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
-	return args, nil
-}
-
 func (ec *executionContext) field_Asset_dailyAssetPrices_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -338,135 +269,6 @@ func (ec *executionContext) field_Asset_dailyAssetPrices_args(ctx context.Contex
 		}
 	}
 	args["orderBy"] = arg4
-	var arg5 *ent.DailyAssetPriceWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalODailyAssetPriceWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐDailyAssetPriceWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
-	return args, nil
-}
-
-func (ec *executionContext) field_Asset_transactionBases_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *ent.Cursor
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *ent.Cursor
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.TransactionOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOTransactionOrder2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.TransactionWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOTransactionWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
-	return args, nil
-}
-
-func (ec *executionContext) field_Asset_transactionQuotes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *ent.Cursor
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *ent.Cursor
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.TransactionOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOTransactionOrder2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.TransactionWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOTransactionWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
 	return args, nil
 }
 
@@ -518,15 +320,6 @@ func (ec *executionContext) field_AuthRole_accounts_args(ctx context.Context, ra
 		}
 	}
 	args["orderBy"] = arg4
-	var arg5 *ent.AccountWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOAccountWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccountWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
 	return args, nil
 }
 
@@ -578,135 +371,6 @@ func (ec *executionContext) field_AuthRole_staffAccounts_args(ctx context.Contex
 		}
 	}
 	args["orderBy"] = arg4
-	var arg5 *ent.StaffAccountWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOStaffAccountWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccountWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
-	return args, nil
-}
-
-func (ec *executionContext) field_AuthType_accounts_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *ent.Cursor
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *ent.Cursor
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.AccountOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOAccountOrder2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccountOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.AccountWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOAccountWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccountWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
-	return args, nil
-}
-
-func (ec *executionContext) field_AuthType_staffAccounts_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *ent.Cursor
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *ent.Cursor
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.StaffAccountOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOStaffAccountOrder2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccountOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.StaffAccountWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOStaffAccountWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccountWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
 	return args, nil
 }
 
@@ -758,15 +422,6 @@ func (ec *executionContext) field_Blockchain_cryptocurrencies_args(ctx context.C
 		}
 	}
 	args["orderBy"] = arg4
-	var arg5 *ent.CryptocurrencyWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOCryptocurrencyWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCryptocurrencyWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
 	return args, nil
 }
 
@@ -818,15 +473,6 @@ func (ec *executionContext) field_Blockchain_transactions_args(ctx context.Conte
 		}
 	}
 	args["orderBy"] = arg4
-	var arg5 *ent.TransactionWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOTransactionWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
 	return args, nil
 }
 
@@ -878,15 +524,6 @@ func (ec *executionContext) field_Connection_portfolios_args(ctx context.Context
 		}
 	}
 	args["orderBy"] = arg4
-	var arg5 *ent.PortfolioWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOPortfolioWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐPortfolioWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
 	return args, nil
 }
 
@@ -1118,15 +755,6 @@ func (ec *executionContext) field_Portfolio_transactions_args(ctx context.Contex
 		}
 	}
 	args["orderBy"] = arg4
-	var arg5 *ent.TransactionWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOTransactionWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
 	return args, nil
 }
 
@@ -2183,15 +1811,6 @@ func (ec *executionContext) field_SourceType_sources_args(ctx context.Context, r
 		}
 	}
 	args["orderBy"] = arg4
-	var arg5 *ent.SourceWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOSourceWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSourceWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
 	return args, nil
 }
 
@@ -2247,66 +1866,6 @@ func (ec *executionContext) field_StaffAccount_authRoles_args(ctx context.Contex
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
 		arg5, err = ec.unmarshalOAuthRoleWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAuthRoleWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
-	return args, nil
-}
-
-func (ec *executionContext) field_TransactionType_transactions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *ent.Cursor
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *ent.Cursor
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.TransactionOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOTransactionOrder2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.TransactionWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOTransactionWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2584,47 +2143,6 @@ func (ec *executionContext) fieldContext_Account_email(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Account_password(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Account_password(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Password, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Account_password(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Account",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Account_passwordUpdatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
 	if err != nil {
@@ -2664,50 +2182,6 @@ func (ec *executionContext) fieldContext_Account_passwordUpdatedAt(ctx context.C
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Account_authTypeID(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Account_authTypeID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AuthTypeID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(pulid.PULID)
-	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Account_authTypeID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Account",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2890,10 +2364,6 @@ func (ec *executionContext) fieldContext_Account_authType(ctx context.Context, f
 				return ec.fieldContext_AuthType_value(ctx, field)
 			case "description":
 				return ec.fieldContext_AuthType_description(ctx, field)
-			case "accounts":
-				return ec.fieldContext_AuthType_accounts(ctx, field)
-			case "staffAccounts":
-				return ec.fieldContext_AuthType_staffAccounts(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AuthType", field.Name)
 		},
@@ -2915,7 +2385,7 @@ func (ec *executionContext) _Account_connections(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Connections(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.ConnectionOrder), fc.Args["where"].(*ent.ConnectionWhereInput))
+		return obj.Connections(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.ConnectionOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3157,12 +2627,8 @@ func (ec *executionContext) fieldContext_AccountEdge_node(ctx context.Context, f
 				return ec.fieldContext_Account_nickname(ctx, field)
 			case "email":
 				return ec.fieldContext_Account_email(ctx, field)
-			case "password":
-				return ec.fieldContext_Account_password(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
-			case "authTypeID":
-				return ec.fieldContext_Account_authTypeID(ctx, field)
 			case "authRoles":
 				return ec.fieldContext_Account_authRoles(ctx, field)
 			case "portfolios":
@@ -3395,50 +2861,6 @@ func (ec *executionContext) fieldContext_Asset_deletedAt(ctx context.Context, fi
 	return fc, nil
 }
 
-func (ec *executionContext) _Asset_assetClassID(ctx context.Context, field graphql.CollectedField, obj *ent.Asset) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Asset_assetClassID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AssetClassID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(pulid.PULID)
-	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Asset_assetClassID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Asset",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Asset_assetClass(ctx context.Context, field graphql.CollectedField, obj *ent.Asset) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Asset_assetClass(ctx, field)
 	if err != nil {
@@ -3490,8 +2912,6 @@ func (ec *executionContext) fieldContext_Asset_assetClass(ctx context.Context, f
 				return ec.fieldContext_AssetClass_value(ctx, field)
 			case "description":
 				return ec.fieldContext_AssetClass_description(ctx, field)
-			case "assets":
-				return ec.fieldContext_AssetClass_assets(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AssetClass", field.Name)
 		},
@@ -3562,132 +2982,6 @@ func (ec *executionContext) fieldContext_Asset_cryptocurrency(ctx context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _Asset_transactionBases(ctx context.Context, field graphql.CollectedField, obj *ent.Asset) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Asset_transactionBases(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TransactionBases(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.TransactionOrder), fc.Args["where"].(*ent.TransactionWhereInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ent.TransactionConnection)
-	fc.Result = res
-	return ec.marshalNTransactionConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionConnection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Asset_transactionBases(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Asset",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_TransactionConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_TransactionConnection_pageInfo(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_TransactionConnection_totalCount(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type TransactionConnection", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Asset_transactionBases_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Asset_transactionQuotes(ctx context.Context, field graphql.CollectedField, obj *ent.Asset) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Asset_transactionQuotes(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TransactionQuotes(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.TransactionOrder), fc.Args["where"].(*ent.TransactionWhereInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ent.TransactionConnection)
-	fc.Result = res
-	return ec.marshalNTransactionConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionConnection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Asset_transactionQuotes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Asset",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_TransactionConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_TransactionConnection_pageInfo(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_TransactionConnection_totalCount(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type TransactionConnection", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Asset_transactionQuotes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Asset_dailyAssetPrices(ctx context.Context, field graphql.CollectedField, obj *ent.Asset) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Asset_dailyAssetPrices(ctx, field)
 	if err != nil {
@@ -3702,7 +2996,7 @@ func (ec *executionContext) _Asset_dailyAssetPrices(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.DailyAssetPrices(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.DailyAssetPriceOrder), fc.Args["where"].(*ent.DailyAssetPriceWhereInput))
+		return obj.DailyAssetPrices(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.DailyAssetPriceOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4009,69 +3303,6 @@ func (ec *executionContext) fieldContext_AssetClass_description(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _AssetClass_assets(ctx context.Context, field graphql.CollectedField, obj *ent.AssetClass) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_AssetClass_assets(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Assets(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AssetOrder), fc.Args["where"].(*ent.AssetWhereInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ent.AssetConnection)
-	fc.Result = res
-	return ec.marshalNAssetConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAssetConnection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_AssetClass_assets(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "AssetClass",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_AssetConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_AssetConnection_pageInfo(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_AssetConnection_totalCount(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type AssetConnection", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_AssetClass_assets_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _AssetClassConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.AssetClassConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_AssetClassConnection_edges(ctx, field)
 	if err != nil {
@@ -4265,8 +3496,6 @@ func (ec *executionContext) fieldContext_AssetClassEdge_node(ctx context.Context
 				return ec.fieldContext_AssetClass_value(ctx, field)
 			case "description":
 				return ec.fieldContext_AssetClass_description(ctx, field)
-			case "assets":
-				return ec.fieldContext_AssetClass_assets(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AssetClass", field.Name)
 		},
@@ -4507,16 +3736,10 @@ func (ec *executionContext) fieldContext_AssetEdge_node(ctx context.Context, fie
 				return ec.fieldContext_Asset_updatedAt(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Asset_deletedAt(ctx, field)
-			case "assetClassID":
-				return ec.fieldContext_Asset_assetClassID(ctx, field)
 			case "assetClass":
 				return ec.fieldContext_Asset_assetClass(ctx, field)
 			case "cryptocurrency":
 				return ec.fieldContext_Asset_cryptocurrency(ctx, field)
-			case "transactionBases":
-				return ec.fieldContext_Asset_transactionBases(ctx, field)
-			case "transactionQuotes":
-				return ec.fieldContext_Asset_transactionQuotes(ctx, field)
 			case "dailyAssetPrices":
 				return ec.fieldContext_Asset_dailyAssetPrices(ctx, field)
 			}
@@ -4842,7 +4065,7 @@ func (ec *executionContext) _AuthRole_accounts(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Accounts(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AccountOrder), fc.Args["where"].(*ent.AccountWhereInput))
+		return obj.Accounts(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AccountOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4905,7 +4128,7 @@ func (ec *executionContext) _AuthRole_staffAccounts(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.StaffAccounts(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.StaffAccountOrder), fc.Args["where"].(*ent.StaffAccountWhereInput))
+		return obj.StaffAccounts(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.StaffAccountOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5460,132 +4683,6 @@ func (ec *executionContext) fieldContext_AuthType_description(ctx context.Contex
 	return fc, nil
 }
 
-func (ec *executionContext) _AuthType_accounts(ctx context.Context, field graphql.CollectedField, obj *ent.AuthType) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_AuthType_accounts(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Accounts(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AccountOrder), fc.Args["where"].(*ent.AccountWhereInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ent.AccountConnection)
-	fc.Result = res
-	return ec.marshalNAccountConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccountConnection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_AuthType_accounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "AuthType",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_AccountConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_AccountConnection_pageInfo(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_AccountConnection_totalCount(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type AccountConnection", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_AuthType_accounts_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _AuthType_staffAccounts(ctx context.Context, field graphql.CollectedField, obj *ent.AuthType) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_AuthType_staffAccounts(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.StaffAccounts(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.StaffAccountOrder), fc.Args["where"].(*ent.StaffAccountWhereInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ent.StaffAccountConnection)
-	fc.Result = res
-	return ec.marshalNStaffAccountConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccountConnection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_AuthType_staffAccounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "AuthType",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_StaffAccountConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_StaffAccountConnection_pageInfo(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_StaffAccountConnection_totalCount(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type StaffAccountConnection", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_AuthType_staffAccounts_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _AuthTypeConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.AuthTypeConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_AuthTypeConnection_edges(ctx, field)
 	if err != nil {
@@ -5779,10 +4876,6 @@ func (ec *executionContext) fieldContext_AuthTypeEdge_node(ctx context.Context, 
 				return ec.fieldContext_AuthType_value(ctx, field)
 			case "description":
 				return ec.fieldContext_AuthType_description(ctx, field)
-			case "accounts":
-				return ec.fieldContext_AuthType_accounts(ctx, field)
-			case "staffAccounts":
-				return ec.fieldContext_AuthType_staffAccounts(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AuthType", field.Name)
 		},
@@ -6191,7 +5284,7 @@ func (ec *executionContext) _Blockchain_cryptocurrencies(ctx context.Context, fi
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Cryptocurrencies(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.CryptocurrencyOrder), fc.Args["where"].(*ent.CryptocurrencyWhereInput))
+		return obj.Cryptocurrencies(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.CryptocurrencyOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6254,7 +5347,7 @@ func (ec *executionContext) _Blockchain_transactions(ctx context.Context, field 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Transactions(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.TransactionOrder), fc.Args["where"].(*ent.TransactionWhereInput))
+		return obj.Transactions(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.TransactionOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -6911,12 +6004,8 @@ func (ec *executionContext) fieldContext_Connection_account(ctx context.Context,
 				return ec.fieldContext_Account_nickname(ctx, field)
 			case "email":
 				return ec.fieldContext_Account_email(ctx, field)
-			case "password":
-				return ec.fieldContext_Account_password(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
-			case "authTypeID":
-				return ec.fieldContext_Account_authTypeID(ctx, field)
 			case "authRoles":
 				return ec.fieldContext_Account_authRoles(ctx, field)
 			case "portfolios":
@@ -6946,7 +6035,7 @@ func (ec *executionContext) _Connection_portfolios(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Portfolios(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.PortfolioOrder), fc.Args["where"].(*ent.PortfolioWhereInput))
+		return obj.Portfolios(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.PortfolioOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7638,16 +6727,10 @@ func (ec *executionContext) fieldContext_Cryptocurrency_asset(ctx context.Contex
 				return ec.fieldContext_Asset_updatedAt(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Asset_deletedAt(ctx, field)
-			case "assetClassID":
-				return ec.fieldContext_Asset_assetClassID(ctx, field)
 			case "assetClass":
 				return ec.fieldContext_Asset_assetClass(ctx, field)
 			case "cryptocurrency":
 				return ec.fieldContext_Asset_cryptocurrency(ctx, field)
-			case "transactionBases":
-				return ec.fieldContext_Asset_transactionBases(ctx, field)
-			case "transactionQuotes":
-				return ec.fieldContext_Asset_transactionQuotes(ctx, field)
 			case "dailyAssetPrices":
 				return ec.fieldContext_Asset_dailyAssetPrices(ctx, field)
 			}
@@ -8488,16 +7571,10 @@ func (ec *executionContext) fieldContext_DailyAssetPrice_asset(ctx context.Conte
 				return ec.fieldContext_Asset_updatedAt(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Asset_deletedAt(ctx, field)
-			case "assetClassID":
-				return ec.fieldContext_Asset_assetClassID(ctx, field)
 			case "assetClass":
 				return ec.fieldContext_Asset_assetClass(ctx, field)
 			case "cryptocurrency":
 				return ec.fieldContext_Asset_cryptocurrency(ctx, field)
-			case "transactionBases":
-				return ec.fieldContext_Asset_transactionBases(ctx, field)
-			case "transactionQuotes":
-				return ec.fieldContext_Asset_transactionQuotes(ctx, field)
 			case "dailyAssetPrices":
 				return ec.fieldContext_Asset_dailyAssetPrices(ctx, field)
 			}
@@ -9943,12 +9020,8 @@ func (ec *executionContext) fieldContext_Portfolio_account(ctx context.Context, 
 				return ec.fieldContext_Account_nickname(ctx, field)
 			case "email":
 				return ec.fieldContext_Account_email(ctx, field)
-			case "password":
-				return ec.fieldContext_Account_password(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
-			case "authTypeID":
-				return ec.fieldContext_Account_authTypeID(ctx, field)
 			case "authRoles":
 				return ec.fieldContext_Account_authRoles(ctx, field)
 			case "portfolios":
@@ -9978,7 +9051,7 @@ func (ec *executionContext) _Portfolio_transactions(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Transactions(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.TransactionOrder), fc.Args["where"].(*ent.TransactionWhereInput))
+		return obj.Transactions(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.TransactionOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -12470,7 +11543,7 @@ func (ec *executionContext) _SourceType_sources(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Sources(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.SourceOrder), fc.Args["where"].(*ent.SourceWhereInput))
+		return obj.Sources(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.SourceOrder))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -13026,47 +12099,6 @@ func (ec *executionContext) fieldContext_StaffAccount_email(ctx context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _StaffAccount_password(ctx context.Context, field graphql.CollectedField, obj *ent.StaffAccount) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_StaffAccount_password(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Password, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*string)
-	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_StaffAccount_password(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "StaffAccount",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _StaffAccount_passwordUpdatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.StaffAccount) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_StaffAccount_passwordUpdatedAt(ctx, field)
 	if err != nil {
@@ -13106,50 +12138,6 @@ func (ec *executionContext) fieldContext_StaffAccount_passwordUpdatedAt(ctx cont
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Time does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _StaffAccount_authTypeID(ctx context.Context, field graphql.CollectedField, obj *ent.StaffAccount) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_StaffAccount_authTypeID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.AuthTypeID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(pulid.PULID)
-	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_StaffAccount_authTypeID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "StaffAccount",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
 		},
 	}
 	return fc, nil
@@ -13269,10 +12257,6 @@ func (ec *executionContext) fieldContext_StaffAccount_authType(ctx context.Conte
 				return ec.fieldContext_AuthType_value(ctx, field)
 			case "description":
 				return ec.fieldContext_AuthType_description(ctx, field)
-			case "accounts":
-				return ec.fieldContext_AuthType_accounts(ctx, field)
-			case "staffAccounts":
-				return ec.fieldContext_AuthType_staffAccounts(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type AuthType", field.Name)
 		},
@@ -13473,12 +12457,8 @@ func (ec *executionContext) fieldContext_StaffAccountEdge_node(ctx context.Conte
 				return ec.fieldContext_StaffAccount_nickname(ctx, field)
 			case "email":
 				return ec.fieldContext_StaffAccount_email(ctx, field)
-			case "password":
-				return ec.fieldContext_StaffAccount_password(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_StaffAccount_passwordUpdatedAt(ctx, field)
-			case "authTypeID":
-				return ec.fieldContext_StaffAccount_authTypeID(ctx, field)
 			case "authRoles":
 				return ec.fieldContext_StaffAccount_authRoles(ctx, field)
 			case "authType":
@@ -13880,50 +12860,6 @@ func (ec *executionContext) fieldContext_Transaction_blockchainID(ctx context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _Transaction_transactionTypeID(ctx context.Context, field graphql.CollectedField, obj *ent.Transaction) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Transaction_transactionTypeID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TransactionTypeID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(pulid.PULID)
-	fc.Result = res
-	return ec.marshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Transaction_transactionTypeID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Transaction",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type ID does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _Transaction_exchangeID(ctx context.Context, field graphql.CollectedField, obj *ent.Transaction) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Transaction_exchangeID(ctx, field)
 	if err != nil {
@@ -14148,8 +13084,6 @@ func (ec *executionContext) fieldContext_Transaction_transactionType(ctx context
 				return ec.fieldContext_TransactionType_value(ctx, field)
 			case "description":
 				return ec.fieldContext_TransactionType_description(ctx, field)
-			case "transactions":
-				return ec.fieldContext_TransactionType_transactions(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TransactionType", field.Name)
 		},
@@ -14204,16 +13138,10 @@ func (ec *executionContext) fieldContext_Transaction_baseAsset(ctx context.Conte
 				return ec.fieldContext_Asset_updatedAt(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Asset_deletedAt(ctx, field)
-			case "assetClassID":
-				return ec.fieldContext_Asset_assetClassID(ctx, field)
 			case "assetClass":
 				return ec.fieldContext_Asset_assetClass(ctx, field)
 			case "cryptocurrency":
 				return ec.fieldContext_Asset_cryptocurrency(ctx, field)
-			case "transactionBases":
-				return ec.fieldContext_Asset_transactionBases(ctx, field)
-			case "transactionQuotes":
-				return ec.fieldContext_Asset_transactionQuotes(ctx, field)
 			case "dailyAssetPrices":
 				return ec.fieldContext_Asset_dailyAssetPrices(ctx, field)
 			}
@@ -14267,16 +13195,10 @@ func (ec *executionContext) fieldContext_Transaction_quoteAsset(ctx context.Cont
 				return ec.fieldContext_Asset_updatedAt(ctx, field)
 			case "deletedAt":
 				return ec.fieldContext_Asset_deletedAt(ctx, field)
-			case "assetClassID":
-				return ec.fieldContext_Asset_assetClassID(ctx, field)
 			case "assetClass":
 				return ec.fieldContext_Asset_assetClass(ctx, field)
 			case "cryptocurrency":
 				return ec.fieldContext_Asset_cryptocurrency(ctx, field)
-			case "transactionBases":
-				return ec.fieldContext_Asset_transactionBases(ctx, field)
-			case "transactionQuotes":
-				return ec.fieldContext_Asset_transactionQuotes(ctx, field)
 			case "dailyAssetPrices":
 				return ec.fieldContext_Asset_dailyAssetPrices(ctx, field)
 			}
@@ -14676,8 +13598,6 @@ func (ec *executionContext) fieldContext_TransactionEdge_node(ctx context.Contex
 				return ec.fieldContext_Transaction_pricePerUnit(ctx, field)
 			case "blockchainID":
 				return ec.fieldContext_Transaction_blockchainID(ctx, field)
-			case "transactionTypeID":
-				return ec.fieldContext_Transaction_transactionTypeID(ctx, field)
 			case "exchangeID":
 				return ec.fieldContext_Transaction_exchangeID(ctx, field)
 			case "portfolioID":
@@ -15007,69 +13927,6 @@ func (ec *executionContext) fieldContext_TransactionType_description(ctx context
 	return fc, nil
 }
 
-func (ec *executionContext) _TransactionType_transactions(ctx context.Context, field graphql.CollectedField, obj *ent.TransactionType) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_TransactionType_transactions(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Transactions(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.TransactionOrder), fc.Args["where"].(*ent.TransactionWhereInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ent.TransactionConnection)
-	fc.Result = res
-	return ec.marshalNTransactionConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionConnection(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_TransactionType_transactions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "TransactionType",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "edges":
-				return ec.fieldContext_TransactionConnection_edges(ctx, field)
-			case "pageInfo":
-				return ec.fieldContext_TransactionConnection_pageInfo(ctx, field)
-			case "totalCount":
-				return ec.fieldContext_TransactionConnection_totalCount(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type TransactionConnection", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_TransactionType_transactions_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
 func (ec *executionContext) _TransactionTypeConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.TransactionTypeConnection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_TransactionTypeConnection_edges(ctx, field)
 	if err != nil {
@@ -15263,8 +14120,6 @@ func (ec *executionContext) fieldContext_TransactionTypeEdge_node(ctx context.Co
 				return ec.fieldContext_TransactionType_value(ctx, field)
 			case "description":
 				return ec.fieldContext_TransactionType_description(ctx, field)
-			case "transactions":
-				return ec.fieldContext_TransactionType_transactions(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type TransactionType", field.Name)
 		},
@@ -15367,7 +14222,7 @@ func (ec *executionContext) unmarshalInputAccountWhereInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "nickname", "nicknameNEQ", "nicknameIn", "nicknameNotIn", "nicknameGT", "nicknameGTE", "nicknameLT", "nicknameLTE", "nicknameContains", "nicknameHasPrefix", "nicknameHasSuffix", "nicknameEqualFold", "nicknameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "password", "passwordNEQ", "passwordIn", "passwordNotIn", "passwordGT", "passwordGTE", "passwordLT", "passwordLTE", "passwordContains", "passwordHasPrefix", "passwordHasSuffix", "passwordIsNil", "passwordNotNil", "passwordEqualFold", "passwordContainsFold", "passwordUpdatedAt", "passwordUpdatedAtNEQ", "passwordUpdatedAtIn", "passwordUpdatedAtNotIn", "passwordUpdatedAtGT", "passwordUpdatedAtGTE", "passwordUpdatedAtLT", "passwordUpdatedAtLTE", "authTypeID", "authTypeIDNEQ", "authTypeIDIn", "authTypeIDNotIn", "authTypeIDGT", "authTypeIDGTE", "authTypeIDLT", "authTypeIDLTE", "authTypeIDContains", "authTypeIDHasPrefix", "authTypeIDHasSuffix", "authTypeIDEqualFold", "authTypeIDContainsFold", "hasAuthRoles", "hasAuthRolesWith", "hasPortfolios", "hasPortfoliosWith", "hasAuthType", "hasAuthTypeWith", "hasConnections", "hasConnectionsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "nickname", "nicknameNEQ", "nicknameIn", "nicknameNotIn", "nicknameGT", "nicknameGTE", "nicknameLT", "nicknameLTE", "nicknameContains", "nicknameHasPrefix", "nicknameHasSuffix", "nicknameEqualFold", "nicknameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "passwordUpdatedAt", "passwordUpdatedAtNEQ", "passwordUpdatedAtIn", "passwordUpdatedAtNotIn", "passwordUpdatedAtGT", "passwordUpdatedAtGTE", "passwordUpdatedAtLT", "passwordUpdatedAtLTE", "hasAuthRoles", "hasAuthRolesWith", "hasPortfolios", "hasPortfoliosWith", "hasAuthType", "hasAuthTypeWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -15878,126 +14733,6 @@ func (ec *executionContext) unmarshalInputAccountWhereInput(ctx context.Context,
 			if err != nil {
 				return it, err
 			}
-		case "password":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
-			it.Password, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordNEQ"))
-			it.PasswordNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordIn"))
-			it.PasswordIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordNotIn"))
-			it.PasswordNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordGT"))
-			it.PasswordGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordGTE"))
-			it.PasswordGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordLT"))
-			it.PasswordLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordLTE"))
-			it.PasswordLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordContains"))
-			it.PasswordContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordHasPrefix"))
-			it.PasswordHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordHasSuffix"))
-			it.PasswordHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordIsNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordIsNil"))
-			it.PasswordIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordNotNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordNotNil"))
-			it.PasswordNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordEqualFold"))
-			it.PasswordEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordContainsFold"))
-			it.PasswordContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "passwordUpdatedAt":
 			var err error
 
@@ -16062,110 +14797,6 @@ func (ec *executionContext) unmarshalInputAccountWhereInput(ctx context.Context,
 			if err != nil {
 				return it, err
 			}
-		case "authTypeID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeID"))
-			it.AuthTypeID, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDNEQ"))
-			it.AuthTypeIDNEQ, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDIn"))
-			it.AuthTypeIDIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDNotIn"))
-			it.AuthTypeIDNotIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDGT"))
-			it.AuthTypeIDGT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDGTE"))
-			it.AuthTypeIDGTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDLT"))
-			it.AuthTypeIDLT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDLTE"))
-			it.AuthTypeIDLTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDContains"))
-			it.AuthTypeIDContains, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDHasPrefix"))
-			it.AuthTypeIDHasPrefix, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDHasSuffix"))
-			it.AuthTypeIDHasSuffix, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDEqualFold"))
-			it.AuthTypeIDEqualFold, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDContainsFold"))
-			it.AuthTypeIDContainsFold, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "hasAuthRoles":
 			var err error
 
@@ -16211,22 +14842,6 @@ func (ec *executionContext) unmarshalInputAccountWhereInput(ctx context.Context,
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasAuthTypeWith"))
 			it.HasAuthTypeWith, err = ec.unmarshalOAuthTypeWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAuthTypeWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasConnections":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasConnections"))
-			it.HasConnections, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasConnectionsWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasConnectionsWith"))
-			it.HasConnectionsWith, err = ec.unmarshalOConnectionWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐConnectionWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -16283,7 +14898,7 @@ func (ec *executionContext) unmarshalInputAssetClassWhereInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "value", "valueNEQ", "valueIn", "valueNotIn", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionIsNil", "descriptionNotNil", "descriptionEqualFold", "descriptionContainsFold", "hasAssets", "hasAssetsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "value", "valueNEQ", "valueIn", "valueNotIn", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionIsNil", "descriptionNotNil", "descriptionEqualFold", "descriptionContainsFold"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -16738,22 +15353,6 @@ func (ec *executionContext) unmarshalInputAssetClassWhereInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-		case "hasAssets":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasAssets"))
-			it.HasAssets, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasAssetsWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasAssetsWith"))
-			it.HasAssetsWith, err = ec.unmarshalOAssetWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAssetWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -16807,7 +15406,7 @@ func (ec *executionContext) unmarshalInputAssetWhereInput(ctx context.Context, o
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "assetClassID", "assetClassIDNEQ", "assetClassIDIn", "assetClassIDNotIn", "assetClassIDGT", "assetClassIDGTE", "assetClassIDLT", "assetClassIDLTE", "assetClassIDContains", "assetClassIDHasPrefix", "assetClassIDHasSuffix", "assetClassIDEqualFold", "assetClassIDContainsFold", "hasAssetClass", "hasAssetClassWith", "hasCryptocurrency", "hasCryptocurrencyWith", "hasTransactionBases", "hasTransactionBasesWith", "hasTransactionQuotes", "hasTransactionQuotesWith", "hasDailyAssetPrices", "hasDailyAssetPricesWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "hasAssetClass", "hasAssetClassWith", "hasCryptocurrency", "hasCryptocurrencyWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -17110,110 +15709,6 @@ func (ec *executionContext) unmarshalInputAssetWhereInput(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
-		case "assetClassID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassID"))
-			it.AssetClassID, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassIDNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassIDNEQ"))
-			it.AssetClassIDNEQ, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassIDIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassIDIn"))
-			it.AssetClassIDIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassIDNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassIDNotIn"))
-			it.AssetClassIDNotIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassIDGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassIDGT"))
-			it.AssetClassIDGT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassIDGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassIDGTE"))
-			it.AssetClassIDGTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassIDLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassIDLT"))
-			it.AssetClassIDLT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassIDLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassIDLTE"))
-			it.AssetClassIDLTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassIDContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassIDContains"))
-			it.AssetClassIDContains, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassIDHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassIDHasPrefix"))
-			it.AssetClassIDHasPrefix, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassIDHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassIDHasSuffix"))
-			it.AssetClassIDHasSuffix, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassIDEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassIDEqualFold"))
-			it.AssetClassIDEqualFold, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassIDContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassIDContainsFold"))
-			it.AssetClassIDContainsFold, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "hasAssetClass":
 			var err error
 
@@ -17243,54 +15738,6 @@ func (ec *executionContext) unmarshalInputAssetWhereInput(ctx context.Context, o
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCryptocurrencyWith"))
 			it.HasCryptocurrencyWith, err = ec.unmarshalOCryptocurrencyWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCryptocurrencyWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasTransactionBases":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactionBases"))
-			it.HasTransactionBases, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasTransactionBasesWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactionBasesWith"))
-			it.HasTransactionBasesWith, err = ec.unmarshalOTransactionWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasTransactionQuotes":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactionQuotes"))
-			it.HasTransactionQuotes, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasTransactionQuotesWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactionQuotesWith"))
-			it.HasTransactionQuotesWith, err = ec.unmarshalOTransactionWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasDailyAssetPrices":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasDailyAssetPrices"))
-			it.HasDailyAssetPrices, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasDailyAssetPricesWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasDailyAssetPricesWith"))
-			it.HasDailyAssetPricesWith, err = ec.unmarshalODailyAssetPriceWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐDailyAssetPriceWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -17347,7 +15794,7 @@ func (ec *executionContext) unmarshalInputAuthRoleWhereInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "value", "valueNEQ", "valueIn", "valueNotIn", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionIsNil", "descriptionNotNil", "descriptionEqualFold", "descriptionContainsFold", "hasAccounts", "hasAccountsWith", "hasStaffAccounts", "hasStaffAccountsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "value", "valueNEQ", "valueIn", "valueNotIn", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionIsNil", "descriptionNotNil", "descriptionEqualFold", "descriptionContainsFold"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -17802,38 +16249,6 @@ func (ec *executionContext) unmarshalInputAuthRoleWhereInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
-		case "hasAccounts":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasAccounts"))
-			it.HasAccounts, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasAccountsWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasAccountsWith"))
-			it.HasAccountsWith, err = ec.unmarshalOAccountWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccountWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasStaffAccounts":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasStaffAccounts"))
-			it.HasStaffAccounts, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasStaffAccountsWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasStaffAccountsWith"))
-			it.HasStaffAccountsWith, err = ec.unmarshalOStaffAccountWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccountWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -17887,7 +16302,7 @@ func (ec *executionContext) unmarshalInputAuthTypeWhereInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "value", "valueNEQ", "valueIn", "valueNotIn", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionIsNil", "descriptionNotNil", "descriptionEqualFold", "descriptionContainsFold", "hasAccounts", "hasAccountsWith", "hasStaffAccounts", "hasStaffAccountsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "value", "valueNEQ", "valueIn", "valueNotIn", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionIsNil", "descriptionNotNil", "descriptionEqualFold", "descriptionContainsFold"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -18342,38 +16757,6 @@ func (ec *executionContext) unmarshalInputAuthTypeWhereInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
-		case "hasAccounts":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasAccounts"))
-			it.HasAccounts, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasAccountsWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasAccountsWith"))
-			it.HasAccountsWith, err = ec.unmarshalOAccountWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccountWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasStaffAccounts":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasStaffAccounts"))
-			it.HasStaffAccounts, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasStaffAccountsWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasStaffAccountsWith"))
-			it.HasStaffAccountsWith, err = ec.unmarshalOStaffAccountWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccountWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -18427,7 +16810,7 @@ func (ec *executionContext) unmarshalInputBlockchainWhereInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "symbol", "symbolNEQ", "symbolIn", "symbolNotIn", "symbolGT", "symbolGTE", "symbolLT", "symbolLTE", "symbolContains", "symbolHasPrefix", "symbolHasSuffix", "symbolEqualFold", "symbolContainsFold", "icon", "iconNEQ", "iconIn", "iconNotIn", "iconGT", "iconGTE", "iconLT", "iconLTE", "iconContains", "iconHasPrefix", "iconHasSuffix", "iconIsNil", "iconNotNil", "iconEqualFold", "iconContainsFold", "chainID", "chainIDNEQ", "chainIDIn", "chainIDNotIn", "chainIDGT", "chainIDGTE", "chainIDLT", "chainIDLTE", "chainIDIsNil", "chainIDNotNil", "hasCryptocurrencies", "hasCryptocurrenciesWith", "hasTransactions", "hasTransactionsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "symbol", "symbolNEQ", "symbolIn", "symbolNotIn", "symbolGT", "symbolGTE", "symbolLT", "symbolLTE", "symbolContains", "symbolHasPrefix", "symbolHasSuffix", "symbolEqualFold", "symbolContainsFold", "chainID", "chainIDNEQ", "chainIDIn", "chainIDNotIn", "chainIDGT", "chainIDGTE", "chainIDLT", "chainIDLTE", "chainIDIsNil", "chainIDNotNil"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -18938,126 +17321,6 @@ func (ec *executionContext) unmarshalInputBlockchainWhereInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-		case "icon":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("icon"))
-			it.Icon, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconNEQ"))
-			it.IconNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIn"))
-			it.IconIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconNotIn"))
-			it.IconNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconGT"))
-			it.IconGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconGTE"))
-			it.IconGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconLT"))
-			it.IconLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconLTE"))
-			it.IconLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconContains"))
-			it.IconContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconHasPrefix"))
-			it.IconHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconHasSuffix"))
-			it.IconHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconIsNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIsNil"))
-			it.IconIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconNotNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconNotNil"))
-			it.IconNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconEqualFold"))
-			it.IconEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconContainsFold"))
-			it.IconContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "chainID":
 			var err error
 
@@ -19138,38 +17401,6 @@ func (ec *executionContext) unmarshalInputBlockchainWhereInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-		case "hasCryptocurrencies":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCryptocurrencies"))
-			it.HasCryptocurrencies, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasCryptocurrenciesWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasCryptocurrenciesWith"))
-			it.HasCryptocurrenciesWith, err = ec.unmarshalOCryptocurrencyWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCryptocurrencyWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasTransactions":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactions"))
-			it.HasTransactions, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasTransactionsWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactionsWith"))
-			it.HasTransactionsWith, err = ec.unmarshalOTransactionWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -19223,7 +17454,7 @@ func (ec *executionContext) unmarshalInputConnectionWhereInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "accessToken", "accessTokenNEQ", "accessTokenIn", "accessTokenNotIn", "accessTokenGT", "accessTokenGTE", "accessTokenLT", "accessTokenLTE", "accessTokenContains", "accessTokenHasPrefix", "accessTokenHasSuffix", "accessTokenEqualFold", "accessTokenContainsFold", "accountID", "accountIDNEQ", "accountIDIn", "accountIDNotIn", "accountIDGT", "accountIDGTE", "accountIDLT", "accountIDLTE", "accountIDContains", "accountIDHasPrefix", "accountIDHasSuffix", "accountIDEqualFold", "accountIDContainsFold", "hasAccount", "hasAccountWith", "hasPortfolios", "hasPortfoliosWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "accountID", "accountIDNEQ", "accountIDIn", "accountIDNotIn", "accountIDGT", "accountIDGTE", "accountIDLT", "accountIDLTE", "accountIDContains", "accountIDHasPrefix", "accountIDHasSuffix", "accountIDEqualFold", "accountIDContainsFold", "hasAccount", "hasAccountWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -19630,110 +17861,6 @@ func (ec *executionContext) unmarshalInputConnectionWhereInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-		case "accessToken":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessToken"))
-			it.AccessToken, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accessTokenNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessTokenNEQ"))
-			it.AccessTokenNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accessTokenIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessTokenIn"))
-			it.AccessTokenIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accessTokenNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessTokenNotIn"))
-			it.AccessTokenNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accessTokenGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessTokenGT"))
-			it.AccessTokenGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accessTokenGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessTokenGTE"))
-			it.AccessTokenGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accessTokenLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessTokenLT"))
-			it.AccessTokenLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accessTokenLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessTokenLTE"))
-			it.AccessTokenLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accessTokenContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessTokenContains"))
-			it.AccessTokenContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accessTokenHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessTokenHasPrefix"))
-			it.AccessTokenHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accessTokenHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessTokenHasSuffix"))
-			it.AccessTokenHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accessTokenEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessTokenEqualFold"))
-			it.AccessTokenEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accessTokenContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accessTokenContainsFold"))
-			it.AccessTokenContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "accountID":
 			var err error
 
@@ -19854,22 +17981,6 @@ func (ec *executionContext) unmarshalInputConnectionWhereInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-		case "hasPortfolios":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasPortfolios"))
-			it.HasPortfolios, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasPortfoliosWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasPortfoliosWith"))
-			it.HasPortfoliosWith, err = ec.unmarshalOPortfolioWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐPortfolioWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -19883,37 +17994,13 @@ func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "nickname", "email", "password", "passwordUpdatedAt", "authRoleIDs", "portfolioIDs", "authTypeID", "connectionIDs"}
+	fieldsInOrder := [...]string{"nickname", "email", "password", "authRoleIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "nickname":
 			var err error
 
@@ -19938,43 +18025,11 @@ func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
-		case "passwordUpdatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordUpdatedAt"))
-			it.PasswordUpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "authRoleIDs":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authRoleIDs"))
 			it.AuthRoleIDs, err = ec.unmarshalNID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "portfolioIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("portfolioIDs"))
-			it.PortfolioIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeID"))
-			it.AuthTypeID, err = ec.unmarshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "connectionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("connectionIDs"))
-			it.ConnectionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -19991,37 +18046,13 @@ func (ec *executionContext) unmarshalInputCreateAssetClassInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "value", "description", "assetIDs"}
+	fieldsInOrder := [...]string{"value", "description"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "value":
 			var err error
 
@@ -20038,98 +18069,6 @@ func (ec *executionContext) unmarshalInputCreateAssetClassInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-		case "assetIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetIDs"))
-			it.AssetIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		}
-	}
-
-	return it, nil
-}
-
-func (ec *executionContext) unmarshalInputCreateAssetInput(ctx context.Context, obj interface{}) (ent.CreateAssetInput, error) {
-	var it ent.CreateAssetInput
-	asMap := map[string]interface{}{}
-	for k, v := range obj.(map[string]interface{}) {
-		asMap[k] = v
-	}
-
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "assetClassID", "cryptocurrencyID", "transactionBasisIDs", "transactionQuoteIDs", "dailyAssetPriceIDs"}
-	for _, k := range fieldsInOrder {
-		v, ok := asMap[k]
-		if !ok {
-			continue
-		}
-		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "assetClassID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("assetClassID"))
-			it.AssetClassID, err = ec.unmarshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "cryptocurrencyID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cryptocurrencyID"))
-			it.CryptocurrencyID, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionBasisIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionBasisIDs"))
-			it.TransactionBasisIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionQuoteIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionQuoteIDs"))
-			it.TransactionQuoteIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "dailyAssetPriceIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dailyAssetPriceIDs"))
-			it.DailyAssetPriceIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -20143,37 +18082,13 @@ func (ec *executionContext) unmarshalInputCreateAuthRoleInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "value", "description", "accountIDs", "staffAccountIDs"}
+	fieldsInOrder := [...]string{"value", "description"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "value":
 			var err error
 
@@ -20190,22 +18105,6 @@ func (ec *executionContext) unmarshalInputCreateAuthRoleInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
-		case "accountIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accountIDs"))
-			it.AccountIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "staffAccountIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("staffAccountIDs"))
-			it.StaffAccountIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -20219,37 +18118,13 @@ func (ec *executionContext) unmarshalInputCreateAuthTypeInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "value", "description", "accountIDs", "staffAccountIDs"}
+	fieldsInOrder := [...]string{"value", "description"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "value":
 			var err error
 
@@ -20266,22 +18141,6 @@ func (ec *executionContext) unmarshalInputCreateAuthTypeInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
-		case "accountIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accountIDs"))
-			it.AccountIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "staffAccountIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("staffAccountIDs"))
-			it.StaffAccountIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -20295,37 +18154,13 @@ func (ec *executionContext) unmarshalInputCreateBlockchainInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "name", "symbol", "icon", "chainID", "cryptocurrencyIDs", "transactionIDs"}
+	fieldsInOrder := [...]string{"name", "symbol", "icon", "chainID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "name":
 			var err error
 
@@ -20358,22 +18193,6 @@ func (ec *executionContext) unmarshalInputCreateBlockchainInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-		case "cryptocurrencyIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cryptocurrencyIDs"))
-			it.CryptocurrencyIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionIDs"))
-			it.TransactionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -20387,37 +18206,13 @@ func (ec *executionContext) unmarshalInputCreateConnectionInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "name", "accessToken", "accountID", "portfolioIDs"}
+	fieldsInOrder := [...]string{"name", "accessToken", "accountID", "portfolioIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "name":
 			var err error
 
@@ -20463,37 +18258,13 @@ func (ec *executionContext) unmarshalInputCreateCryptocurrencyInput(ctx context.
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "symbol", "icon", "name", "assetID", "blockchainIDs"}
+	fieldsInOrder := [...]string{"symbol", "icon", "name", "assetID", "blockchainIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "symbol":
 			var err error
 
@@ -20547,42 +18318,18 @@ func (ec *executionContext) unmarshalInputCreateDailyAssetPriceInput(ctx context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "time", "open", "high", "low", "close", "adjustedClose", "assetID"}
+	fieldsInOrder := [...]string{"time", "open", "high", "low", "close", "adjustedClose", "assetID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "time":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("time"))
-			it.Time, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			it.Time, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -20647,37 +18394,13 @@ func (ec *executionContext) unmarshalInputCreateExchangeInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "name", "icon", "url", "transactionIDs"}
+	fieldsInOrder := [...]string{"name", "icon", "url"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "name":
 			var err error
 
@@ -20702,14 +18425,6 @@ func (ec *executionContext) unmarshalInputCreateExchangeInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
-		case "transactionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionIDs"))
-			it.TransactionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -20723,37 +18438,13 @@ func (ec *executionContext) unmarshalInputCreatePortfolioInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "name", "isPublic", "isVisible", "accountID", "transactionIDs", "connectionIDs"}
+	fieldsInOrder := [...]string{"name", "isPublic", "accountID", "connectionIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "name":
 			var err error
 
@@ -20770,27 +18461,11 @@ func (ec *executionContext) unmarshalInputCreatePortfolioInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-		case "isVisible":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isVisible"))
-			it.IsVisible, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "accountID":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accountID"))
 			it.AccountID, err = ec.unmarshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionIDs"))
-			it.TransactionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -20815,37 +18490,13 @@ func (ec *executionContext) unmarshalInputCreateSourceInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "name", "icon", "sourceTypeID"}
+	fieldsInOrder := [...]string{"name", "icon", "sourceTypeID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "name":
 			var err error
 
@@ -20883,37 +18534,13 @@ func (ec *executionContext) unmarshalInputCreateSourceTypeInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "value", "description", "sourceIDs"}
+	fieldsInOrder := [...]string{"value", "description"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "value":
 			var err error
 
@@ -20930,14 +18557,6 @@ func (ec *executionContext) unmarshalInputCreateSourceTypeInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-		case "sourceIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDs"))
-			it.SourceIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -20951,37 +18570,13 @@ func (ec *executionContext) unmarshalInputCreateStaffAccountInput(ctx context.Co
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "nickname", "email", "password", "passwordUpdatedAt", "authRoleIDs", "authTypeID"}
+	fieldsInOrder := [...]string{"nickname", "email", "password", "authRoleIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "nickname":
 			var err error
 
@@ -21006,27 +18601,11 @@ func (ec *executionContext) unmarshalInputCreateStaffAccountInput(ctx context.Co
 			if err != nil {
 				return it, err
 			}
-		case "passwordUpdatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordUpdatedAt"))
-			it.PasswordUpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "authRoleIDs":
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authRoleIDs"))
 			it.AuthRoleIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeID"))
-			it.AuthTypeID, err = ec.unmarshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -21043,37 +18622,13 @@ func (ec *executionContext) unmarshalInputCreateTransactionInput(ctx context.Con
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "time", "units", "pricePerUnit", "transactionTypeID", "baseAssetID", "quoteAssetID", "portfolioID", "exchangeID", "blockchainID"}
+	fieldsInOrder := [...]string{"time", "units", "pricePerUnit", "transactionTypeID", "baseAssetID", "quoteAssetID", "portfolioID", "exchangeID", "blockchainID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "time":
 			var err error
 
@@ -21159,37 +18714,13 @@ func (ec *executionContext) unmarshalInputCreateTransactionTypeInput(ctx context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"createdAt", "updatedAt", "deletedAt", "value", "description", "transactionIDs"}
+	fieldsInOrder := [...]string{"value", "description"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "createdAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
-			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deletedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedAt"))
-			it.DeletedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "value":
 			var err error
 
@@ -21203,14 +18734,6 @@ func (ec *executionContext) unmarshalInputCreateTransactionTypeInput(ctx context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
 			it.Description, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionIDs"))
-			it.TransactionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -21267,7 +18790,7 @@ func (ec *executionContext) unmarshalInputCryptocurrencyWhereInput(ctx context.C
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "symbol", "symbolNEQ", "symbolIn", "symbolNotIn", "symbolGT", "symbolGTE", "symbolLT", "symbolLTE", "symbolContains", "symbolHasPrefix", "symbolHasSuffix", "symbolEqualFold", "symbolContainsFold", "icon", "iconNEQ", "iconIn", "iconNotIn", "iconGT", "iconGTE", "iconLT", "iconLTE", "iconContains", "iconHasPrefix", "iconHasSuffix", "iconIsNil", "iconNotNil", "iconEqualFold", "iconContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "assetID", "assetIDNEQ", "assetIDIn", "assetIDNotIn", "assetIDGT", "assetIDGTE", "assetIDLT", "assetIDLTE", "assetIDContains", "assetIDHasPrefix", "assetIDHasSuffix", "assetIDEqualFold", "assetIDContainsFold", "hasAsset", "hasAssetWith", "hasBlockchains", "hasBlockchainsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "symbol", "symbolNEQ", "symbolIn", "symbolNotIn", "symbolGT", "symbolGTE", "symbolLT", "symbolLTE", "symbolContains", "symbolHasPrefix", "symbolHasSuffix", "symbolEqualFold", "symbolContainsFold", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "assetID", "assetIDNEQ", "assetIDIn", "assetIDNotIn", "assetIDGT", "assetIDGTE", "assetIDLT", "assetIDLTE", "assetIDContains", "assetIDHasPrefix", "assetIDHasSuffix", "assetIDEqualFold", "assetIDContainsFold", "hasAsset", "hasAssetWith", "hasBlockchains", "hasBlockchainsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -21671,126 +19194,6 @@ func (ec *executionContext) unmarshalInputCryptocurrencyWhereInput(ctx context.C
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("symbolContainsFold"))
 			it.SymbolContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "icon":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("icon"))
-			it.Icon, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconNEQ"))
-			it.IconNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIn"))
-			it.IconIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconNotIn"))
-			it.IconNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconGT"))
-			it.IconGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconGTE"))
-			it.IconGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconLT"))
-			it.IconLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconLTE"))
-			it.IconLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconContains"))
-			it.IconContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconHasPrefix"))
-			it.IconHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconHasSuffix"))
-			it.IconHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconIsNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIsNil"))
-			it.IconIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconNotNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconNotNil"))
-			it.IconNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconEqualFold"))
-			it.IconEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconContainsFold"))
-			it.IconContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -23011,7 +20414,7 @@ func (ec *executionContext) unmarshalInputExchangeWhereInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "icon", "iconNEQ", "iconIn", "iconNotIn", "iconGT", "iconGTE", "iconLT", "iconLTE", "iconContains", "iconHasPrefix", "iconHasSuffix", "iconIsNil", "iconNotNil", "iconEqualFold", "iconContainsFold", "url", "urlNEQ", "urlIn", "urlNotIn", "urlGT", "urlGTE", "urlLT", "urlLTE", "urlContains", "urlHasPrefix", "urlHasSuffix", "urlIsNil", "urlNotNil", "urlEqualFold", "urlContainsFold", "hasTransactions", "hasTransactionsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "url", "urlNEQ", "urlIn", "urlNotIn", "urlGT", "urlGTE", "urlLT", "urlLTE", "urlContains", "urlHasPrefix", "urlHasSuffix", "urlIsNil", "urlNotNil", "urlEqualFold", "urlContainsFold", "hasTransactions", "hasTransactionsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -23418,126 +20821,6 @@ func (ec *executionContext) unmarshalInputExchangeWhereInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
-		case "icon":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("icon"))
-			it.Icon, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconNEQ"))
-			it.IconNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIn"))
-			it.IconIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconNotIn"))
-			it.IconNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconGT"))
-			it.IconGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconGTE"))
-			it.IconGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconLT"))
-			it.IconLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconLTE"))
-			it.IconLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconContains"))
-			it.IconContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconHasPrefix"))
-			it.IconHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconHasSuffix"))
-			it.IconHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconIsNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIsNil"))
-			it.IconIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconNotNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconNotNil"))
-			it.IconNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconEqualFold"))
-			it.IconEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconContainsFold"))
-			it.IconContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "url":
 			var err error
 
@@ -23727,7 +21010,7 @@ func (ec *executionContext) unmarshalInputPortfolioWhereInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "isPublic", "isPublicNEQ", "isVisible", "isVisibleNEQ", "accountID", "accountIDNEQ", "accountIDIn", "accountIDNotIn", "accountIDGT", "accountIDGTE", "accountIDLT", "accountIDLTE", "accountIDContains", "accountIDHasPrefix", "accountIDHasSuffix", "accountIDEqualFold", "accountIDContainsFold", "hasAccount", "hasAccountWith", "hasTransactions", "hasTransactionsWith", "hasConnections", "hasConnectionsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "isPublic", "isPublicNEQ", "isVisible", "isVisibleNEQ", "accountID", "accountIDNEQ", "accountIDIn", "accountIDNotIn", "accountIDGT", "accountIDGTE", "accountIDLT", "accountIDLTE", "accountIDContains", "accountIDHasPrefix", "accountIDHasSuffix", "accountIDEqualFold", "accountIDContainsFold", "hasAccount", "hasAccountWith", "hasConnections", "hasConnectionsWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -24286,22 +21569,6 @@ func (ec *executionContext) unmarshalInputPortfolioWhereInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
-		case "hasTransactions":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactions"))
-			it.HasTransactions, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasTransactionsWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactionsWith"))
-			it.HasTransactionsWith, err = ec.unmarshalOTransactionWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "hasConnections":
 			var err error
 
@@ -24411,7 +21678,7 @@ func (ec *executionContext) unmarshalInputSourceTypeWhereInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "value", "valueNEQ", "valueIn", "valueNotIn", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionIsNil", "descriptionNotNil", "descriptionEqualFold", "descriptionContainsFold", "hasSources", "hasSourcesWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "value", "valueNEQ", "valueIn", "valueNotIn", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionIsNil", "descriptionNotNil", "descriptionEqualFold", "descriptionContainsFold"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -24866,22 +22133,6 @@ func (ec *executionContext) unmarshalInputSourceTypeWhereInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-		case "hasSources":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSources"))
-			it.HasSources, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasSourcesWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSourcesWith"))
-			it.HasSourcesWith, err = ec.unmarshalOSourceWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSourceWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -24895,7 +22146,7 @@ func (ec *executionContext) unmarshalInputSourceWhereInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "icon", "iconNEQ", "iconIn", "iconNotIn", "iconGT", "iconGTE", "iconLT", "iconLTE", "iconContains", "iconHasPrefix", "iconHasSuffix", "iconIsNil", "iconNotNil", "iconEqualFold", "iconContainsFold", "sourceTypeID", "sourceTypeIDNEQ", "sourceTypeIDIn", "sourceTypeIDNotIn", "sourceTypeIDGT", "sourceTypeIDGTE", "sourceTypeIDLT", "sourceTypeIDLTE", "sourceTypeIDContains", "sourceTypeIDHasPrefix", "sourceTypeIDHasSuffix", "sourceTypeIDEqualFold", "sourceTypeIDContainsFold", "hasSourceType", "hasSourceTypeWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "sourceTypeID", "sourceTypeIDNEQ", "sourceTypeIDIn", "sourceTypeIDNotIn", "sourceTypeIDGT", "sourceTypeIDGTE", "sourceTypeIDLT", "sourceTypeIDLTE", "sourceTypeIDContains", "sourceTypeIDHasPrefix", "sourceTypeIDHasSuffix", "sourceTypeIDEqualFold", "sourceTypeIDContainsFold", "hasSourceType", "hasSourceTypeWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -25302,126 +22553,6 @@ func (ec *executionContext) unmarshalInputSourceWhereInput(ctx context.Context, 
 			if err != nil {
 				return it, err
 			}
-		case "icon":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("icon"))
-			it.Icon, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconNEQ"))
-			it.IconNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIn"))
-			it.IconIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconNotIn"))
-			it.IconNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconGT"))
-			it.IconGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconGTE"))
-			it.IconGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconLT"))
-			it.IconLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconLTE"))
-			it.IconLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconContains"))
-			it.IconContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconHasPrefix"))
-			it.IconHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconHasSuffix"))
-			it.IconHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconIsNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIsNil"))
-			it.IconIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconNotNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconNotNil"))
-			it.IconNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconEqualFold"))
-			it.IconEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "iconContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconContainsFold"))
-			it.IconContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "sourceTypeID":
 			var err error
 
@@ -25595,7 +22726,7 @@ func (ec *executionContext) unmarshalInputStaffAccountWhereInput(ctx context.Con
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "nickname", "nicknameNEQ", "nicknameIn", "nicknameNotIn", "nicknameGT", "nicknameGTE", "nicknameLT", "nicknameLTE", "nicknameContains", "nicknameHasPrefix", "nicknameHasSuffix", "nicknameEqualFold", "nicknameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "password", "passwordNEQ", "passwordIn", "passwordNotIn", "passwordGT", "passwordGTE", "passwordLT", "passwordLTE", "passwordContains", "passwordHasPrefix", "passwordHasSuffix", "passwordIsNil", "passwordNotNil", "passwordEqualFold", "passwordContainsFold", "passwordUpdatedAt", "passwordUpdatedAtNEQ", "passwordUpdatedAtIn", "passwordUpdatedAtNotIn", "passwordUpdatedAtGT", "passwordUpdatedAtGTE", "passwordUpdatedAtLT", "passwordUpdatedAtLTE", "authTypeID", "authTypeIDNEQ", "authTypeIDIn", "authTypeIDNotIn", "authTypeIDGT", "authTypeIDGTE", "authTypeIDLT", "authTypeIDLTE", "authTypeIDContains", "authTypeIDHasPrefix", "authTypeIDHasSuffix", "authTypeIDEqualFold", "authTypeIDContainsFold", "hasAuthRoles", "hasAuthRolesWith", "hasAuthType", "hasAuthTypeWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "nickname", "nicknameNEQ", "nicknameIn", "nicknameNotIn", "nicknameGT", "nicknameGTE", "nicknameLT", "nicknameLTE", "nicknameContains", "nicknameHasPrefix", "nicknameHasSuffix", "nicknameEqualFold", "nicknameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "passwordUpdatedAt", "passwordUpdatedAtNEQ", "passwordUpdatedAtIn", "passwordUpdatedAtNotIn", "passwordUpdatedAtGT", "passwordUpdatedAtGTE", "passwordUpdatedAtLT", "passwordUpdatedAtLTE", "hasAuthRoles", "hasAuthRolesWith", "hasAuthType", "hasAuthTypeWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -26106,126 +23237,6 @@ func (ec *executionContext) unmarshalInputStaffAccountWhereInput(ctx context.Con
 			if err != nil {
 				return it, err
 			}
-		case "password":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
-			it.Password, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordNEQ"))
-			it.PasswordNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordIn"))
-			it.PasswordIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordNotIn"))
-			it.PasswordNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordGT"))
-			it.PasswordGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordGTE"))
-			it.PasswordGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordLT"))
-			it.PasswordLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordLTE"))
-			it.PasswordLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordContains"))
-			it.PasswordContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordHasPrefix"))
-			it.PasswordHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordHasSuffix"))
-			it.PasswordHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordIsNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordIsNil"))
-			it.PasswordIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordNotNil":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordNotNil"))
-			it.PasswordNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordEqualFold"))
-			it.PasswordEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "passwordContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordContainsFold"))
-			it.PasswordContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "passwordUpdatedAt":
 			var err error
 
@@ -26287,110 +23298,6 @@ func (ec *executionContext) unmarshalInputStaffAccountWhereInput(ctx context.Con
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordUpdatedAtLTE"))
 			it.PasswordUpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeID"))
-			it.AuthTypeID, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDNEQ"))
-			it.AuthTypeIDNEQ, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDIn"))
-			it.AuthTypeIDIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDNotIn"))
-			it.AuthTypeIDNotIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDGT"))
-			it.AuthTypeIDGT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDGTE"))
-			it.AuthTypeIDGTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDLT"))
-			it.AuthTypeIDLT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDLTE"))
-			it.AuthTypeIDLTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDContains"))
-			it.AuthTypeIDContains, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDHasPrefix"))
-			it.AuthTypeIDHasPrefix, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDHasSuffix"))
-			it.AuthTypeIDHasSuffix, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDEqualFold"))
-			it.AuthTypeIDEqualFold, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "authTypeIDContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeIDContainsFold"))
-			it.AuthTypeIDContainsFold, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -26519,7 +23426,7 @@ func (ec *executionContext) unmarshalInputTransactionTypeWhereInput(ctx context.
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "value", "valueNEQ", "valueIn", "valueNotIn", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionIsNil", "descriptionNotNil", "descriptionEqualFold", "descriptionContainsFold", "hasTransactions", "hasTransactionsWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "value", "valueNEQ", "valueIn", "valueNotIn", "description", "descriptionNEQ", "descriptionIn", "descriptionNotIn", "descriptionGT", "descriptionGTE", "descriptionLT", "descriptionLTE", "descriptionContains", "descriptionHasPrefix", "descriptionHasSuffix", "descriptionIsNil", "descriptionNotNil", "descriptionEqualFold", "descriptionContainsFold"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -26974,22 +23881,6 @@ func (ec *executionContext) unmarshalInputTransactionTypeWhereInput(ctx context.
 			if err != nil {
 				return it, err
 			}
-		case "hasTransactions":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactions"))
-			it.HasTransactions, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasTransactionsWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTransactionsWith"))
-			it.HasTransactionsWith, err = ec.unmarshalOTransactionWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -27003,7 +23894,7 @@ func (ec *executionContext) unmarshalInputTransactionWhereInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "time", "timeNEQ", "timeIn", "timeNotIn", "timeGT", "timeGTE", "timeLT", "timeLTE", "units", "unitsNEQ", "unitsIn", "unitsNotIn", "unitsGT", "unitsGTE", "unitsLT", "unitsLTE", "pricePerUnit", "pricePerUnitNEQ", "pricePerUnitIn", "pricePerUnitNotIn", "pricePerUnitGT", "pricePerUnitGTE", "pricePerUnitLT", "pricePerUnitLTE", "blockchainID", "blockchainIDNEQ", "blockchainIDIn", "blockchainIDNotIn", "blockchainIDGT", "blockchainIDGTE", "blockchainIDLT", "blockchainIDLTE", "blockchainIDContains", "blockchainIDHasPrefix", "blockchainIDHasSuffix", "blockchainIDIsNil", "blockchainIDNotNil", "blockchainIDEqualFold", "blockchainIDContainsFold", "transactionTypeID", "transactionTypeIDNEQ", "transactionTypeIDIn", "transactionTypeIDNotIn", "transactionTypeIDGT", "transactionTypeIDGTE", "transactionTypeIDLT", "transactionTypeIDLTE", "transactionTypeIDContains", "transactionTypeIDHasPrefix", "transactionTypeIDHasSuffix", "transactionTypeIDEqualFold", "transactionTypeIDContainsFold", "exchangeID", "exchangeIDNEQ", "exchangeIDIn", "exchangeIDNotIn", "exchangeIDGT", "exchangeIDGTE", "exchangeIDLT", "exchangeIDLTE", "exchangeIDContains", "exchangeIDHasPrefix", "exchangeIDHasSuffix", "exchangeIDEqualFold", "exchangeIDContainsFold", "portfolioID", "portfolioIDNEQ", "portfolioIDIn", "portfolioIDNotIn", "portfolioIDGT", "portfolioIDGTE", "portfolioIDLT", "portfolioIDLTE", "portfolioIDContains", "portfolioIDHasPrefix", "portfolioIDHasSuffix", "portfolioIDEqualFold", "portfolioIDContainsFold", "baseAssetID", "baseAssetIDNEQ", "baseAssetIDIn", "baseAssetIDNotIn", "baseAssetIDGT", "baseAssetIDGTE", "baseAssetIDLT", "baseAssetIDLTE", "baseAssetIDContains", "baseAssetIDHasPrefix", "baseAssetIDHasSuffix", "baseAssetIDEqualFold", "baseAssetIDContainsFold", "quoteAssetID", "quoteAssetIDNEQ", "quoteAssetIDIn", "quoteAssetIDNotIn", "quoteAssetIDGT", "quoteAssetIDGTE", "quoteAssetIDLT", "quoteAssetIDLTE", "quoteAssetIDContains", "quoteAssetIDHasPrefix", "quoteAssetIDHasSuffix", "quoteAssetIDIsNil", "quoteAssetIDNotNil", "quoteAssetIDEqualFold", "quoteAssetIDContainsFold", "hasTransactionType", "hasTransactionTypeWith", "hasBaseAsset", "hasBaseAssetWith", "hasQuoteAsset", "hasQuoteAssetWith", "hasPortfolio", "hasPortfolioWith", "hasExchange", "hasExchangeWith", "hasBlockchain", "hasBlockchainWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "time", "timeNEQ", "timeIn", "timeNotIn", "timeGT", "timeGTE", "timeLT", "timeLTE", "units", "unitsNEQ", "unitsIn", "unitsNotIn", "unitsGT", "unitsGTE", "unitsLT", "unitsLTE", "pricePerUnit", "pricePerUnitNEQ", "pricePerUnitIn", "pricePerUnitNotIn", "pricePerUnitGT", "pricePerUnitGTE", "pricePerUnitLT", "pricePerUnitLTE", "blockchainID", "blockchainIDNEQ", "blockchainIDIn", "blockchainIDNotIn", "blockchainIDGT", "blockchainIDGTE", "blockchainIDLT", "blockchainIDLTE", "blockchainIDContains", "blockchainIDHasPrefix", "blockchainIDHasSuffix", "blockchainIDIsNil", "blockchainIDNotNil", "blockchainIDEqualFold", "blockchainIDContainsFold", "exchangeID", "exchangeIDNEQ", "exchangeIDIn", "exchangeIDNotIn", "exchangeIDGT", "exchangeIDGTE", "exchangeIDLT", "exchangeIDLTE", "exchangeIDContains", "exchangeIDHasPrefix", "exchangeIDHasSuffix", "exchangeIDEqualFold", "exchangeIDContainsFold", "portfolioID", "portfolioIDNEQ", "portfolioIDIn", "portfolioIDNotIn", "portfolioIDGT", "portfolioIDGTE", "portfolioIDLT", "portfolioIDLTE", "portfolioIDContains", "portfolioIDHasPrefix", "portfolioIDHasSuffix", "portfolioIDEqualFold", "portfolioIDContainsFold", "baseAssetID", "baseAssetIDNEQ", "baseAssetIDIn", "baseAssetIDNotIn", "baseAssetIDGT", "baseAssetIDGTE", "baseAssetIDLT", "baseAssetIDLTE", "baseAssetIDContains", "baseAssetIDHasPrefix", "baseAssetIDHasSuffix", "baseAssetIDEqualFold", "baseAssetIDContainsFold", "quoteAssetID", "quoteAssetIDNEQ", "quoteAssetIDIn", "quoteAssetIDNotIn", "quoteAssetIDGT", "quoteAssetIDGTE", "quoteAssetIDLT", "quoteAssetIDLTE", "quoteAssetIDContains", "quoteAssetIDHasPrefix", "quoteAssetIDHasSuffix", "quoteAssetIDIsNil", "quoteAssetIDNotNil", "quoteAssetIDEqualFold", "quoteAssetIDContainsFold", "hasTransactionType", "hasTransactionTypeWith", "hasBaseAsset", "hasBaseAssetWith", "hasQuoteAsset", "hasQuoteAssetWith", "hasPortfolio", "hasPortfolioWith", "hasExchange", "hasExchangeWith", "hasBlockchain", "hasBlockchainWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -27618,110 +24509,6 @@ func (ec *executionContext) unmarshalInputTransactionWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-		case "transactionTypeID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeID"))
-			it.TransactionTypeID, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionTypeIDNEQ":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeIDNEQ"))
-			it.TransactionTypeIDNEQ, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionTypeIDIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeIDIn"))
-			it.TransactionTypeIDIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionTypeIDNotIn":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeIDNotIn"))
-			it.TransactionTypeIDNotIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionTypeIDGT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeIDGT"))
-			it.TransactionTypeIDGT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionTypeIDGTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeIDGTE"))
-			it.TransactionTypeIDGTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionTypeIDLT":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeIDLT"))
-			it.TransactionTypeIDLT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionTypeIDLTE":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeIDLTE"))
-			it.TransactionTypeIDLTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionTypeIDContains":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeIDContains"))
-			it.TransactionTypeIDContains, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionTypeIDHasPrefix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeIDHasPrefix"))
-			it.TransactionTypeIDHasPrefix, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionTypeIDHasSuffix":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeIDHasSuffix"))
-			it.TransactionTypeIDHasSuffix, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionTypeIDEqualFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeIDEqualFold"))
-			it.TransactionTypeIDEqualFold, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "transactionTypeIDContainsFold":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionTypeIDContainsFold"))
-			it.TransactionTypeIDContainsFold, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "exchangeID":
 			var err error
 
@@ -28263,21 +25050,13 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "nickname", "email", "clearPassword", "password", "passwordUpdatedAt", "addAuthRoleIDs", "removeAuthRoleIDs", "addPortfolioIDs", "removePortfolioIDs", "clearAuthType", "authTypeID", "addConnectionIDs", "removeConnectionIDs"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "nickname", "email", "clearPassword", "password", "addAuthRoleIDs", "removeAuthRoleIDs", "clearAuthType", "authTypeID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -28326,14 +25105,6 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
-		case "passwordUpdatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordUpdatedAt"))
-			it.PasswordUpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "addAuthRoleIDs":
 			var err error
 
@@ -28347,22 +25118,6 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeAuthRoleIDs"))
 			it.RemoveAuthRoleIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "addPortfolioIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addPortfolioIDs"))
-			it.AddPortfolioIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removePortfolioIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removePortfolioIDs"))
-			it.RemovePortfolioIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -28382,22 +25137,6 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
-		case "addConnectionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addConnectionIDs"))
-			it.AddConnectionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeConnectionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeConnectionIDs"))
-			it.RemoveConnectionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -28411,21 +25150,13 @@ func (ec *executionContext) unmarshalInputUpdateAssetClassInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "value", "clearDescription", "description", "addAssetIDs", "removeAssetIDs"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "value", "clearDescription", "description"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -28466,22 +25197,6 @@ func (ec *executionContext) unmarshalInputUpdateAssetClassInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-		case "addAssetIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addAssetIDs"))
-			it.AddAssetIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeAssetIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeAssetIDs"))
-			it.RemoveAssetIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -28495,21 +25210,13 @@ func (ec *executionContext) unmarshalInputUpdateAssetInput(ctx context.Context, 
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "clearAssetClass", "assetClassID", "clearCryptocurrency", "cryptocurrencyID", "addTransactionBasisIDs", "removeTransactionBasisIDs", "addTransactionQuoteIDs", "removeTransactionQuoteIDs", "addDailyAssetPriceIDs", "removeDailyAssetPriceIDs"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "clearAssetClass", "assetClassID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -28542,70 +25249,6 @@ func (ec *executionContext) unmarshalInputUpdateAssetInput(ctx context.Context, 
 			if err != nil {
 				return it, err
 			}
-		case "clearCryptocurrency":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearCryptocurrency"))
-			it.ClearCryptocurrency, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "cryptocurrencyID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("cryptocurrencyID"))
-			it.CryptocurrencyID, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "addTransactionBasisIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addTransactionBasisIDs"))
-			it.AddTransactionBasisIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeTransactionBasisIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeTransactionBasisIDs"))
-			it.RemoveTransactionBasisIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "addTransactionQuoteIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addTransactionQuoteIDs"))
-			it.AddTransactionQuoteIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeTransactionQuoteIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeTransactionQuoteIDs"))
-			it.RemoveTransactionQuoteIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "addDailyAssetPriceIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addDailyAssetPriceIDs"))
-			it.AddDailyAssetPriceIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeDailyAssetPriceIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeDailyAssetPriceIDs"))
-			it.RemoveDailyAssetPriceIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -28619,21 +25262,13 @@ func (ec *executionContext) unmarshalInputUpdateAuthRoleInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "value", "clearDescription", "description", "addAccountIDs", "removeAccountIDs", "addStaffAccountIDs", "removeStaffAccountIDs"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "value", "clearDescription", "description"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -28674,38 +25309,6 @@ func (ec *executionContext) unmarshalInputUpdateAuthRoleInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
-		case "addAccountIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addAccountIDs"))
-			it.AddAccountIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeAccountIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeAccountIDs"))
-			it.RemoveAccountIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "addStaffAccountIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addStaffAccountIDs"))
-			it.AddStaffAccountIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeStaffAccountIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeStaffAccountIDs"))
-			it.RemoveStaffAccountIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -28719,21 +25322,13 @@ func (ec *executionContext) unmarshalInputUpdateAuthTypeInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "value", "clearDescription", "description", "addAccountIDs", "removeAccountIDs", "addStaffAccountIDs", "removeStaffAccountIDs"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "value", "clearDescription", "description"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -28774,38 +25369,6 @@ func (ec *executionContext) unmarshalInputUpdateAuthTypeInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
-		case "addAccountIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addAccountIDs"))
-			it.AddAccountIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeAccountIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeAccountIDs"))
-			it.RemoveAccountIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "addStaffAccountIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addStaffAccountIDs"))
-			it.AddStaffAccountIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeStaffAccountIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeStaffAccountIDs"))
-			it.RemoveStaffAccountIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -28819,21 +25382,13 @@ func (ec *executionContext) unmarshalInputUpdateBlockchainInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "name", "symbol", "clearIcon", "icon", "clearChainID", "chainID", "addCryptocurrencyIDs", "removeCryptocurrencyIDs", "addTransactionIDs", "removeTransactionIDs"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "name", "symbol", "clearIcon", "icon", "clearChainID", "chainID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -28898,38 +25453,6 @@ func (ec *executionContext) unmarshalInputUpdateBlockchainInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-		case "addCryptocurrencyIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addCryptocurrencyIDs"))
-			it.AddCryptocurrencyIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeCryptocurrencyIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeCryptocurrencyIDs"))
-			it.RemoveCryptocurrencyIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "addTransactionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addTransactionIDs"))
-			it.AddTransactionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeTransactionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeTransactionIDs"))
-			it.RemoveTransactionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -28943,21 +25466,13 @@ func (ec *executionContext) unmarshalInputUpdateConnectionInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "name", "accessToken", "clearAccount", "accountID", "addPortfolioIDs", "removePortfolioIDs"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "name", "accessToken", "clearAccount", "accountID", "addPortfolioIDs", "removePortfolioIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -29035,21 +25550,13 @@ func (ec *executionContext) unmarshalInputUpdateCryptocurrencyInput(ctx context.
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "symbol", "clearIcon", "icon", "name", "clearAsset", "assetID", "addBlockchainIDs", "removeBlockchainIDs"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "symbol", "clearIcon", "icon", "name", "clearAsset", "assetID", "addBlockchainIDs", "removeBlockchainIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -29143,21 +25650,13 @@ func (ec *executionContext) unmarshalInputUpdateDailyAssetPriceInput(ctx context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "time", "clearOpen", "open", "clearHigh", "high", "clearLow", "low", "clearClose", "close", "adjustedClose", "clearAsset", "assetID"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "time", "clearOpen", "open", "clearHigh", "high", "clearLow", "low", "clearClose", "close", "adjustedClose", "clearAsset", "assetID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -29283,21 +25782,13 @@ func (ec *executionContext) unmarshalInputUpdateExchangeInput(ctx context.Contex
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "name", "clearIcon", "icon", "clearURL", "url", "addTransactionIDs", "removeTransactionIDs"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "name", "clearIcon", "icon", "clearURL", "url"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -29354,22 +25845,6 @@ func (ec *executionContext) unmarshalInputUpdateExchangeInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
-		case "addTransactionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addTransactionIDs"))
-			it.AddTransactionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeTransactionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeTransactionIDs"))
-			it.RemoveTransactionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -29383,21 +25858,13 @@ func (ec *executionContext) unmarshalInputUpdatePortfolioInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "name", "isPublic", "isVisible", "clearAccount", "accountID", "addTransactionIDs", "removeTransactionIDs", "addConnectionIDs", "removeConnectionIDs"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "name", "isPublic", "isVisible", "addConnectionIDs", "removeConnectionIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -29438,38 +25905,6 @@ func (ec *executionContext) unmarshalInputUpdatePortfolioInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
-		case "clearAccount":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearAccount"))
-			it.ClearAccount, err = ec.unmarshalOBoolean2bool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "accountID":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("accountID"))
-			it.AccountID, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "addTransactionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addTransactionIDs"))
-			it.AddTransactionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeTransactionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeTransactionIDs"))
-			it.RemoveTransactionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "addConnectionIDs":
 			var err error
 
@@ -29499,21 +25934,13 @@ func (ec *executionContext) unmarshalInputUpdateSourceInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "name", "clearIcon", "icon", "clearSourceType", "sourceTypeID"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "name", "clearIcon", "icon", "clearSourceType", "sourceTypeID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -29583,21 +26010,13 @@ func (ec *executionContext) unmarshalInputUpdateSourceTypeInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "value", "clearDescription", "description", "addSourceIDs", "removeSourceIDs"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "value", "clearDescription", "description"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -29638,22 +26057,6 @@ func (ec *executionContext) unmarshalInputUpdateSourceTypeInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
-		case "addSourceIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addSourceIDs"))
-			it.AddSourceIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeSourceIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeSourceIDs"))
-			it.RemoveSourceIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -29667,21 +26070,13 @@ func (ec *executionContext) unmarshalInputUpdateStaffAccountInput(ctx context.Co
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "nickname", "email", "clearPassword", "password", "passwordUpdatedAt", "addAuthRoleIDs", "removeAuthRoleIDs", "clearAuthType", "authTypeID"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "nickname", "email", "clearPassword", "password", "addAuthRoleIDs", "removeAuthRoleIDs", "clearAuthType", "authTypeID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -29730,14 +26125,6 @@ func (ec *executionContext) unmarshalInputUpdateStaffAccountInput(ctx context.Co
 			if err != nil {
 				return it, err
 			}
-		case "passwordUpdatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordUpdatedAt"))
-			it.PasswordUpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "addAuthRoleIDs":
 			var err error
 
@@ -29783,21 +26170,13 @@ func (ec *executionContext) unmarshalInputUpdateTransactionInput(ctx context.Con
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "time", "units", "pricePerUnit", "clearTransactionType", "transactionTypeID", "clearBaseAsset", "baseAssetID", "clearQuoteAsset", "quoteAssetID", "clearPortfolio", "portfolioID", "clearExchange", "exchangeID", "clearBlockchain", "blockchainID"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "time", "units", "pricePerUnit", "clearTransactionType", "transactionTypeID", "clearBaseAsset", "baseAssetID", "clearQuoteAsset", "quoteAssetID", "clearPortfolio", "portfolioID", "clearExchange", "exchangeID", "clearBlockchain", "blockchainID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -29947,21 +26326,13 @@ func (ec *executionContext) unmarshalInputUpdateTransactionTypeInput(ctx context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"updatedAt", "clearDeletedAt", "deletedAt", "value", "clearDescription", "description", "addTransactionIDs", "removeTransactionIDs"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "value", "clearDescription", "description"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "updatedAt":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
-			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "clearDeletedAt":
 			var err error
 
@@ -29999,22 +26370,6 @@ func (ec *executionContext) unmarshalInputUpdateTransactionTypeInput(ctx context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
 			it.Description, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "addTransactionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addTransactionIDs"))
-			it.AddTransactionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "removeTransactionIDs":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeTransactionIDs"))
-			it.RemoveTransactionIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -30170,20 +26525,9 @@ func (ec *executionContext) _Account(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "password":
-
-			out.Values[i] = ec._Account_password(ctx, field, obj)
-
 		case "passwordUpdatedAt":
 
 			out.Values[i] = ec._Account_passwordUpdatedAt(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "authTypeID":
-
-			out.Values[i] = ec._Account_authTypeID(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
@@ -30385,13 +26729,6 @@ func (ec *executionContext) _Asset(ctx context.Context, sel ast.SelectionSet, ob
 
 			out.Values[i] = ec._Asset_deletedAt(ctx, field, obj)
 
-		case "assetClassID":
-
-			out.Values[i] = ec._Asset_assetClassID(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
 		case "assetClass":
 			field := field
 
@@ -30422,46 +26759,6 @@ func (ec *executionContext) _Asset(ctx context.Context, sel ast.SelectionSet, ob
 					}
 				}()
 				res = ec._Asset_cryptocurrency(ctx, field, obj)
-				return res
-			}
-
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
-
-			})
-		case "transactionBases":
-			field := field
-
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Asset_transactionBases(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			}
-
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
-
-			})
-		case "transactionQuotes":
-			field := field
-
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Asset_transactionQuotes(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
 				return res
 			}
 
@@ -30515,21 +26812,21 @@ func (ec *executionContext) _AssetClass(ctx context.Context, sel ast.SelectionSe
 			out.Values[i] = ec._AssetClass_id(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "createdAt":
 
 			out.Values[i] = ec._AssetClass_createdAt(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "updatedAt":
 
 			out.Values[i] = ec._AssetClass_updatedAt(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "deletedAt":
 
@@ -30540,32 +26837,12 @@ func (ec *executionContext) _AssetClass(ctx context.Context, sel ast.SelectionSe
 			out.Values[i] = ec._AssetClass_value(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "description":
 
 			out.Values[i] = ec._AssetClass_description(ctx, field, obj)
 
-		case "assets":
-			field := field
-
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._AssetClass_assets(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			}
-
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
-
-			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -30902,21 +27179,21 @@ func (ec *executionContext) _AuthType(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = ec._AuthType_id(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "createdAt":
 
 			out.Values[i] = ec._AuthType_createdAt(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "updatedAt":
 
 			out.Values[i] = ec._AuthType_updatedAt(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "deletedAt":
 
@@ -30927,52 +27204,12 @@ func (ec *executionContext) _AuthType(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = ec._AuthType_value(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "description":
 
 			out.Values[i] = ec._AuthType_description(ctx, field, obj)
 
-		case "accounts":
-			field := field
-
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._AuthType_accounts(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			}
-
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
-
-			})
-		case "staffAccounts":
-			field := field
-
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._AuthType_staffAccounts(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			}
-
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
-
-			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -32973,20 +29210,9 @@ func (ec *executionContext) _StaffAccount(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "password":
-
-			out.Values[i] = ec._StaffAccount_password(ctx, field, obj)
-
 		case "passwordUpdatedAt":
 
 			out.Values[i] = ec._StaffAccount_passwordUpdatedAt(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "authTypeID":
-
-			out.Values[i] = ec._StaffAccount_authTypeID(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
@@ -33173,13 +29399,6 @@ func (ec *executionContext) _Transaction(ctx context.Context, sel ast.SelectionS
 
 			out.Values[i] = ec._Transaction_blockchainID(ctx, field, obj)
 
-		case "transactionTypeID":
-
-			out.Values[i] = ec._Transaction_transactionTypeID(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
 		case "exchangeID":
 
 			out.Values[i] = ec._Transaction_exchangeID(ctx, field, obj)
@@ -33416,21 +29635,21 @@ func (ec *executionContext) _TransactionType(ctx context.Context, sel ast.Select
 			out.Values[i] = ec._TransactionType_id(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "createdAt":
 
 			out.Values[i] = ec._TransactionType_createdAt(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "updatedAt":
 
 			out.Values[i] = ec._TransactionType_updatedAt(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "deletedAt":
 
@@ -33441,32 +29660,12 @@ func (ec *executionContext) _TransactionType(ctx context.Context, sel ast.Select
 			out.Values[i] = ec._TransactionType_value(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
+				invalids++
 			}
 		case "description":
 
 			out.Values[i] = ec._TransactionType_description(ctx, field, obj)
 
-		case "transactions":
-			field := field
-
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._TransactionType_transactions(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			}
-
-			out.Concurrently(i, func() graphql.Marshaler {
-				return innerFunc(ctx)
-
-			})
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

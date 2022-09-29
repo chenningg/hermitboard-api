@@ -41,12 +41,12 @@ func (Asset) Edges() []ent.Edge {
 			Unique().
 			Annotations(
 				entgql.MapsTo("cryptocurrency"),
-				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput|entgql.SkipOrderField),
+				entgql.Skip(entgql.SkipMutationUpdateInput),
 			),
 		edge.To("daily_asset_prices", DailyAssetPrice.Type).
 			Annotations(
 				entgql.RelayConnection(), entgql.MapsTo("dailyAssetPrices"),
-				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput|entgql.SkipOrderField),
+				entgql.Skip(entgql.SkipWhereInput|entgql.SkipMutationUpdateInput),
 			),
 	}
 }
@@ -55,6 +55,6 @@ func (Asset) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
 		entgql.QueryField(),
-		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
+		entgql.Mutations(entgql.MutationUpdate()),
 	}
 }

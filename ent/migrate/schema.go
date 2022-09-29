@@ -18,7 +18,7 @@ var (
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "password_updated_at", Type: field.TypeTime},
-		{Name: "auth_type_id", Type: field.TypeString},
+		{Name: "account_auth_type", Type: field.TypeString},
 	}
 	// AccountsTable holds the schema information for the "accounts" table.
 	AccountsTable = &schema.Table{
@@ -27,7 +27,7 @@ var (
 		PrimaryKey: []*schema.Column{AccountsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "accounts_auth_types_accounts",
+				Symbol:     "accounts_auth_types_auth_type",
 				Columns:    []*schema.Column{AccountsColumns[8]},
 				RefColumns: []*schema.Column{AuthTypesColumns[0]},
 				OnDelete:   schema.NoAction,
@@ -40,7 +40,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "asset_class_id", Type: field.TypeString},
+		{Name: "asset_asset_class", Type: field.TypeString},
 	}
 	// AssetsTable holds the schema information for the "assets" table.
 	AssetsTable = &schema.Table{
@@ -49,7 +49,7 @@ var (
 		PrimaryKey: []*schema.Column{AssetsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "assets_asset_classes_assets",
+				Symbol:     "assets_asset_classes_asset_class",
 				Columns:    []*schema.Column{AssetsColumns[4]},
 				RefColumns: []*schema.Column{AssetClassesColumns[0]},
 				OnDelete:   schema.NoAction,
@@ -299,7 +299,7 @@ var (
 		{Name: "email", Type: field.TypeString, Unique: true},
 		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "password_updated_at", Type: field.TypeTime},
-		{Name: "auth_type_id", Type: field.TypeString},
+		{Name: "staff_account_auth_type", Type: field.TypeString},
 	}
 	// StaffAccountsTable holds the schema information for the "staff_accounts" table.
 	StaffAccountsTable = &schema.Table{
@@ -308,7 +308,7 @@ var (
 		PrimaryKey: []*schema.Column{StaffAccountsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "staff_accounts_auth_types_staff_accounts",
+				Symbol:     "staff_accounts_auth_types_auth_type",
 				Columns:    []*schema.Column{StaffAccountsColumns[8]},
 				RefColumns: []*schema.Column{AuthTypesColumns[0]},
 				OnDelete:   schema.NoAction,
@@ -324,12 +324,12 @@ var (
 		{Name: "time", Type: field.TypeTime},
 		{Name: "units", Type: field.TypeInt},
 		{Name: "price_per_unit", Type: field.TypeFloat64},
-		{Name: "base_asset_id", Type: field.TypeString},
-		{Name: "quote_asset_id", Type: field.TypeString, Nullable: true},
 		{Name: "blockchain_id", Type: field.TypeString, Nullable: true},
 		{Name: "exchange_id", Type: field.TypeString},
 		{Name: "portfolio_id", Type: field.TypeString},
-		{Name: "transaction_type_id", Type: field.TypeString},
+		{Name: "transaction_transaction_type", Type: field.TypeString},
+		{Name: "base_asset_id", Type: field.TypeString},
+		{Name: "quote_asset_id", Type: field.TypeString, Nullable: true},
 	}
 	// TransactionsTable holds the schema information for the "transactions" table.
 	TransactionsTable = &schema.Table{
@@ -338,40 +338,40 @@ var (
 		PrimaryKey: []*schema.Column{TransactionsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "transactions_assets_transaction_bases",
-				Columns:    []*schema.Column{TransactionsColumns[7]},
-				RefColumns: []*schema.Column{AssetsColumns[0]},
-				OnDelete:   schema.NoAction,
-			},
-			{
-				Symbol:     "transactions_assets_transaction_quotes",
-				Columns:    []*schema.Column{TransactionsColumns[8]},
-				RefColumns: []*schema.Column{AssetsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "transactions_blockchains_transactions",
-				Columns:    []*schema.Column{TransactionsColumns[9]},
+				Columns:    []*schema.Column{TransactionsColumns[7]},
 				RefColumns: []*schema.Column{BlockchainsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "transactions_exchanges_transactions",
-				Columns:    []*schema.Column{TransactionsColumns[10]},
+				Columns:    []*schema.Column{TransactionsColumns[8]},
 				RefColumns: []*schema.Column{ExchangesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "transactions_portfolios_transactions",
-				Columns:    []*schema.Column{TransactionsColumns[11]},
+				Columns:    []*schema.Column{TransactionsColumns[9]},
 				RefColumns: []*schema.Column{PortfoliosColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "transactions_transaction_types_transactions",
-				Columns:    []*schema.Column{TransactionsColumns[12]},
+				Symbol:     "transactions_transaction_types_transaction_type",
+				Columns:    []*schema.Column{TransactionsColumns[10]},
 				RefColumns: []*schema.Column{TransactionTypesColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "transactions_assets_base_asset",
+				Columns:    []*schema.Column{TransactionsColumns[11]},
+				RefColumns: []*schema.Column{AssetsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "transactions_assets_quote_asset",
+				Columns:    []*schema.Column{TransactionsColumns[12]},
+				RefColumns: []*schema.Column{AssetsColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 	}
@@ -524,12 +524,12 @@ func init() {
 	PortfoliosTable.ForeignKeys[0].RefTable = AccountsTable
 	SourcesTable.ForeignKeys[0].RefTable = SourceTypesTable
 	StaffAccountsTable.ForeignKeys[0].RefTable = AuthTypesTable
-	TransactionsTable.ForeignKeys[0].RefTable = AssetsTable
-	TransactionsTable.ForeignKeys[1].RefTable = AssetsTable
-	TransactionsTable.ForeignKeys[2].RefTable = BlockchainsTable
-	TransactionsTable.ForeignKeys[3].RefTable = ExchangesTable
-	TransactionsTable.ForeignKeys[4].RefTable = PortfoliosTable
-	TransactionsTable.ForeignKeys[5].RefTable = TransactionTypesTable
+	TransactionsTable.ForeignKeys[0].RefTable = BlockchainsTable
+	TransactionsTable.ForeignKeys[1].RefTable = ExchangesTable
+	TransactionsTable.ForeignKeys[2].RefTable = PortfoliosTable
+	TransactionsTable.ForeignKeys[3].RefTable = TransactionTypesTable
+	TransactionsTable.ForeignKeys[4].RefTable = AssetsTable
+	TransactionsTable.ForeignKeys[5].RefTable = AssetsTable
 	AccountAuthRolesTable.ForeignKeys[0].RefTable = AccountsTable
 	AccountAuthRolesTable.ForeignKeys[1].RefTable = AuthRolesTable
 	BlockchainCryptocurrenciesTable.ForeignKeys[0].RefTable = BlockchainsTable

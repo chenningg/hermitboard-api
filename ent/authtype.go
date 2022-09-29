@@ -27,43 +27,6 @@ type AuthType struct {
 	Value authtype.Value `json:"value,omitempty"`
 	// Description holds the value of the "description" field.
 	Description *string `json:"description,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the AuthTypeQuery when eager-loading is set.
-	Edges AuthTypeEdges `json:"edges"`
-}
-
-// AuthTypeEdges holds the relations/edges for other nodes in the graph.
-type AuthTypeEdges struct {
-	// Accounts holds the value of the accounts edge.
-	Accounts []*Account `json:"accounts,omitempty"`
-	// StaffAccounts holds the value of the staff_accounts edge.
-	StaffAccounts []*StaffAccount `json:"staff_accounts,omitempty"`
-	// loadedTypes holds the information for reporting if a
-	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
-	// totalCount holds the count of the edges above.
-	totalCount [2]map[string]int
-
-	namedAccounts      map[string][]*Account
-	namedStaffAccounts map[string][]*StaffAccount
-}
-
-// AccountsOrErr returns the Accounts value or an error if the edge
-// was not loaded in eager-loading.
-func (e AuthTypeEdges) AccountsOrErr() ([]*Account, error) {
-	if e.loadedTypes[0] {
-		return e.Accounts, nil
-	}
-	return nil, &NotLoadedError{edge: "accounts"}
-}
-
-// StaffAccountsOrErr returns the StaffAccounts value or an error if the edge
-// was not loaded in eager-loading.
-func (e AuthTypeEdges) StaffAccountsOrErr() ([]*StaffAccount, error) {
-	if e.loadedTypes[1] {
-		return e.StaffAccounts, nil
-	}
-	return nil, &NotLoadedError{edge: "staff_accounts"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -135,16 +98,6 @@ func (at *AuthType) assignValues(columns []string, values []any) error {
 	return nil
 }
 
-// QueryAccounts queries the "accounts" edge of the AuthType entity.
-func (at *AuthType) QueryAccounts() *AccountQuery {
-	return (&AuthTypeClient{config: at.config}).QueryAccounts(at)
-}
-
-// QueryStaffAccounts queries the "staff_accounts" edge of the AuthType entity.
-func (at *AuthType) QueryStaffAccounts() *StaffAccountQuery {
-	return (&AuthTypeClient{config: at.config}).QueryStaffAccounts(at)
-}
-
 // Update returns a builder for updating this AuthType.
 // Note that you need to call AuthType.Unwrap() before calling this method if this AuthType
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -188,54 +141,6 @@ func (at *AuthType) String() string {
 	}
 	builder.WriteByte(')')
 	return builder.String()
-}
-
-// NamedAccounts returns the Accounts named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (at *AuthType) NamedAccounts(name string) ([]*Account, error) {
-	if at.Edges.namedAccounts == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := at.Edges.namedAccounts[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (at *AuthType) appendNamedAccounts(name string, edges ...*Account) {
-	if at.Edges.namedAccounts == nil {
-		at.Edges.namedAccounts = make(map[string][]*Account)
-	}
-	if len(edges) == 0 {
-		at.Edges.namedAccounts[name] = []*Account{}
-	} else {
-		at.Edges.namedAccounts[name] = append(at.Edges.namedAccounts[name], edges...)
-	}
-}
-
-// NamedStaffAccounts returns the StaffAccounts named value or an error if the edge was not
-// loaded in eager-loading with this name.
-func (at *AuthType) NamedStaffAccounts(name string) ([]*StaffAccount, error) {
-	if at.Edges.namedStaffAccounts == nil {
-		return nil, &NotLoadedError{edge: name}
-	}
-	nodes, ok := at.Edges.namedStaffAccounts[name]
-	if !ok {
-		return nil, &NotLoadedError{edge: name}
-	}
-	return nodes, nil
-}
-
-func (at *AuthType) appendNamedStaffAccounts(name string, edges ...*StaffAccount) {
-	if at.Edges.namedStaffAccounts == nil {
-		at.Edges.namedStaffAccounts = make(map[string][]*StaffAccount)
-	}
-	if len(edges) == 0 {
-		at.Edges.namedStaffAccounts[name] = []*StaffAccount{}
-	} else {
-		at.Edges.namedStaffAccounts[name] = append(at.Edges.namedStaffAccounts[name], edges...)
-	}
 }
 
 // AuthTypes is a parsable slice of AuthType.

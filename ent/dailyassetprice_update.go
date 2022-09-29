@@ -54,14 +54,6 @@ func (dapu *DailyAssetPriceUpdate) SetTime(t time.Time) *DailyAssetPriceUpdate {
 	return dapu
 }
 
-// SetNillableTime sets the "time" field if the given value is not nil.
-func (dapu *DailyAssetPriceUpdate) SetNillableTime(t *time.Time) *DailyAssetPriceUpdate {
-	if t != nil {
-		dapu.SetTime(*t)
-	}
-	return dapu
-}
-
 // SetOpen sets the "open" field.
 func (dapu *DailyAssetPriceUpdate) SetOpen(f float64) *DailyAssetPriceUpdate {
 	dapu.mutation.ResetOpen()
@@ -500,14 +492,6 @@ func (dapuo *DailyAssetPriceUpdateOne) ClearDeletedAt() *DailyAssetPriceUpdateOn
 // SetTime sets the "time" field.
 func (dapuo *DailyAssetPriceUpdateOne) SetTime(t time.Time) *DailyAssetPriceUpdateOne {
 	dapuo.mutation.SetTime(t)
-	return dapuo
-}
-
-// SetNillableTime sets the "time" field if the given value is not nil.
-func (dapuo *DailyAssetPriceUpdateOne) SetNillableTime(t *time.Time) *DailyAssetPriceUpdateOne {
-	if t != nil {
-		dapuo.SetTime(*t)
-	}
 	return dapuo
 }
 

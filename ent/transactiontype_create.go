@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
@@ -96,21 +95,6 @@ func (ttc *TransactionTypeCreate) SetNillableID(pu *pulid.PULID) *TransactionTyp
 		ttc.SetID(*pu)
 	}
 	return ttc
-}
-
-// AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
-func (ttc *TransactionTypeCreate) AddTransactionIDs(ids ...pulid.PULID) *TransactionTypeCreate {
-	ttc.mutation.AddTransactionIDs(ids...)
-	return ttc
-}
-
-// AddTransactions adds the "transactions" edges to the Transaction entity.
-func (ttc *TransactionTypeCreate) AddTransactions(t ...*Transaction) *TransactionTypeCreate {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return ttc.AddTransactionIDs(ids...)
 }
 
 // Mutation returns the TransactionTypeMutation object of the builder.
@@ -300,25 +284,6 @@ func (ttc *TransactionTypeCreate) createSpec() (*TransactionType, *sqlgraph.Crea
 			Column: transactiontype.FieldDescription,
 		})
 		_node.Description = &value
-	}
-	if nodes := ttc.mutation.TransactionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   transactiontype.TransactionsTable,
-			Columns: []string{transactiontype.TransactionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

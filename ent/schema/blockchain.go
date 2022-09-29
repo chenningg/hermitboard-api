@@ -36,7 +36,8 @@ func (Blockchain) Fields() []ent.Field {
 		field.String("icon").
 			Optional().
 			Nillable().
-			NotEmpty(),
+			NotEmpty().
+			Annotations(entgql.Skip(entgql.SkipWhereInput)),
 		field.Int64("chain_id").
 			Optional().
 			Nillable().
@@ -48,9 +49,15 @@ func (Blockchain) Fields() []ent.Field {
 func (Blockchain) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("cryptocurrencies", Cryptocurrency.Type).
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("cryptocurrencies")),
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("cryptocurrencies"),
+				entgql.Skip(entgql.SkipWhereInput|entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
+			),
 		edge.To("transactions", Transaction.Type).
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("transactions")),
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("transactions"),
+				entgql.Skip(entgql.SkipWhereInput|entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
+			),
 	}
 }
 

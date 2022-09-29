@@ -376,10 +376,6 @@ func init() {
 	dailyassetpriceDescDeletedAt := dailyassetpriceMixinFields3[0].Descriptor()
 	// dailyassetprice.UpdateDefaultDeletedAt holds the default value on update for the deleted_at field.
 	dailyassetprice.UpdateDefaultDeletedAt = dailyassetpriceDescDeletedAt.UpdateDefault.(func() time.Time)
-	// dailyassetpriceDescTime is the schema descriptor for time field.
-	dailyassetpriceDescTime := dailyassetpriceFields[0].Descriptor()
-	// dailyassetprice.DefaultTime holds the default value on creation for the time field.
-	dailyassetprice.DefaultTime = dailyassetpriceDescTime.Default.(func() time.Time)
 	// dailyassetpriceDescID is the schema descriptor for id field.
 	dailyassetpriceDescID := dailyassetpriceMixinFields0[0].Descriptor()
 	// dailyassetprice.DefaultID holds the default value on creation for the id field.

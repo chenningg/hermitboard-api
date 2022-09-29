@@ -26,17 +26,8 @@ const (
 	FieldValue = "value"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// EdgeAssets holds the string denoting the assets edge name in mutations.
-	EdgeAssets = "assets"
 	// Table holds the table name of the assetclass in the database.
 	Table = "asset_classes"
-	// AssetsTable is the table that holds the assets relation/edge.
-	AssetsTable = "assets"
-	// AssetsInverseTable is the table name for the Asset entity.
-	// It exists in this package in order to avoid circular dependency with the "asset" package.
-	AssetsInverseTable = "assets"
-	// AssetsColumn is the table column denoting the assets relation/edge.
-	AssetsColumn = "asset_class_id"
 )
 
 // Columns holds all SQL columns for assetclass fields.

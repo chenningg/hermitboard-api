@@ -11,9 +11,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/chenningg/hermitboard-api/ent/account"
 	"github.com/chenningg/hermitboard-api/ent/asset"
-	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
-	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/blockchain"
 	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/cryptocurrency"
@@ -21,7 +19,6 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/sourcetype"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
-	"github.com/chenningg/hermitboard-api/ent/transactiontype"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -227,7 +224,7 @@ func (a *AccountQuery) collectField(ctx context.Context, op *graphql.OperationCo
 				path  = append(path, alias)
 				query = &ConnectionQuery{config: a.config}
 			)
-			args := newConnectionPaginateArgs(fieldArgs(ctx, new(ConnectionWhereInput), path...))
+			args := newConnectionPaginateArgs(fieldArgs(ctx, nil, path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -396,179 +393,13 @@ func (a *AssetQuery) collectField(ctx context.Context, op *graphql.OperationCont
 				return err
 			}
 			a.withCryptocurrency = query
-		case "transactionBases":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &TransactionQuery{config: a.config}
-			)
-			args := newTransactionPaginateArgs(fieldArgs(ctx, new(TransactionWhereInput), path...))
-			if err := validateFirstLast(args.first, args.last); err != nil {
-				return fmt.Errorf("validate first and last in path %q: %w", path, err)
-			}
-			pager, err := newTransactionPager(args.opts)
-			if err != nil {
-				return fmt.Errorf("create new pager in path %q: %w", path, err)
-			}
-			if query, err = pager.applyFilter(query); err != nil {
-				return err
-			}
-			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
-			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
-				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
-				if hasPagination || ignoredEdges {
-					query := query.Clone()
-					a.loadTotal = append(a.loadTotal, func(ctx context.Context, nodes []*Asset) error {
-						ids := make([]driver.Value, len(nodes))
-						for i := range nodes {
-							ids[i] = nodes[i].ID
-						}
-						var v []struct {
-							NodeID pulid.PULID `sql:"base_asset_id"`
-							Count  int         `sql:"count"`
-						}
-						query.Where(func(s *sql.Selector) {
-							s.Where(sql.InValues(asset.TransactionBasesColumn, ids...))
-						})
-						if err := query.GroupBy(asset.TransactionBasesColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
-							return err
-						}
-						m := make(map[pulid.PULID]int, len(v))
-						for i := range v {
-							m[v[i].NodeID] = v[i].Count
-						}
-						for i := range nodes {
-							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[2] == nil {
-								nodes[i].Edges.totalCount[2] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[2][alias] = n
-						}
-						return nil
-					})
-				} else {
-					a.loadTotal = append(a.loadTotal, func(_ context.Context, nodes []*Asset) error {
-						for i := range nodes {
-							n := len(nodes[i].Edges.TransactionBases)
-							if nodes[i].Edges.totalCount[2] == nil {
-								nodes[i].Edges.totalCount[2] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[2][alias] = n
-						}
-						return nil
-					})
-				}
-			}
-			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
-				continue
-			}
-
-			query = pager.applyCursors(query, args.after, args.before)
-			if limit := paginateLimit(args.first, args.last); limit > 0 {
-				modify := limitRows(asset.TransactionBasesColumn, limit, pager.orderExpr(args.last != nil))
-				query.modifiers = append(query.modifiers, modify)
-			} else {
-				query = pager.applyOrder(query, args.last != nil)
-			}
-			path = append(path, edgesField, nodeField)
-			if field := collectedField(ctx, path...); field != nil {
-				if err := query.collectField(ctx, op, *field, path, satisfies...); err != nil {
-					return err
-				}
-			}
-			a.WithNamedTransactionBases(alias, func(wq *TransactionQuery) {
-				*wq = *query
-			})
-		case "transactionQuotes":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &TransactionQuery{config: a.config}
-			)
-			args := newTransactionPaginateArgs(fieldArgs(ctx, new(TransactionWhereInput), path...))
-			if err := validateFirstLast(args.first, args.last); err != nil {
-				return fmt.Errorf("validate first and last in path %q: %w", path, err)
-			}
-			pager, err := newTransactionPager(args.opts)
-			if err != nil {
-				return fmt.Errorf("create new pager in path %q: %w", path, err)
-			}
-			if query, err = pager.applyFilter(query); err != nil {
-				return err
-			}
-			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
-			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
-				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
-				if hasPagination || ignoredEdges {
-					query := query.Clone()
-					a.loadTotal = append(a.loadTotal, func(ctx context.Context, nodes []*Asset) error {
-						ids := make([]driver.Value, len(nodes))
-						for i := range nodes {
-							ids[i] = nodes[i].ID
-						}
-						var v []struct {
-							NodeID pulid.PULID `sql:"quote_asset_id"`
-							Count  int         `sql:"count"`
-						}
-						query.Where(func(s *sql.Selector) {
-							s.Where(sql.InValues(asset.TransactionQuotesColumn, ids...))
-						})
-						if err := query.GroupBy(asset.TransactionQuotesColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
-							return err
-						}
-						m := make(map[pulid.PULID]int, len(v))
-						for i := range v {
-							m[v[i].NodeID] = v[i].Count
-						}
-						for i := range nodes {
-							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[3] == nil {
-								nodes[i].Edges.totalCount[3] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[3][alias] = n
-						}
-						return nil
-					})
-				} else {
-					a.loadTotal = append(a.loadTotal, func(_ context.Context, nodes []*Asset) error {
-						for i := range nodes {
-							n := len(nodes[i].Edges.TransactionQuotes)
-							if nodes[i].Edges.totalCount[3] == nil {
-								nodes[i].Edges.totalCount[3] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[3][alias] = n
-						}
-						return nil
-					})
-				}
-			}
-			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
-				continue
-			}
-
-			query = pager.applyCursors(query, args.after, args.before)
-			if limit := paginateLimit(args.first, args.last); limit > 0 {
-				modify := limitRows(asset.TransactionQuotesColumn, limit, pager.orderExpr(args.last != nil))
-				query.modifiers = append(query.modifiers, modify)
-			} else {
-				query = pager.applyOrder(query, args.last != nil)
-			}
-			path = append(path, edgesField, nodeField)
-			if field := collectedField(ctx, path...); field != nil {
-				if err := query.collectField(ctx, op, *field, path, satisfies...); err != nil {
-					return err
-				}
-			}
-			a.WithNamedTransactionQuotes(alias, func(wq *TransactionQuery) {
-				*wq = *query
-			})
 		case "dailyAssetPrices":
 			var (
 				alias = field.Alias
 				path  = append(path, alias)
 				query = &DailyAssetPriceQuery{config: a.config}
 			)
-			args := newDailyAssetPricePaginateArgs(fieldArgs(ctx, new(DailyAssetPriceWhereInput), path...))
+			args := newDailyAssetPricePaginateArgs(fieldArgs(ctx, nil, path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -605,10 +436,10 @@ func (a *AssetQuery) collectField(ctx context.Context, op *graphql.OperationCont
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[4] == nil {
-								nodes[i].Edges.totalCount[4] = make(map[string]int)
+							if nodes[i].Edges.totalCount[2] == nil {
+								nodes[i].Edges.totalCount[2] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[4][alias] = n
+							nodes[i].Edges.totalCount[2][alias] = n
 						}
 						return nil
 					})
@@ -616,10 +447,10 @@ func (a *AssetQuery) collectField(ctx context.Context, op *graphql.OperationCont
 					a.loadTotal = append(a.loadTotal, func(_ context.Context, nodes []*Asset) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.DailyAssetPrices)
-							if nodes[i].Edges.totalCount[4] == nil {
-								nodes[i].Edges.totalCount[4] = make(map[string]int)
+							if nodes[i].Edges.totalCount[2] == nil {
+								nodes[i].Edges.totalCount[2] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[4][alias] = n
+							nodes[i].Edges.totalCount[2][alias] = n
 						}
 						return nil
 					})
@@ -715,93 +546,6 @@ func (ac *AssetClassQuery) CollectFields(ctx context.Context, satisfies ...strin
 
 func (ac *AssetClassQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
 	path = append([]string(nil), path...)
-	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
-		switch field.Name {
-		case "assets":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &AssetQuery{config: ac.config}
-			)
-			args := newAssetPaginateArgs(fieldArgs(ctx, new(AssetWhereInput), path...))
-			if err := validateFirstLast(args.first, args.last); err != nil {
-				return fmt.Errorf("validate first and last in path %q: %w", path, err)
-			}
-			pager, err := newAssetPager(args.opts)
-			if err != nil {
-				return fmt.Errorf("create new pager in path %q: %w", path, err)
-			}
-			if query, err = pager.applyFilter(query); err != nil {
-				return err
-			}
-			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
-			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
-				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
-				if hasPagination || ignoredEdges {
-					query := query.Clone()
-					ac.loadTotal = append(ac.loadTotal, func(ctx context.Context, nodes []*AssetClass) error {
-						ids := make([]driver.Value, len(nodes))
-						for i := range nodes {
-							ids[i] = nodes[i].ID
-						}
-						var v []struct {
-							NodeID pulid.PULID `sql:"asset_class_id"`
-							Count  int         `sql:"count"`
-						}
-						query.Where(func(s *sql.Selector) {
-							s.Where(sql.InValues(assetclass.AssetsColumn, ids...))
-						})
-						if err := query.GroupBy(assetclass.AssetsColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
-							return err
-						}
-						m := make(map[pulid.PULID]int, len(v))
-						for i := range v {
-							m[v[i].NodeID] = v[i].Count
-						}
-						for i := range nodes {
-							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[0] == nil {
-								nodes[i].Edges.totalCount[0] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[0][alias] = n
-						}
-						return nil
-					})
-				} else {
-					ac.loadTotal = append(ac.loadTotal, func(_ context.Context, nodes []*AssetClass) error {
-						for i := range nodes {
-							n := len(nodes[i].Edges.Assets)
-							if nodes[i].Edges.totalCount[0] == nil {
-								nodes[i].Edges.totalCount[0] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[0][alias] = n
-						}
-						return nil
-					})
-				}
-			}
-			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
-				continue
-			}
-
-			query = pager.applyCursors(query, args.after, args.before)
-			if limit := paginateLimit(args.first, args.last); limit > 0 {
-				modify := limitRows(assetclass.AssetsColumn, limit, pager.orderExpr(args.last != nil))
-				query.modifiers = append(query.modifiers, modify)
-			} else {
-				query = pager.applyOrder(query, args.last != nil)
-			}
-			path = append(path, edgesField, nodeField)
-			if field := collectedField(ctx, path...); field != nil {
-				if err := query.collectField(ctx, op, *field, path, satisfies...); err != nil {
-					return err
-				}
-			}
-			ac.WithNamedAssets(alias, func(wq *AssetQuery) {
-				*wq = *query
-			})
-		}
-	}
 	return nil
 }
 
@@ -878,7 +622,7 @@ func (ar *AuthRoleQuery) collectField(ctx context.Context, op *graphql.Operation
 				path  = append(path, alias)
 				query = &AccountQuery{config: ar.config}
 			)
-			args := newAccountPaginateArgs(fieldArgs(ctx, new(AccountWhereInput), path...))
+			args := newAccountPaginateArgs(fieldArgs(ctx, nil, path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -965,7 +709,7 @@ func (ar *AuthRoleQuery) collectField(ctx context.Context, op *graphql.Operation
 				path  = append(path, alias)
 				query = &StaffAccountQuery{config: ar.config}
 			)
-			args := newStaffAccountPaginateArgs(fieldArgs(ctx, new(StaffAccountWhereInput), path...))
+			args := newStaffAccountPaginateArgs(fieldArgs(ctx, nil, path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -1116,176 +860,6 @@ func (at *AuthTypeQuery) CollectFields(ctx context.Context, satisfies ...string)
 
 func (at *AuthTypeQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
 	path = append([]string(nil), path...)
-	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
-		switch field.Name {
-		case "accounts":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &AccountQuery{config: at.config}
-			)
-			args := newAccountPaginateArgs(fieldArgs(ctx, new(AccountWhereInput), path...))
-			if err := validateFirstLast(args.first, args.last); err != nil {
-				return fmt.Errorf("validate first and last in path %q: %w", path, err)
-			}
-			pager, err := newAccountPager(args.opts)
-			if err != nil {
-				return fmt.Errorf("create new pager in path %q: %w", path, err)
-			}
-			if query, err = pager.applyFilter(query); err != nil {
-				return err
-			}
-			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
-			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
-				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
-				if hasPagination || ignoredEdges {
-					query := query.Clone()
-					at.loadTotal = append(at.loadTotal, func(ctx context.Context, nodes []*AuthType) error {
-						ids := make([]driver.Value, len(nodes))
-						for i := range nodes {
-							ids[i] = nodes[i].ID
-						}
-						var v []struct {
-							NodeID pulid.PULID `sql:"auth_type_id"`
-							Count  int         `sql:"count"`
-						}
-						query.Where(func(s *sql.Selector) {
-							s.Where(sql.InValues(authtype.AccountsColumn, ids...))
-						})
-						if err := query.GroupBy(authtype.AccountsColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
-							return err
-						}
-						m := make(map[pulid.PULID]int, len(v))
-						for i := range v {
-							m[v[i].NodeID] = v[i].Count
-						}
-						for i := range nodes {
-							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[0] == nil {
-								nodes[i].Edges.totalCount[0] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[0][alias] = n
-						}
-						return nil
-					})
-				} else {
-					at.loadTotal = append(at.loadTotal, func(_ context.Context, nodes []*AuthType) error {
-						for i := range nodes {
-							n := len(nodes[i].Edges.Accounts)
-							if nodes[i].Edges.totalCount[0] == nil {
-								nodes[i].Edges.totalCount[0] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[0][alias] = n
-						}
-						return nil
-					})
-				}
-			}
-			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
-				continue
-			}
-
-			query = pager.applyCursors(query, args.after, args.before)
-			if limit := paginateLimit(args.first, args.last); limit > 0 {
-				modify := limitRows(authtype.AccountsColumn, limit, pager.orderExpr(args.last != nil))
-				query.modifiers = append(query.modifiers, modify)
-			} else {
-				query = pager.applyOrder(query, args.last != nil)
-			}
-			path = append(path, edgesField, nodeField)
-			if field := collectedField(ctx, path...); field != nil {
-				if err := query.collectField(ctx, op, *field, path, satisfies...); err != nil {
-					return err
-				}
-			}
-			at.WithNamedAccounts(alias, func(wq *AccountQuery) {
-				*wq = *query
-			})
-		case "staffAccounts":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &StaffAccountQuery{config: at.config}
-			)
-			args := newStaffAccountPaginateArgs(fieldArgs(ctx, new(StaffAccountWhereInput), path...))
-			if err := validateFirstLast(args.first, args.last); err != nil {
-				return fmt.Errorf("validate first and last in path %q: %w", path, err)
-			}
-			pager, err := newStaffAccountPager(args.opts)
-			if err != nil {
-				return fmt.Errorf("create new pager in path %q: %w", path, err)
-			}
-			if query, err = pager.applyFilter(query); err != nil {
-				return err
-			}
-			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
-			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
-				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
-				if hasPagination || ignoredEdges {
-					query := query.Clone()
-					at.loadTotal = append(at.loadTotal, func(ctx context.Context, nodes []*AuthType) error {
-						ids := make([]driver.Value, len(nodes))
-						for i := range nodes {
-							ids[i] = nodes[i].ID
-						}
-						var v []struct {
-							NodeID pulid.PULID `sql:"auth_type_id"`
-							Count  int         `sql:"count"`
-						}
-						query.Where(func(s *sql.Selector) {
-							s.Where(sql.InValues(authtype.StaffAccountsColumn, ids...))
-						})
-						if err := query.GroupBy(authtype.StaffAccountsColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
-							return err
-						}
-						m := make(map[pulid.PULID]int, len(v))
-						for i := range v {
-							m[v[i].NodeID] = v[i].Count
-						}
-						for i := range nodes {
-							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[1] == nil {
-								nodes[i].Edges.totalCount[1] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[1][alias] = n
-						}
-						return nil
-					})
-				} else {
-					at.loadTotal = append(at.loadTotal, func(_ context.Context, nodes []*AuthType) error {
-						for i := range nodes {
-							n := len(nodes[i].Edges.StaffAccounts)
-							if nodes[i].Edges.totalCount[1] == nil {
-								nodes[i].Edges.totalCount[1] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[1][alias] = n
-						}
-						return nil
-					})
-				}
-			}
-			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
-				continue
-			}
-
-			query = pager.applyCursors(query, args.after, args.before)
-			if limit := paginateLimit(args.first, args.last); limit > 0 {
-				modify := limitRows(authtype.StaffAccountsColumn, limit, pager.orderExpr(args.last != nil))
-				query.modifiers = append(query.modifiers, modify)
-			} else {
-				query = pager.applyOrder(query, args.last != nil)
-			}
-			path = append(path, edgesField, nodeField)
-			if field := collectedField(ctx, path...); field != nil {
-				if err := query.collectField(ctx, op, *field, path, satisfies...); err != nil {
-					return err
-				}
-			}
-			at.WithNamedStaffAccounts(alias, func(wq *StaffAccountQuery) {
-				*wq = *query
-			})
-		}
-	}
 	return nil
 }
 
@@ -1362,7 +936,7 @@ func (b *BlockchainQuery) collectField(ctx context.Context, op *graphql.Operatio
 				path  = append(path, alias)
 				query = &CryptocurrencyQuery{config: b.config}
 			)
-			args := newCryptocurrencyPaginateArgs(fieldArgs(ctx, new(CryptocurrencyWhereInput), path...))
+			args := newCryptocurrencyPaginateArgs(fieldArgs(ctx, nil, path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -1449,7 +1023,7 @@ func (b *BlockchainQuery) collectField(ctx context.Context, op *graphql.Operatio
 				path  = append(path, alias)
 				query = &TransactionQuery{config: b.config}
 			)
-			args := newTransactionPaginateArgs(fieldArgs(ctx, new(TransactionWhereInput), path...))
+			args := newTransactionPaginateArgs(fieldArgs(ctx, nil, path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -1614,7 +1188,7 @@ func (c *ConnectionQuery) collectField(ctx context.Context, op *graphql.Operatio
 				path  = append(path, alias)
 				query = &PortfolioQuery{config: c.config}
 			)
-			args := newPortfolioPaginateArgs(fieldArgs(ctx, new(PortfolioWhereInput), path...))
+			args := newPortfolioPaginateArgs(fieldArgs(ctx, nil, path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -2189,7 +1763,7 @@ func (po *PortfolioQuery) collectField(ctx context.Context, op *graphql.Operatio
 				path  = append(path, alias)
 				query = &TransactionQuery{config: po.config}
 			)
-			args := newTransactionPaginateArgs(fieldArgs(ctx, new(TransactionWhereInput), path...))
+			args := newTransactionPaginateArgs(fieldArgs(ctx, nil, path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -2513,7 +2087,7 @@ func (st *SourceTypeQuery) collectField(ctx context.Context, op *graphql.Operati
 				path  = append(path, alias)
 				query = &SourceQuery{config: st.config}
 			)
-			args := newSourcePaginateArgs(fieldArgs(ctx, new(SourceWhereInput), path...))
+			args := newSourcePaginateArgs(fieldArgs(ctx, nil, path...))
 			if err := validateFirstLast(args.first, args.last); err != nil {
 				return fmt.Errorf("validate first and last in path %q: %w", path, err)
 			}
@@ -2961,93 +2535,6 @@ func (tt *TransactionTypeQuery) CollectFields(ctx context.Context, satisfies ...
 
 func (tt *TransactionTypeQuery) collectField(ctx context.Context, op *graphql.OperationContext, field graphql.CollectedField, path []string, satisfies ...string) error {
 	path = append([]string(nil), path...)
-	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
-		switch field.Name {
-		case "transactions":
-			var (
-				alias = field.Alias
-				path  = append(path, alias)
-				query = &TransactionQuery{config: tt.config}
-			)
-			args := newTransactionPaginateArgs(fieldArgs(ctx, new(TransactionWhereInput), path...))
-			if err := validateFirstLast(args.first, args.last); err != nil {
-				return fmt.Errorf("validate first and last in path %q: %w", path, err)
-			}
-			pager, err := newTransactionPager(args.opts)
-			if err != nil {
-				return fmt.Errorf("create new pager in path %q: %w", path, err)
-			}
-			if query, err = pager.applyFilter(query); err != nil {
-				return err
-			}
-			ignoredEdges := !hasCollectedField(ctx, append(path, edgesField)...)
-			if hasCollectedField(ctx, append(path, totalCountField)...) || hasCollectedField(ctx, append(path, pageInfoField)...) {
-				hasPagination := args.after != nil || args.first != nil || args.before != nil || args.last != nil
-				if hasPagination || ignoredEdges {
-					query := query.Clone()
-					tt.loadTotal = append(tt.loadTotal, func(ctx context.Context, nodes []*TransactionType) error {
-						ids := make([]driver.Value, len(nodes))
-						for i := range nodes {
-							ids[i] = nodes[i].ID
-						}
-						var v []struct {
-							NodeID pulid.PULID `sql:"transaction_type_id"`
-							Count  int         `sql:"count"`
-						}
-						query.Where(func(s *sql.Selector) {
-							s.Where(sql.InValues(transactiontype.TransactionsColumn, ids...))
-						})
-						if err := query.GroupBy(transactiontype.TransactionsColumn).Aggregate(Count()).Scan(ctx, &v); err != nil {
-							return err
-						}
-						m := make(map[pulid.PULID]int, len(v))
-						for i := range v {
-							m[v[i].NodeID] = v[i].Count
-						}
-						for i := range nodes {
-							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[0] == nil {
-								nodes[i].Edges.totalCount[0] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[0][alias] = n
-						}
-						return nil
-					})
-				} else {
-					tt.loadTotal = append(tt.loadTotal, func(_ context.Context, nodes []*TransactionType) error {
-						for i := range nodes {
-							n := len(nodes[i].Edges.Transactions)
-							if nodes[i].Edges.totalCount[0] == nil {
-								nodes[i].Edges.totalCount[0] = make(map[string]int)
-							}
-							nodes[i].Edges.totalCount[0][alias] = n
-						}
-						return nil
-					})
-				}
-			}
-			if ignoredEdges || (args.first != nil && *args.first == 0) || (args.last != nil && *args.last == 0) {
-				continue
-			}
-
-			query = pager.applyCursors(query, args.after, args.before)
-			if limit := paginateLimit(args.first, args.last); limit > 0 {
-				modify := limitRows(transactiontype.TransactionsColumn, limit, pager.orderExpr(args.last != nil))
-				query.modifiers = append(query.modifiers, modify)
-			} else {
-				query = pager.applyOrder(query, args.last != nil)
-			}
-			path = append(path, edgesField, nodeField)
-			if field := collectedField(ctx, path...); field != nil {
-				if err := query.collectField(ctx, op, *field, path, satisfies...); err != nil {
-					return err
-				}
-			}
-			tt.WithNamedTransactions(alias, func(wq *TransactionQuery) {
-				*wq = *query
-			})
-		}
-	}
 	return nil
 }
 

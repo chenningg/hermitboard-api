@@ -11,10 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
-	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // AssetClassUpdate is the builder for updating AssetClass entities.
@@ -74,45 +72,9 @@ func (acu *AssetClassUpdate) ClearDescription() *AssetClassUpdate {
 	return acu
 }
 
-// AddAssetIDs adds the "assets" edge to the Asset entity by IDs.
-func (acu *AssetClassUpdate) AddAssetIDs(ids ...pulid.PULID) *AssetClassUpdate {
-	acu.mutation.AddAssetIDs(ids...)
-	return acu
-}
-
-// AddAssets adds the "assets" edges to the Asset entity.
-func (acu *AssetClassUpdate) AddAssets(a ...*Asset) *AssetClassUpdate {
-	ids := make([]pulid.PULID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return acu.AddAssetIDs(ids...)
-}
-
 // Mutation returns the AssetClassMutation object of the builder.
 func (acu *AssetClassUpdate) Mutation() *AssetClassMutation {
 	return acu.mutation
-}
-
-// ClearAssets clears all "assets" edges to the Asset entity.
-func (acu *AssetClassUpdate) ClearAssets() *AssetClassUpdate {
-	acu.mutation.ClearAssets()
-	return acu
-}
-
-// RemoveAssetIDs removes the "assets" edge to Asset entities by IDs.
-func (acu *AssetClassUpdate) RemoveAssetIDs(ids ...pulid.PULID) *AssetClassUpdate {
-	acu.mutation.RemoveAssetIDs(ids...)
-	return acu
-}
-
-// RemoveAssets removes "assets" edges to Asset entities.
-func (acu *AssetClassUpdate) RemoveAssets(a ...*Asset) *AssetClassUpdate {
-	ids := make([]pulid.PULID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return acu.RemoveAssetIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -261,60 +223,6 @@ func (acu *AssetClassUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: assetclass.FieldDescription,
 		})
 	}
-	if acu.mutation.AssetsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   assetclass.AssetsTable,
-			Columns: []string{assetclass.AssetsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: asset.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := acu.mutation.RemovedAssetsIDs(); len(nodes) > 0 && !acu.mutation.AssetsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   assetclass.AssetsTable,
-			Columns: []string{assetclass.AssetsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: asset.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := acu.mutation.AssetsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   assetclass.AssetsTable,
-			Columns: []string{assetclass.AssetsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: asset.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, acu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{assetclass.Label}
@@ -378,45 +286,9 @@ func (acuo *AssetClassUpdateOne) ClearDescription() *AssetClassUpdateOne {
 	return acuo
 }
 
-// AddAssetIDs adds the "assets" edge to the Asset entity by IDs.
-func (acuo *AssetClassUpdateOne) AddAssetIDs(ids ...pulid.PULID) *AssetClassUpdateOne {
-	acuo.mutation.AddAssetIDs(ids...)
-	return acuo
-}
-
-// AddAssets adds the "assets" edges to the Asset entity.
-func (acuo *AssetClassUpdateOne) AddAssets(a ...*Asset) *AssetClassUpdateOne {
-	ids := make([]pulid.PULID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return acuo.AddAssetIDs(ids...)
-}
-
 // Mutation returns the AssetClassMutation object of the builder.
 func (acuo *AssetClassUpdateOne) Mutation() *AssetClassMutation {
 	return acuo.mutation
-}
-
-// ClearAssets clears all "assets" edges to the Asset entity.
-func (acuo *AssetClassUpdateOne) ClearAssets() *AssetClassUpdateOne {
-	acuo.mutation.ClearAssets()
-	return acuo
-}
-
-// RemoveAssetIDs removes the "assets" edge to Asset entities by IDs.
-func (acuo *AssetClassUpdateOne) RemoveAssetIDs(ids ...pulid.PULID) *AssetClassUpdateOne {
-	acuo.mutation.RemoveAssetIDs(ids...)
-	return acuo
-}
-
-// RemoveAssets removes "assets" edges to Asset entities.
-func (acuo *AssetClassUpdateOne) RemoveAssets(a ...*Asset) *AssetClassUpdateOne {
-	ids := make([]pulid.PULID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return acuo.RemoveAssetIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -594,60 +466,6 @@ func (acuo *AssetClassUpdateOne) sqlSave(ctx context.Context) (_node *AssetClass
 			Type:   field.TypeString,
 			Column: assetclass.FieldDescription,
 		})
-	}
-	if acuo.mutation.AssetsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   assetclass.AssetsTable,
-			Columns: []string{assetclass.AssetsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: asset.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := acuo.mutation.RemovedAssetsIDs(); len(nodes) > 0 && !acuo.mutation.AssetsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   assetclass.AssetsTable,
-			Columns: []string{assetclass.AssetsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: asset.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := acuo.mutation.AssetsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   assetclass.AssetsTable,
-			Columns: []string{assetclass.AssetsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: asset.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &AssetClass{config: acuo.config}
 	_spec.Assign = _node.assignValues

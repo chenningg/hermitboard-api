@@ -10,7 +10,6 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
@@ -96,21 +95,6 @@ func (acc *AssetClassCreate) SetNillableID(pu *pulid.PULID) *AssetClassCreate {
 		acc.SetID(*pu)
 	}
 	return acc
-}
-
-// AddAssetIDs adds the "assets" edge to the Asset entity by IDs.
-func (acc *AssetClassCreate) AddAssetIDs(ids ...pulid.PULID) *AssetClassCreate {
-	acc.mutation.AddAssetIDs(ids...)
-	return acc
-}
-
-// AddAssets adds the "assets" edges to the Asset entity.
-func (acc *AssetClassCreate) AddAssets(a ...*Asset) *AssetClassCreate {
-	ids := make([]pulid.PULID, len(a))
-	for i := range a {
-		ids[i] = a[i].ID
-	}
-	return acc.AddAssetIDs(ids...)
 }
 
 // Mutation returns the AssetClassMutation object of the builder.
@@ -300,25 +284,6 @@ func (acc *AssetClassCreate) createSpec() (*AssetClass, *sqlgraph.CreateSpec) {
 			Column: assetclass.FieldDescription,
 		})
 		_node.Description = &value
-	}
-	if nodes := acc.mutation.AssetsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   assetclass.AssetsTable,
-			Columns: []string{assetclass.AssetsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: asset.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

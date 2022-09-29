@@ -34,7 +34,8 @@ func (Connection) Fields() []ent.Field {
 			MinLen(3).
 			Annotations(entgql.OrderField("NAME")),
 		field.String("access_token").
-			NotEmpty(),
+			NotEmpty().
+			Annotations(entgql.Skip(entgql.SkipWhereInput)),
 		field.String("account_id").
 			GoType(pulid.PULID("")),
 	}
@@ -51,7 +52,10 @@ func (Connection) Edges() []ent.Edge {
 			Annotations(entgql.MapsTo("account")),
 		edge.From("portfolios", Portfolio.Type).
 			Ref("connections").
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("portfolios")),
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("portfolios"),
+				entgql.Skip(entgql.SkipWhereInput),
+			),
 	}
 }
 

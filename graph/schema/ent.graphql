@@ -7,10 +7,7 @@ type Account implements Node {
   deletedAt: Time
   nickname: String!
   email: String!
-  """Hashed and salted password using Bcrypt."""
-  password: String
   passwordUpdatedAt: Time!
-  authTypeID: ID!
   authRoles(
     """Returns the elements in the list that come after the specified cursor."""
     after: Cursor
@@ -65,9 +62,6 @@ type Account implements Node {
 
     """Ordering options for Connections returned from the connection."""
     orderBy: ConnectionOrder
-
-    """Filtering options for Connections returned from the connection."""
-    where: ConnectionWhereInput
   ): ConnectionConnection!
 }
 """A connection to a list of items."""
@@ -100,6 +94,7 @@ enum AccountOrderField {
   DELETED_AT
   NICKNAME
   EMAIL
+  PASSWORD_UPDATED_AT
 }
 """
 AccountWhereInput is used for filtering Account objects.
@@ -175,22 +170,6 @@ input AccountWhereInput {
   emailHasSuffix: String
   emailEqualFold: String
   emailContainsFold: String
-  """password field predicates"""
-  password: String
-  passwordNEQ: String
-  passwordIn: [String!]
-  passwordNotIn: [String!]
-  passwordGT: String
-  passwordGTE: String
-  passwordLT: String
-  passwordLTE: String
-  passwordContains: String
-  passwordHasPrefix: String
-  passwordHasSuffix: String
-  passwordIsNil: Boolean
-  passwordNotNil: Boolean
-  passwordEqualFold: String
-  passwordContainsFold: String
   """password_updated_at field predicates"""
   passwordUpdatedAt: Time
   passwordUpdatedAtNEQ: Time
@@ -200,20 +179,6 @@ input AccountWhereInput {
   passwordUpdatedAtGTE: Time
   passwordUpdatedAtLT: Time
   passwordUpdatedAtLTE: Time
-  """auth_type_id field predicates"""
-  authTypeID: ID
-  authTypeIDNEQ: ID
-  authTypeIDIn: [ID!]
-  authTypeIDNotIn: [ID!]
-  authTypeIDGT: ID
-  authTypeIDGTE: ID
-  authTypeIDLT: ID
-  authTypeIDLTE: ID
-  authTypeIDContains: ID
-  authTypeIDHasPrefix: ID
-  authTypeIDHasSuffix: ID
-  authTypeIDEqualFold: ID
-  authTypeIDContainsFold: ID
   """auth_roles edge predicates"""
   hasAuthRoles: Boolean
   hasAuthRolesWith: [AuthRoleWhereInput!]
@@ -223,56 +188,14 @@ input AccountWhereInput {
   """auth_type edge predicates"""
   hasAuthType: Boolean
   hasAuthTypeWith: [AuthTypeWhereInput!]
-  """connections edge predicates"""
-  hasConnections: Boolean
-  hasConnectionsWith: [ConnectionWhereInput!]
 }
 type Asset implements Node {
   id: ID!
   createdAt: Time!
   updatedAt: Time!
   deletedAt: Time
-  assetClassID: ID!
   assetClass: AssetClass!
   cryptocurrency: Cryptocurrency
-  transactionBases(
-    """Returns the elements in the list that come after the specified cursor."""
-    after: Cursor
-
-    """Returns the first _n_ elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come before the specified cursor."""
-    before: Cursor
-
-    """Returns the last _n_ elements from the list."""
-    last: Int
-
-    """Ordering options for Transactions returned from the connection."""
-    orderBy: TransactionOrder
-
-    """Filtering options for Transactions returned from the connection."""
-    where: TransactionWhereInput
-  ): TransactionConnection!
-  transactionQuotes(
-    """Returns the elements in the list that come after the specified cursor."""
-    after: Cursor
-
-    """Returns the first _n_ elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come before the specified cursor."""
-    before: Cursor
-
-    """Returns the last _n_ elements from the list."""
-    last: Int
-
-    """Ordering options for Transactions returned from the connection."""
-    orderBy: TransactionOrder
-
-    """Filtering options for Transactions returned from the connection."""
-    where: TransactionWhereInput
-  ): TransactionConnection!
   dailyAssetPrices(
     """Returns the elements in the list that come after the specified cursor."""
     after: Cursor
@@ -288,9 +211,6 @@ type Asset implements Node {
 
     """Ordering options for DailyAssetPrices returned from the connection."""
     orderBy: DailyAssetPriceOrder
-
-    """Filtering options for DailyAssetPrices returned from the connection."""
-    where: DailyAssetPriceWhereInput
   ): DailyAssetPriceConnection!
 }
 type AssetClass implements Node {
@@ -300,25 +220,6 @@ type AssetClass implements Node {
   deletedAt: Time
   value: AssetClassValue!
   description: String
-  assets(
-    """Returns the elements in the list that come after the specified cursor."""
-    after: Cursor
-
-    """Returns the first _n_ elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come before the specified cursor."""
-    before: Cursor
-
-    """Returns the last _n_ elements from the list."""
-    last: Int
-
-    """Ordering options for Assets returned from the connection."""
-    orderBy: AssetOrder
-
-    """Filtering options for Assets returned from the connection."""
-    where: AssetWhereInput
-  ): AssetConnection!
 }
 """A connection to a list of items."""
 type AssetClassConnection {
@@ -348,7 +249,7 @@ enum AssetClassOrderField {
   CREATED_AT
   UPDATED_AT
   DELETED_AT
-  ASSET_CLASS
+  ASSET_CLASS_VALUE
 }
 """AssetClassValue is enum for the field value"""
 enum AssetClassValue @goModel(model: "github.com/chenningg/hermitboard-api/ent/assetclass.Value") {
@@ -427,9 +328,6 @@ input AssetClassWhereInput {
   descriptionNotNil: Boolean
   descriptionEqualFold: String
   descriptionContainsFold: String
-  """assets edge predicates"""
-  hasAssets: Boolean
-  hasAssetsWith: [AssetWhereInput!]
 }
 """A connection to a list of items."""
 type AssetConnection {
@@ -506,35 +404,12 @@ input AssetWhereInput {
   deletedAtLTE: Time
   deletedAtIsNil: Boolean
   deletedAtNotNil: Boolean
-  """asset_class_id field predicates"""
-  assetClassID: ID
-  assetClassIDNEQ: ID
-  assetClassIDIn: [ID!]
-  assetClassIDNotIn: [ID!]
-  assetClassIDGT: ID
-  assetClassIDGTE: ID
-  assetClassIDLT: ID
-  assetClassIDLTE: ID
-  assetClassIDContains: ID
-  assetClassIDHasPrefix: ID
-  assetClassIDHasSuffix: ID
-  assetClassIDEqualFold: ID
-  assetClassIDContainsFold: ID
   """asset_class edge predicates"""
   hasAssetClass: Boolean
   hasAssetClassWith: [AssetClassWhereInput!]
   """cryptocurrency edge predicates"""
   hasCryptocurrency: Boolean
   hasCryptocurrencyWith: [CryptocurrencyWhereInput!]
-  """transaction_bases edge predicates"""
-  hasTransactionBases: Boolean
-  hasTransactionBasesWith: [TransactionWhereInput!]
-  """transaction_quotes edge predicates"""
-  hasTransactionQuotes: Boolean
-  hasTransactionQuotesWith: [TransactionWhereInput!]
-  """daily_asset_prices edge predicates"""
-  hasDailyAssetPrices: Boolean
-  hasDailyAssetPricesWith: [DailyAssetPriceWhereInput!]
 }
 type AuthRole implements Node {
   id: ID!
@@ -558,9 +433,6 @@ type AuthRole implements Node {
 
     """Ordering options for Accounts returned from the connection."""
     orderBy: AccountOrder
-
-    """Filtering options for Accounts returned from the connection."""
-    where: AccountWhereInput
   ): AccountConnection!
   staffAccounts(
     """Returns the elements in the list that come after the specified cursor."""
@@ -577,9 +449,6 @@ type AuthRole implements Node {
 
     """Ordering options for StaffAccounts returned from the connection."""
     orderBy: StaffAccountOrder
-
-    """Filtering options for StaffAccounts returned from the connection."""
-    where: StaffAccountWhereInput
   ): StaffAccountConnection!
 }
 """A connection to a list of items."""
@@ -610,7 +479,7 @@ enum AuthRoleOrderField {
   CREATED_AT
   UPDATED_AT
   DELETED_AT
-  AUTH_ROLE
+  AUTH_ROLE_VALUE
 }
 """AuthRoleValue is enum for the field value"""
 enum AuthRoleValue @goModel(model: "github.com/chenningg/hermitboard-api/ent/authrole.Value") {
@@ -690,12 +559,6 @@ input AuthRoleWhereInput {
   descriptionNotNil: Boolean
   descriptionEqualFold: String
   descriptionContainsFold: String
-  """accounts edge predicates"""
-  hasAccounts: Boolean
-  hasAccountsWith: [AccountWhereInput!]
-  """staff_accounts edge predicates"""
-  hasStaffAccounts: Boolean
-  hasStaffAccountsWith: [StaffAccountWhereInput!]
 }
 type AuthType implements Node {
   id: ID!
@@ -704,44 +567,6 @@ type AuthType implements Node {
   deletedAt: Time
   value: AuthTypeValue!
   description: String
-  accounts(
-    """Returns the elements in the list that come after the specified cursor."""
-    after: Cursor
-
-    """Returns the first _n_ elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come before the specified cursor."""
-    before: Cursor
-
-    """Returns the last _n_ elements from the list."""
-    last: Int
-
-    """Ordering options for Accounts returned from the connection."""
-    orderBy: AccountOrder
-
-    """Filtering options for Accounts returned from the connection."""
-    where: AccountWhereInput
-  ): AccountConnection!
-  staffAccounts(
-    """Returns the elements in the list that come after the specified cursor."""
-    after: Cursor
-
-    """Returns the first _n_ elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come before the specified cursor."""
-    before: Cursor
-
-    """Returns the last _n_ elements from the list."""
-    last: Int
-
-    """Ordering options for StaffAccounts returned from the connection."""
-    orderBy: StaffAccountOrder
-
-    """Filtering options for StaffAccounts returned from the connection."""
-    where: StaffAccountWhereInput
-  ): StaffAccountConnection!
 }
 """A connection to a list of items."""
 type AuthTypeConnection {
@@ -771,7 +596,7 @@ enum AuthTypeOrderField {
   CREATED_AT
   UPDATED_AT
   DELETED_AT
-  AUTH_TYPE
+  AUTH_TYPE_VALUE
 }
 """AuthTypeValue is enum for the field value"""
 enum AuthTypeValue @goModel(model: "github.com/chenningg/hermitboard-api/ent/authtype.Value") {
@@ -847,12 +672,6 @@ input AuthTypeWhereInput {
   descriptionNotNil: Boolean
   descriptionEqualFold: String
   descriptionContainsFold: String
-  """accounts edge predicates"""
-  hasAccounts: Boolean
-  hasAccountsWith: [AccountWhereInput!]
-  """staff_accounts edge predicates"""
-  hasStaffAccounts: Boolean
-  hasStaffAccountsWith: [StaffAccountWhereInput!]
 }
 type Blockchain implements Node {
   id: ID!
@@ -878,9 +697,6 @@ type Blockchain implements Node {
 
     """Ordering options for Cryptocurrencies returned from the connection."""
     orderBy: CryptocurrencyOrder
-
-    """Filtering options for Cryptocurrencies returned from the connection."""
-    where: CryptocurrencyWhereInput
   ): CryptocurrencyConnection!
   transactions(
     """Returns the elements in the list that come after the specified cursor."""
@@ -897,9 +713,6 @@ type Blockchain implements Node {
 
     """Ordering options for Transactions returned from the connection."""
     orderBy: TransactionOrder
-
-    """Filtering options for Transactions returned from the connection."""
-    where: TransactionWhereInput
   ): TransactionConnection!
 }
 """A connection to a list of items."""
@@ -1008,22 +821,6 @@ input BlockchainWhereInput {
   symbolHasSuffix: String
   symbolEqualFold: String
   symbolContainsFold: String
-  """icon field predicates"""
-  icon: String
-  iconNEQ: String
-  iconIn: [String!]
-  iconNotIn: [String!]
-  iconGT: String
-  iconGTE: String
-  iconLT: String
-  iconLTE: String
-  iconContains: String
-  iconHasPrefix: String
-  iconHasSuffix: String
-  iconIsNil: Boolean
-  iconNotNil: Boolean
-  iconEqualFold: String
-  iconContainsFold: String
   """chain_id field predicates"""
   chainID: Int
   chainIDNEQ: Int
@@ -1035,12 +832,6 @@ input BlockchainWhereInput {
   chainIDLTE: Int
   chainIDIsNil: Boolean
   chainIDNotNil: Boolean
-  """cryptocurrencies edge predicates"""
-  hasCryptocurrencies: Boolean
-  hasCryptocurrenciesWith: [CryptocurrencyWhereInput!]
-  """transactions edge predicates"""
-  hasTransactions: Boolean
-  hasTransactionsWith: [TransactionWhereInput!]
 }
 type Connection implements Node {
   id: ID!
@@ -1066,9 +857,6 @@ type Connection implements Node {
 
     """Ordering options for Portfolios returned from the connection."""
     orderBy: PortfolioOrder
-
-    """Filtering options for Portfolios returned from the connection."""
-    where: PortfolioWhereInput
   ): PortfolioConnection!
 }
 """A connection to a list of items."""
@@ -1161,20 +949,6 @@ input ConnectionWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  """access_token field predicates"""
-  accessToken: String
-  accessTokenNEQ: String
-  accessTokenIn: [String!]
-  accessTokenNotIn: [String!]
-  accessTokenGT: String
-  accessTokenGTE: String
-  accessTokenLT: String
-  accessTokenLTE: String
-  accessTokenContains: String
-  accessTokenHasPrefix: String
-  accessTokenHasSuffix: String
-  accessTokenEqualFold: String
-  accessTokenContainsFold: String
   """account_id field predicates"""
   accountID: ID
   accountIDNEQ: ID
@@ -1192,103 +966,56 @@ input ConnectionWhereInput {
   """account edge predicates"""
   hasAccount: Boolean
   hasAccountWith: [AccountWhereInput!]
-  """portfolios edge predicates"""
-  hasPortfolios: Boolean
-  hasPortfoliosWith: [PortfolioWhereInput!]
 }
 """
 CreateAccountInput is used for create Account object.
 Input was generated by ent.
 """
 input CreateAccountInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   nickname: String!
   email: String!
-  """Hashed and salted password using Bcrypt."""
   password: String
-  passwordUpdatedAt: Time
   authRoleIDs: [ID!]!
-  portfolioIDs: [ID!]
-  authTypeID: ID!
-  connectionIDs: [ID!]
 }
 """
 CreateAssetClassInput is used for create AssetClass object.
 Input was generated by ent.
 """
 input CreateAssetClassInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   value: AssetClassValue!
   description: String
-  assetIDs: [ID!]
-}
-"""
-CreateAssetInput is used for create Asset object.
-Input was generated by ent.
-"""
-input CreateAssetInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
-  assetClassID: ID!
-  cryptocurrencyID: ID
-  transactionBasisIDs: [ID!]
-  transactionQuoteIDs: [ID!]
-  dailyAssetPriceIDs: [ID!]
 }
 """
 CreateAuthRoleInput is used for create AuthRole object.
 Input was generated by ent.
 """
 input CreateAuthRoleInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   value: AuthRoleValue!
   description: String
-  accountIDs: [ID!]
-  staffAccountIDs: [ID!]
 }
 """
 CreateAuthTypeInput is used for create AuthType object.
 Input was generated by ent.
 """
 input CreateAuthTypeInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   value: AuthTypeValue!
   description: String
-  accountIDs: [ID!]
-  staffAccountIDs: [ID!]
 }
 """
 CreateBlockchainInput is used for create Blockchain object.
 Input was generated by ent.
 """
 input CreateBlockchainInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   name: String!
   symbol: String!
   icon: String
   chainID: Int
-  cryptocurrencyIDs: [ID!]
-  transactionIDs: [ID!]
 }
 """
 CreateConnectionInput is used for create Connection object.
 Input was generated by ent.
 """
 input CreateConnectionInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   name: String!
   accessToken: String!
   accountID: ID!
@@ -1299,9 +1026,6 @@ CreateCryptocurrencyInput is used for create Cryptocurrency object.
 Input was generated by ent.
 """
 input CreateCryptocurrencyInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   symbol: String!
   """A url to the image icon for this cryptocurrency."""
   icon: String
@@ -1314,10 +1038,7 @@ CreateDailyAssetPriceInput is used for create DailyAssetPrice object.
 Input was generated by ent.
 """
 input CreateDailyAssetPriceInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
-  time: Time
+  time: Time!
   open: Float
   high: Float
   low: Float
@@ -1330,30 +1051,20 @@ CreateExchangeInput is used for create Exchange object.
 Input was generated by ent.
 """
 input CreateExchangeInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   name: String!
   icon: String
   """A url to the exchange site."""
   url: String
-  transactionIDs: [ID!]
 }
 """
 CreatePortfolioInput is used for create Portfolio object.
 Input was generated by ent.
 """
 input CreatePortfolioInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   name: String!
   """Whether this portfolio is visible to others."""
   isPublic: Boolean
-  """Whether this portfolio is visible to the owner."""
-  isVisible: Boolean
   accountID: ID!
-  transactionIDs: [ID!]
   connectionIDs: [ID!]
 }
 """
@@ -1361,9 +1072,6 @@ CreateSourceInput is used for create Source object.
 Input was generated by ent.
 """
 input CreateSourceInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   name: String!
   icon: String
   sourceTypeID: ID!
@@ -1373,37 +1081,24 @@ CreateSourceTypeInput is used for create SourceType object.
 Input was generated by ent.
 """
 input CreateSourceTypeInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   value: SourceTypeValue!
   description: String
-  sourceIDs: [ID!]
 }
 """
 CreateStaffAccountInput is used for create StaffAccount object.
 Input was generated by ent.
 """
 input CreateStaffAccountInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   nickname: String!
   email: String!
-  """Hashed and salted password using Bcrypt."""
   password: String
-  passwordUpdatedAt: Time
   authRoleIDs: [ID!]
-  authTypeID: ID!
 }
 """
 CreateTransactionInput is used for create Transaction object.
 Input was generated by ent.
 """
 input CreateTransactionInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   time: Time!
   units: Int!
   pricePerUnit: Float!
@@ -1419,12 +1114,8 @@ CreateTransactionTypeInput is used for create TransactionType object.
 Input was generated by ent.
 """
 input CreateTransactionTypeInput {
-  createdAt: Time
-  updatedAt: Time
-  deletedAt: Time
   value: TransactionTypeValue!
   description: String
-  transactionIDs: [ID!]
 }
 type Cryptocurrency implements Node {
   id: ID!
@@ -1548,22 +1239,6 @@ input CryptocurrencyWhereInput {
   symbolHasSuffix: String
   symbolEqualFold: String
   symbolContainsFold: String
-  """icon field predicates"""
-  icon: String
-  iconNEQ: String
-  iconIn: [String!]
-  iconNotIn: [String!]
-  iconGT: String
-  iconGTE: String
-  iconLT: String
-  iconLTE: String
-  iconContains: String
-  iconHasPrefix: String
-  iconHasSuffix: String
-  iconIsNil: Boolean
-  iconNotNil: Boolean
-  iconEqualFold: String
-  iconContainsFold: String
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -1893,22 +1568,6 @@ input ExchangeWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  """icon field predicates"""
-  icon: String
-  iconNEQ: String
-  iconIn: [String!]
-  iconNotIn: [String!]
-  iconGT: String
-  iconGTE: String
-  iconLT: String
-  iconLTE: String
-  iconContains: String
-  iconHasPrefix: String
-  iconHasSuffix: String
-  iconIsNil: Boolean
-  iconNotNil: Boolean
-  iconEqualFold: String
-  iconContainsFold: String
   """url field predicates"""
   url: String
   urlNEQ: String
@@ -1985,9 +1644,6 @@ type Portfolio implements Node {
 
     """Ordering options for Transactions returned from the connection."""
     orderBy: TransactionOrder
-
-    """Filtering options for Transactions returned from the connection."""
-    where: TransactionWhereInput
   ): TransactionConnection!
   connections(
     """Returns the elements in the list that come after the specified cursor."""
@@ -2124,9 +1780,6 @@ input PortfolioWhereInput {
   """account edge predicates"""
   hasAccount: Boolean
   hasAccountWith: [AccountWhereInput!]
-  """transactions edge predicates"""
-  hasTransactions: Boolean
-  hasTransactionsWith: [TransactionWhereInput!]
   """connections edge predicates"""
   hasConnections: Boolean
   hasConnectionsWith: [ConnectionWhereInput!]
@@ -2509,9 +2162,6 @@ type SourceType implements Node {
 
     """Ordering options for Sources returned from the connection."""
     orderBy: SourceOrder
-
-    """Filtering options for Sources returned from the connection."""
-    where: SourceWhereInput
   ): SourceConnection!
 }
 """A connection to a list of items."""
@@ -2542,7 +2192,7 @@ enum SourceTypeOrderField {
   CREATED_AT
   UPDATED_AT
   DELETED_AT
-  SOURCE_TYPE
+  SOURCE_TYPE_VALUE
 }
 """SourceTypeValue is enum for the field value"""
 enum SourceTypeValue @goModel(model: "github.com/chenningg/hermitboard-api/ent/sourcetype.Value") {
@@ -2617,9 +2267,6 @@ input SourceTypeWhereInput {
   descriptionNotNil: Boolean
   descriptionEqualFold: String
   descriptionContainsFold: String
-  """sources edge predicates"""
-  hasSources: Boolean
-  hasSourcesWith: [SourceWhereInput!]
 }
 """
 SourceWhereInput is used for filtering Source objects.
@@ -2681,22 +2328,6 @@ input SourceWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  """icon field predicates"""
-  icon: String
-  iconNEQ: String
-  iconIn: [String!]
-  iconNotIn: [String!]
-  iconGT: String
-  iconGTE: String
-  iconLT: String
-  iconLTE: String
-  iconContains: String
-  iconHasPrefix: String
-  iconHasSuffix: String
-  iconIsNil: Boolean
-  iconNotNil: Boolean
-  iconEqualFold: String
-  iconContainsFold: String
   """source_type_id field predicates"""
   sourceTypeID: ID
   sourceTypeIDNEQ: ID
@@ -2722,10 +2353,7 @@ type StaffAccount implements Node {
   deletedAt: Time
   nickname: String!
   email: String!
-  """Hashed and salted password using Bcrypt."""
-  password: String
   passwordUpdatedAt: Time!
-  authTypeID: ID!
   authRoles(
     """Returns the elements in the list that come after the specified cursor."""
     after: Cursor
@@ -2850,22 +2478,6 @@ input StaffAccountWhereInput {
   emailHasSuffix: String
   emailEqualFold: String
   emailContainsFold: String
-  """password field predicates"""
-  password: String
-  passwordNEQ: String
-  passwordIn: [String!]
-  passwordNotIn: [String!]
-  passwordGT: String
-  passwordGTE: String
-  passwordLT: String
-  passwordLTE: String
-  passwordContains: String
-  passwordHasPrefix: String
-  passwordHasSuffix: String
-  passwordIsNil: Boolean
-  passwordNotNil: Boolean
-  passwordEqualFold: String
-  passwordContainsFold: String
   """password_updated_at field predicates"""
   passwordUpdatedAt: Time
   passwordUpdatedAtNEQ: Time
@@ -2875,20 +2487,6 @@ input StaffAccountWhereInput {
   passwordUpdatedAtGTE: Time
   passwordUpdatedAtLT: Time
   passwordUpdatedAtLTE: Time
-  """auth_type_id field predicates"""
-  authTypeID: ID
-  authTypeIDNEQ: ID
-  authTypeIDIn: [ID!]
-  authTypeIDNotIn: [ID!]
-  authTypeIDGT: ID
-  authTypeIDGTE: ID
-  authTypeIDLT: ID
-  authTypeIDLTE: ID
-  authTypeIDContains: ID
-  authTypeIDHasPrefix: ID
-  authTypeIDHasSuffix: ID
-  authTypeIDEqualFold: ID
-  authTypeIDContainsFold: ID
   """auth_roles edge predicates"""
   hasAuthRoles: Boolean
   hasAuthRolesWith: [AuthRoleWhereInput!]
@@ -2905,7 +2503,6 @@ type Transaction implements Node {
   units: Int!
   pricePerUnit: Float!
   blockchainID: ID
-  transactionTypeID: ID!
   exchangeID: ID!
   portfolioID: ID!
   baseAssetID: ID!
@@ -2953,25 +2550,6 @@ type TransactionType implements Node {
   deletedAt: Time
   value: TransactionTypeValue!
   description: String
-  transactions(
-    """Returns the elements in the list that come after the specified cursor."""
-    after: Cursor
-
-    """Returns the first _n_ elements from the list."""
-    first: Int
-
-    """Returns the elements in the list that come before the specified cursor."""
-    before: Cursor
-
-    """Returns the last _n_ elements from the list."""
-    last: Int
-
-    """Ordering options for Transactions returned from the connection."""
-    orderBy: TransactionOrder
-
-    """Filtering options for Transactions returned from the connection."""
-    where: TransactionWhereInput
-  ): TransactionConnection!
 }
 """A connection to a list of items."""
 type TransactionTypeConnection {
@@ -3001,7 +2579,7 @@ enum TransactionTypeOrderField {
   CREATED_AT
   UPDATED_AT
   DELETED_AT
-  TRANSACTION_TYPE
+  TRANSACTION_TYPE_VALUE
 }
 """TransactionTypeValue is enum for the field value"""
 enum TransactionTypeValue @goModel(model: "github.com/chenningg/hermitboard-api/ent/transactiontype.Value") {
@@ -3081,9 +2659,6 @@ input TransactionTypeWhereInput {
   descriptionNotNil: Boolean
   descriptionEqualFold: String
   descriptionContainsFold: String
-  """transactions edge predicates"""
-  hasTransactions: Boolean
-  hasTransactionsWith: [TransactionWhereInput!]
 }
 """
 TransactionWhereInput is used for filtering Transaction objects.
@@ -3174,20 +2749,6 @@ input TransactionWhereInput {
   blockchainIDNotNil: Boolean
   blockchainIDEqualFold: ID
   blockchainIDContainsFold: ID
-  """transaction_type_id field predicates"""
-  transactionTypeID: ID
-  transactionTypeIDNEQ: ID
-  transactionTypeIDIn: [ID!]
-  transactionTypeIDNotIn: [ID!]
-  transactionTypeIDGT: ID
-  transactionTypeIDGTE: ID
-  transactionTypeIDLT: ID
-  transactionTypeIDLTE: ID
-  transactionTypeIDContains: ID
-  transactionTypeIDHasPrefix: ID
-  transactionTypeIDHasSuffix: ID
-  transactionTypeIDEqualFold: ID
-  transactionTypeIDContainsFold: ID
   """exchange_id field predicates"""
   exchangeID: ID
   exchangeIDNEQ: ID
@@ -3270,95 +2831,65 @@ UpdateAccountInput is used for update Account object.
 Input was generated by ent.
 """
 input UpdateAccountInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   nickname: String
   email: String
   clearPassword: Boolean
-  """Hashed and salted password using Bcrypt."""
   password: String
-  passwordUpdatedAt: Time
   addAuthRoleIDs: [ID!]
   removeAuthRoleIDs: [ID!]
-  addPortfolioIDs: [ID!]
-  removePortfolioIDs: [ID!]
   clearAuthType: Boolean
   authTypeID: ID
-  addConnectionIDs: [ID!]
-  removeConnectionIDs: [ID!]
 }
 """
 UpdateAssetClassInput is used for update AssetClass object.
 Input was generated by ent.
 """
 input UpdateAssetClassInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   value: AssetClassValue
   clearDescription: Boolean
   description: String
-  addAssetIDs: [ID!]
-  removeAssetIDs: [ID!]
 }
 """
 UpdateAssetInput is used for update Asset object.
 Input was generated by ent.
 """
 input UpdateAssetInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   clearAssetClass: Boolean
   assetClassID: ID
-  clearCryptocurrency: Boolean
-  cryptocurrencyID: ID
-  addTransactionBasisIDs: [ID!]
-  removeTransactionBasisIDs: [ID!]
-  addTransactionQuoteIDs: [ID!]
-  removeTransactionQuoteIDs: [ID!]
-  addDailyAssetPriceIDs: [ID!]
-  removeDailyAssetPriceIDs: [ID!]
 }
 """
 UpdateAuthRoleInput is used for update AuthRole object.
 Input was generated by ent.
 """
 input UpdateAuthRoleInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   value: AuthRoleValue
   clearDescription: Boolean
   description: String
-  addAccountIDs: [ID!]
-  removeAccountIDs: [ID!]
-  addStaffAccountIDs: [ID!]
-  removeStaffAccountIDs: [ID!]
 }
 """
 UpdateAuthTypeInput is used for update AuthType object.
 Input was generated by ent.
 """
 input UpdateAuthTypeInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   value: AuthTypeValue
   clearDescription: Boolean
   description: String
-  addAccountIDs: [ID!]
-  removeAccountIDs: [ID!]
-  addStaffAccountIDs: [ID!]
-  removeStaffAccountIDs: [ID!]
 }
 """
 UpdateBlockchainInput is used for update Blockchain object.
 Input was generated by ent.
 """
 input UpdateBlockchainInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   name: String
@@ -3367,17 +2898,12 @@ input UpdateBlockchainInput {
   icon: String
   clearChainID: Boolean
   chainID: Int
-  addCryptocurrencyIDs: [ID!]
-  removeCryptocurrencyIDs: [ID!]
-  addTransactionIDs: [ID!]
-  removeTransactionIDs: [ID!]
 }
 """
 UpdateConnectionInput is used for update Connection object.
 Input was generated by ent.
 """
 input UpdateConnectionInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   name: String
@@ -3392,7 +2918,6 @@ UpdateCryptocurrencyInput is used for update Cryptocurrency object.
 Input was generated by ent.
 """
 input UpdateCryptocurrencyInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   symbol: String
@@ -3410,7 +2935,6 @@ UpdateDailyAssetPriceInput is used for update DailyAssetPrice object.
 Input was generated by ent.
 """
 input UpdateDailyAssetPriceInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   time: Time
@@ -3431,7 +2955,6 @@ UpdateExchangeInput is used for update Exchange object.
 Input was generated by ent.
 """
 input UpdateExchangeInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   name: String
@@ -3440,15 +2963,12 @@ input UpdateExchangeInput {
   clearURL: Boolean
   """A url to the exchange site."""
   url: String
-  addTransactionIDs: [ID!]
-  removeTransactionIDs: [ID!]
 }
 """
 UpdatePortfolioInput is used for update Portfolio object.
 Input was generated by ent.
 """
 input UpdatePortfolioInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   name: String
@@ -3456,10 +2976,6 @@ input UpdatePortfolioInput {
   isPublic: Boolean
   """Whether this portfolio is visible to the owner."""
   isVisible: Boolean
-  clearAccount: Boolean
-  accountID: ID
-  addTransactionIDs: [ID!]
-  removeTransactionIDs: [ID!]
   addConnectionIDs: [ID!]
   removeConnectionIDs: [ID!]
 }
@@ -3468,7 +2984,6 @@ UpdateSourceInput is used for update Source object.
 Input was generated by ent.
 """
 input UpdateSourceInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   name: String
@@ -3482,29 +2997,23 @@ UpdateSourceTypeInput is used for update SourceType object.
 Input was generated by ent.
 """
 input UpdateSourceTypeInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   value: SourceTypeValue
   clearDescription: Boolean
   description: String
-  addSourceIDs: [ID!]
-  removeSourceIDs: [ID!]
 }
 """
 UpdateStaffAccountInput is used for update StaffAccount object.
 Input was generated by ent.
 """
 input UpdateStaffAccountInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   nickname: String
   email: String
   clearPassword: Boolean
-  """Hashed and salted password using Bcrypt."""
   password: String
-  passwordUpdatedAt: Time
   addAuthRoleIDs: [ID!]
   removeAuthRoleIDs: [ID!]
   clearAuthType: Boolean
@@ -3515,7 +3024,6 @@ UpdateTransactionInput is used for update Transaction object.
 Input was generated by ent.
 """
 input UpdateTransactionInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   time: Time
@@ -3539,12 +3047,9 @@ UpdateTransactionTypeInput is used for update TransactionType object.
 Input was generated by ent.
 """
 input UpdateTransactionTypeInput {
-  updatedAt: Time
   clearDeletedAt: Boolean
   deletedAt: Time
   value: TransactionTypeValue
   clearDescription: Boolean
   description: String
-  addTransactionIDs: [ID!]
-  removeTransactionIDs: [ID!]
 }

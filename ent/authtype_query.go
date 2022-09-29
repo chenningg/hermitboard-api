@@ -4,35 +4,28 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/chenningg/hermitboard-api/ent/account"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
-	"github.com/chenningg/hermitboard-api/ent/staffaccount"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // AuthTypeQuery is the builder for querying AuthType entities.
 type AuthTypeQuery struct {
 	config
-	limit                  *int
-	offset                 *int
-	unique                 *bool
-	order                  []OrderFunc
-	fields                 []string
-	predicates             []predicate.AuthType
-	withAccounts           *AccountQuery
-	withStaffAccounts      *StaffAccountQuery
-	modifiers              []func(*sql.Selector)
-	loadTotal              []func(context.Context, []*AuthType) error
-	withNamedAccounts      map[string]*AccountQuery
-	withNamedStaffAccounts map[string]*StaffAccountQuery
+	limit      *int
+	offset     *int
+	unique     *bool
+	order      []OrderFunc
+	fields     []string
+	predicates []predicate.AuthType
+	modifiers  []func(*sql.Selector)
+	loadTotal  []func(context.Context, []*AuthType) error
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -67,50 +60,6 @@ func (atq *AuthTypeQuery) Unique(unique bool) *AuthTypeQuery {
 func (atq *AuthTypeQuery) Order(o ...OrderFunc) *AuthTypeQuery {
 	atq.order = append(atq.order, o...)
 	return atq
-}
-
-// QueryAccounts chains the current query on the "accounts" edge.
-func (atq *AuthTypeQuery) QueryAccounts() *AccountQuery {
-	query := &AccountQuery{config: atq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := atq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := atq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(authtype.Table, authtype.FieldID, selector),
-			sqlgraph.To(account.Table, account.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, authtype.AccountsTable, authtype.AccountsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryStaffAccounts chains the current query on the "staff_accounts" edge.
-func (atq *AuthTypeQuery) QueryStaffAccounts() *StaffAccountQuery {
-	query := &StaffAccountQuery{config: atq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := atq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := atq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(authtype.Table, authtype.FieldID, selector),
-			sqlgraph.To(staffaccount.Table, staffaccount.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, authtype.StaffAccountsTable, authtype.StaffAccountsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // First returns the first AuthType entity from the query.
@@ -289,40 +238,16 @@ func (atq *AuthTypeQuery) Clone() *AuthTypeQuery {
 		return nil
 	}
 	return &AuthTypeQuery{
-		config:            atq.config,
-		limit:             atq.limit,
-		offset:            atq.offset,
-		order:             append([]OrderFunc{}, atq.order...),
-		predicates:        append([]predicate.AuthType{}, atq.predicates...),
-		withAccounts:      atq.withAccounts.Clone(),
-		withStaffAccounts: atq.withStaffAccounts.Clone(),
+		config:     atq.config,
+		limit:      atq.limit,
+		offset:     atq.offset,
+		order:      append([]OrderFunc{}, atq.order...),
+		predicates: append([]predicate.AuthType{}, atq.predicates...),
 		// clone intermediate query.
 		sql:    atq.sql.Clone(),
 		path:   atq.path,
 		unique: atq.unique,
 	}
-}
-
-// WithAccounts tells the query-builder to eager-load the nodes that are connected to
-// the "accounts" edge. The optional arguments are used to configure the query builder of the edge.
-func (atq *AuthTypeQuery) WithAccounts(opts ...func(*AccountQuery)) *AuthTypeQuery {
-	query := &AccountQuery{config: atq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	atq.withAccounts = query
-	return atq
-}
-
-// WithStaffAccounts tells the query-builder to eager-load the nodes that are connected to
-// the "staff_accounts" edge. The optional arguments are used to configure the query builder of the edge.
-func (atq *AuthTypeQuery) WithStaffAccounts(opts ...func(*StaffAccountQuery)) *AuthTypeQuery {
-	query := &StaffAccountQuery{config: atq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	atq.withStaffAccounts = query
-	return atq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -391,12 +316,8 @@ func (atq *AuthTypeQuery) prepareQuery(ctx context.Context) error {
 
 func (atq *AuthTypeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AuthType, error) {
 	var (
-		nodes       = []*AuthType{}
-		_spec       = atq.querySpec()
-		loadedTypes = [2]bool{
-			atq.withAccounts != nil,
-			atq.withStaffAccounts != nil,
-		}
+		nodes = []*AuthType{}
+		_spec = atq.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*AuthType).scanValues(nil, columns)
@@ -404,7 +325,6 @@ func (atq *AuthTypeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Au
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &AuthType{config: atq.config}
 		nodes = append(nodes, node)
-		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(atq.modifiers) > 0 {
@@ -419,95 +339,12 @@ func (atq *AuthTypeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Au
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := atq.withAccounts; query != nil {
-		if err := atq.loadAccounts(ctx, query, nodes,
-			func(n *AuthType) { n.Edges.Accounts = []*Account{} },
-			func(n *AuthType, e *Account) { n.Edges.Accounts = append(n.Edges.Accounts, e) }); err != nil {
-			return nil, err
-		}
-	}
-	if query := atq.withStaffAccounts; query != nil {
-		if err := atq.loadStaffAccounts(ctx, query, nodes,
-			func(n *AuthType) { n.Edges.StaffAccounts = []*StaffAccount{} },
-			func(n *AuthType, e *StaffAccount) { n.Edges.StaffAccounts = append(n.Edges.StaffAccounts, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range atq.withNamedAccounts {
-		if err := atq.loadAccounts(ctx, query, nodes,
-			func(n *AuthType) { n.appendNamedAccounts(name) },
-			func(n *AuthType, e *Account) { n.appendNamedAccounts(name, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range atq.withNamedStaffAccounts {
-		if err := atq.loadStaffAccounts(ctx, query, nodes,
-			func(n *AuthType) { n.appendNamedStaffAccounts(name) },
-			func(n *AuthType, e *StaffAccount) { n.appendNamedStaffAccounts(name, e) }); err != nil {
-			return nil, err
-		}
-	}
 	for i := range atq.loadTotal {
 		if err := atq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
-}
-
-func (atq *AuthTypeQuery) loadAccounts(ctx context.Context, query *AccountQuery, nodes []*AuthType, init func(*AuthType), assign func(*AuthType, *Account)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[pulid.PULID]*AuthType)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.Where(predicate.Account(func(s *sql.Selector) {
-		s.Where(sql.InValues(authtype.AccountsColumn, fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.AuthTypeID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "auth_type_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (atq *AuthTypeQuery) loadStaffAccounts(ctx context.Context, query *StaffAccountQuery, nodes []*AuthType, init func(*AuthType), assign func(*AuthType, *StaffAccount)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[pulid.PULID]*AuthType)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.Where(predicate.StaffAccount(func(s *sql.Selector) {
-		s.Where(sql.InValues(authtype.StaffAccountsColumn, fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.AuthTypeID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "auth_type_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
 }
 
 func (atq *AuthTypeQuery) sqlCount(ctx context.Context) (int, error) {
@@ -611,34 +448,6 @@ func (atq *AuthTypeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
-}
-
-// WithNamedAccounts tells the query-builder to eager-load the nodes that are connected to the "accounts"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (atq *AuthTypeQuery) WithNamedAccounts(name string, opts ...func(*AccountQuery)) *AuthTypeQuery {
-	query := &AccountQuery{config: atq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	if atq.withNamedAccounts == nil {
-		atq.withNamedAccounts = make(map[string]*AccountQuery)
-	}
-	atq.withNamedAccounts[name] = query
-	return atq
-}
-
-// WithNamedStaffAccounts tells the query-builder to eager-load the nodes that are connected to the "staff_accounts"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (atq *AuthTypeQuery) WithNamedStaffAccounts(name string, opts ...func(*StaffAccountQuery)) *AuthTypeQuery {
-	query := &StaffAccountQuery{config: atq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	if atq.withNamedStaffAccounts == nil {
-		atq.withNamedStaffAccounts = make(map[string]*StaffAccountQuery)
-	}
-	atq.withNamedStaffAccounts[name] = query
-	return atq
 }
 
 // AuthTypeGroupBy is the group-by builder for AuthType entities.

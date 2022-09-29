@@ -22,10 +22,7 @@ func (r *queryResolver) Nodes(ctx context.Context, ids []pulid.PULID) ([]ent.Nod
 }
 
 // Accounts is the resolver for the accounts field.
-func (r *queryResolver) Accounts(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AccountOrder,
-	where *ent.AccountWhereInput,
-) (*ent.AccountConnection, error) {
+func (r *queryResolver) Accounts(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AccountOrder, where *ent.AccountWhereInput) (*ent.AccountConnection, error) {
 	return r.db.Client().Account.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -35,10 +32,7 @@ func (r *queryResolver) Accounts(
 }
 
 // Assets is the resolver for the assets field.
-func (r *queryResolver) Assets(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetOrder,
-	where *ent.AssetWhereInput,
-) (*ent.AssetConnection, error) {
+func (r *queryResolver) Assets(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetOrder, where *ent.AssetWhereInput) (*ent.AssetConnection, error) {
 	return r.db.Client().Asset.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -48,10 +42,7 @@ func (r *queryResolver) Assets(
 }
 
 // Assetclasses is the resolver for the assetclasses field.
-func (r *queryResolver) Assetclasses(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetClassOrder,
-	where *ent.AssetClassWhereInput,
-) (*ent.AssetClassConnection, error) {
+func (r *queryResolver) Assetclasses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetClassOrder, where *ent.AssetClassWhereInput) (*ent.AssetClassConnection, error) {
 	return r.db.Client().AssetClass.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -61,10 +52,7 @@ func (r *queryResolver) Assetclasses(
 }
 
 // Authroles is the resolver for the authroles field.
-func (r *queryResolver) Authroles(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthRoleOrder,
-	where *ent.AuthRoleWhereInput,
-) (*ent.AuthRoleConnection, error) {
+func (r *queryResolver) Authroles(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthRoleOrder, where *ent.AuthRoleWhereInput) (*ent.AuthRoleConnection, error) {
 	return r.db.Client().AuthRole.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -74,10 +62,7 @@ func (r *queryResolver) Authroles(
 }
 
 // Authtypes is the resolver for the authtypes field.
-func (r *queryResolver) Authtypes(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthTypeOrder,
-	where *ent.AuthTypeWhereInput,
-) (*ent.AuthTypeConnection, error) {
+func (r *queryResolver) Authtypes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthTypeOrder, where *ent.AuthTypeWhereInput) (*ent.AuthTypeConnection, error) {
 	return r.db.Client().AuthType.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -87,10 +72,7 @@ func (r *queryResolver) Authtypes(
 }
 
 // Blockchains is the resolver for the blockchains field.
-func (r *queryResolver) Blockchains(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.BlockchainOrder,
-	where *ent.BlockchainWhereInput,
-) (*ent.BlockchainConnection, error) {
+func (r *queryResolver) Blockchains(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.BlockchainOrder, where *ent.BlockchainWhereInput) (*ent.BlockchainConnection, error) {
 	return r.db.Client().Blockchain.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -100,10 +82,7 @@ func (r *queryResolver) Blockchains(
 }
 
 // Connections is the resolver for the connections field.
-func (r *queryResolver) Connections(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ConnectionOrder,
-	where *ent.ConnectionWhereInput,
-) (*ent.ConnectionConnection, error) {
+func (r *queryResolver) Connections(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ConnectionOrder, where *ent.ConnectionWhereInput) (*ent.ConnectionConnection, error) {
 	return r.db.Client().Connection.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -113,10 +92,7 @@ func (r *queryResolver) Connections(
 }
 
 // Cryptocurrencies is the resolver for the cryptocurrencies field.
-func (r *queryResolver) Cryptocurrencies(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.CryptocurrencyOrder,
-	where *ent.CryptocurrencyWhereInput,
-) (*ent.CryptocurrencyConnection, error) {
+func (r *queryResolver) Cryptocurrencies(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.CryptocurrencyOrder, where *ent.CryptocurrencyWhereInput) (*ent.CryptocurrencyConnection, error) {
 	return r.db.Client().Cryptocurrency.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -126,10 +102,7 @@ func (r *queryResolver) Cryptocurrencies(
 }
 
 // Dailyassetprices is the resolver for the dailyassetprices field.
-func (r *queryResolver) Dailyassetprices(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int,
-	orderBy *ent.DailyAssetPriceOrder, where *ent.DailyAssetPriceWhereInput,
-) (*ent.DailyAssetPriceConnection, error) {
+func (r *queryResolver) Dailyassetprices(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.DailyAssetPriceOrder, where *ent.DailyAssetPriceWhereInput) (*ent.DailyAssetPriceConnection, error) {
 	return r.db.Client().DailyAssetPrice.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -139,10 +112,7 @@ func (r *queryResolver) Dailyassetprices(
 }
 
 // Exchanges is the resolver for the exchanges field.
-func (r *queryResolver) Exchanges(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ExchangeOrder,
-	where *ent.ExchangeWhereInput,
-) (*ent.ExchangeConnection, error) {
+func (r *queryResolver) Exchanges(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ExchangeOrder, where *ent.ExchangeWhereInput) (*ent.ExchangeConnection, error) {
 	return r.db.Client().Exchange.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -152,10 +122,7 @@ func (r *queryResolver) Exchanges(
 }
 
 // Portfolios is the resolver for the portfolios field.
-func (r *queryResolver) Portfolios(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PortfolioOrder,
-	where *ent.PortfolioWhereInput,
-) (*ent.PortfolioConnection, error) {
+func (r *queryResolver) Portfolios(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PortfolioOrder, where *ent.PortfolioWhereInput) (*ent.PortfolioConnection, error) {
 	return r.db.Client().Portfolio.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -165,10 +132,7 @@ func (r *queryResolver) Portfolios(
 }
 
 // Sources is the resolver for the sources field.
-func (r *queryResolver) Sources(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceOrder,
-	where *ent.SourceWhereInput,
-) (*ent.SourceConnection, error) {
+func (r *queryResolver) Sources(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceOrder, where *ent.SourceWhereInput) (*ent.SourceConnection, error) {
 	return r.db.Client().Source.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -178,10 +142,7 @@ func (r *queryResolver) Sources(
 }
 
 // Sourcetypes is the resolver for the sourcetypes field.
-func (r *queryResolver) Sourcetypes(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceTypeOrder,
-	where *ent.SourceTypeWhereInput,
-) (*ent.SourceTypeConnection, error) {
+func (r *queryResolver) Sourcetypes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceTypeOrder, where *ent.SourceTypeWhereInput) (*ent.SourceTypeConnection, error) {
 	return r.db.Client().SourceType.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -191,10 +152,7 @@ func (r *queryResolver) Sourcetypes(
 }
 
 // Staffaccounts is the resolver for the staffaccounts field.
-func (r *queryResolver) Staffaccounts(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffAccountOrder,
-	where *ent.StaffAccountWhereInput,
-) (*ent.StaffAccountConnection, error) {
+func (r *queryResolver) Staffaccounts(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffAccountOrder, where *ent.StaffAccountWhereInput) (*ent.StaffAccountConnection, error) {
 	return r.db.Client().StaffAccount.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -204,10 +162,7 @@ func (r *queryResolver) Staffaccounts(
 }
 
 // Transactions is the resolver for the transactions field.
-func (r *queryResolver) Transactions(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder,
-	where *ent.TransactionWhereInput,
-) (*ent.TransactionConnection, error) {
+func (r *queryResolver) Transactions(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) (*ent.TransactionConnection, error) {
 	return r.db.Client().Transaction.Query().
 		Paginate(
 			ctx, after, first, before, last,
@@ -217,10 +172,7 @@ func (r *queryResolver) Transactions(
 }
 
 // Transactiontypes is the resolver for the transactiontypes field.
-func (r *queryResolver) Transactiontypes(
-	ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int,
-	orderBy *ent.TransactionTypeOrder, where *ent.TransactionTypeWhereInput,
-) (*ent.TransactionTypeConnection, error) {
+func (r *queryResolver) Transactiontypes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionTypeOrder, where *ent.TransactionTypeWhereInput) (*ent.TransactionTypeConnection, error) {
 	return r.db.Client().TransactionType.Query().
 		Paginate(
 			ctx, after, first, before, last,

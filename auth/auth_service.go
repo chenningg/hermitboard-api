@@ -10,8 +10,8 @@ import (
 )
 
 type AuthServicer interface {
-	RegisterAccount(ctx context.Context, account ent.CreateAccountInput) (*ent.Account, SessionID, error)
-	RegisterStaffAccount(ctx context.Context, staffAccount ent.CreateStaffAccountInput) (
+	CreateAccount(ctx context.Context, account ent.CreateAccountInput) (*ent.Account, SessionID, error)
+	CreateStaffAccount(ctx context.Context, staffAccount ent.CreateStaffAccountInput) (
 		*ent.StaffAccount, SessionID, error,
 	)
 	LoginToLocalAccount(ctx context.Context, username string, password string) (*ent.Account, error)

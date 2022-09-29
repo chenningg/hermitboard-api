@@ -33,7 +33,8 @@ func (Exchange) Fields() []ent.Field {
 		field.String("icon").
 			Optional().
 			Nillable().
-			NotEmpty(),
+			NotEmpty().
+			Annotations(entgql.Skip(entgql.SkipWhereInput)),
 		field.String("url").
 			Optional().
 			Nillable().
@@ -46,7 +47,10 @@ func (Exchange) Fields() []ent.Field {
 func (Exchange) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("transactions", Transaction.Type).
-			Annotations(entgql.RelayConnection(), entgql.MapsTo("transactions")),
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("transactions"),
+				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
+			),
 	}
 }
 

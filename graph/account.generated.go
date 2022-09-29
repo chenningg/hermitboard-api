@@ -93,12 +93,8 @@ func (ec *executionContext) fieldContext_Mutation_createAccount(ctx context.Cont
 				return ec.fieldContext_Account_nickname(ctx, field)
 			case "email":
 				return ec.fieldContext_Account_email(ctx, field)
-			case "password":
-				return ec.fieldContext_Account_password(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
-			case "authTypeID":
-				return ec.fieldContext_Account_authTypeID(ctx, field)
 			case "authRoles":
 				return ec.fieldContext_Account_authRoles(ctx, field)
 			case "portfolios":

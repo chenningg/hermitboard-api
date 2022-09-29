@@ -19,16 +19,10 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
-	// FieldAssetClassID holds the string denoting the asset_class_id field in the database.
-	FieldAssetClassID = "asset_class_id"
 	// EdgeAssetClass holds the string denoting the asset_class edge name in mutations.
 	EdgeAssetClass = "asset_class"
 	// EdgeCryptocurrency holds the string denoting the cryptocurrency edge name in mutations.
 	EdgeCryptocurrency = "cryptocurrency"
-	// EdgeTransactionBases holds the string denoting the transaction_bases edge name in mutations.
-	EdgeTransactionBases = "transaction_bases"
-	// EdgeTransactionQuotes holds the string denoting the transaction_quotes edge name in mutations.
-	EdgeTransactionQuotes = "transaction_quotes"
 	// EdgeDailyAssetPrices holds the string denoting the daily_asset_prices edge name in mutations.
 	EdgeDailyAssetPrices = "daily_asset_prices"
 	// Table holds the table name of the asset in the database.
@@ -39,7 +33,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "assetclass" package.
 	AssetClassInverseTable = "asset_classes"
 	// AssetClassColumn is the table column denoting the asset_class relation/edge.
-	AssetClassColumn = "asset_class_id"
+	AssetClassColumn = "asset_asset_class"
 	// CryptocurrencyTable is the table that holds the cryptocurrency relation/edge.
 	CryptocurrencyTable = "cryptocurrencies"
 	// CryptocurrencyInverseTable is the table name for the Cryptocurrency entity.
@@ -47,20 +41,6 @@ const (
 	CryptocurrencyInverseTable = "cryptocurrencies"
 	// CryptocurrencyColumn is the table column denoting the cryptocurrency relation/edge.
 	CryptocurrencyColumn = "asset_id"
-	// TransactionBasesTable is the table that holds the transaction_bases relation/edge.
-	TransactionBasesTable = "transactions"
-	// TransactionBasesInverseTable is the table name for the Transaction entity.
-	// It exists in this package in order to avoid circular dependency with the "transaction" package.
-	TransactionBasesInverseTable = "transactions"
-	// TransactionBasesColumn is the table column denoting the transaction_bases relation/edge.
-	TransactionBasesColumn = "base_asset_id"
-	// TransactionQuotesTable is the table that holds the transaction_quotes relation/edge.
-	TransactionQuotesTable = "transactions"
-	// TransactionQuotesInverseTable is the table name for the Transaction entity.
-	// It exists in this package in order to avoid circular dependency with the "transaction" package.
-	TransactionQuotesInverseTable = "transactions"
-	// TransactionQuotesColumn is the table column denoting the transaction_quotes relation/edge.
-	TransactionQuotesColumn = "quote_asset_id"
 	// DailyAssetPricesTable is the table that holds the daily_asset_prices relation/edge.
 	DailyAssetPricesTable = "daily_asset_prices"
 	// DailyAssetPricesInverseTable is the table name for the DailyAssetPrice entity.
@@ -76,13 +56,23 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDeletedAt,
-	FieldAssetClassID,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "assets"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"asset_asset_class",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

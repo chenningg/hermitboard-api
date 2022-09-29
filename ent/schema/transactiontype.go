@@ -39,7 +39,7 @@ func (TransactionType) Fields() []ent.Field {
 			).
 			Annotations(
 				entgql.Type("TransactionTypeValue"),
-				entgql.OrderField("TRANSACTION_TYPE"),
+				entgql.OrderField("TRANSACTION_TYPE_VALUE"),
 			),
 		field.String("description").
 			Optional().

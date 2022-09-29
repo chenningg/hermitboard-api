@@ -12,9 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
-	"github.com/chenningg/hermitboard-api/ent/transaction"
 	"github.com/chenningg/hermitboard-api/ent/transactiontype"
-	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // TransactionTypeUpdate is the builder for updating TransactionType entities.
@@ -74,45 +72,9 @@ func (ttu *TransactionTypeUpdate) ClearDescription() *TransactionTypeUpdate {
 	return ttu
 }
 
-// AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
-func (ttu *TransactionTypeUpdate) AddTransactionIDs(ids ...pulid.PULID) *TransactionTypeUpdate {
-	ttu.mutation.AddTransactionIDs(ids...)
-	return ttu
-}
-
-// AddTransactions adds the "transactions" edges to the Transaction entity.
-func (ttu *TransactionTypeUpdate) AddTransactions(t ...*Transaction) *TransactionTypeUpdate {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return ttu.AddTransactionIDs(ids...)
-}
-
 // Mutation returns the TransactionTypeMutation object of the builder.
 func (ttu *TransactionTypeUpdate) Mutation() *TransactionTypeMutation {
 	return ttu.mutation
-}
-
-// ClearTransactions clears all "transactions" edges to the Transaction entity.
-func (ttu *TransactionTypeUpdate) ClearTransactions() *TransactionTypeUpdate {
-	ttu.mutation.ClearTransactions()
-	return ttu
-}
-
-// RemoveTransactionIDs removes the "transactions" edge to Transaction entities by IDs.
-func (ttu *TransactionTypeUpdate) RemoveTransactionIDs(ids ...pulid.PULID) *TransactionTypeUpdate {
-	ttu.mutation.RemoveTransactionIDs(ids...)
-	return ttu
-}
-
-// RemoveTransactions removes "transactions" edges to Transaction entities.
-func (ttu *TransactionTypeUpdate) RemoveTransactions(t ...*Transaction) *TransactionTypeUpdate {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return ttu.RemoveTransactionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -261,60 +223,6 @@ func (ttu *TransactionTypeUpdate) sqlSave(ctx context.Context) (n int, err error
 			Column: transactiontype.FieldDescription,
 		})
 	}
-	if ttu.mutation.TransactionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   transactiontype.TransactionsTable,
-			Columns: []string{transactiontype.TransactionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ttu.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !ttu.mutation.TransactionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   transactiontype.TransactionsTable,
-			Columns: []string{transactiontype.TransactionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ttu.mutation.TransactionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   transactiontype.TransactionsTable,
-			Columns: []string{transactiontype.TransactionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ttu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{transactiontype.Label}
@@ -378,45 +286,9 @@ func (ttuo *TransactionTypeUpdateOne) ClearDescription() *TransactionTypeUpdateO
 	return ttuo
 }
 
-// AddTransactionIDs adds the "transactions" edge to the Transaction entity by IDs.
-func (ttuo *TransactionTypeUpdateOne) AddTransactionIDs(ids ...pulid.PULID) *TransactionTypeUpdateOne {
-	ttuo.mutation.AddTransactionIDs(ids...)
-	return ttuo
-}
-
-// AddTransactions adds the "transactions" edges to the Transaction entity.
-func (ttuo *TransactionTypeUpdateOne) AddTransactions(t ...*Transaction) *TransactionTypeUpdateOne {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return ttuo.AddTransactionIDs(ids...)
-}
-
 // Mutation returns the TransactionTypeMutation object of the builder.
 func (ttuo *TransactionTypeUpdateOne) Mutation() *TransactionTypeMutation {
 	return ttuo.mutation
-}
-
-// ClearTransactions clears all "transactions" edges to the Transaction entity.
-func (ttuo *TransactionTypeUpdateOne) ClearTransactions() *TransactionTypeUpdateOne {
-	ttuo.mutation.ClearTransactions()
-	return ttuo
-}
-
-// RemoveTransactionIDs removes the "transactions" edge to Transaction entities by IDs.
-func (ttuo *TransactionTypeUpdateOne) RemoveTransactionIDs(ids ...pulid.PULID) *TransactionTypeUpdateOne {
-	ttuo.mutation.RemoveTransactionIDs(ids...)
-	return ttuo
-}
-
-// RemoveTransactions removes "transactions" edges to Transaction entities.
-func (ttuo *TransactionTypeUpdateOne) RemoveTransactions(t ...*Transaction) *TransactionTypeUpdateOne {
-	ids := make([]pulid.PULID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return ttuo.RemoveTransactionIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -594,60 +466,6 @@ func (ttuo *TransactionTypeUpdateOne) sqlSave(ctx context.Context) (_node *Trans
 			Type:   field.TypeString,
 			Column: transactiontype.FieldDescription,
 		})
-	}
-	if ttuo.mutation.TransactionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   transactiontype.TransactionsTable,
-			Columns: []string{transactiontype.TransactionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ttuo.mutation.RemovedTransactionsIDs(); len(nodes) > 0 && !ttuo.mutation.TransactionsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   transactiontype.TransactionsTable,
-			Columns: []string{transactiontype.TransactionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ttuo.mutation.TransactionsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   transactiontype.TransactionsTable,
-			Columns: []string{transactiontype.TransactionsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: transaction.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &TransactionType{config: ttuo.config}
 	_spec.Assign = _node.assignValues

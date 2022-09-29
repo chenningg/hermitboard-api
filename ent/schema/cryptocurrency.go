@@ -35,7 +35,8 @@ func (Cryptocurrency) Fields() []ent.Field {
 			Optional().
 			Nillable().
 			NotEmpty().
-			Comment("A url to the image icon for this cryptocurrency."),
+			Comment("A url to the image icon for this cryptocurrency.").
+			Annotations(entgql.Skip(entgql.SkipWhereInput)),
 		field.String("name").
 			NotEmpty().
 			Annotations(entgql.OrderField("NAME")),

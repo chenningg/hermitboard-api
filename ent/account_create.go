@@ -107,12 +107,6 @@ func (ac *AccountCreate) SetNillablePasswordUpdatedAt(t *time.Time) *AccountCrea
 	return ac
 }
 
-// SetAuthTypeID sets the "auth_type_id" field.
-func (ac *AccountCreate) SetAuthTypeID(pu pulid.PULID) *AccountCreate {
-	ac.mutation.SetAuthTypeID(pu)
-	return ac
-}
-
 // SetID sets the "id" field.
 func (ac *AccountCreate) SetID(pu pulid.PULID) *AccountCreate {
 	ac.mutation.SetID(pu)
@@ -155,6 +149,12 @@ func (ac *AccountCreate) AddPortfolios(p ...*Portfolio) *AccountCreate {
 		ids[i] = p[i].ID
 	}
 	return ac.AddPortfolioIDs(ids...)
+}
+
+// SetAuthTypeID sets the "auth_type" edge to the AuthType entity by ID.
+func (ac *AccountCreate) SetAuthTypeID(id pulid.PULID) *AccountCreate {
+	ac.mutation.SetAuthTypeID(id)
+	return ac
 }
 
 // SetAuthType sets the "auth_type" edge to the AuthType entity.
@@ -304,9 +304,6 @@ func (ac *AccountCreate) check() error {
 	if _, ok := ac.mutation.PasswordUpdatedAt(); !ok {
 		return &ValidationError{Name: "password_updated_at", err: errors.New(`ent: missing required field "Account.password_updated_at"`)}
 	}
-	if _, ok := ac.mutation.AuthTypeID(); !ok {
-		return &ValidationError{Name: "auth_type_id", err: errors.New(`ent: missing required field "Account.auth_type_id"`)}
-	}
 	if len(ac.mutation.AuthRolesIDs()) == 0 {
 		return &ValidationError{Name: "auth_roles", err: errors.New(`ent: missing required edge "Account.auth_roles"`)}
 	}
@@ -446,7 +443,7 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 	if nodes := ac.mutation.AuthTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   account.AuthTypeTable,
 			Columns: []string{account.AuthTypeColumn},
 			Bidi:    false,
@@ -460,7 +457,7 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.AuthTypeID = nodes[0]
+		_node.account_auth_type = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ac.mutation.ConnectionsIDs(); len(nodes) > 0 {

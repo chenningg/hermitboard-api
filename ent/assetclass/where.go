@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
@@ -462,34 +461,6 @@ func DescriptionEqualFold(v string) predicate.AssetClass {
 func DescriptionContainsFold(v string) predicate.AssetClass {
 	return predicate.AssetClass(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldDescription), v))
-	})
-}
-
-// HasAssets applies the HasEdge predicate on the "assets" edge.
-func HasAssets() predicate.AssetClass {
-	return predicate.AssetClass(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AssetsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AssetsTable, AssetsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasAssetsWith applies the HasEdge predicate on the "assets" edge with a given conditions (other predicates).
-func HasAssetsWith(preds ...predicate.Asset) predicate.AssetClass {
-	return predicate.AssetClass(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(AssetsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, AssetsTable, AssetsColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
 	})
 }
 

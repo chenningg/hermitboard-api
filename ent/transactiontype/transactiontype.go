@@ -26,17 +26,8 @@ const (
 	FieldValue = "value"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// EdgeTransactions holds the string denoting the transactions edge name in mutations.
-	EdgeTransactions = "transactions"
 	// Table holds the table name of the transactiontype in the database.
 	Table = "transaction_types"
-	// TransactionsTable is the table that holds the transactions relation/edge.
-	TransactionsTable = "transactions"
-	// TransactionsInverseTable is the table name for the Transaction entity.
-	// It exists in this package in order to avoid circular dependency with the "transaction" package.
-	TransactionsInverseTable = "transactions"
-	// TransactionsColumn is the table column denoting the transactions relation/edge.
-	TransactionsColumn = "transaction_type_id"
 )
 
 // Columns holds all SQL columns for transactiontype fields.

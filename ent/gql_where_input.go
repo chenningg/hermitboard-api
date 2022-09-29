@@ -106,23 +106,6 @@ type AccountWhereInput struct {
 	EmailEqualFold    *string  `json:"emailEqualFold,omitempty"`
 	EmailContainsFold *string  `json:"emailContainsFold,omitempty"`
 
-	// "password" field predicates.
-	Password             *string  `json:"password,omitempty"`
-	PasswordNEQ          *string  `json:"passwordNEQ,omitempty"`
-	PasswordIn           []string `json:"passwordIn,omitempty"`
-	PasswordNotIn        []string `json:"passwordNotIn,omitempty"`
-	PasswordGT           *string  `json:"passwordGT,omitempty"`
-	PasswordGTE          *string  `json:"passwordGTE,omitempty"`
-	PasswordLT           *string  `json:"passwordLT,omitempty"`
-	PasswordLTE          *string  `json:"passwordLTE,omitempty"`
-	PasswordContains     *string  `json:"passwordContains,omitempty"`
-	PasswordHasPrefix    *string  `json:"passwordHasPrefix,omitempty"`
-	PasswordHasSuffix    *string  `json:"passwordHasSuffix,omitempty"`
-	PasswordIsNil        bool     `json:"passwordIsNil,omitempty"`
-	PasswordNotNil       bool     `json:"passwordNotNil,omitempty"`
-	PasswordEqualFold    *string  `json:"passwordEqualFold,omitempty"`
-	PasswordContainsFold *string  `json:"passwordContainsFold,omitempty"`
-
 	// "password_updated_at" field predicates.
 	PasswordUpdatedAt      *time.Time  `json:"passwordUpdatedAt,omitempty"`
 	PasswordUpdatedAtNEQ   *time.Time  `json:"passwordUpdatedAtNEQ,omitempty"`
@@ -132,21 +115,6 @@ type AccountWhereInput struct {
 	PasswordUpdatedAtGTE   *time.Time  `json:"passwordUpdatedAtGTE,omitempty"`
 	PasswordUpdatedAtLT    *time.Time  `json:"passwordUpdatedAtLT,omitempty"`
 	PasswordUpdatedAtLTE   *time.Time  `json:"passwordUpdatedAtLTE,omitempty"`
-
-	// "auth_type_id" field predicates.
-	AuthTypeID             *pulid.PULID  `json:"authTypeID,omitempty"`
-	AuthTypeIDNEQ          *pulid.PULID  `json:"authTypeIDNEQ,omitempty"`
-	AuthTypeIDIn           []pulid.PULID `json:"authTypeIDIn,omitempty"`
-	AuthTypeIDNotIn        []pulid.PULID `json:"authTypeIDNotIn,omitempty"`
-	AuthTypeIDGT           *pulid.PULID  `json:"authTypeIDGT,omitempty"`
-	AuthTypeIDGTE          *pulid.PULID  `json:"authTypeIDGTE,omitempty"`
-	AuthTypeIDLT           *pulid.PULID  `json:"authTypeIDLT,omitempty"`
-	AuthTypeIDLTE          *pulid.PULID  `json:"authTypeIDLTE,omitempty"`
-	AuthTypeIDContains     *pulid.PULID  `json:"authTypeIDContains,omitempty"`
-	AuthTypeIDHasPrefix    *pulid.PULID  `json:"authTypeIDHasPrefix,omitempty"`
-	AuthTypeIDHasSuffix    *pulid.PULID  `json:"authTypeIDHasSuffix,omitempty"`
-	AuthTypeIDEqualFold    *pulid.PULID  `json:"authTypeIDEqualFold,omitempty"`
-	AuthTypeIDContainsFold *pulid.PULID  `json:"authTypeIDContainsFold,omitempty"`
 
 	// "auth_roles" edge predicates.
 	HasAuthRoles     *bool                 `json:"hasAuthRoles,omitempty"`
@@ -159,10 +127,6 @@ type AccountWhereInput struct {
 	// "auth_type" edge predicates.
 	HasAuthType     *bool                 `json:"hasAuthType,omitempty"`
 	HasAuthTypeWith []*AuthTypeWhereInput `json:"hasAuthTypeWith,omitempty"`
-
-	// "connections" edge predicates.
-	HasConnections     *bool                   `json:"hasConnections,omitempty"`
-	HasConnectionsWith []*ConnectionWhereInput `json:"hasConnectionsWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -416,51 +380,6 @@ func (i *AccountWhereInput) P() (predicate.Account, error) {
 	if i.EmailContainsFold != nil {
 		predicates = append(predicates, account.EmailContainsFold(*i.EmailContainsFold))
 	}
-	if i.Password != nil {
-		predicates = append(predicates, account.PasswordEQ(*i.Password))
-	}
-	if i.PasswordNEQ != nil {
-		predicates = append(predicates, account.PasswordNEQ(*i.PasswordNEQ))
-	}
-	if len(i.PasswordIn) > 0 {
-		predicates = append(predicates, account.PasswordIn(i.PasswordIn...))
-	}
-	if len(i.PasswordNotIn) > 0 {
-		predicates = append(predicates, account.PasswordNotIn(i.PasswordNotIn...))
-	}
-	if i.PasswordGT != nil {
-		predicates = append(predicates, account.PasswordGT(*i.PasswordGT))
-	}
-	if i.PasswordGTE != nil {
-		predicates = append(predicates, account.PasswordGTE(*i.PasswordGTE))
-	}
-	if i.PasswordLT != nil {
-		predicates = append(predicates, account.PasswordLT(*i.PasswordLT))
-	}
-	if i.PasswordLTE != nil {
-		predicates = append(predicates, account.PasswordLTE(*i.PasswordLTE))
-	}
-	if i.PasswordContains != nil {
-		predicates = append(predicates, account.PasswordContains(*i.PasswordContains))
-	}
-	if i.PasswordHasPrefix != nil {
-		predicates = append(predicates, account.PasswordHasPrefix(*i.PasswordHasPrefix))
-	}
-	if i.PasswordHasSuffix != nil {
-		predicates = append(predicates, account.PasswordHasSuffix(*i.PasswordHasSuffix))
-	}
-	if i.PasswordIsNil {
-		predicates = append(predicates, account.PasswordIsNil())
-	}
-	if i.PasswordNotNil {
-		predicates = append(predicates, account.PasswordNotNil())
-	}
-	if i.PasswordEqualFold != nil {
-		predicates = append(predicates, account.PasswordEqualFold(*i.PasswordEqualFold))
-	}
-	if i.PasswordContainsFold != nil {
-		predicates = append(predicates, account.PasswordContainsFold(*i.PasswordContainsFold))
-	}
 	if i.PasswordUpdatedAt != nil {
 		predicates = append(predicates, account.PasswordUpdatedAtEQ(*i.PasswordUpdatedAt))
 	}
@@ -484,45 +403,6 @@ func (i *AccountWhereInput) P() (predicate.Account, error) {
 	}
 	if i.PasswordUpdatedAtLTE != nil {
 		predicates = append(predicates, account.PasswordUpdatedAtLTE(*i.PasswordUpdatedAtLTE))
-	}
-	if i.AuthTypeID != nil {
-		predicates = append(predicates, account.AuthTypeIDEQ(*i.AuthTypeID))
-	}
-	if i.AuthTypeIDNEQ != nil {
-		predicates = append(predicates, account.AuthTypeIDNEQ(*i.AuthTypeIDNEQ))
-	}
-	if len(i.AuthTypeIDIn) > 0 {
-		predicates = append(predicates, account.AuthTypeIDIn(i.AuthTypeIDIn...))
-	}
-	if len(i.AuthTypeIDNotIn) > 0 {
-		predicates = append(predicates, account.AuthTypeIDNotIn(i.AuthTypeIDNotIn...))
-	}
-	if i.AuthTypeIDGT != nil {
-		predicates = append(predicates, account.AuthTypeIDGT(*i.AuthTypeIDGT))
-	}
-	if i.AuthTypeIDGTE != nil {
-		predicates = append(predicates, account.AuthTypeIDGTE(*i.AuthTypeIDGTE))
-	}
-	if i.AuthTypeIDLT != nil {
-		predicates = append(predicates, account.AuthTypeIDLT(*i.AuthTypeIDLT))
-	}
-	if i.AuthTypeIDLTE != nil {
-		predicates = append(predicates, account.AuthTypeIDLTE(*i.AuthTypeIDLTE))
-	}
-	if i.AuthTypeIDContains != nil {
-		predicates = append(predicates, account.AuthTypeIDContains(*i.AuthTypeIDContains))
-	}
-	if i.AuthTypeIDHasPrefix != nil {
-		predicates = append(predicates, account.AuthTypeIDHasPrefix(*i.AuthTypeIDHasPrefix))
-	}
-	if i.AuthTypeIDHasSuffix != nil {
-		predicates = append(predicates, account.AuthTypeIDHasSuffix(*i.AuthTypeIDHasSuffix))
-	}
-	if i.AuthTypeIDEqualFold != nil {
-		predicates = append(predicates, account.AuthTypeIDEqualFold(*i.AuthTypeIDEqualFold))
-	}
-	if i.AuthTypeIDContainsFold != nil {
-		predicates = append(predicates, account.AuthTypeIDContainsFold(*i.AuthTypeIDContainsFold))
 	}
 
 	if i.HasAuthRoles != nil {
@@ -578,24 +458,6 @@ func (i *AccountWhereInput) P() (predicate.Account, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, account.HasAuthTypeWith(with...))
-	}
-	if i.HasConnections != nil {
-		p := account.HasConnections()
-		if !*i.HasConnections {
-			p = account.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasConnectionsWith) > 0 {
-		with := make([]predicate.Connection, 0, len(i.HasConnectionsWith))
-		for _, w := range i.HasConnectionsWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasConnectionsWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, account.HasConnectionsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -656,21 +518,6 @@ type AssetWhereInput struct {
 	DeletedAtIsNil  bool        `json:"deletedAtIsNil,omitempty"`
 	DeletedAtNotNil bool        `json:"deletedAtNotNil,omitempty"`
 
-	// "asset_class_id" field predicates.
-	AssetClassID             *pulid.PULID  `json:"assetClassID,omitempty"`
-	AssetClassIDNEQ          *pulid.PULID  `json:"assetClassIDNEQ,omitempty"`
-	AssetClassIDIn           []pulid.PULID `json:"assetClassIDIn,omitempty"`
-	AssetClassIDNotIn        []pulid.PULID `json:"assetClassIDNotIn,omitempty"`
-	AssetClassIDGT           *pulid.PULID  `json:"assetClassIDGT,omitempty"`
-	AssetClassIDGTE          *pulid.PULID  `json:"assetClassIDGTE,omitempty"`
-	AssetClassIDLT           *pulid.PULID  `json:"assetClassIDLT,omitempty"`
-	AssetClassIDLTE          *pulid.PULID  `json:"assetClassIDLTE,omitempty"`
-	AssetClassIDContains     *pulid.PULID  `json:"assetClassIDContains,omitempty"`
-	AssetClassIDHasPrefix    *pulid.PULID  `json:"assetClassIDHasPrefix,omitempty"`
-	AssetClassIDHasSuffix    *pulid.PULID  `json:"assetClassIDHasSuffix,omitempty"`
-	AssetClassIDEqualFold    *pulid.PULID  `json:"assetClassIDEqualFold,omitempty"`
-	AssetClassIDContainsFold *pulid.PULID  `json:"assetClassIDContainsFold,omitempty"`
-
 	// "asset_class" edge predicates.
 	HasAssetClass     *bool                   `json:"hasAssetClass,omitempty"`
 	HasAssetClassWith []*AssetClassWhereInput `json:"hasAssetClassWith,omitempty"`
@@ -678,18 +525,6 @@ type AssetWhereInput struct {
 	// "cryptocurrency" edge predicates.
 	HasCryptocurrency     *bool                       `json:"hasCryptocurrency,omitempty"`
 	HasCryptocurrencyWith []*CryptocurrencyWhereInput `json:"hasCryptocurrencyWith,omitempty"`
-
-	// "transaction_bases" edge predicates.
-	HasTransactionBases     *bool                    `json:"hasTransactionBases,omitempty"`
-	HasTransactionBasesWith []*TransactionWhereInput `json:"hasTransactionBasesWith,omitempty"`
-
-	// "transaction_quotes" edge predicates.
-	HasTransactionQuotes     *bool                    `json:"hasTransactionQuotes,omitempty"`
-	HasTransactionQuotesWith []*TransactionWhereInput `json:"hasTransactionQuotesWith,omitempty"`
-
-	// "daily_asset_prices" edge predicates.
-	HasDailyAssetPrices     *bool                        `json:"hasDailyAssetPrices,omitempty"`
-	HasDailyAssetPricesWith []*DailyAssetPriceWhereInput `json:"hasDailyAssetPricesWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -865,45 +700,6 @@ func (i *AssetWhereInput) P() (predicate.Asset, error) {
 	if i.DeletedAtNotNil {
 		predicates = append(predicates, asset.DeletedAtNotNil())
 	}
-	if i.AssetClassID != nil {
-		predicates = append(predicates, asset.AssetClassIDEQ(*i.AssetClassID))
-	}
-	if i.AssetClassIDNEQ != nil {
-		predicates = append(predicates, asset.AssetClassIDNEQ(*i.AssetClassIDNEQ))
-	}
-	if len(i.AssetClassIDIn) > 0 {
-		predicates = append(predicates, asset.AssetClassIDIn(i.AssetClassIDIn...))
-	}
-	if len(i.AssetClassIDNotIn) > 0 {
-		predicates = append(predicates, asset.AssetClassIDNotIn(i.AssetClassIDNotIn...))
-	}
-	if i.AssetClassIDGT != nil {
-		predicates = append(predicates, asset.AssetClassIDGT(*i.AssetClassIDGT))
-	}
-	if i.AssetClassIDGTE != nil {
-		predicates = append(predicates, asset.AssetClassIDGTE(*i.AssetClassIDGTE))
-	}
-	if i.AssetClassIDLT != nil {
-		predicates = append(predicates, asset.AssetClassIDLT(*i.AssetClassIDLT))
-	}
-	if i.AssetClassIDLTE != nil {
-		predicates = append(predicates, asset.AssetClassIDLTE(*i.AssetClassIDLTE))
-	}
-	if i.AssetClassIDContains != nil {
-		predicates = append(predicates, asset.AssetClassIDContains(*i.AssetClassIDContains))
-	}
-	if i.AssetClassIDHasPrefix != nil {
-		predicates = append(predicates, asset.AssetClassIDHasPrefix(*i.AssetClassIDHasPrefix))
-	}
-	if i.AssetClassIDHasSuffix != nil {
-		predicates = append(predicates, asset.AssetClassIDHasSuffix(*i.AssetClassIDHasSuffix))
-	}
-	if i.AssetClassIDEqualFold != nil {
-		predicates = append(predicates, asset.AssetClassIDEqualFold(*i.AssetClassIDEqualFold))
-	}
-	if i.AssetClassIDContainsFold != nil {
-		predicates = append(predicates, asset.AssetClassIDContainsFold(*i.AssetClassIDContainsFold))
-	}
 
 	if i.HasAssetClass != nil {
 		p := asset.HasAssetClass()
@@ -940,60 +736,6 @@ func (i *AssetWhereInput) P() (predicate.Asset, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, asset.HasCryptocurrencyWith(with...))
-	}
-	if i.HasTransactionBases != nil {
-		p := asset.HasTransactionBases()
-		if !*i.HasTransactionBases {
-			p = asset.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasTransactionBasesWith) > 0 {
-		with := make([]predicate.Transaction, 0, len(i.HasTransactionBasesWith))
-		for _, w := range i.HasTransactionBasesWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasTransactionBasesWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, asset.HasTransactionBasesWith(with...))
-	}
-	if i.HasTransactionQuotes != nil {
-		p := asset.HasTransactionQuotes()
-		if !*i.HasTransactionQuotes {
-			p = asset.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasTransactionQuotesWith) > 0 {
-		with := make([]predicate.Transaction, 0, len(i.HasTransactionQuotesWith))
-		for _, w := range i.HasTransactionQuotesWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasTransactionQuotesWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, asset.HasTransactionQuotesWith(with...))
-	}
-	if i.HasDailyAssetPrices != nil {
-		p := asset.HasDailyAssetPrices()
-		if !*i.HasDailyAssetPrices {
-			p = asset.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasDailyAssetPricesWith) > 0 {
-		with := make([]predicate.DailyAssetPrice, 0, len(i.HasDailyAssetPricesWith))
-		for _, w := range i.HasDailyAssetPricesWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasDailyAssetPricesWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, asset.HasDailyAssetPricesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -1076,10 +818,6 @@ type AssetClassWhereInput struct {
 	DescriptionNotNil       bool     `json:"descriptionNotNil,omitempty"`
 	DescriptionEqualFold    *string  `json:"descriptionEqualFold,omitempty"`
 	DescriptionContainsFold *string  `json:"descriptionContainsFold,omitempty"`
-
-	// "assets" edge predicates.
-	HasAssets     *bool              `json:"hasAssets,omitempty"`
-	HasAssetsWith []*AssetWhereInput `json:"hasAssetsWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -1313,24 +1051,6 @@ func (i *AssetClassWhereInput) P() (predicate.AssetClass, error) {
 		predicates = append(predicates, assetclass.DescriptionContainsFold(*i.DescriptionContainsFold))
 	}
 
-	if i.HasAssets != nil {
-		p := assetclass.HasAssets()
-		if !*i.HasAssets {
-			p = assetclass.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasAssetsWith) > 0 {
-		with := make([]predicate.Asset, 0, len(i.HasAssetsWith))
-		for _, w := range i.HasAssetsWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasAssetsWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, assetclass.HasAssetsWith(with...))
-	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptyAssetClassWhereInput
@@ -1412,14 +1132,6 @@ type AuthRoleWhereInput struct {
 	DescriptionNotNil       bool     `json:"descriptionNotNil,omitempty"`
 	DescriptionEqualFold    *string  `json:"descriptionEqualFold,omitempty"`
 	DescriptionContainsFold *string  `json:"descriptionContainsFold,omitempty"`
-
-	// "accounts" edge predicates.
-	HasAccounts     *bool                `json:"hasAccounts,omitempty"`
-	HasAccountsWith []*AccountWhereInput `json:"hasAccountsWith,omitempty"`
-
-	// "staff_accounts" edge predicates.
-	HasStaffAccounts     *bool                     `json:"hasStaffAccounts,omitempty"`
-	HasStaffAccountsWith []*StaffAccountWhereInput `json:"hasStaffAccountsWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -1653,42 +1365,6 @@ func (i *AuthRoleWhereInput) P() (predicate.AuthRole, error) {
 		predicates = append(predicates, authrole.DescriptionContainsFold(*i.DescriptionContainsFold))
 	}
 
-	if i.HasAccounts != nil {
-		p := authrole.HasAccounts()
-		if !*i.HasAccounts {
-			p = authrole.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasAccountsWith) > 0 {
-		with := make([]predicate.Account, 0, len(i.HasAccountsWith))
-		for _, w := range i.HasAccountsWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasAccountsWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, authrole.HasAccountsWith(with...))
-	}
-	if i.HasStaffAccounts != nil {
-		p := authrole.HasStaffAccounts()
-		if !*i.HasStaffAccounts {
-			p = authrole.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasStaffAccountsWith) > 0 {
-		with := make([]predicate.StaffAccount, 0, len(i.HasStaffAccountsWith))
-		for _, w := range i.HasStaffAccountsWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasStaffAccountsWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, authrole.HasStaffAccountsWith(with...))
-	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptyAuthRoleWhereInput
@@ -1770,14 +1446,6 @@ type AuthTypeWhereInput struct {
 	DescriptionNotNil       bool     `json:"descriptionNotNil,omitempty"`
 	DescriptionEqualFold    *string  `json:"descriptionEqualFold,omitempty"`
 	DescriptionContainsFold *string  `json:"descriptionContainsFold,omitempty"`
-
-	// "accounts" edge predicates.
-	HasAccounts     *bool                `json:"hasAccounts,omitempty"`
-	HasAccountsWith []*AccountWhereInput `json:"hasAccountsWith,omitempty"`
-
-	// "staff_accounts" edge predicates.
-	HasStaffAccounts     *bool                     `json:"hasStaffAccounts,omitempty"`
-	HasStaffAccountsWith []*StaffAccountWhereInput `json:"hasStaffAccountsWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -2011,42 +1679,6 @@ func (i *AuthTypeWhereInput) P() (predicate.AuthType, error) {
 		predicates = append(predicates, authtype.DescriptionContainsFold(*i.DescriptionContainsFold))
 	}
 
-	if i.HasAccounts != nil {
-		p := authtype.HasAccounts()
-		if !*i.HasAccounts {
-			p = authtype.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasAccountsWith) > 0 {
-		with := make([]predicate.Account, 0, len(i.HasAccountsWith))
-		for _, w := range i.HasAccountsWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasAccountsWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, authtype.HasAccountsWith(with...))
-	}
-	if i.HasStaffAccounts != nil {
-		p := authtype.HasStaffAccounts()
-		if !*i.HasStaffAccounts {
-			p = authtype.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasStaffAccountsWith) > 0 {
-		with := make([]predicate.StaffAccount, 0, len(i.HasStaffAccountsWith))
-		for _, w := range i.HasStaffAccountsWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasStaffAccountsWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, authtype.HasStaffAccountsWith(with...))
-	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptyAuthTypeWhereInput
@@ -2136,23 +1768,6 @@ type BlockchainWhereInput struct {
 	SymbolEqualFold    *string  `json:"symbolEqualFold,omitempty"`
 	SymbolContainsFold *string  `json:"symbolContainsFold,omitempty"`
 
-	// "icon" field predicates.
-	Icon             *string  `json:"icon,omitempty"`
-	IconNEQ          *string  `json:"iconNEQ,omitempty"`
-	IconIn           []string `json:"iconIn,omitempty"`
-	IconNotIn        []string `json:"iconNotIn,omitempty"`
-	IconGT           *string  `json:"iconGT,omitempty"`
-	IconGTE          *string  `json:"iconGTE,omitempty"`
-	IconLT           *string  `json:"iconLT,omitempty"`
-	IconLTE          *string  `json:"iconLTE,omitempty"`
-	IconContains     *string  `json:"iconContains,omitempty"`
-	IconHasPrefix    *string  `json:"iconHasPrefix,omitempty"`
-	IconHasSuffix    *string  `json:"iconHasSuffix,omitempty"`
-	IconIsNil        bool     `json:"iconIsNil,omitempty"`
-	IconNotNil       bool     `json:"iconNotNil,omitempty"`
-	IconEqualFold    *string  `json:"iconEqualFold,omitempty"`
-	IconContainsFold *string  `json:"iconContainsFold,omitempty"`
-
 	// "chain_id" field predicates.
 	ChainID       *int64  `json:"chainID,omitempty"`
 	ChainIDNEQ    *int64  `json:"chainIDNEQ,omitempty"`
@@ -2164,14 +1779,6 @@ type BlockchainWhereInput struct {
 	ChainIDLTE    *int64  `json:"chainIDLTE,omitempty"`
 	ChainIDIsNil  bool    `json:"chainIDIsNil,omitempty"`
 	ChainIDNotNil bool    `json:"chainIDNotNil,omitempty"`
-
-	// "cryptocurrencies" edge predicates.
-	HasCryptocurrencies     *bool                       `json:"hasCryptocurrencies,omitempty"`
-	HasCryptocurrenciesWith []*CryptocurrencyWhereInput `json:"hasCryptocurrenciesWith,omitempty"`
-
-	// "transactions" edge predicates.
-	HasTransactions     *bool                    `json:"hasTransactions,omitempty"`
-	HasTransactionsWith []*TransactionWhereInput `json:"hasTransactionsWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -2425,51 +2032,6 @@ func (i *BlockchainWhereInput) P() (predicate.Blockchain, error) {
 	if i.SymbolContainsFold != nil {
 		predicates = append(predicates, blockchain.SymbolContainsFold(*i.SymbolContainsFold))
 	}
-	if i.Icon != nil {
-		predicates = append(predicates, blockchain.IconEQ(*i.Icon))
-	}
-	if i.IconNEQ != nil {
-		predicates = append(predicates, blockchain.IconNEQ(*i.IconNEQ))
-	}
-	if len(i.IconIn) > 0 {
-		predicates = append(predicates, blockchain.IconIn(i.IconIn...))
-	}
-	if len(i.IconNotIn) > 0 {
-		predicates = append(predicates, blockchain.IconNotIn(i.IconNotIn...))
-	}
-	if i.IconGT != nil {
-		predicates = append(predicates, blockchain.IconGT(*i.IconGT))
-	}
-	if i.IconGTE != nil {
-		predicates = append(predicates, blockchain.IconGTE(*i.IconGTE))
-	}
-	if i.IconLT != nil {
-		predicates = append(predicates, blockchain.IconLT(*i.IconLT))
-	}
-	if i.IconLTE != nil {
-		predicates = append(predicates, blockchain.IconLTE(*i.IconLTE))
-	}
-	if i.IconContains != nil {
-		predicates = append(predicates, blockchain.IconContains(*i.IconContains))
-	}
-	if i.IconHasPrefix != nil {
-		predicates = append(predicates, blockchain.IconHasPrefix(*i.IconHasPrefix))
-	}
-	if i.IconHasSuffix != nil {
-		predicates = append(predicates, blockchain.IconHasSuffix(*i.IconHasSuffix))
-	}
-	if i.IconIsNil {
-		predicates = append(predicates, blockchain.IconIsNil())
-	}
-	if i.IconNotNil {
-		predicates = append(predicates, blockchain.IconNotNil())
-	}
-	if i.IconEqualFold != nil {
-		predicates = append(predicates, blockchain.IconEqualFold(*i.IconEqualFold))
-	}
-	if i.IconContainsFold != nil {
-		predicates = append(predicates, blockchain.IconContainsFold(*i.IconContainsFold))
-	}
 	if i.ChainID != nil {
 		predicates = append(predicates, blockchain.ChainIDEQ(*i.ChainID))
 	}
@@ -2501,42 +2063,6 @@ func (i *BlockchainWhereInput) P() (predicate.Blockchain, error) {
 		predicates = append(predicates, blockchain.ChainIDNotNil())
 	}
 
-	if i.HasCryptocurrencies != nil {
-		p := blockchain.HasCryptocurrencies()
-		if !*i.HasCryptocurrencies {
-			p = blockchain.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasCryptocurrenciesWith) > 0 {
-		with := make([]predicate.Cryptocurrency, 0, len(i.HasCryptocurrenciesWith))
-		for _, w := range i.HasCryptocurrenciesWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasCryptocurrenciesWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, blockchain.HasCryptocurrenciesWith(with...))
-	}
-	if i.HasTransactions != nil {
-		p := blockchain.HasTransactions()
-		if !*i.HasTransactions {
-			p = blockchain.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasTransactionsWith) > 0 {
-		with := make([]predicate.Transaction, 0, len(i.HasTransactionsWith))
-		for _, w := range i.HasTransactionsWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasTransactionsWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, blockchain.HasTransactionsWith(with...))
-	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptyBlockchainWhereInput
@@ -2611,21 +2137,6 @@ type ConnectionWhereInput struct {
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
 
-	// "access_token" field predicates.
-	AccessToken             *string  `json:"accessToken,omitempty"`
-	AccessTokenNEQ          *string  `json:"accessTokenNEQ,omitempty"`
-	AccessTokenIn           []string `json:"accessTokenIn,omitempty"`
-	AccessTokenNotIn        []string `json:"accessTokenNotIn,omitempty"`
-	AccessTokenGT           *string  `json:"accessTokenGT,omitempty"`
-	AccessTokenGTE          *string  `json:"accessTokenGTE,omitempty"`
-	AccessTokenLT           *string  `json:"accessTokenLT,omitempty"`
-	AccessTokenLTE          *string  `json:"accessTokenLTE,omitempty"`
-	AccessTokenContains     *string  `json:"accessTokenContains,omitempty"`
-	AccessTokenHasPrefix    *string  `json:"accessTokenHasPrefix,omitempty"`
-	AccessTokenHasSuffix    *string  `json:"accessTokenHasSuffix,omitempty"`
-	AccessTokenEqualFold    *string  `json:"accessTokenEqualFold,omitempty"`
-	AccessTokenContainsFold *string  `json:"accessTokenContainsFold,omitempty"`
-
 	// "account_id" field predicates.
 	AccountID             *pulid.PULID  `json:"accountID,omitempty"`
 	AccountIDNEQ          *pulid.PULID  `json:"accountIDNEQ,omitempty"`
@@ -2644,10 +2155,6 @@ type ConnectionWhereInput struct {
 	// "account" edge predicates.
 	HasAccount     *bool                `json:"hasAccount,omitempty"`
 	HasAccountWith []*AccountWhereInput `json:"hasAccountWith,omitempty"`
-
-	// "portfolios" edge predicates.
-	HasPortfolios     *bool                  `json:"hasPortfolios,omitempty"`
-	HasPortfoliosWith []*PortfolioWhereInput `json:"hasPortfoliosWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -2862,45 +2369,6 @@ func (i *ConnectionWhereInput) P() (predicate.Connection, error) {
 	if i.NameContainsFold != nil {
 		predicates = append(predicates, connection.NameContainsFold(*i.NameContainsFold))
 	}
-	if i.AccessToken != nil {
-		predicates = append(predicates, connection.AccessTokenEQ(*i.AccessToken))
-	}
-	if i.AccessTokenNEQ != nil {
-		predicates = append(predicates, connection.AccessTokenNEQ(*i.AccessTokenNEQ))
-	}
-	if len(i.AccessTokenIn) > 0 {
-		predicates = append(predicates, connection.AccessTokenIn(i.AccessTokenIn...))
-	}
-	if len(i.AccessTokenNotIn) > 0 {
-		predicates = append(predicates, connection.AccessTokenNotIn(i.AccessTokenNotIn...))
-	}
-	if i.AccessTokenGT != nil {
-		predicates = append(predicates, connection.AccessTokenGT(*i.AccessTokenGT))
-	}
-	if i.AccessTokenGTE != nil {
-		predicates = append(predicates, connection.AccessTokenGTE(*i.AccessTokenGTE))
-	}
-	if i.AccessTokenLT != nil {
-		predicates = append(predicates, connection.AccessTokenLT(*i.AccessTokenLT))
-	}
-	if i.AccessTokenLTE != nil {
-		predicates = append(predicates, connection.AccessTokenLTE(*i.AccessTokenLTE))
-	}
-	if i.AccessTokenContains != nil {
-		predicates = append(predicates, connection.AccessTokenContains(*i.AccessTokenContains))
-	}
-	if i.AccessTokenHasPrefix != nil {
-		predicates = append(predicates, connection.AccessTokenHasPrefix(*i.AccessTokenHasPrefix))
-	}
-	if i.AccessTokenHasSuffix != nil {
-		predicates = append(predicates, connection.AccessTokenHasSuffix(*i.AccessTokenHasSuffix))
-	}
-	if i.AccessTokenEqualFold != nil {
-		predicates = append(predicates, connection.AccessTokenEqualFold(*i.AccessTokenEqualFold))
-	}
-	if i.AccessTokenContainsFold != nil {
-		predicates = append(predicates, connection.AccessTokenContainsFold(*i.AccessTokenContainsFold))
-	}
 	if i.AccountID != nil {
 		predicates = append(predicates, connection.AccountIDEQ(*i.AccountID))
 	}
@@ -2958,24 +2426,6 @@ func (i *ConnectionWhereInput) P() (predicate.Connection, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, connection.HasAccountWith(with...))
-	}
-	if i.HasPortfolios != nil {
-		p := connection.HasPortfolios()
-		if !*i.HasPortfolios {
-			p = connection.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasPortfoliosWith) > 0 {
-		with := make([]predicate.Portfolio, 0, len(i.HasPortfoliosWith))
-		for _, w := range i.HasPortfoliosWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasPortfoliosWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, connection.HasPortfoliosWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -3050,23 +2500,6 @@ type CryptocurrencyWhereInput struct {
 	SymbolHasSuffix    *string  `json:"symbolHasSuffix,omitempty"`
 	SymbolEqualFold    *string  `json:"symbolEqualFold,omitempty"`
 	SymbolContainsFold *string  `json:"symbolContainsFold,omitempty"`
-
-	// "icon" field predicates.
-	Icon             *string  `json:"icon,omitempty"`
-	IconNEQ          *string  `json:"iconNEQ,omitempty"`
-	IconIn           []string `json:"iconIn,omitempty"`
-	IconNotIn        []string `json:"iconNotIn,omitempty"`
-	IconGT           *string  `json:"iconGT,omitempty"`
-	IconGTE          *string  `json:"iconGTE,omitempty"`
-	IconLT           *string  `json:"iconLT,omitempty"`
-	IconLTE          *string  `json:"iconLTE,omitempty"`
-	IconContains     *string  `json:"iconContains,omitempty"`
-	IconHasPrefix    *string  `json:"iconHasPrefix,omitempty"`
-	IconHasSuffix    *string  `json:"iconHasSuffix,omitempty"`
-	IconIsNil        bool     `json:"iconIsNil,omitempty"`
-	IconNotNil       bool     `json:"iconNotNil,omitempty"`
-	IconEqualFold    *string  `json:"iconEqualFold,omitempty"`
-	IconContainsFold *string  `json:"iconContainsFold,omitempty"`
 
 	// "name" field predicates.
 	Name             *string  `json:"name,omitempty"`
@@ -3318,51 +2751,6 @@ func (i *CryptocurrencyWhereInput) P() (predicate.Cryptocurrency, error) {
 	}
 	if i.SymbolContainsFold != nil {
 		predicates = append(predicates, cryptocurrency.SymbolContainsFold(*i.SymbolContainsFold))
-	}
-	if i.Icon != nil {
-		predicates = append(predicates, cryptocurrency.IconEQ(*i.Icon))
-	}
-	if i.IconNEQ != nil {
-		predicates = append(predicates, cryptocurrency.IconNEQ(*i.IconNEQ))
-	}
-	if len(i.IconIn) > 0 {
-		predicates = append(predicates, cryptocurrency.IconIn(i.IconIn...))
-	}
-	if len(i.IconNotIn) > 0 {
-		predicates = append(predicates, cryptocurrency.IconNotIn(i.IconNotIn...))
-	}
-	if i.IconGT != nil {
-		predicates = append(predicates, cryptocurrency.IconGT(*i.IconGT))
-	}
-	if i.IconGTE != nil {
-		predicates = append(predicates, cryptocurrency.IconGTE(*i.IconGTE))
-	}
-	if i.IconLT != nil {
-		predicates = append(predicates, cryptocurrency.IconLT(*i.IconLT))
-	}
-	if i.IconLTE != nil {
-		predicates = append(predicates, cryptocurrency.IconLTE(*i.IconLTE))
-	}
-	if i.IconContains != nil {
-		predicates = append(predicates, cryptocurrency.IconContains(*i.IconContains))
-	}
-	if i.IconHasPrefix != nil {
-		predicates = append(predicates, cryptocurrency.IconHasPrefix(*i.IconHasPrefix))
-	}
-	if i.IconHasSuffix != nil {
-		predicates = append(predicates, cryptocurrency.IconHasSuffix(*i.IconHasSuffix))
-	}
-	if i.IconIsNil {
-		predicates = append(predicates, cryptocurrency.IconIsNil())
-	}
-	if i.IconNotNil {
-		predicates = append(predicates, cryptocurrency.IconNotNil())
-	}
-	if i.IconEqualFold != nil {
-		predicates = append(predicates, cryptocurrency.IconEqualFold(*i.IconEqualFold))
-	}
-	if i.IconContainsFold != nil {
-		predicates = append(predicates, cryptocurrency.IconContainsFold(*i.IconContainsFold))
 	}
 	if i.Name != nil {
 		predicates = append(predicates, cryptocurrency.NameEQ(*i.Name))
@@ -4099,23 +3487,6 @@ type ExchangeWhereInput struct {
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
 
-	// "icon" field predicates.
-	Icon             *string  `json:"icon,omitempty"`
-	IconNEQ          *string  `json:"iconNEQ,omitempty"`
-	IconIn           []string `json:"iconIn,omitempty"`
-	IconNotIn        []string `json:"iconNotIn,omitempty"`
-	IconGT           *string  `json:"iconGT,omitempty"`
-	IconGTE          *string  `json:"iconGTE,omitempty"`
-	IconLT           *string  `json:"iconLT,omitempty"`
-	IconLTE          *string  `json:"iconLTE,omitempty"`
-	IconContains     *string  `json:"iconContains,omitempty"`
-	IconHasPrefix    *string  `json:"iconHasPrefix,omitempty"`
-	IconHasSuffix    *string  `json:"iconHasSuffix,omitempty"`
-	IconIsNil        bool     `json:"iconIsNil,omitempty"`
-	IconNotNil       bool     `json:"iconNotNil,omitempty"`
-	IconEqualFold    *string  `json:"iconEqualFold,omitempty"`
-	IconContainsFold *string  `json:"iconContainsFold,omitempty"`
-
 	// "url" field predicates.
 	URL             *string  `json:"url,omitempty"`
 	URLNEQ          *string  `json:"urlNEQ,omitempty"`
@@ -4350,51 +3721,6 @@ func (i *ExchangeWhereInput) P() (predicate.Exchange, error) {
 	if i.NameContainsFold != nil {
 		predicates = append(predicates, exchange.NameContainsFold(*i.NameContainsFold))
 	}
-	if i.Icon != nil {
-		predicates = append(predicates, exchange.IconEQ(*i.Icon))
-	}
-	if i.IconNEQ != nil {
-		predicates = append(predicates, exchange.IconNEQ(*i.IconNEQ))
-	}
-	if len(i.IconIn) > 0 {
-		predicates = append(predicates, exchange.IconIn(i.IconIn...))
-	}
-	if len(i.IconNotIn) > 0 {
-		predicates = append(predicates, exchange.IconNotIn(i.IconNotIn...))
-	}
-	if i.IconGT != nil {
-		predicates = append(predicates, exchange.IconGT(*i.IconGT))
-	}
-	if i.IconGTE != nil {
-		predicates = append(predicates, exchange.IconGTE(*i.IconGTE))
-	}
-	if i.IconLT != nil {
-		predicates = append(predicates, exchange.IconLT(*i.IconLT))
-	}
-	if i.IconLTE != nil {
-		predicates = append(predicates, exchange.IconLTE(*i.IconLTE))
-	}
-	if i.IconContains != nil {
-		predicates = append(predicates, exchange.IconContains(*i.IconContains))
-	}
-	if i.IconHasPrefix != nil {
-		predicates = append(predicates, exchange.IconHasPrefix(*i.IconHasPrefix))
-	}
-	if i.IconHasSuffix != nil {
-		predicates = append(predicates, exchange.IconHasSuffix(*i.IconHasSuffix))
-	}
-	if i.IconIsNil {
-		predicates = append(predicates, exchange.IconIsNil())
-	}
-	if i.IconNotNil {
-		predicates = append(predicates, exchange.IconNotNil())
-	}
-	if i.IconEqualFold != nil {
-		predicates = append(predicates, exchange.IconEqualFold(*i.IconEqualFold))
-	}
-	if i.IconContainsFold != nil {
-		predicates = append(predicates, exchange.IconContainsFold(*i.IconContainsFold))
-	}
 	if i.URL != nil {
 		predicates = append(predicates, exchange.URLEQ(*i.URL))
 	}
@@ -4559,10 +3885,6 @@ type PortfolioWhereInput struct {
 	// "account" edge predicates.
 	HasAccount     *bool                `json:"hasAccount,omitempty"`
 	HasAccountWith []*AccountWhereInput `json:"hasAccountWith,omitempty"`
-
-	// "transactions" edge predicates.
-	HasTransactions     *bool                    `json:"hasTransactions,omitempty"`
-	HasTransactionsWith []*TransactionWhereInput `json:"hasTransactionsWith,omitempty"`
 
 	// "connections" edge predicates.
 	HasConnections     *bool                   `json:"hasConnections,omitempty"`
@@ -4851,24 +4173,6 @@ func (i *PortfolioWhereInput) P() (predicate.Portfolio, error) {
 		}
 		predicates = append(predicates, portfolio.HasAccountWith(with...))
 	}
-	if i.HasTransactions != nil {
-		p := portfolio.HasTransactions()
-		if !*i.HasTransactions {
-			p = portfolio.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasTransactionsWith) > 0 {
-		with := make([]predicate.Transaction, 0, len(i.HasTransactionsWith))
-		for _, w := range i.HasTransactionsWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasTransactionsWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, portfolio.HasTransactionsWith(with...))
-	}
 	if i.HasConnections != nil {
 		p := portfolio.HasConnections()
 		if !*i.HasConnections {
@@ -4960,23 +4264,6 @@ type SourceWhereInput struct {
 	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
-
-	// "icon" field predicates.
-	Icon             *string  `json:"icon,omitempty"`
-	IconNEQ          *string  `json:"iconNEQ,omitempty"`
-	IconIn           []string `json:"iconIn,omitempty"`
-	IconNotIn        []string `json:"iconNotIn,omitempty"`
-	IconGT           *string  `json:"iconGT,omitempty"`
-	IconGTE          *string  `json:"iconGTE,omitempty"`
-	IconLT           *string  `json:"iconLT,omitempty"`
-	IconLTE          *string  `json:"iconLTE,omitempty"`
-	IconContains     *string  `json:"iconContains,omitempty"`
-	IconHasPrefix    *string  `json:"iconHasPrefix,omitempty"`
-	IconHasSuffix    *string  `json:"iconHasSuffix,omitempty"`
-	IconIsNil        bool     `json:"iconIsNil,omitempty"`
-	IconNotNil       bool     `json:"iconNotNil,omitempty"`
-	IconEqualFold    *string  `json:"iconEqualFold,omitempty"`
-	IconContainsFold *string  `json:"iconContainsFold,omitempty"`
 
 	// "source_type_id" field predicates.
 	SourceTypeID             *pulid.PULID  `json:"sourceTypeID,omitempty"`
@@ -5210,51 +4497,6 @@ func (i *SourceWhereInput) P() (predicate.Source, error) {
 	if i.NameContainsFold != nil {
 		predicates = append(predicates, source.NameContainsFold(*i.NameContainsFold))
 	}
-	if i.Icon != nil {
-		predicates = append(predicates, source.IconEQ(*i.Icon))
-	}
-	if i.IconNEQ != nil {
-		predicates = append(predicates, source.IconNEQ(*i.IconNEQ))
-	}
-	if len(i.IconIn) > 0 {
-		predicates = append(predicates, source.IconIn(i.IconIn...))
-	}
-	if len(i.IconNotIn) > 0 {
-		predicates = append(predicates, source.IconNotIn(i.IconNotIn...))
-	}
-	if i.IconGT != nil {
-		predicates = append(predicates, source.IconGT(*i.IconGT))
-	}
-	if i.IconGTE != nil {
-		predicates = append(predicates, source.IconGTE(*i.IconGTE))
-	}
-	if i.IconLT != nil {
-		predicates = append(predicates, source.IconLT(*i.IconLT))
-	}
-	if i.IconLTE != nil {
-		predicates = append(predicates, source.IconLTE(*i.IconLTE))
-	}
-	if i.IconContains != nil {
-		predicates = append(predicates, source.IconContains(*i.IconContains))
-	}
-	if i.IconHasPrefix != nil {
-		predicates = append(predicates, source.IconHasPrefix(*i.IconHasPrefix))
-	}
-	if i.IconHasSuffix != nil {
-		predicates = append(predicates, source.IconHasSuffix(*i.IconHasSuffix))
-	}
-	if i.IconIsNil {
-		predicates = append(predicates, source.IconIsNil())
-	}
-	if i.IconNotNil {
-		predicates = append(predicates, source.IconNotNil())
-	}
-	if i.IconEqualFold != nil {
-		predicates = append(predicates, source.IconEqualFold(*i.IconEqualFold))
-	}
-	if i.IconContainsFold != nil {
-		predicates = append(predicates, source.IconContainsFold(*i.IconContainsFold))
-	}
 	if i.SourceTypeID != nil {
 		predicates = append(predicates, source.SourceTypeIDEQ(*i.SourceTypeID))
 	}
@@ -5394,10 +4636,6 @@ type SourceTypeWhereInput struct {
 	DescriptionNotNil       bool     `json:"descriptionNotNil,omitempty"`
 	DescriptionEqualFold    *string  `json:"descriptionEqualFold,omitempty"`
 	DescriptionContainsFold *string  `json:"descriptionContainsFold,omitempty"`
-
-	// "sources" edge predicates.
-	HasSources     *bool               `json:"hasSources,omitempty"`
-	HasSourcesWith []*SourceWhereInput `json:"hasSourcesWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -5631,24 +4869,6 @@ func (i *SourceTypeWhereInput) P() (predicate.SourceType, error) {
 		predicates = append(predicates, sourcetype.DescriptionContainsFold(*i.DescriptionContainsFold))
 	}
 
-	if i.HasSources != nil {
-		p := sourcetype.HasSources()
-		if !*i.HasSources {
-			p = sourcetype.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasSourcesWith) > 0 {
-		with := make([]predicate.Source, 0, len(i.HasSourcesWith))
-		for _, w := range i.HasSourcesWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasSourcesWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, sourcetype.HasSourcesWith(with...))
-	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptySourceTypeWhereInput
@@ -5738,23 +4958,6 @@ type StaffAccountWhereInput struct {
 	EmailEqualFold    *string  `json:"emailEqualFold,omitempty"`
 	EmailContainsFold *string  `json:"emailContainsFold,omitempty"`
 
-	// "password" field predicates.
-	Password             *string  `json:"password,omitempty"`
-	PasswordNEQ          *string  `json:"passwordNEQ,omitempty"`
-	PasswordIn           []string `json:"passwordIn,omitempty"`
-	PasswordNotIn        []string `json:"passwordNotIn,omitempty"`
-	PasswordGT           *string  `json:"passwordGT,omitempty"`
-	PasswordGTE          *string  `json:"passwordGTE,omitempty"`
-	PasswordLT           *string  `json:"passwordLT,omitempty"`
-	PasswordLTE          *string  `json:"passwordLTE,omitempty"`
-	PasswordContains     *string  `json:"passwordContains,omitempty"`
-	PasswordHasPrefix    *string  `json:"passwordHasPrefix,omitempty"`
-	PasswordHasSuffix    *string  `json:"passwordHasSuffix,omitempty"`
-	PasswordIsNil        bool     `json:"passwordIsNil,omitempty"`
-	PasswordNotNil       bool     `json:"passwordNotNil,omitempty"`
-	PasswordEqualFold    *string  `json:"passwordEqualFold,omitempty"`
-	PasswordContainsFold *string  `json:"passwordContainsFold,omitempty"`
-
 	// "password_updated_at" field predicates.
 	PasswordUpdatedAt      *time.Time  `json:"passwordUpdatedAt,omitempty"`
 	PasswordUpdatedAtNEQ   *time.Time  `json:"passwordUpdatedAtNEQ,omitempty"`
@@ -5764,21 +4967,6 @@ type StaffAccountWhereInput struct {
 	PasswordUpdatedAtGTE   *time.Time  `json:"passwordUpdatedAtGTE,omitempty"`
 	PasswordUpdatedAtLT    *time.Time  `json:"passwordUpdatedAtLT,omitempty"`
 	PasswordUpdatedAtLTE   *time.Time  `json:"passwordUpdatedAtLTE,omitempty"`
-
-	// "auth_type_id" field predicates.
-	AuthTypeID             *pulid.PULID  `json:"authTypeID,omitempty"`
-	AuthTypeIDNEQ          *pulid.PULID  `json:"authTypeIDNEQ,omitempty"`
-	AuthTypeIDIn           []pulid.PULID `json:"authTypeIDIn,omitempty"`
-	AuthTypeIDNotIn        []pulid.PULID `json:"authTypeIDNotIn,omitempty"`
-	AuthTypeIDGT           *pulid.PULID  `json:"authTypeIDGT,omitempty"`
-	AuthTypeIDGTE          *pulid.PULID  `json:"authTypeIDGTE,omitempty"`
-	AuthTypeIDLT           *pulid.PULID  `json:"authTypeIDLT,omitempty"`
-	AuthTypeIDLTE          *pulid.PULID  `json:"authTypeIDLTE,omitempty"`
-	AuthTypeIDContains     *pulid.PULID  `json:"authTypeIDContains,omitempty"`
-	AuthTypeIDHasPrefix    *pulid.PULID  `json:"authTypeIDHasPrefix,omitempty"`
-	AuthTypeIDHasSuffix    *pulid.PULID  `json:"authTypeIDHasSuffix,omitempty"`
-	AuthTypeIDEqualFold    *pulid.PULID  `json:"authTypeIDEqualFold,omitempty"`
-	AuthTypeIDContainsFold *pulid.PULID  `json:"authTypeIDContainsFold,omitempty"`
 
 	// "auth_roles" edge predicates.
 	HasAuthRoles     *bool                 `json:"hasAuthRoles,omitempty"`
@@ -6040,51 +5228,6 @@ func (i *StaffAccountWhereInput) P() (predicate.StaffAccount, error) {
 	if i.EmailContainsFold != nil {
 		predicates = append(predicates, staffaccount.EmailContainsFold(*i.EmailContainsFold))
 	}
-	if i.Password != nil {
-		predicates = append(predicates, staffaccount.PasswordEQ(*i.Password))
-	}
-	if i.PasswordNEQ != nil {
-		predicates = append(predicates, staffaccount.PasswordNEQ(*i.PasswordNEQ))
-	}
-	if len(i.PasswordIn) > 0 {
-		predicates = append(predicates, staffaccount.PasswordIn(i.PasswordIn...))
-	}
-	if len(i.PasswordNotIn) > 0 {
-		predicates = append(predicates, staffaccount.PasswordNotIn(i.PasswordNotIn...))
-	}
-	if i.PasswordGT != nil {
-		predicates = append(predicates, staffaccount.PasswordGT(*i.PasswordGT))
-	}
-	if i.PasswordGTE != nil {
-		predicates = append(predicates, staffaccount.PasswordGTE(*i.PasswordGTE))
-	}
-	if i.PasswordLT != nil {
-		predicates = append(predicates, staffaccount.PasswordLT(*i.PasswordLT))
-	}
-	if i.PasswordLTE != nil {
-		predicates = append(predicates, staffaccount.PasswordLTE(*i.PasswordLTE))
-	}
-	if i.PasswordContains != nil {
-		predicates = append(predicates, staffaccount.PasswordContains(*i.PasswordContains))
-	}
-	if i.PasswordHasPrefix != nil {
-		predicates = append(predicates, staffaccount.PasswordHasPrefix(*i.PasswordHasPrefix))
-	}
-	if i.PasswordHasSuffix != nil {
-		predicates = append(predicates, staffaccount.PasswordHasSuffix(*i.PasswordHasSuffix))
-	}
-	if i.PasswordIsNil {
-		predicates = append(predicates, staffaccount.PasswordIsNil())
-	}
-	if i.PasswordNotNil {
-		predicates = append(predicates, staffaccount.PasswordNotNil())
-	}
-	if i.PasswordEqualFold != nil {
-		predicates = append(predicates, staffaccount.PasswordEqualFold(*i.PasswordEqualFold))
-	}
-	if i.PasswordContainsFold != nil {
-		predicates = append(predicates, staffaccount.PasswordContainsFold(*i.PasswordContainsFold))
-	}
 	if i.PasswordUpdatedAt != nil {
 		predicates = append(predicates, staffaccount.PasswordUpdatedAtEQ(*i.PasswordUpdatedAt))
 	}
@@ -6108,45 +5251,6 @@ func (i *StaffAccountWhereInput) P() (predicate.StaffAccount, error) {
 	}
 	if i.PasswordUpdatedAtLTE != nil {
 		predicates = append(predicates, staffaccount.PasswordUpdatedAtLTE(*i.PasswordUpdatedAtLTE))
-	}
-	if i.AuthTypeID != nil {
-		predicates = append(predicates, staffaccount.AuthTypeIDEQ(*i.AuthTypeID))
-	}
-	if i.AuthTypeIDNEQ != nil {
-		predicates = append(predicates, staffaccount.AuthTypeIDNEQ(*i.AuthTypeIDNEQ))
-	}
-	if len(i.AuthTypeIDIn) > 0 {
-		predicates = append(predicates, staffaccount.AuthTypeIDIn(i.AuthTypeIDIn...))
-	}
-	if len(i.AuthTypeIDNotIn) > 0 {
-		predicates = append(predicates, staffaccount.AuthTypeIDNotIn(i.AuthTypeIDNotIn...))
-	}
-	if i.AuthTypeIDGT != nil {
-		predicates = append(predicates, staffaccount.AuthTypeIDGT(*i.AuthTypeIDGT))
-	}
-	if i.AuthTypeIDGTE != nil {
-		predicates = append(predicates, staffaccount.AuthTypeIDGTE(*i.AuthTypeIDGTE))
-	}
-	if i.AuthTypeIDLT != nil {
-		predicates = append(predicates, staffaccount.AuthTypeIDLT(*i.AuthTypeIDLT))
-	}
-	if i.AuthTypeIDLTE != nil {
-		predicates = append(predicates, staffaccount.AuthTypeIDLTE(*i.AuthTypeIDLTE))
-	}
-	if i.AuthTypeIDContains != nil {
-		predicates = append(predicates, staffaccount.AuthTypeIDContains(*i.AuthTypeIDContains))
-	}
-	if i.AuthTypeIDHasPrefix != nil {
-		predicates = append(predicates, staffaccount.AuthTypeIDHasPrefix(*i.AuthTypeIDHasPrefix))
-	}
-	if i.AuthTypeIDHasSuffix != nil {
-		predicates = append(predicates, staffaccount.AuthTypeIDHasSuffix(*i.AuthTypeIDHasSuffix))
-	}
-	if i.AuthTypeIDEqualFold != nil {
-		predicates = append(predicates, staffaccount.AuthTypeIDEqualFold(*i.AuthTypeIDEqualFold))
-	}
-	if i.AuthTypeIDContainsFold != nil {
-		predicates = append(predicates, staffaccount.AuthTypeIDContainsFold(*i.AuthTypeIDContainsFold))
 	}
 
 	if i.HasAuthRoles != nil {
@@ -6290,21 +5394,6 @@ type TransactionWhereInput struct {
 	BlockchainIDNotNil       bool          `json:"blockchainIDNotNil,omitempty"`
 	BlockchainIDEqualFold    *pulid.PULID  `json:"blockchainIDEqualFold,omitempty"`
 	BlockchainIDContainsFold *pulid.PULID  `json:"blockchainIDContainsFold,omitempty"`
-
-	// "transaction_type_id" field predicates.
-	TransactionTypeID             *pulid.PULID  `json:"transactionTypeID,omitempty"`
-	TransactionTypeIDNEQ          *pulid.PULID  `json:"transactionTypeIDNEQ,omitempty"`
-	TransactionTypeIDIn           []pulid.PULID `json:"transactionTypeIDIn,omitempty"`
-	TransactionTypeIDNotIn        []pulid.PULID `json:"transactionTypeIDNotIn,omitempty"`
-	TransactionTypeIDGT           *pulid.PULID  `json:"transactionTypeIDGT,omitempty"`
-	TransactionTypeIDGTE          *pulid.PULID  `json:"transactionTypeIDGTE,omitempty"`
-	TransactionTypeIDLT           *pulid.PULID  `json:"transactionTypeIDLT,omitempty"`
-	TransactionTypeIDLTE          *pulid.PULID  `json:"transactionTypeIDLTE,omitempty"`
-	TransactionTypeIDContains     *pulid.PULID  `json:"transactionTypeIDContains,omitempty"`
-	TransactionTypeIDHasPrefix    *pulid.PULID  `json:"transactionTypeIDHasPrefix,omitempty"`
-	TransactionTypeIDHasSuffix    *pulid.PULID  `json:"transactionTypeIDHasSuffix,omitempty"`
-	TransactionTypeIDEqualFold    *pulid.PULID  `json:"transactionTypeIDEqualFold,omitempty"`
-	TransactionTypeIDContainsFold *pulid.PULID  `json:"transactionTypeIDContainsFold,omitempty"`
 
 	// "exchange_id" field predicates.
 	ExchangeID             *pulid.PULID  `json:"exchangeID,omitempty"`
@@ -6683,45 +5772,6 @@ func (i *TransactionWhereInput) P() (predicate.Transaction, error) {
 	if i.BlockchainIDContainsFold != nil {
 		predicates = append(predicates, transaction.BlockchainIDContainsFold(*i.BlockchainIDContainsFold))
 	}
-	if i.TransactionTypeID != nil {
-		predicates = append(predicates, transaction.TransactionTypeIDEQ(*i.TransactionTypeID))
-	}
-	if i.TransactionTypeIDNEQ != nil {
-		predicates = append(predicates, transaction.TransactionTypeIDNEQ(*i.TransactionTypeIDNEQ))
-	}
-	if len(i.TransactionTypeIDIn) > 0 {
-		predicates = append(predicates, transaction.TransactionTypeIDIn(i.TransactionTypeIDIn...))
-	}
-	if len(i.TransactionTypeIDNotIn) > 0 {
-		predicates = append(predicates, transaction.TransactionTypeIDNotIn(i.TransactionTypeIDNotIn...))
-	}
-	if i.TransactionTypeIDGT != nil {
-		predicates = append(predicates, transaction.TransactionTypeIDGT(*i.TransactionTypeIDGT))
-	}
-	if i.TransactionTypeIDGTE != nil {
-		predicates = append(predicates, transaction.TransactionTypeIDGTE(*i.TransactionTypeIDGTE))
-	}
-	if i.TransactionTypeIDLT != nil {
-		predicates = append(predicates, transaction.TransactionTypeIDLT(*i.TransactionTypeIDLT))
-	}
-	if i.TransactionTypeIDLTE != nil {
-		predicates = append(predicates, transaction.TransactionTypeIDLTE(*i.TransactionTypeIDLTE))
-	}
-	if i.TransactionTypeIDContains != nil {
-		predicates = append(predicates, transaction.TransactionTypeIDContains(*i.TransactionTypeIDContains))
-	}
-	if i.TransactionTypeIDHasPrefix != nil {
-		predicates = append(predicates, transaction.TransactionTypeIDHasPrefix(*i.TransactionTypeIDHasPrefix))
-	}
-	if i.TransactionTypeIDHasSuffix != nil {
-		predicates = append(predicates, transaction.TransactionTypeIDHasSuffix(*i.TransactionTypeIDHasSuffix))
-	}
-	if i.TransactionTypeIDEqualFold != nil {
-		predicates = append(predicates, transaction.TransactionTypeIDEqualFold(*i.TransactionTypeIDEqualFold))
-	}
-	if i.TransactionTypeIDContainsFold != nil {
-		predicates = append(predicates, transaction.TransactionTypeIDContainsFold(*i.TransactionTypeIDContainsFold))
-	}
 	if i.ExchangeID != nil {
 		predicates = append(predicates, transaction.ExchangeIDEQ(*i.ExchangeID))
 	}
@@ -7074,10 +6124,6 @@ type TransactionTypeWhereInput struct {
 	DescriptionNotNil       bool     `json:"descriptionNotNil,omitempty"`
 	DescriptionEqualFold    *string  `json:"descriptionEqualFold,omitempty"`
 	DescriptionContainsFold *string  `json:"descriptionContainsFold,omitempty"`
-
-	// "transactions" edge predicates.
-	HasTransactions     *bool                    `json:"hasTransactions,omitempty"`
-	HasTransactionsWith []*TransactionWhereInput `json:"hasTransactionsWith,omitempty"`
 }
 
 // AddPredicates adds custom predicates to the where input to be used during the filtering phase.
@@ -7311,24 +6357,6 @@ func (i *TransactionTypeWhereInput) P() (predicate.TransactionType, error) {
 		predicates = append(predicates, transactiontype.DescriptionContainsFold(*i.DescriptionContainsFold))
 	}
 
-	if i.HasTransactions != nil {
-		p := transactiontype.HasTransactions()
-		if !*i.HasTransactions {
-			p = transactiontype.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasTransactionsWith) > 0 {
-		with := make([]predicate.Transaction, 0, len(i.HasTransactionsWith))
-		for _, w := range i.HasTransactionsWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, fmt.Errorf("%w: field 'HasTransactionsWith'", err)
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, transactiontype.HasTransactionsWith(with...))
-	}
 	switch len(predicates) {
 	case 0:
 		return nil, ErrEmptyTransactionTypeWhereInput

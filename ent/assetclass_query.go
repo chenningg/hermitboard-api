@@ -4,14 +4,12 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/chenningg/hermitboard-api/ent/asset"
 	"github.com/chenningg/hermitboard-api/ent/assetclass"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -20,16 +18,14 @@ import (
 // AssetClassQuery is the builder for querying AssetClass entities.
 type AssetClassQuery struct {
 	config
-	limit           *int
-	offset          *int
-	unique          *bool
-	order           []OrderFunc
-	fields          []string
-	predicates      []predicate.AssetClass
-	withAssets      *AssetQuery
-	modifiers       []func(*sql.Selector)
-	loadTotal       []func(context.Context, []*AssetClass) error
-	withNamedAssets map[string]*AssetQuery
+	limit      *int
+	offset     *int
+	unique     *bool
+	order      []OrderFunc
+	fields     []string
+	predicates []predicate.AssetClass
+	modifiers  []func(*sql.Selector)
+	loadTotal  []func(context.Context, []*AssetClass) error
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -64,28 +60,6 @@ func (acq *AssetClassQuery) Unique(unique bool) *AssetClassQuery {
 func (acq *AssetClassQuery) Order(o ...OrderFunc) *AssetClassQuery {
 	acq.order = append(acq.order, o...)
 	return acq
-}
-
-// QueryAssets chains the current query on the "assets" edge.
-func (acq *AssetClassQuery) QueryAssets() *AssetQuery {
-	query := &AssetQuery{config: acq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := acq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := acq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(assetclass.Table, assetclass.FieldID, selector),
-			sqlgraph.To(asset.Table, asset.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, assetclass.AssetsTable, assetclass.AssetsColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(acq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // First returns the first AssetClass entity from the query.
@@ -269,23 +243,11 @@ func (acq *AssetClassQuery) Clone() *AssetClassQuery {
 		offset:     acq.offset,
 		order:      append([]OrderFunc{}, acq.order...),
 		predicates: append([]predicate.AssetClass{}, acq.predicates...),
-		withAssets: acq.withAssets.Clone(),
 		// clone intermediate query.
 		sql:    acq.sql.Clone(),
 		path:   acq.path,
 		unique: acq.unique,
 	}
-}
-
-// WithAssets tells the query-builder to eager-load the nodes that are connected to
-// the "assets" edge. The optional arguments are used to configure the query builder of the edge.
-func (acq *AssetClassQuery) WithAssets(opts ...func(*AssetQuery)) *AssetClassQuery {
-	query := &AssetQuery{config: acq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	acq.withAssets = query
-	return acq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -354,11 +316,8 @@ func (acq *AssetClassQuery) prepareQuery(ctx context.Context) error {
 
 func (acq *AssetClassQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AssetClass, error) {
 	var (
-		nodes       = []*AssetClass{}
-		_spec       = acq.querySpec()
-		loadedTypes = [1]bool{
-			acq.withAssets != nil,
-		}
+		nodes = []*AssetClass{}
+		_spec = acq.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*AssetClass).scanValues(nil, columns)
@@ -366,7 +325,6 @@ func (acq *AssetClassQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &AssetClass{config: acq.config}
 		nodes = append(nodes, node)
-		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(acq.modifiers) > 0 {
@@ -381,54 +339,12 @@ func (acq *AssetClassQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := acq.withAssets; query != nil {
-		if err := acq.loadAssets(ctx, query, nodes,
-			func(n *AssetClass) { n.Edges.Assets = []*Asset{} },
-			func(n *AssetClass, e *Asset) { n.Edges.Assets = append(n.Edges.Assets, e) }); err != nil {
-			return nil, err
-		}
-	}
-	for name, query := range acq.withNamedAssets {
-		if err := acq.loadAssets(ctx, query, nodes,
-			func(n *AssetClass) { n.appendNamedAssets(name) },
-			func(n *AssetClass, e *Asset) { n.appendNamedAssets(name, e) }); err != nil {
-			return nil, err
-		}
-	}
 	for i := range acq.loadTotal {
 		if err := acq.loadTotal[i](ctx, nodes); err != nil {
 			return nil, err
 		}
 	}
 	return nodes, nil
-}
-
-func (acq *AssetClassQuery) loadAssets(ctx context.Context, query *AssetQuery, nodes []*AssetClass, init func(*AssetClass), assign func(*AssetClass, *Asset)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[pulid.PULID]*AssetClass)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.Where(predicate.Asset(func(s *sql.Selector) {
-		s.Where(sql.InValues(assetclass.AssetsColumn, fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.AssetClassID
-		node, ok := nodeids[fk]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "asset_class_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
 }
 
 func (acq *AssetClassQuery) sqlCount(ctx context.Context) (int, error) {
@@ -532,20 +448,6 @@ func (acq *AssetClassQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
-}
-
-// WithNamedAssets tells the query-builder to eager-load the nodes that are connected to the "assets"
-// edge with the given name. The optional arguments are used to configure the query builder of the edge.
-func (acq *AssetClassQuery) WithNamedAssets(name string, opts ...func(*AssetQuery)) *AssetClassQuery {
-	query := &AssetQuery{config: acq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	if acq.withNamedAssets == nil {
-		acq.withNamedAssets = make(map[string]*AssetQuery)
-	}
-	acq.withNamedAssets[name] = query
-	return acq
 }
 
 // AssetClassGroupBy is the group-by builder for AssetClass entities.

@@ -26,26 +26,8 @@ const (
 	FieldValue = "value"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// EdgeAccounts holds the string denoting the accounts edge name in mutations.
-	EdgeAccounts = "accounts"
-	// EdgeStaffAccounts holds the string denoting the staff_accounts edge name in mutations.
-	EdgeStaffAccounts = "staff_accounts"
 	// Table holds the table name of the authtype in the database.
 	Table = "auth_types"
-	// AccountsTable is the table that holds the accounts relation/edge.
-	AccountsTable = "accounts"
-	// AccountsInverseTable is the table name for the Account entity.
-	// It exists in this package in order to avoid circular dependency with the "account" package.
-	AccountsInverseTable = "accounts"
-	// AccountsColumn is the table column denoting the accounts relation/edge.
-	AccountsColumn = "auth_type_id"
-	// StaffAccountsTable is the table that holds the staff_accounts relation/edge.
-	StaffAccountsTable = "staff_accounts"
-	// StaffAccountsInverseTable is the table name for the StaffAccount entity.
-	// It exists in this package in order to avoid circular dependency with the "staffaccount" package.
-	StaffAccountsInverseTable = "staff_accounts"
-	// StaffAccountsColumn is the table column denoting the staff_accounts relation/edge.
-	StaffAccountsColumn = "auth_type_id"
 )
 
 // Columns holds all SQL columns for authtype fields.

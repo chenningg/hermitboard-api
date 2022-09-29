@@ -80,8 +80,6 @@ var (
 	UpdateDefaultUpdatedAt func() time.Time
 	// UpdateDefaultDeletedAt holds the default value on update for the "deleted_at" field.
 	UpdateDefaultDeletedAt func() time.Time
-	// DefaultTime holds the default value on creation for the "time" field.
-	DefaultTime func() time.Time
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() pulid.PULID
 )

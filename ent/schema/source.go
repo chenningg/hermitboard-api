@@ -34,7 +34,8 @@ func (Source) Fields() []ent.Field {
 		field.String("icon").
 			Optional().
 			Nillable().
-			NotEmpty(),
+			NotEmpty().
+			Annotations(entgql.Skip(entgql.SkipWhereInput)),
 		field.String("source_type_id").
 			GoType(pulid.PULID("")),
 	}

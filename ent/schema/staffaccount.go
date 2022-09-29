@@ -41,11 +41,11 @@ func (StaffAccount) Fields() []ent.Field {
 			Optional().
 			Nillable().
 			NotEmpty().
-			Annotations(entgql.Skip(entgql.SkipType | entgql.SkipWhereInput | entgql.SkipOrderField)),
+			Annotations(entgql.Skip(entgql.SkipType | entgql.SkipWhereInput)),
 		field.Time("password_updated_at").
 			Default(time.Now).
 			UpdateDefault(time.Now).
-			Annotations(entgql.Skip(entgql.SkipMutationCreateInput, entgql.SkipMutationUpdateInput)),
+			Annotations(entgql.Skip(entgql.SkipMutationCreateInput | entgql.SkipMutationUpdateInput)),
 	}
 }
 
@@ -55,12 +55,14 @@ func (StaffAccount) Edges() []ent.Edge {
 		edge.To("auth_roles", AuthRole.Type).
 			Annotations(
 				entgql.RelayConnection(), entgql.MapsTo("authRoles"),
-				entgql.Skip(entgql.SkipMutationCreateInput),
 			),
 		edge.To("auth_type", AuthType.Type).
 			Required().
 			Unique().
-			Annotations(entgql.MapsTo("authType")),
+			Annotations(
+				entgql.MapsTo("authType"),
+				entgql.Skip(entgql.SkipMutationCreateInput),
+			),
 	}
 }
 
