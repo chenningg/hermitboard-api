@@ -48,6 +48,7 @@ type ComplexityRoot struct {
 		CreatedAt         func(childComplexity int) int
 		DeletedAt         func(childComplexity int) int
 		Email             func(childComplexity int) int
+		EmailConfirmed    func(childComplexity int) int
 		ID                func(childComplexity int) int
 		Nickname          func(childComplexity int) int
 		PasswordUpdatedAt func(childComplexity int) int
@@ -374,6 +375,7 @@ type ComplexityRoot struct {
 		CreatedAt         func(childComplexity int) int
 		DeletedAt         func(childComplexity int) int
 		Email             func(childComplexity int) int
+		EmailConfirmed    func(childComplexity int) int
 		ID                func(childComplexity int) int
 		Nickname          func(childComplexity int) int
 		PasswordUpdatedAt func(childComplexity int) int
@@ -510,6 +512,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Account.Email(childComplexity), true
+
+	case "Account.emailConfirmed":
+		if e.complexity.Account.EmailConfirmed == nil {
+			break
+		}
+
+		return e.complexity.Account.EmailConfirmed(childComplexity), true
 
 	case "Account.id":
 		if e.complexity.Account.ID == nil {
@@ -2071,6 +2080,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.StaffAccount.Email(childComplexity), true
 
+	case "StaffAccount.emailConfirmed":
+		if e.complexity.StaffAccount.EmailConfirmed == nil {
+			break
+		}
+
+		return e.complexity.StaffAccount.EmailConfirmed(childComplexity), true
+
 	case "StaffAccount.id":
 		if e.complexity.StaffAccount.ID == nil {
 			break
@@ -2502,7 +2518,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(parsedSchema, parsedSchema.Types[name]), nil
 }
 
-//go:embed "schema/account.graphql" "schema/ent.graphql" "schema/schema.graphql"
+//go:embed "schema/auth.graphql" "schema/ent.graphql" "schema/schema.graphql"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -2514,7 +2530,7 @@ func sourceData(filename string) string {
 }
 
 var sources = []*ast.Source{
-	{Name: "schema/account.graphql", Input: sourceData("schema/account.graphql"), BuiltIn: false},
+	{Name: "schema/auth.graphql", Input: sourceData("schema/auth.graphql"), BuiltIn: false},
 	{Name: "schema/ent.graphql", Input: sourceData("schema/ent.graphql"), BuiltIn: false},
 	{Name: "schema/schema.graphql", Input: sourceData("schema/schema.graphql"), BuiltIn: false},
 }

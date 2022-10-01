@@ -16,8 +16,9 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "nickname", Type: field.TypeString, Unique: true},
 		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "email_confirmed", Type: field.TypeBool, Default: false},
 		{Name: "password", Type: field.TypeString, Nullable: true},
-		{Name: "password_updated_at", Type: field.TypeTime},
+		{Name: "password_updated_at", Type: field.TypeTime, Nullable: true},
 		{Name: "account_auth_type", Type: field.TypeString},
 	}
 	// AccountsTable holds the schema information for the "accounts" table.
@@ -28,7 +29,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "accounts_auth_types_auth_type",
-				Columns:    []*schema.Column{AccountsColumns[8]},
+				Columns:    []*schema.Column{AccountsColumns[9]},
 				RefColumns: []*schema.Column{AuthTypesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -297,8 +298,9 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "nickname", Type: field.TypeString, Unique: true},
 		{Name: "email", Type: field.TypeString, Unique: true},
+		{Name: "email_confirmed", Type: field.TypeBool, Default: false},
 		{Name: "password", Type: field.TypeString, Nullable: true},
-		{Name: "password_updated_at", Type: field.TypeTime},
+		{Name: "password_updated_at", Type: field.TypeTime, Nullable: true},
 		{Name: "staff_account_auth_type", Type: field.TypeString},
 	}
 	// StaffAccountsTable holds the schema information for the "staff_accounts" table.
@@ -309,7 +311,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "staff_accounts_auth_types_auth_type",
-				Columns:    []*schema.Column{StaffAccountsColumns[8]},
+				Columns:    []*schema.Column{StaffAccountsColumns[9]},
 				RefColumns: []*schema.Column{AuthTypesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},

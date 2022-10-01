@@ -36,6 +36,8 @@ func (StaffAccount) Fields() []ent.Field {
 		field.String("email").
 			Unique().
 			NotEmpty(),
+		field.Bool("email_confirmed").
+			Default(false),
 		field.String("password").
 			Sensitive().
 			Optional().
@@ -43,9 +45,13 @@ func (StaffAccount) Fields() []ent.Field {
 			NotEmpty().
 			Annotations(entgql.Skip(entgql.SkipType | entgql.SkipWhereInput)),
 		field.Time("password_updated_at").
-			Default(time.Now).
 			UpdateDefault(time.Now).
-			Annotations(entgql.Skip(entgql.SkipMutationCreateInput | entgql.SkipMutationUpdateInput)),
+			Optional().
+			Nillable().
+			Annotations(
+				entgql.OrderField("PASSWORD_UPDATED_AT"),
+				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
+			),
 	}
 }
 

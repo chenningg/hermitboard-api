@@ -4677,6 +4677,16 @@ var (
 			}
 		},
 	}
+	// StaffAccountOrderFieldPasswordUpdatedAt orders StaffAccount by password_updated_at.
+	StaffAccountOrderFieldPasswordUpdatedAt = &StaffAccountOrderField{
+		field: staffaccount.FieldPasswordUpdatedAt,
+		toCursor: func(sa *StaffAccount) Cursor {
+			return Cursor{
+				ID:    sa.ID,
+				Value: sa.PasswordUpdatedAt,
+			}
+		},
+	}
 )
 
 // String implement fmt.Stringer interface.
@@ -4689,6 +4699,8 @@ func (f StaffAccountOrderField) String() string {
 		str = "UPDATED_AT"
 	case staffaccount.FieldDeletedAt:
 		str = "DELETED_AT"
+	case staffaccount.FieldPasswordUpdatedAt:
+		str = "PASSWORD_UPDATED_AT"
 	}
 	return str
 }
@@ -4711,6 +4723,8 @@ func (f *StaffAccountOrderField) UnmarshalGQL(v interface{}) error {
 		*f = *StaffAccountOrderFieldUpdatedAt
 	case "DELETED_AT":
 		*f = *StaffAccountOrderFieldDeletedAt
+	case "PASSWORD_UPDATED_AT":
+		*f = *StaffAccountOrderFieldPasswordUpdatedAt
 	default:
 		return fmt.Errorf("%s is not a valid StaffAccountOrderField", str)
 	}

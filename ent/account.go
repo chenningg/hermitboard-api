@@ -28,10 +28,12 @@ type Account struct {
 	Nickname string `json:"nickname,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
+	// EmailConfirmed holds the value of the "email_confirmed" field.
+	EmailConfirmed bool `json:"email_confirmed,omitempty"`
 	// Password holds the value of the "password" field.
 	Password *string `json:"-"`
 	// PasswordUpdatedAt holds the value of the "password_updated_at" field.
-	PasswordUpdatedAt time.Time `json:"password_updated_at,omitempty"`
+	PasswordUpdatedAt *time.Time `json:"password_updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AccountQuery when eager-loading is set.
 	Edges             AccountEdges `json:"edges"`
@@ -106,6 +108,8 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case account.FieldID:
 			values[i] = new(pulid.PULID)
+		case account.FieldEmailConfirmed:
+			values[i] = new(sql.NullBool)
 		case account.FieldNickname, account.FieldEmail, account.FieldPassword:
 			values[i] = new(sql.NullString)
 		case account.FieldCreatedAt, account.FieldUpdatedAt, account.FieldDeletedAt, account.FieldPasswordUpdatedAt:
@@ -164,6 +168,12 @@ func (a *Account) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.Email = value.String
 			}
+		case account.FieldEmailConfirmed:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field email_confirmed", values[i])
+			} else if value.Valid {
+				a.EmailConfirmed = value.Bool
+			}
 		case account.FieldPassword:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field password", values[i])
@@ -175,7 +185,8 @@ func (a *Account) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field password_updated_at", values[i])
 			} else if value.Valid {
-				a.PasswordUpdatedAt = value.Time
+				a.PasswordUpdatedAt = new(time.Time)
+				*a.PasswordUpdatedAt = value.Time
 			}
 		case account.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
@@ -249,10 +260,15 @@ func (a *Account) String() string {
 	builder.WriteString("email=")
 	builder.WriteString(a.Email)
 	builder.WriteString(", ")
+	builder.WriteString("email_confirmed=")
+	builder.WriteString(fmt.Sprintf("%v", a.EmailConfirmed))
+	builder.WriteString(", ")
 	builder.WriteString("password=<sensitive>")
 	builder.WriteString(", ")
-	builder.WriteString("password_updated_at=")
-	builder.WriteString(a.PasswordUpdatedAt.Format(time.ANSIC))
+	if v := a.PasswordUpdatedAt; v != nil {
+		builder.WriteString("password_updated_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

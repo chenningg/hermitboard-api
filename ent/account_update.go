@@ -63,6 +63,20 @@ func (au *AccountUpdate) SetEmail(s string) *AccountUpdate {
 	return au
 }
 
+// SetEmailConfirmed sets the "email_confirmed" field.
+func (au *AccountUpdate) SetEmailConfirmed(b bool) *AccountUpdate {
+	au.mutation.SetEmailConfirmed(b)
+	return au
+}
+
+// SetNillableEmailConfirmed sets the "email_confirmed" field if the given value is not nil.
+func (au *AccountUpdate) SetNillableEmailConfirmed(b *bool) *AccountUpdate {
+	if b != nil {
+		au.SetEmailConfirmed(*b)
+	}
+	return au
+}
+
 // SetPassword sets the "password" field.
 func (au *AccountUpdate) SetPassword(s string) *AccountUpdate {
 	au.mutation.SetPassword(s)
@@ -86,6 +100,12 @@ func (au *AccountUpdate) ClearPassword() *AccountUpdate {
 // SetPasswordUpdatedAt sets the "password_updated_at" field.
 func (au *AccountUpdate) SetPasswordUpdatedAt(t time.Time) *AccountUpdate {
 	au.mutation.SetPasswordUpdatedAt(t)
+	return au
+}
+
+// ClearPasswordUpdatedAt clears the value of the "password_updated_at" field.
+func (au *AccountUpdate) ClearPasswordUpdatedAt() *AccountUpdate {
+	au.mutation.ClearPasswordUpdatedAt()
 	return au
 }
 
@@ -290,7 +310,7 @@ func (au *AccountUpdate) defaults() {
 		v := account.UpdateDefaultDeletedAt()
 		au.mutation.SetDeletedAt(v)
 	}
-	if _, ok := au.mutation.PasswordUpdatedAt(); !ok {
+	if _, ok := au.mutation.PasswordUpdatedAt(); !ok && !au.mutation.PasswordUpdatedAtCleared() {
 		v := account.UpdateDefaultPasswordUpdatedAt()
 		au.mutation.SetPasswordUpdatedAt(v)
 	}
@@ -371,6 +391,13 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: account.FieldEmail,
 		})
 	}
+	if value, ok := au.mutation.EmailConfirmed(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: account.FieldEmailConfirmed,
+		})
+	}
 	if value, ok := au.mutation.Password(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -388,6 +415,12 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: account.FieldPasswordUpdatedAt,
+		})
+	}
+	if au.mutation.PasswordUpdatedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: account.FieldPasswordUpdatedAt,
 		})
 	}
@@ -637,6 +670,20 @@ func (auo *AccountUpdateOne) SetEmail(s string) *AccountUpdateOne {
 	return auo
 }
 
+// SetEmailConfirmed sets the "email_confirmed" field.
+func (auo *AccountUpdateOne) SetEmailConfirmed(b bool) *AccountUpdateOne {
+	auo.mutation.SetEmailConfirmed(b)
+	return auo
+}
+
+// SetNillableEmailConfirmed sets the "email_confirmed" field if the given value is not nil.
+func (auo *AccountUpdateOne) SetNillableEmailConfirmed(b *bool) *AccountUpdateOne {
+	if b != nil {
+		auo.SetEmailConfirmed(*b)
+	}
+	return auo
+}
+
 // SetPassword sets the "password" field.
 func (auo *AccountUpdateOne) SetPassword(s string) *AccountUpdateOne {
 	auo.mutation.SetPassword(s)
@@ -660,6 +707,12 @@ func (auo *AccountUpdateOne) ClearPassword() *AccountUpdateOne {
 // SetPasswordUpdatedAt sets the "password_updated_at" field.
 func (auo *AccountUpdateOne) SetPasswordUpdatedAt(t time.Time) *AccountUpdateOne {
 	auo.mutation.SetPasswordUpdatedAt(t)
+	return auo
+}
+
+// ClearPasswordUpdatedAt clears the value of the "password_updated_at" field.
+func (auo *AccountUpdateOne) ClearPasswordUpdatedAt() *AccountUpdateOne {
+	auo.mutation.ClearPasswordUpdatedAt()
 	return auo
 }
 
@@ -877,7 +930,7 @@ func (auo *AccountUpdateOne) defaults() {
 		v := account.UpdateDefaultDeletedAt()
 		auo.mutation.SetDeletedAt(v)
 	}
-	if _, ok := auo.mutation.PasswordUpdatedAt(); !ok {
+	if _, ok := auo.mutation.PasswordUpdatedAt(); !ok && !auo.mutation.PasswordUpdatedAtCleared() {
 		v := account.UpdateDefaultPasswordUpdatedAt()
 		auo.mutation.SetPasswordUpdatedAt(v)
 	}
@@ -975,6 +1028,13 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 			Column: account.FieldEmail,
 		})
 	}
+	if value, ok := auo.mutation.EmailConfirmed(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: account.FieldEmailConfirmed,
+		})
+	}
 	if value, ok := auo.mutation.Password(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -992,6 +1052,12 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: account.FieldPasswordUpdatedAt,
+		})
+	}
+	if auo.mutation.PasswordUpdatedAtCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: account.FieldPasswordUpdatedAt,
 		})
 	}

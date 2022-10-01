@@ -15,16 +15,20 @@ import (
 
 // CreateAccountInput represents a mutation input for creating accounts.
 type CreateAccountInput struct {
-	Nickname    string
-	Email       string
-	Password    *string
-	AuthRoleIDs []pulid.PULID
+	Nickname       string
+	Email          string
+	EmailConfirmed *bool
+	Password       *string
+	AuthRoleIDs    []pulid.PULID
 }
 
 // Mutate applies the CreateAccountInput on the AccountMutation builder.
 func (i *CreateAccountInput) Mutate(m *AccountMutation) {
 	m.SetNickname(i.Nickname)
 	m.SetEmail(i.Email)
+	if v := i.EmailConfirmed; v != nil {
+		m.SetEmailConfirmed(*v)
+	}
 	if v := i.Password; v != nil {
 		m.SetPassword(*v)
 	}
@@ -45,6 +49,7 @@ type UpdateAccountInput struct {
 	DeletedAt         *time.Time
 	Nickname          *string
 	Email             *string
+	EmailConfirmed    *bool
 	ClearPassword     bool
 	Password          *string
 	AddAuthRoleIDs    []pulid.PULID
@@ -66,6 +71,9 @@ func (i *UpdateAccountInput) Mutate(m *AccountMutation) {
 	}
 	if v := i.Email; v != nil {
 		m.SetEmail(*v)
+	}
+	if v := i.EmailConfirmed; v != nil {
+		m.SetEmailConfirmed(*v)
 	}
 	if i.ClearPassword {
 		m.ClearPassword()
@@ -947,16 +955,20 @@ func (c *SourceTypeUpdateOne) SetInput(i UpdateSourceTypeInput) *SourceTypeUpdat
 
 // CreateStaffAccountInput represents a mutation input for creating staffaccounts.
 type CreateStaffAccountInput struct {
-	Nickname    string
-	Email       string
-	Password    *string
-	AuthRoleIDs []pulid.PULID
+	Nickname       string
+	Email          string
+	EmailConfirmed *bool
+	Password       *string
+	AuthRoleIDs    []pulid.PULID
 }
 
 // Mutate applies the CreateStaffAccountInput on the StaffAccountMutation builder.
 func (i *CreateStaffAccountInput) Mutate(m *StaffAccountMutation) {
 	m.SetNickname(i.Nickname)
 	m.SetEmail(i.Email)
+	if v := i.EmailConfirmed; v != nil {
+		m.SetEmailConfirmed(*v)
+	}
 	if v := i.Password; v != nil {
 		m.SetPassword(*v)
 	}
@@ -977,6 +989,7 @@ type UpdateStaffAccountInput struct {
 	DeletedAt         *time.Time
 	Nickname          *string
 	Email             *string
+	EmailConfirmed    *bool
 	ClearPassword     bool
 	Password          *string
 	AddAuthRoleIDs    []pulid.PULID
@@ -998,6 +1011,9 @@ func (i *UpdateStaffAccountInput) Mutate(m *StaffAccountMutation) {
 	}
 	if v := i.Email; v != nil {
 		m.SetEmail(*v)
+	}
+	if v := i.EmailConfirmed; v != nil {
+		m.SetEmailConfirmed(*v)
 	}
 	if i.ClearPassword {
 		m.ClearPassword()

@@ -69,6 +69,7 @@ type AccountMutation struct {
 	deleted_at          *time.Time
 	nickname            *string
 	email               *string
+	email_confirmed     *bool
 	password            *string
 	password_updated_at *time.Time
 	clearedFields       map[string]struct{}
@@ -385,6 +386,42 @@ func (m *AccountMutation) ResetEmail() {
 	m.email = nil
 }
 
+// SetEmailConfirmed sets the "email_confirmed" field.
+func (m *AccountMutation) SetEmailConfirmed(b bool) {
+	m.email_confirmed = &b
+}
+
+// EmailConfirmed returns the value of the "email_confirmed" field in the mutation.
+func (m *AccountMutation) EmailConfirmed() (r bool, exists bool) {
+	v := m.email_confirmed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmailConfirmed returns the old "email_confirmed" field's value of the Account entity.
+// If the Account object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountMutation) OldEmailConfirmed(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmailConfirmed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmailConfirmed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmailConfirmed: %w", err)
+	}
+	return oldValue.EmailConfirmed, nil
+}
+
+// ResetEmailConfirmed resets all changes to the "email_confirmed" field.
+func (m *AccountMutation) ResetEmailConfirmed() {
+	m.email_confirmed = nil
+}
+
 // SetPassword sets the "password" field.
 func (m *AccountMutation) SetPassword(s string) {
 	m.password = &s
@@ -451,7 +488,7 @@ func (m *AccountMutation) PasswordUpdatedAt() (r time.Time, exists bool) {
 // OldPasswordUpdatedAt returns the old "password_updated_at" field's value of the Account entity.
 // If the Account object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AccountMutation) OldPasswordUpdatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *AccountMutation) OldPasswordUpdatedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPasswordUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -465,9 +502,22 @@ func (m *AccountMutation) OldPasswordUpdatedAt(ctx context.Context) (v time.Time
 	return oldValue.PasswordUpdatedAt, nil
 }
 
+// ClearPasswordUpdatedAt clears the value of the "password_updated_at" field.
+func (m *AccountMutation) ClearPasswordUpdatedAt() {
+	m.password_updated_at = nil
+	m.clearedFields[account.FieldPasswordUpdatedAt] = struct{}{}
+}
+
+// PasswordUpdatedAtCleared returns if the "password_updated_at" field was cleared in this mutation.
+func (m *AccountMutation) PasswordUpdatedAtCleared() bool {
+	_, ok := m.clearedFields[account.FieldPasswordUpdatedAt]
+	return ok
+}
+
 // ResetPasswordUpdatedAt resets all changes to the "password_updated_at" field.
 func (m *AccountMutation) ResetPasswordUpdatedAt() {
 	m.password_updated_at = nil
+	delete(m.clearedFields, account.FieldPasswordUpdatedAt)
 }
 
 // AddAuthRoleIDs adds the "auth_roles" edge to the AuthRole entity by ids.
@@ -690,7 +740,7 @@ func (m *AccountMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AccountMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, account.FieldCreatedAt)
 	}
@@ -705,6 +755,9 @@ func (m *AccountMutation) Fields() []string {
 	}
 	if m.email != nil {
 		fields = append(fields, account.FieldEmail)
+	}
+	if m.email_confirmed != nil {
+		fields = append(fields, account.FieldEmailConfirmed)
 	}
 	if m.password != nil {
 		fields = append(fields, account.FieldPassword)
@@ -730,6 +783,8 @@ func (m *AccountMutation) Field(name string) (ent.Value, bool) {
 		return m.Nickname()
 	case account.FieldEmail:
 		return m.Email()
+	case account.FieldEmailConfirmed:
+		return m.EmailConfirmed()
 	case account.FieldPassword:
 		return m.Password()
 	case account.FieldPasswordUpdatedAt:
@@ -753,6 +808,8 @@ func (m *AccountMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldNickname(ctx)
 	case account.FieldEmail:
 		return m.OldEmail(ctx)
+	case account.FieldEmailConfirmed:
+		return m.OldEmailConfirmed(ctx)
 	case account.FieldPassword:
 		return m.OldPassword(ctx)
 	case account.FieldPasswordUpdatedAt:
@@ -800,6 +857,13 @@ func (m *AccountMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEmail(v)
+		return nil
+	case account.FieldEmailConfirmed:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmailConfirmed(v)
 		return nil
 	case account.FieldPassword:
 		v, ok := value.(string)
@@ -851,6 +915,9 @@ func (m *AccountMutation) ClearedFields() []string {
 	if m.FieldCleared(account.FieldPassword) {
 		fields = append(fields, account.FieldPassword)
 	}
+	if m.FieldCleared(account.FieldPasswordUpdatedAt) {
+		fields = append(fields, account.FieldPasswordUpdatedAt)
+	}
 	return fields
 }
 
@@ -870,6 +937,9 @@ func (m *AccountMutation) ClearField(name string) error {
 		return nil
 	case account.FieldPassword:
 		m.ClearPassword()
+		return nil
+	case account.FieldPasswordUpdatedAt:
+		m.ClearPasswordUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Account nullable field %s", name)
@@ -893,6 +963,9 @@ func (m *AccountMutation) ResetField(name string) error {
 		return nil
 	case account.FieldEmail:
 		m.ResetEmail()
+		return nil
+	case account.FieldEmailConfirmed:
+		m.ResetEmailConfirmed()
 		return nil
 	case account.FieldPassword:
 		m.ResetPassword()
@@ -10204,6 +10277,7 @@ type StaffAccountMutation struct {
 	deleted_at          *time.Time
 	nickname            *string
 	email               *string
+	email_confirmed     *bool
 	password            *string
 	password_updated_at *time.Time
 	clearedFields       map[string]struct{}
@@ -10514,6 +10588,42 @@ func (m *StaffAccountMutation) ResetEmail() {
 	m.email = nil
 }
 
+// SetEmailConfirmed sets the "email_confirmed" field.
+func (m *StaffAccountMutation) SetEmailConfirmed(b bool) {
+	m.email_confirmed = &b
+}
+
+// EmailConfirmed returns the value of the "email_confirmed" field in the mutation.
+func (m *StaffAccountMutation) EmailConfirmed() (r bool, exists bool) {
+	v := m.email_confirmed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmailConfirmed returns the old "email_confirmed" field's value of the StaffAccount entity.
+// If the StaffAccount object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StaffAccountMutation) OldEmailConfirmed(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmailConfirmed is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmailConfirmed requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmailConfirmed: %w", err)
+	}
+	return oldValue.EmailConfirmed, nil
+}
+
+// ResetEmailConfirmed resets all changes to the "email_confirmed" field.
+func (m *StaffAccountMutation) ResetEmailConfirmed() {
+	m.email_confirmed = nil
+}
+
 // SetPassword sets the "password" field.
 func (m *StaffAccountMutation) SetPassword(s string) {
 	m.password = &s
@@ -10580,7 +10690,7 @@ func (m *StaffAccountMutation) PasswordUpdatedAt() (r time.Time, exists bool) {
 // OldPasswordUpdatedAt returns the old "password_updated_at" field's value of the StaffAccount entity.
 // If the StaffAccount object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *StaffAccountMutation) OldPasswordUpdatedAt(ctx context.Context) (v time.Time, err error) {
+func (m *StaffAccountMutation) OldPasswordUpdatedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPasswordUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -10594,9 +10704,22 @@ func (m *StaffAccountMutation) OldPasswordUpdatedAt(ctx context.Context) (v time
 	return oldValue.PasswordUpdatedAt, nil
 }
 
+// ClearPasswordUpdatedAt clears the value of the "password_updated_at" field.
+func (m *StaffAccountMutation) ClearPasswordUpdatedAt() {
+	m.password_updated_at = nil
+	m.clearedFields[staffaccount.FieldPasswordUpdatedAt] = struct{}{}
+}
+
+// PasswordUpdatedAtCleared returns if the "password_updated_at" field was cleared in this mutation.
+func (m *StaffAccountMutation) PasswordUpdatedAtCleared() bool {
+	_, ok := m.clearedFields[staffaccount.FieldPasswordUpdatedAt]
+	return ok
+}
+
 // ResetPasswordUpdatedAt resets all changes to the "password_updated_at" field.
 func (m *StaffAccountMutation) ResetPasswordUpdatedAt() {
 	m.password_updated_at = nil
+	delete(m.clearedFields, staffaccount.FieldPasswordUpdatedAt)
 }
 
 // AddAuthRoleIDs adds the "auth_roles" edge to the AuthRole entity by ids.
@@ -10711,7 +10834,7 @@ func (m *StaffAccountMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StaffAccountMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, staffaccount.FieldCreatedAt)
 	}
@@ -10726,6 +10849,9 @@ func (m *StaffAccountMutation) Fields() []string {
 	}
 	if m.email != nil {
 		fields = append(fields, staffaccount.FieldEmail)
+	}
+	if m.email_confirmed != nil {
+		fields = append(fields, staffaccount.FieldEmailConfirmed)
 	}
 	if m.password != nil {
 		fields = append(fields, staffaccount.FieldPassword)
@@ -10751,6 +10877,8 @@ func (m *StaffAccountMutation) Field(name string) (ent.Value, bool) {
 		return m.Nickname()
 	case staffaccount.FieldEmail:
 		return m.Email()
+	case staffaccount.FieldEmailConfirmed:
+		return m.EmailConfirmed()
 	case staffaccount.FieldPassword:
 		return m.Password()
 	case staffaccount.FieldPasswordUpdatedAt:
@@ -10774,6 +10902,8 @@ func (m *StaffAccountMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldNickname(ctx)
 	case staffaccount.FieldEmail:
 		return m.OldEmail(ctx)
+	case staffaccount.FieldEmailConfirmed:
+		return m.OldEmailConfirmed(ctx)
 	case staffaccount.FieldPassword:
 		return m.OldPassword(ctx)
 	case staffaccount.FieldPasswordUpdatedAt:
@@ -10821,6 +10951,13 @@ func (m *StaffAccountMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEmail(v)
+		return nil
+	case staffaccount.FieldEmailConfirmed:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmailConfirmed(v)
 		return nil
 	case staffaccount.FieldPassword:
 		v, ok := value.(string)
@@ -10872,6 +11009,9 @@ func (m *StaffAccountMutation) ClearedFields() []string {
 	if m.FieldCleared(staffaccount.FieldPassword) {
 		fields = append(fields, staffaccount.FieldPassword)
 	}
+	if m.FieldCleared(staffaccount.FieldPasswordUpdatedAt) {
+		fields = append(fields, staffaccount.FieldPasswordUpdatedAt)
+	}
 	return fields
 }
 
@@ -10891,6 +11031,9 @@ func (m *StaffAccountMutation) ClearField(name string) error {
 		return nil
 	case staffaccount.FieldPassword:
 		m.ClearPassword()
+		return nil
+	case staffaccount.FieldPasswordUpdatedAt:
+		m.ClearPasswordUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown StaffAccount nullable field %s", name)
@@ -10914,6 +11057,9 @@ func (m *StaffAccountMutation) ResetField(name string) error {
 		return nil
 	case staffaccount.FieldEmail:
 		m.ResetEmail()
+		return nil
+	case staffaccount.FieldEmailConfirmed:
+		m.ResetEmailConfirmed()
 		return nil
 	case staffaccount.FieldPassword:
 		m.ResetPassword()

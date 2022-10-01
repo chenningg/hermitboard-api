@@ -77,6 +77,20 @@ func (sac *StaffAccountCreate) SetEmail(s string) *StaffAccountCreate {
 	return sac
 }
 
+// SetEmailConfirmed sets the "email_confirmed" field.
+func (sac *StaffAccountCreate) SetEmailConfirmed(b bool) *StaffAccountCreate {
+	sac.mutation.SetEmailConfirmed(b)
+	return sac
+}
+
+// SetNillableEmailConfirmed sets the "email_confirmed" field if the given value is not nil.
+func (sac *StaffAccountCreate) SetNillableEmailConfirmed(b *bool) *StaffAccountCreate {
+	if b != nil {
+		sac.SetEmailConfirmed(*b)
+	}
+	return sac
+}
+
 // SetPassword sets the "password" field.
 func (sac *StaffAccountCreate) SetPassword(s string) *StaffAccountCreate {
 	sac.mutation.SetPassword(s)
@@ -230,9 +244,9 @@ func (sac *StaffAccountCreate) defaults() {
 		v := staffaccount.DefaultUpdatedAt()
 		sac.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := sac.mutation.PasswordUpdatedAt(); !ok {
-		v := staffaccount.DefaultPasswordUpdatedAt()
-		sac.mutation.SetPasswordUpdatedAt(v)
+	if _, ok := sac.mutation.EmailConfirmed(); !ok {
+		v := staffaccount.DefaultEmailConfirmed
+		sac.mutation.SetEmailConfirmed(v)
 	}
 	if _, ok := sac.mutation.ID(); !ok {
 		v := staffaccount.DefaultID()
@@ -264,13 +278,13 @@ func (sac *StaffAccountCreate) check() error {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "StaffAccount.email": %w`, err)}
 		}
 	}
+	if _, ok := sac.mutation.EmailConfirmed(); !ok {
+		return &ValidationError{Name: "email_confirmed", err: errors.New(`ent: missing required field "StaffAccount.email_confirmed"`)}
+	}
 	if v, ok := sac.mutation.Password(); ok {
 		if err := staffaccount.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "StaffAccount.password": %w`, err)}
 		}
-	}
-	if _, ok := sac.mutation.PasswordUpdatedAt(); !ok {
-		return &ValidationError{Name: "password_updated_at", err: errors.New(`ent: missing required field "StaffAccount.password_updated_at"`)}
 	}
 	if _, ok := sac.mutation.AuthTypeID(); !ok {
 		return &ValidationError{Name: "auth_type", err: errors.New(`ent: missing required edge "StaffAccount.auth_type"`)}
@@ -351,6 +365,14 @@ func (sac *StaffAccountCreate) createSpec() (*StaffAccount, *sqlgraph.CreateSpec
 		})
 		_node.Email = value
 	}
+	if value, ok := sac.mutation.EmailConfirmed(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: staffaccount.FieldEmailConfirmed,
+		})
+		_node.EmailConfirmed = value
+	}
 	if value, ok := sac.mutation.Password(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -365,7 +387,7 @@ func (sac *StaffAccountCreate) createSpec() (*StaffAccount, *sqlgraph.CreateSpec
 			Value:  value,
 			Column: staffaccount.FieldPasswordUpdatedAt,
 		})
-		_node.PasswordUpdatedAt = value
+		_node.PasswordUpdatedAt = &value
 	}
 	if nodes := sac.mutation.AuthRolesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -12,8 +12,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var ErrIncorrectUsernameOrPassword = fmt.Errorf("auth: incorrect username or password")
-
 func (authService AuthService) LoginToLocalAccount(ctx context.Context, username string, password string) (
 	*ent.Account, SessionID, error,
 ) {

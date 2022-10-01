@@ -106,15 +106,21 @@ type AccountWhereInput struct {
 	EmailEqualFold    *string  `json:"emailEqualFold,omitempty"`
 	EmailContainsFold *string  `json:"emailContainsFold,omitempty"`
 
+	// "email_confirmed" field predicates.
+	EmailConfirmed    *bool `json:"emailConfirmed,omitempty"`
+	EmailConfirmedNEQ *bool `json:"emailConfirmedNEQ,omitempty"`
+
 	// "password_updated_at" field predicates.
-	PasswordUpdatedAt      *time.Time  `json:"passwordUpdatedAt,omitempty"`
-	PasswordUpdatedAtNEQ   *time.Time  `json:"passwordUpdatedAtNEQ,omitempty"`
-	PasswordUpdatedAtIn    []time.Time `json:"passwordUpdatedAtIn,omitempty"`
-	PasswordUpdatedAtNotIn []time.Time `json:"passwordUpdatedAtNotIn,omitempty"`
-	PasswordUpdatedAtGT    *time.Time  `json:"passwordUpdatedAtGT,omitempty"`
-	PasswordUpdatedAtGTE   *time.Time  `json:"passwordUpdatedAtGTE,omitempty"`
-	PasswordUpdatedAtLT    *time.Time  `json:"passwordUpdatedAtLT,omitempty"`
-	PasswordUpdatedAtLTE   *time.Time  `json:"passwordUpdatedAtLTE,omitempty"`
+	PasswordUpdatedAt       *time.Time  `json:"passwordUpdatedAt,omitempty"`
+	PasswordUpdatedAtNEQ    *time.Time  `json:"passwordUpdatedAtNEQ,omitempty"`
+	PasswordUpdatedAtIn     []time.Time `json:"passwordUpdatedAtIn,omitempty"`
+	PasswordUpdatedAtNotIn  []time.Time `json:"passwordUpdatedAtNotIn,omitempty"`
+	PasswordUpdatedAtGT     *time.Time  `json:"passwordUpdatedAtGT,omitempty"`
+	PasswordUpdatedAtGTE    *time.Time  `json:"passwordUpdatedAtGTE,omitempty"`
+	PasswordUpdatedAtLT     *time.Time  `json:"passwordUpdatedAtLT,omitempty"`
+	PasswordUpdatedAtLTE    *time.Time  `json:"passwordUpdatedAtLTE,omitempty"`
+	PasswordUpdatedAtIsNil  bool        `json:"passwordUpdatedAtIsNil,omitempty"`
+	PasswordUpdatedAtNotNil bool        `json:"passwordUpdatedAtNotNil,omitempty"`
 
 	// "auth_roles" edge predicates.
 	HasAuthRoles     *bool                 `json:"hasAuthRoles,omitempty"`
@@ -380,6 +386,12 @@ func (i *AccountWhereInput) P() (predicate.Account, error) {
 	if i.EmailContainsFold != nil {
 		predicates = append(predicates, account.EmailContainsFold(*i.EmailContainsFold))
 	}
+	if i.EmailConfirmed != nil {
+		predicates = append(predicates, account.EmailConfirmedEQ(*i.EmailConfirmed))
+	}
+	if i.EmailConfirmedNEQ != nil {
+		predicates = append(predicates, account.EmailConfirmedNEQ(*i.EmailConfirmedNEQ))
+	}
 	if i.PasswordUpdatedAt != nil {
 		predicates = append(predicates, account.PasswordUpdatedAtEQ(*i.PasswordUpdatedAt))
 	}
@@ -403,6 +415,12 @@ func (i *AccountWhereInput) P() (predicate.Account, error) {
 	}
 	if i.PasswordUpdatedAtLTE != nil {
 		predicates = append(predicates, account.PasswordUpdatedAtLTE(*i.PasswordUpdatedAtLTE))
+	}
+	if i.PasswordUpdatedAtIsNil {
+		predicates = append(predicates, account.PasswordUpdatedAtIsNil())
+	}
+	if i.PasswordUpdatedAtNotNil {
+		predicates = append(predicates, account.PasswordUpdatedAtNotNil())
 	}
 
 	if i.HasAuthRoles != nil {
@@ -4958,15 +4976,21 @@ type StaffAccountWhereInput struct {
 	EmailEqualFold    *string  `json:"emailEqualFold,omitempty"`
 	EmailContainsFold *string  `json:"emailContainsFold,omitempty"`
 
+	// "email_confirmed" field predicates.
+	EmailConfirmed    *bool `json:"emailConfirmed,omitempty"`
+	EmailConfirmedNEQ *bool `json:"emailConfirmedNEQ,omitempty"`
+
 	// "password_updated_at" field predicates.
-	PasswordUpdatedAt      *time.Time  `json:"passwordUpdatedAt,omitempty"`
-	PasswordUpdatedAtNEQ   *time.Time  `json:"passwordUpdatedAtNEQ,omitempty"`
-	PasswordUpdatedAtIn    []time.Time `json:"passwordUpdatedAtIn,omitempty"`
-	PasswordUpdatedAtNotIn []time.Time `json:"passwordUpdatedAtNotIn,omitempty"`
-	PasswordUpdatedAtGT    *time.Time  `json:"passwordUpdatedAtGT,omitempty"`
-	PasswordUpdatedAtGTE   *time.Time  `json:"passwordUpdatedAtGTE,omitempty"`
-	PasswordUpdatedAtLT    *time.Time  `json:"passwordUpdatedAtLT,omitempty"`
-	PasswordUpdatedAtLTE   *time.Time  `json:"passwordUpdatedAtLTE,omitempty"`
+	PasswordUpdatedAt       *time.Time  `json:"passwordUpdatedAt,omitempty"`
+	PasswordUpdatedAtNEQ    *time.Time  `json:"passwordUpdatedAtNEQ,omitempty"`
+	PasswordUpdatedAtIn     []time.Time `json:"passwordUpdatedAtIn,omitempty"`
+	PasswordUpdatedAtNotIn  []time.Time `json:"passwordUpdatedAtNotIn,omitempty"`
+	PasswordUpdatedAtGT     *time.Time  `json:"passwordUpdatedAtGT,omitempty"`
+	PasswordUpdatedAtGTE    *time.Time  `json:"passwordUpdatedAtGTE,omitempty"`
+	PasswordUpdatedAtLT     *time.Time  `json:"passwordUpdatedAtLT,omitempty"`
+	PasswordUpdatedAtLTE    *time.Time  `json:"passwordUpdatedAtLTE,omitempty"`
+	PasswordUpdatedAtIsNil  bool        `json:"passwordUpdatedAtIsNil,omitempty"`
+	PasswordUpdatedAtNotNil bool        `json:"passwordUpdatedAtNotNil,omitempty"`
 
 	// "auth_roles" edge predicates.
 	HasAuthRoles     *bool                 `json:"hasAuthRoles,omitempty"`
@@ -5228,6 +5252,12 @@ func (i *StaffAccountWhereInput) P() (predicate.StaffAccount, error) {
 	if i.EmailContainsFold != nil {
 		predicates = append(predicates, staffaccount.EmailContainsFold(*i.EmailContainsFold))
 	}
+	if i.EmailConfirmed != nil {
+		predicates = append(predicates, staffaccount.EmailConfirmedEQ(*i.EmailConfirmed))
+	}
+	if i.EmailConfirmedNEQ != nil {
+		predicates = append(predicates, staffaccount.EmailConfirmedNEQ(*i.EmailConfirmedNEQ))
+	}
 	if i.PasswordUpdatedAt != nil {
 		predicates = append(predicates, staffaccount.PasswordUpdatedAtEQ(*i.PasswordUpdatedAt))
 	}
@@ -5251,6 +5281,12 @@ func (i *StaffAccountWhereInput) P() (predicate.StaffAccount, error) {
 	}
 	if i.PasswordUpdatedAtLTE != nil {
 		predicates = append(predicates, staffaccount.PasswordUpdatedAtLTE(*i.PasswordUpdatedAtLTE))
+	}
+	if i.PasswordUpdatedAtIsNil {
+		predicates = append(predicates, staffaccount.PasswordUpdatedAtIsNil())
+	}
+	if i.PasswordUpdatedAtNotNil {
+		predicates = append(predicates, staffaccount.PasswordUpdatedAtNotNil())
 	}
 
 	if i.HasAuthRoles != nil {

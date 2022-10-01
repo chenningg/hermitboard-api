@@ -117,6 +117,13 @@ func Email(v string) predicate.StaffAccount {
 	})
 }
 
+// EmailConfirmed applies equality check predicate on the "email_confirmed" field. It's identical to EmailConfirmedEQ.
+func EmailConfirmed(v bool) predicate.StaffAccount {
+	return predicate.StaffAccount(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmailConfirmed), v))
+	})
+}
+
 // Password applies equality check predicate on the "password" field. It's identical to PasswordEQ.
 func Password(v string) predicate.StaffAccount {
 	return predicate.StaffAccount(func(s *sql.Selector) {
@@ -535,6 +542,20 @@ func EmailContainsFold(v string) predicate.StaffAccount {
 	})
 }
 
+// EmailConfirmedEQ applies the EQ predicate on the "email_confirmed" field.
+func EmailConfirmedEQ(v bool) predicate.StaffAccount {
+	return predicate.StaffAccount(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldEmailConfirmed), v))
+	})
+}
+
+// EmailConfirmedNEQ applies the NEQ predicate on the "email_confirmed" field.
+func EmailConfirmedNEQ(v bool) predicate.StaffAccount {
+	return predicate.StaffAccount(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldEmailConfirmed), v))
+	})
+}
+
 // PasswordEQ applies the EQ predicate on the "password" field.
 func PasswordEQ(v string) predicate.StaffAccount {
 	return predicate.StaffAccount(func(s *sql.Selector) {
@@ -709,6 +730,20 @@ func PasswordUpdatedAtLT(v time.Time) predicate.StaffAccount {
 func PasswordUpdatedAtLTE(v time.Time) predicate.StaffAccount {
 	return predicate.StaffAccount(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldPasswordUpdatedAt), v))
+	})
+}
+
+// PasswordUpdatedAtIsNil applies the IsNil predicate on the "password_updated_at" field.
+func PasswordUpdatedAtIsNil() predicate.StaffAccount {
+	return predicate.StaffAccount(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldPasswordUpdatedAt)))
+	})
+}
+
+// PasswordUpdatedAtNotNil applies the NotNil predicate on the "password_updated_at" field.
+func PasswordUpdatedAtNotNil() predicate.StaffAccount {
+	return predicate.StaffAccount(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldPasswordUpdatedAt)))
 	})
 }
 

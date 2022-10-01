@@ -76,14 +76,16 @@ func init() {
 	accountDescEmail := accountFields[1].Descriptor()
 	// account.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	account.EmailValidator = accountDescEmail.Validators[0].(func(string) error)
+	// accountDescEmailConfirmed is the schema descriptor for email_confirmed field.
+	accountDescEmailConfirmed := accountFields[2].Descriptor()
+	// account.DefaultEmailConfirmed holds the default value on creation for the email_confirmed field.
+	account.DefaultEmailConfirmed = accountDescEmailConfirmed.Default.(bool)
 	// accountDescPassword is the schema descriptor for password field.
-	accountDescPassword := accountFields[2].Descriptor()
+	accountDescPassword := accountFields[3].Descriptor()
 	// account.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	account.PasswordValidator = accountDescPassword.Validators[0].(func(string) error)
 	// accountDescPasswordUpdatedAt is the schema descriptor for password_updated_at field.
-	accountDescPasswordUpdatedAt := accountFields[3].Descriptor()
-	// account.DefaultPasswordUpdatedAt holds the default value on creation for the password_updated_at field.
-	account.DefaultPasswordUpdatedAt = accountDescPasswordUpdatedAt.Default.(func() time.Time)
+	accountDescPasswordUpdatedAt := accountFields[4].Descriptor()
 	// account.UpdateDefaultPasswordUpdatedAt holds the default value on update for the password_updated_at field.
 	account.UpdateDefaultPasswordUpdatedAt = accountDescPasswordUpdatedAt.UpdateDefault.(func() time.Time)
 	// accountDescID is the schema descriptor for id field.
@@ -565,14 +567,16 @@ func init() {
 	staffaccountDescEmail := staffaccountFields[1].Descriptor()
 	// staffaccount.EmailValidator is a validator for the "email" field. It is called by the builders before save.
 	staffaccount.EmailValidator = staffaccountDescEmail.Validators[0].(func(string) error)
+	// staffaccountDescEmailConfirmed is the schema descriptor for email_confirmed field.
+	staffaccountDescEmailConfirmed := staffaccountFields[2].Descriptor()
+	// staffaccount.DefaultEmailConfirmed holds the default value on creation for the email_confirmed field.
+	staffaccount.DefaultEmailConfirmed = staffaccountDescEmailConfirmed.Default.(bool)
 	// staffaccountDescPassword is the schema descriptor for password field.
-	staffaccountDescPassword := staffaccountFields[2].Descriptor()
+	staffaccountDescPassword := staffaccountFields[3].Descriptor()
 	// staffaccount.PasswordValidator is a validator for the "password" field. It is called by the builders before save.
 	staffaccount.PasswordValidator = staffaccountDescPassword.Validators[0].(func(string) error)
 	// staffaccountDescPasswordUpdatedAt is the schema descriptor for password_updated_at field.
-	staffaccountDescPasswordUpdatedAt := staffaccountFields[3].Descriptor()
-	// staffaccount.DefaultPasswordUpdatedAt holds the default value on creation for the password_updated_at field.
-	staffaccount.DefaultPasswordUpdatedAt = staffaccountDescPasswordUpdatedAt.Default.(func() time.Time)
+	staffaccountDescPasswordUpdatedAt := staffaccountFields[4].Descriptor()
 	// staffaccount.UpdateDefaultPasswordUpdatedAt holds the default value on update for the password_updated_at field.
 	staffaccount.UpdateDefaultPasswordUpdatedAt = staffaccountDescPasswordUpdatedAt.UpdateDefault.(func() time.Time)
 	// staffaccountDescID is the schema descriptor for id field.

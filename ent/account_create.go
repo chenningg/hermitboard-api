@@ -79,6 +79,20 @@ func (ac *AccountCreate) SetEmail(s string) *AccountCreate {
 	return ac
 }
 
+// SetEmailConfirmed sets the "email_confirmed" field.
+func (ac *AccountCreate) SetEmailConfirmed(b bool) *AccountCreate {
+	ac.mutation.SetEmailConfirmed(b)
+	return ac
+}
+
+// SetNillableEmailConfirmed sets the "email_confirmed" field if the given value is not nil.
+func (ac *AccountCreate) SetNillableEmailConfirmed(b *bool) *AccountCreate {
+	if b != nil {
+		ac.SetEmailConfirmed(*b)
+	}
+	return ac
+}
+
 // SetPassword sets the "password" field.
 func (ac *AccountCreate) SetPassword(s string) *AccountCreate {
 	ac.mutation.SetPassword(s)
@@ -262,9 +276,9 @@ func (ac *AccountCreate) defaults() {
 		v := account.DefaultUpdatedAt()
 		ac.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := ac.mutation.PasswordUpdatedAt(); !ok {
-		v := account.DefaultPasswordUpdatedAt()
-		ac.mutation.SetPasswordUpdatedAt(v)
+	if _, ok := ac.mutation.EmailConfirmed(); !ok {
+		v := account.DefaultEmailConfirmed
+		ac.mutation.SetEmailConfirmed(v)
 	}
 	if _, ok := ac.mutation.ID(); !ok {
 		v := account.DefaultID()
@@ -296,13 +310,13 @@ func (ac *AccountCreate) check() error {
 			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "Account.email": %w`, err)}
 		}
 	}
+	if _, ok := ac.mutation.EmailConfirmed(); !ok {
+		return &ValidationError{Name: "email_confirmed", err: errors.New(`ent: missing required field "Account.email_confirmed"`)}
+	}
 	if v, ok := ac.mutation.Password(); ok {
 		if err := account.PasswordValidator(v); err != nil {
 			return &ValidationError{Name: "password", err: fmt.Errorf(`ent: validator failed for field "Account.password": %w`, err)}
 		}
-	}
-	if _, ok := ac.mutation.PasswordUpdatedAt(); !ok {
-		return &ValidationError{Name: "password_updated_at", err: errors.New(`ent: missing required field "Account.password_updated_at"`)}
 	}
 	if len(ac.mutation.AuthRolesIDs()) == 0 {
 		return &ValidationError{Name: "auth_roles", err: errors.New(`ent: missing required edge "Account.auth_roles"`)}
@@ -386,6 +400,14 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 		})
 		_node.Email = value
 	}
+	if value, ok := ac.mutation.EmailConfirmed(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeBool,
+			Value:  value,
+			Column: account.FieldEmailConfirmed,
+		})
+		_node.EmailConfirmed = value
+	}
 	if value, ok := ac.mutation.Password(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -400,7 +422,7 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: account.FieldPasswordUpdatedAt,
 		})
-		_node.PasswordUpdatedAt = value
+		_node.PasswordUpdatedAt = &value
 	}
 	if nodes := ac.mutation.AuthRolesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -93,6 +93,8 @@ func (ec *executionContext) fieldContext_Mutation_createAccount(ctx context.Cont
 				return ec.fieldContext_Account_nickname(ctx, field)
 			case "email":
 				return ec.fieldContext_Account_email(ctx, field)
+			case "emailConfirmed":
+				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
 			case "authRoles":

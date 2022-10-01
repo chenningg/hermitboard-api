@@ -2143,6 +2143,50 @@ func (ec *executionContext) fieldContext_Account_email(ctx context.Context, fiel
 	return fc, nil
 }
 
+func (ec *executionContext) _Account_emailConfirmed(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Account_emailConfirmed(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EmailConfirmed, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Account_emailConfirmed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Account",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Account_passwordUpdatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
 	if err != nil {
@@ -2164,14 +2208,11 @@ func (ec *executionContext) _Account_passwordUpdatedAt(ctx context.Context, fiel
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(*time.Time)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Account_passwordUpdatedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -2627,6 +2668,8 @@ func (ec *executionContext) fieldContext_AccountEdge_node(ctx context.Context, f
 				return ec.fieldContext_Account_nickname(ctx, field)
 			case "email":
 				return ec.fieldContext_Account_email(ctx, field)
+			case "emailConfirmed":
+				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
 			case "authRoles":
@@ -6004,6 +6047,8 @@ func (ec *executionContext) fieldContext_Connection_account(ctx context.Context,
 				return ec.fieldContext_Account_nickname(ctx, field)
 			case "email":
 				return ec.fieldContext_Account_email(ctx, field)
+			case "emailConfirmed":
+				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
 			case "authRoles":
@@ -9020,6 +9065,8 @@ func (ec *executionContext) fieldContext_Portfolio_account(ctx context.Context, 
 				return ec.fieldContext_Account_nickname(ctx, field)
 			case "email":
 				return ec.fieldContext_Account_email(ctx, field)
+			case "emailConfirmed":
+				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
 			case "authRoles":
@@ -12099,6 +12146,50 @@ func (ec *executionContext) fieldContext_StaffAccount_email(ctx context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _StaffAccount_emailConfirmed(ctx context.Context, field graphql.CollectedField, obj *ent.StaffAccount) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_StaffAccount_emailConfirmed(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EmailConfirmed, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_StaffAccount_emailConfirmed(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "StaffAccount",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _StaffAccount_passwordUpdatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.StaffAccount) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_StaffAccount_passwordUpdatedAt(ctx, field)
 	if err != nil {
@@ -12120,14 +12211,11 @@ func (ec *executionContext) _StaffAccount_passwordUpdatedAt(ctx context.Context,
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(time.Time)
+	res := resTmp.(*time.Time)
 	fc.Result = res
-	return ec.marshalNTime2timeᚐTime(ctx, field.Selections, res)
+	return ec.marshalOTime2ᚖtimeᚐTime(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_StaffAccount_passwordUpdatedAt(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -12457,6 +12545,8 @@ func (ec *executionContext) fieldContext_StaffAccountEdge_node(ctx context.Conte
 				return ec.fieldContext_StaffAccount_nickname(ctx, field)
 			case "email":
 				return ec.fieldContext_StaffAccount_email(ctx, field)
+			case "emailConfirmed":
+				return ec.fieldContext_StaffAccount_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_StaffAccount_passwordUpdatedAt(ctx, field)
 			case "authRoles":
@@ -14222,7 +14312,7 @@ func (ec *executionContext) unmarshalInputAccountWhereInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "nickname", "nicknameNEQ", "nicknameIn", "nicknameNotIn", "nicknameGT", "nicknameGTE", "nicknameLT", "nicknameLTE", "nicknameContains", "nicknameHasPrefix", "nicknameHasSuffix", "nicknameEqualFold", "nicknameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "passwordUpdatedAt", "passwordUpdatedAtNEQ", "passwordUpdatedAtIn", "passwordUpdatedAtNotIn", "passwordUpdatedAtGT", "passwordUpdatedAtGTE", "passwordUpdatedAtLT", "passwordUpdatedAtLTE", "hasAuthRoles", "hasAuthRolesWith", "hasPortfolios", "hasPortfoliosWith", "hasAuthType", "hasAuthTypeWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "nickname", "nicknameNEQ", "nicknameIn", "nicknameNotIn", "nicknameGT", "nicknameGTE", "nicknameLT", "nicknameLTE", "nicknameContains", "nicknameHasPrefix", "nicknameHasSuffix", "nicknameEqualFold", "nicknameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "emailConfirmed", "emailConfirmedNEQ", "passwordUpdatedAt", "passwordUpdatedAtNEQ", "passwordUpdatedAtIn", "passwordUpdatedAtNotIn", "passwordUpdatedAtGT", "passwordUpdatedAtGTE", "passwordUpdatedAtLT", "passwordUpdatedAtLTE", "passwordUpdatedAtIsNil", "passwordUpdatedAtNotNil", "hasAuthRoles", "hasAuthRolesWith", "hasPortfolios", "hasPortfoliosWith", "hasAuthType", "hasAuthTypeWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -14733,6 +14823,22 @@ func (ec *executionContext) unmarshalInputAccountWhereInput(ctx context.Context,
 			if err != nil {
 				return it, err
 			}
+		case "emailConfirmed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailConfirmed"))
+			it.EmailConfirmed, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "emailConfirmedNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailConfirmedNEQ"))
+			it.EmailConfirmedNEQ, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "passwordUpdatedAt":
 			var err error
 
@@ -14794,6 +14900,22 @@ func (ec *executionContext) unmarshalInputAccountWhereInput(ctx context.Context,
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordUpdatedAtLTE"))
 			it.PasswordUpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "passwordUpdatedAtIsNil":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordUpdatedAtIsNil"))
+			it.PasswordUpdatedAtIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "passwordUpdatedAtNotNil":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordUpdatedAtNotNil"))
+			it.PasswordUpdatedAtNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -17994,7 +18116,7 @@ func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"nickname", "email", "password", "authRoleIDs"}
+	fieldsInOrder := [...]string{"nickname", "email", "emailConfirmed", "password", "authRoleIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -18014,6 +18136,14 @@ func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
 			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "emailConfirmed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailConfirmed"))
+			it.EmailConfirmed, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -18570,7 +18700,7 @@ func (ec *executionContext) unmarshalInputCreateStaffAccountInput(ctx context.Co
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"nickname", "email", "password", "authRoleIDs"}
+	fieldsInOrder := [...]string{"nickname", "email", "emailConfirmed", "password", "authRoleIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -18590,6 +18720,14 @@ func (ec *executionContext) unmarshalInputCreateStaffAccountInput(ctx context.Co
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
 			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "emailConfirmed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailConfirmed"))
+			it.EmailConfirmed, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -22726,7 +22864,7 @@ func (ec *executionContext) unmarshalInputStaffAccountWhereInput(ctx context.Con
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "nickname", "nicknameNEQ", "nicknameIn", "nicknameNotIn", "nicknameGT", "nicknameGTE", "nicknameLT", "nicknameLTE", "nicknameContains", "nicknameHasPrefix", "nicknameHasSuffix", "nicknameEqualFold", "nicknameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "passwordUpdatedAt", "passwordUpdatedAtNEQ", "passwordUpdatedAtIn", "passwordUpdatedAtNotIn", "passwordUpdatedAtGT", "passwordUpdatedAtGTE", "passwordUpdatedAtLT", "passwordUpdatedAtLTE", "hasAuthRoles", "hasAuthRolesWith", "hasAuthType", "hasAuthTypeWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "nickname", "nicknameNEQ", "nicknameIn", "nicknameNotIn", "nicknameGT", "nicknameGTE", "nicknameLT", "nicknameLTE", "nicknameContains", "nicknameHasPrefix", "nicknameHasSuffix", "nicknameEqualFold", "nicknameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "emailConfirmed", "emailConfirmedNEQ", "passwordUpdatedAt", "passwordUpdatedAtNEQ", "passwordUpdatedAtIn", "passwordUpdatedAtNotIn", "passwordUpdatedAtGT", "passwordUpdatedAtGTE", "passwordUpdatedAtLT", "passwordUpdatedAtLTE", "passwordUpdatedAtIsNil", "passwordUpdatedAtNotNil", "hasAuthRoles", "hasAuthRolesWith", "hasAuthType", "hasAuthTypeWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -23237,6 +23375,22 @@ func (ec *executionContext) unmarshalInputStaffAccountWhereInput(ctx context.Con
 			if err != nil {
 				return it, err
 			}
+		case "emailConfirmed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailConfirmed"))
+			it.EmailConfirmed, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "emailConfirmedNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailConfirmedNEQ"))
+			it.EmailConfirmedNEQ, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "passwordUpdatedAt":
 			var err error
 
@@ -23298,6 +23452,22 @@ func (ec *executionContext) unmarshalInputStaffAccountWhereInput(ctx context.Con
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordUpdatedAtLTE"))
 			it.PasswordUpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "passwordUpdatedAtIsNil":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordUpdatedAtIsNil"))
+			it.PasswordUpdatedAtIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "passwordUpdatedAtNotNil":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordUpdatedAtNotNil"))
+			it.PasswordUpdatedAtNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -25050,7 +25220,7 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "nickname", "email", "clearPassword", "password", "addAuthRoleIDs", "removeAuthRoleIDs", "clearAuthType", "authTypeID"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "nickname", "email", "emailConfirmed", "clearPassword", "password", "addAuthRoleIDs", "removeAuthRoleIDs", "clearAuthType", "authTypeID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -25086,6 +25256,14 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
 			it.Email, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "emailConfirmed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailConfirmed"))
+			it.EmailConfirmed, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -26070,7 +26248,7 @@ func (ec *executionContext) unmarshalInputUpdateStaffAccountInput(ctx context.Co
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "nickname", "email", "clearPassword", "password", "addAuthRoleIDs", "removeAuthRoleIDs", "clearAuthType", "authTypeID"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "nickname", "email", "emailConfirmed", "clearPassword", "password", "addAuthRoleIDs", "removeAuthRoleIDs", "clearAuthType", "authTypeID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -26106,6 +26284,14 @@ func (ec *executionContext) unmarshalInputUpdateStaffAccountInput(ctx context.Co
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
 			it.Email, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "emailConfirmed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailConfirmed"))
+			it.EmailConfirmed, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -26525,13 +26711,17 @@ func (ec *executionContext) _Account(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "passwordUpdatedAt":
+		case "emailConfirmed":
 
-			out.Values[i] = ec._Account_passwordUpdatedAt(ctx, field, obj)
+			out.Values[i] = ec._Account_emailConfirmed(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "passwordUpdatedAt":
+
+			out.Values[i] = ec._Account_passwordUpdatedAt(ctx, field, obj)
+
 		case "authRoles":
 			field := field
 
@@ -29210,13 +29400,17 @@ func (ec *executionContext) _StaffAccount(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "passwordUpdatedAt":
+		case "emailConfirmed":
 
-			out.Values[i] = ec._StaffAccount_passwordUpdatedAt(ctx, field, obj)
+			out.Values[i] = ec._StaffAccount_emailConfirmed(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "passwordUpdatedAt":
+
+			out.Values[i] = ec._StaffAccount_passwordUpdatedAt(ctx, field, obj)
+
 		case "authRoles":
 			field := field
 

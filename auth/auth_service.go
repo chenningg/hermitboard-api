@@ -5,17 +5,27 @@ import (
 
 	"github.com/chenningg/hermitboard-api/db"
 	"github.com/chenningg/hermitboard-api/ent"
+	"github.com/chenningg/hermitboard-api/ent/authrole"
+	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/redis"
 	"github.com/go-logr/logr"
 )
 
 type AuthServicer interface {
-	CreateAccount(ctx context.Context, account ent.CreateAccountInput) (*ent.Account, SessionID, error)
-	CreateStaffAccount(ctx context.Context, staffAccount ent.CreateStaffAccountInput) (
-		*ent.StaffAccount, SessionID, error,
+	CreateAccount(
+		ctx context.Context, nickname string, email string, password string, provider authtype.Value,
+		authRoles []authrole.Value,
+	) (*ent.Account, error)
+	CreateStaffAccount(
+		ctx context.Context, nickname string, email string, password string, provider authtype.Value,
+		authRoles []authrole.Value,
+	) (*ent.StaffAccount, error)
+	LoginToAccount(ctx context.Context, username string, password string, provider authtype.Value) (
+		*ent.Account, SessionID, error,
 	)
-	LoginToLocalAccount(ctx context.Context, username string, password string) (*ent.Account, error)
-	LoginToLocalStaffAccount(ctx context.Context, username string, password string) (*ent.StaffAccount, error)
+	LoginToStaffAccount(
+		ctx context.Context, username string, password string, provider authtype.Value,
+	) (*ent.StaffAccount, SessionID, error)
 	LogoutFromAccount(ctx context.Context) error
 	LogoutFromStaffAccount(ctx context.Context) error
 }

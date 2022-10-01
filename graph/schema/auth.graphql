@@ -1,3 +1,4 @@
 type Mutation {
     createAccount(input: CreateAccountInput!): Account
+
 }
