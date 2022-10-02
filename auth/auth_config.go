@@ -1,6 +1,8 @@
 package auth
 
-import "github.com/jellydator/validation"
+import (
+	"github.com/jellydator/validation"
+)
 
 type AuthConfig struct {
 	BcryptCost     int `env:"BCRYPT_COST" envDefault:"10"`

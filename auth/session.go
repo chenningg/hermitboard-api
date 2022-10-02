@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -30,10 +31,15 @@ var StaffAuthRoles = []authrole.Value{authrole.ValueSupport, authrole.ValueAdmin
 // SessionID represents a session ID as a string.
 type SessionID string
 
+func (sessionID SessionID) String() string {
+	return string(sessionID)
+}
+
 // Session represents an authentication session on the server side, containing the user ID and their authorization roles.
 type Session struct {
-	UserID    pulid.PULID
-	AuthRoles map[authrole.Value]struct{}
+	SessionID SessionID                   // Session ID of the logged in user.
+	UserID    pulid.PULID                 // ID of the user.
+	AuthRoles map[authrole.Value]struct{} // Auth roles of the user.
 }
 
 // NewSessionID returns a session ID implemented as a UUIDv4.
@@ -88,6 +94,11 @@ func HasAuthRoles(session *Session, authRoles []authrole.Value) bool {
 func IsLoggedIn(session *Session) bool {
 	if session == nil {
 		return false
+	} else {
+		_, err := ParseSessionID(session.SessionID.String())
+		if err != nil {
+			return false
+		}
 	}
 	return true
 }
@@ -107,4 +118,9 @@ func GetAuthRolesFromSession(session *Session) []authrole.Value {
 	}
 
 	return keys
+}
+
+// SecondsToDuration converts seconds in integer to a duration value.
+func SecondsToDuration(seconds int) (time.Duration, error) {
+	return time.ParseDuration(fmt.Sprintf("%ds", seconds))
 }

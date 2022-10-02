@@ -12,6 +12,8 @@ import (
 )
 
 type AuthServicer interface {
+	Config() *AuthConfig
+	RedisService() *redis.RedisService
 	CreateAccount(
 		ctx context.Context, nickname string, email string, password string, provider authtype.Value,
 		authRoles []authrole.Value,
@@ -20,11 +22,11 @@ type AuthServicer interface {
 		ctx context.Context, nickname string, email string, password string, provider authtype.Value,
 		authRoles []authrole.Value,
 	) (*ent.StaffAccount, error)
-	LoginToAccount(ctx context.Context, username string, password string, provider authtype.Value) (
+	LoginToAccount(ctx context.Context, username string, password string) (
 		*ent.Account, SessionID, error,
 	)
 	LoginToStaffAccount(
-		ctx context.Context, username string, password string, provider authtype.Value,
+		ctx context.Context, username string, password string,
 	) (*ent.StaffAccount, SessionID, error)
 	LogoutFromAccount(ctx context.Context) error
 	LogoutFromStaffAccount(ctx context.Context) error
@@ -33,12 +35,12 @@ type AuthServicer interface {
 type AuthService struct {
 	logger       logr.Logger
 	config       AuthConfig
-	dbService    db.DbServicer
-	redisService redis.RedisServicer
+	dbService    *db.DbService
+	redisService *redis.RedisService
 }
 
 func NewAuthService(
-	authConfig AuthConfig, logger logr.Logger, dbService db.DbServicer, redisService redis.RedisServicer,
+	authConfig AuthConfig, logger logr.Logger, dbService *db.DbService, redisService *redis.RedisService,
 ) *AuthService {
 	var authService = new(AuthService)
 
@@ -51,4 +53,12 @@ func NewAuthService(
 	authService.redisService = redisService
 
 	return authService
+}
+
+func (authService AuthService) Config() *AuthConfig {
+	return &authService.config
+}
+
+func (authService AuthService) RedisService() *redis.RedisService {
+	return authService.redisService
 }

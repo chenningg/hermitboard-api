@@ -30,7 +30,7 @@ func (authService AuthService) CreateAccount(
 	// Don't allow logged in non-staff accounts to create an account.
 	if IsLoggedIn(session) && HasAuthRoles(session, NonStaffAuthRoles) {
 		return nil, fmt.Errorf(
-			"%w: auth.CreateAccount(): non-staff account already logged in, cannot create account", ErrAlreadyLoggedIn,
+			"%w: auth.CreateAccount(): non-staff account already logged in, cannot create account", ErrUnauthorized,
 		)
 	}
 

@@ -86,7 +86,7 @@ func main() {
 	router.Use(chiMiddleware.Logger)
 	router.Use(chiMiddleware.Recoverer)
 	router.Use(chiMiddleware.Heartbeat("/health"))
-	router.Use(middleware.Auth(redisService, authService))
+	router.Use(middleware.Auth(authService))
 
 	// Initialize the web server.
 	srv := handler.NewDefaultServer(resolver.NewSchema(dbService, redisService))
