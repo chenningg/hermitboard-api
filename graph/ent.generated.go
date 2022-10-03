@@ -30,20 +30,20 @@ type QueryResolver interface {
 	Nodes(ctx context.Context, ids []pulid.PULID) ([]ent.Noder, error)
 	Accounts(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AccountOrder, where *ent.AccountWhereInput) (*ent.AccountConnection, error)
 	Assets(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetOrder, where *ent.AssetWhereInput) (*ent.AssetConnection, error)
-	Assetclasses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetClassOrder, where *ent.AssetClassWhereInput) (*ent.AssetClassConnection, error)
-	Authroles(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthRoleOrder, where *ent.AuthRoleWhereInput) (*ent.AuthRoleConnection, error)
-	Authtypes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthTypeOrder, where *ent.AuthTypeWhereInput) (*ent.AuthTypeConnection, error)
+	AssetClasses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetClassOrder, where *ent.AssetClassWhereInput) (*ent.AssetClassConnection, error)
+	AuthRoles(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthRoleOrder, where *ent.AuthRoleWhereInput) (*ent.AuthRoleConnection, error)
+	AuthTypes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthTypeOrder, where *ent.AuthTypeWhereInput) (*ent.AuthTypeConnection, error)
 	Blockchains(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.BlockchainOrder, where *ent.BlockchainWhereInput) (*ent.BlockchainConnection, error)
 	Connections(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ConnectionOrder, where *ent.ConnectionWhereInput) (*ent.ConnectionConnection, error)
 	Cryptocurrencies(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.CryptocurrencyOrder, where *ent.CryptocurrencyWhereInput) (*ent.CryptocurrencyConnection, error)
-	Dailyassetprices(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.DailyAssetPriceOrder, where *ent.DailyAssetPriceWhereInput) (*ent.DailyAssetPriceConnection, error)
+	DailyAssetPrices(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.DailyAssetPriceOrder, where *ent.DailyAssetPriceWhereInput) (*ent.DailyAssetPriceConnection, error)
 	Exchanges(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ExchangeOrder, where *ent.ExchangeWhereInput) (*ent.ExchangeConnection, error)
 	Portfolios(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PortfolioOrder, where *ent.PortfolioWhereInput) (*ent.PortfolioConnection, error)
 	Sources(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceOrder, where *ent.SourceWhereInput) (*ent.SourceConnection, error)
-	Sourcetypes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceTypeOrder, where *ent.SourceTypeWhereInput) (*ent.SourceTypeConnection, error)
-	Staffaccounts(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffAccountOrder, where *ent.StaffAccountWhereInput) (*ent.StaffAccountConnection, error)
+	SourceTypes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceTypeOrder, where *ent.SourceTypeWhereInput) (*ent.SourceTypeConnection, error)
+	StaffAccounts(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffAccountOrder, where *ent.StaffAccountWhereInput) (*ent.StaffAccountConnection, error)
 	Transactions(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) (*ent.TransactionConnection, error)
-	Transactiontypes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionTypeOrder, where *ent.TransactionTypeWhereInput) (*ent.TransactionTypeConnection, error)
+	TransactionTypes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionTypeOrder, where *ent.TransactionTypeWhereInput) (*ent.TransactionTypeConnection, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -833,7 +833,7 @@ func (ec *executionContext) field_Query_accounts_args(ctx context.Context, rawAr
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_assetclasses_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_assetClasses_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *ent.Cursor
@@ -953,7 +953,7 @@ func (ec *executionContext) field_Query_assets_args(ctx context.Context, rawArgs
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_authroles_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_authRoles_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *ent.Cursor
@@ -1013,7 +1013,7 @@ func (ec *executionContext) field_Query_authroles_args(ctx context.Context, rawA
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_authtypes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_authTypes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *ent.Cursor
@@ -1253,7 +1253,7 @@ func (ec *executionContext) field_Query_cryptocurrencies_args(ctx context.Contex
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_dailyassetprices_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_dailyAssetPrices_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *ent.Cursor
@@ -1463,6 +1463,66 @@ func (ec *executionContext) field_Query_portfolios_args(ctx context.Context, raw
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_sourceTypes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.SourceTypeOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOSourceTypeOrder2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSourceTypeOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.SourceTypeWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOSourceTypeWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSourceTypeWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_sources_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1523,67 +1583,7 @@ func (ec *executionContext) field_Query_sources_args(ctx context.Context, rawArg
 	return args, nil
 }
 
-func (ec *executionContext) field_Query_sourcetypes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *ent.Cursor
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *ent.Cursor
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.SourceTypeOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOSourceTypeOrder2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSourceTypeOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.SourceTypeWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOSourceTypeWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSourceTypeWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_staffaccounts_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Query_staffAccounts_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 *ent.Cursor
@@ -1635,6 +1635,66 @@ func (ec *executionContext) field_Query_staffaccounts_args(ctx context.Context, 
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
 		arg5, err = ec.unmarshalOStaffAccountWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccountWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_transactionTypes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.TransactionTypeOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOTransactionTypeOrder2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionTypeOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.TransactionTypeWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOTransactionTypeWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionTypeWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1695,66 +1755,6 @@ func (ec *executionContext) field_Query_transactions_args(ctx context.Context, r
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
 		arg5, err = ec.unmarshalOTransactionWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionWhereInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["where"] = arg5
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_transactiontypes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 *ent.Cursor
-	if tmp, ok := rawArgs["after"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
-		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["after"] = arg0
-	var arg1 *int
-	if tmp, ok := rawArgs["first"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
-		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["first"] = arg1
-	var arg2 *ent.Cursor
-	if tmp, ok := rawArgs["before"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
-		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["before"] = arg2
-	var arg3 *int
-	if tmp, ok := rawArgs["last"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
-		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["last"] = arg3
-	var arg4 *ent.TransactionTypeOrder
-	if tmp, ok := rawArgs["orderBy"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
-		arg4, err = ec.unmarshalOTransactionTypeOrder2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionTypeOrder(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["orderBy"] = arg4
-	var arg5 *ent.TransactionTypeWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg5, err = ec.unmarshalOTransactionTypeWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionTypeWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -9697,8 +9697,8 @@ func (ec *executionContext) fieldContext_Query_assets(ctx context.Context, field
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_assetclasses(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_assetclasses(ctx, field)
+func (ec *executionContext) _Query_assetClasses(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_assetClasses(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -9711,7 +9711,7 @@ func (ec *executionContext) _Query_assetclasses(ctx context.Context, field graph
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Assetclasses(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AssetClassOrder), fc.Args["where"].(*ent.AssetClassWhereInput))
+		return ec.resolvers.Query().AssetClasses(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AssetClassOrder), fc.Args["where"].(*ent.AssetClassWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -9728,7 +9728,7 @@ func (ec *executionContext) _Query_assetclasses(ctx context.Context, field graph
 	return ec.marshalNAssetClassConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAssetClassConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_assetclasses(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_assetClasses(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -9753,15 +9753,15 @@ func (ec *executionContext) fieldContext_Query_assetclasses(ctx context.Context,
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_assetclasses_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_assetClasses_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_authroles(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_authroles(ctx, field)
+func (ec *executionContext) _Query_authRoles(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_authRoles(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -9774,7 +9774,7 @@ func (ec *executionContext) _Query_authroles(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Authroles(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AuthRoleOrder), fc.Args["where"].(*ent.AuthRoleWhereInput))
+		return ec.resolvers.Query().AuthRoles(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AuthRoleOrder), fc.Args["where"].(*ent.AuthRoleWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -9791,7 +9791,7 @@ func (ec *executionContext) _Query_authroles(ctx context.Context, field graphql.
 	return ec.marshalNAuthRoleConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAuthRoleConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_authroles(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_authRoles(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -9816,15 +9816,15 @@ func (ec *executionContext) fieldContext_Query_authroles(ctx context.Context, fi
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_authroles_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_authRoles_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_authtypes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_authtypes(ctx, field)
+func (ec *executionContext) _Query_authTypes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_authTypes(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -9837,7 +9837,7 @@ func (ec *executionContext) _Query_authtypes(ctx context.Context, field graphql.
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Authtypes(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AuthTypeOrder), fc.Args["where"].(*ent.AuthTypeWhereInput))
+		return ec.resolvers.Query().AuthTypes(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AuthTypeOrder), fc.Args["where"].(*ent.AuthTypeWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -9854,7 +9854,7 @@ func (ec *executionContext) _Query_authtypes(ctx context.Context, field graphql.
 	return ec.marshalNAuthTypeConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAuthTypeConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_authtypes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_authTypes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -9879,7 +9879,7 @@ func (ec *executionContext) fieldContext_Query_authtypes(ctx context.Context, fi
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_authtypes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_authTypes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -10075,8 +10075,8 @@ func (ec *executionContext) fieldContext_Query_cryptocurrencies(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_dailyassetprices(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_dailyassetprices(ctx, field)
+func (ec *executionContext) _Query_dailyAssetPrices(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_dailyAssetPrices(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -10089,7 +10089,7 @@ func (ec *executionContext) _Query_dailyassetprices(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Dailyassetprices(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.DailyAssetPriceOrder), fc.Args["where"].(*ent.DailyAssetPriceWhereInput))
+		return ec.resolvers.Query().DailyAssetPrices(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.DailyAssetPriceOrder), fc.Args["where"].(*ent.DailyAssetPriceWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -10106,7 +10106,7 @@ func (ec *executionContext) _Query_dailyassetprices(ctx context.Context, field g
 	return ec.marshalNDailyAssetPriceConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐDailyAssetPriceConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_dailyassetprices(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_dailyAssetPrices(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -10131,7 +10131,7 @@ func (ec *executionContext) fieldContext_Query_dailyassetprices(ctx context.Cont
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_dailyassetprices_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_dailyAssetPrices_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -10327,8 +10327,8 @@ func (ec *executionContext) fieldContext_Query_sources(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_sourcetypes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_sourcetypes(ctx, field)
+func (ec *executionContext) _Query_sourceTypes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_sourceTypes(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -10341,7 +10341,7 @@ func (ec *executionContext) _Query_sourcetypes(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Sourcetypes(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.SourceTypeOrder), fc.Args["where"].(*ent.SourceTypeWhereInput))
+		return ec.resolvers.Query().SourceTypes(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.SourceTypeOrder), fc.Args["where"].(*ent.SourceTypeWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -10358,7 +10358,7 @@ func (ec *executionContext) _Query_sourcetypes(ctx context.Context, field graphq
 	return ec.marshalNSourceTypeConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSourceTypeConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_sourcetypes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_sourceTypes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -10383,15 +10383,15 @@ func (ec *executionContext) fieldContext_Query_sourcetypes(ctx context.Context, 
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_sourcetypes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_sourceTypes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_staffaccounts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_staffaccounts(ctx, field)
+func (ec *executionContext) _Query_staffAccounts(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_staffAccounts(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -10404,7 +10404,7 @@ func (ec *executionContext) _Query_staffaccounts(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Staffaccounts(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.StaffAccountOrder), fc.Args["where"].(*ent.StaffAccountWhereInput))
+		return ec.resolvers.Query().StaffAccounts(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.StaffAccountOrder), fc.Args["where"].(*ent.StaffAccountWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -10421,7 +10421,7 @@ func (ec *executionContext) _Query_staffaccounts(ctx context.Context, field grap
 	return ec.marshalNStaffAccountConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccountConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_staffaccounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_staffAccounts(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -10446,7 +10446,7 @@ func (ec *executionContext) fieldContext_Query_staffaccounts(ctx context.Context
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_staffaccounts_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_staffAccounts_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -10516,8 +10516,8 @@ func (ec *executionContext) fieldContext_Query_transactions(ctx context.Context,
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_transactiontypes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_transactiontypes(ctx, field)
+func (ec *executionContext) _Query_transactionTypes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_transactionTypes(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -10530,7 +10530,7 @@ func (ec *executionContext) _Query_transactiontypes(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Transactiontypes(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.TransactionTypeOrder), fc.Args["where"].(*ent.TransactionTypeWhereInput))
+		return ec.resolvers.Query().TransactionTypes(rctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.TransactionTypeOrder), fc.Args["where"].(*ent.TransactionTypeWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -10547,7 +10547,7 @@ func (ec *executionContext) _Query_transactiontypes(ctx context.Context, field g
 	return ec.marshalNTransactionTypeConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐTransactionTypeConnection(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_transactiontypes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_transactionTypes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -10572,7 +10572,7 @@ func (ec *executionContext) fieldContext_Query_transactiontypes(ctx context.Cont
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_transactiontypes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Query_transactionTypes_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -18116,7 +18116,7 @@ func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"nickname", "email", "emailConfirmed", "password", "authRoleIDs"}
+	fieldsInOrder := [...]string{"nickname", "email", "password", "authRoleIDs", "authTypeID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -18139,14 +18139,6 @@ func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
-		case "emailConfirmed":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailConfirmed"))
-			it.EmailConfirmed, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "password":
 			var err error
 
@@ -18160,6 +18152,14 @@ func (ec *executionContext) unmarshalInputCreateAccountInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authRoleIDs"))
 			it.AuthRoleIDs, err = ec.unmarshalNID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "authTypeID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeID"))
+			it.AuthTypeID, err = ec.unmarshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -18700,7 +18700,7 @@ func (ec *executionContext) unmarshalInputCreateStaffAccountInput(ctx context.Co
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"nickname", "email", "emailConfirmed", "password", "authRoleIDs"}
+	fieldsInOrder := [...]string{"nickname", "email", "password", "authRoleIDs", "authTypeID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -18723,14 +18723,6 @@ func (ec *executionContext) unmarshalInputCreateStaffAccountInput(ctx context.Co
 			if err != nil {
 				return it, err
 			}
-		case "emailConfirmed":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("emailConfirmed"))
-			it.EmailConfirmed, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "password":
 			var err error
 
@@ -18744,6 +18736,14 @@ func (ec *executionContext) unmarshalInputCreateStaffAccountInput(ctx context.Co
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authRoleIDs"))
 			it.AuthRoleIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "authTypeID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("authTypeID"))
+			it.AuthTypeID, err = ec.unmarshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -28703,7 +28703,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "assetclasses":
+		case "assetClasses":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -28712,7 +28712,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_assetclasses(ctx, field)
+				res = ec._Query_assetClasses(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -28726,7 +28726,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "authroles":
+		case "authRoles":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -28735,7 +28735,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_authroles(ctx, field)
+				res = ec._Query_authRoles(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -28749,7 +28749,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "authtypes":
+		case "authTypes":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -28758,7 +28758,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_authtypes(ctx, field)
+				res = ec._Query_authTypes(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -28841,7 +28841,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "dailyassetprices":
+		case "dailyAssetPrices":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -28850,7 +28850,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_dailyassetprices(ctx, field)
+				res = ec._Query_dailyAssetPrices(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -28933,7 +28933,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "sourcetypes":
+		case "sourceTypes":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -28942,7 +28942,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_sourcetypes(ctx, field)
+				res = ec._Query_sourceTypes(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -28956,7 +28956,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "staffaccounts":
+		case "staffAccounts":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -28965,7 +28965,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_staffaccounts(ctx, field)
+				res = ec._Query_staffAccounts(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -29002,7 +29002,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "transactiontypes":
+		case "transactionTypes":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -29011,7 +29011,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_transactiontypes(ctx, field)
+				res = ec._Query_transactionTypes(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -29946,6 +29946,10 @@ func (ec *executionContext) _TransactionTypeEdge(ctx context.Context, sel ast.Se
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNAccount2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccount(ctx context.Context, sel ast.SelectionSet, v ent.Account) graphql.Marshaler {
+	return ec._Account(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNAccount2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccount(ctx context.Context, sel ast.SelectionSet, v *ent.Account) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -30266,6 +30270,11 @@ func (ec *executionContext) unmarshalNCreateAccountInput2githubᚗcomᚋchenning
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateStaffAccountInput2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCreateStaffAccountInput(ctx context.Context, v interface{}) (ent.CreateStaffAccountInput, error) {
+	res, err := ec.unmarshalInputCreateStaffAccountInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNCryptocurrencyConnection2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCryptocurrencyConnection(ctx context.Context, sel ast.SelectionSet, v ent.CryptocurrencyConnection) graphql.Marshaler {
 	return ec._CryptocurrencyConnection(ctx, sel, &v)
 }
@@ -30576,6 +30585,20 @@ func (ec *executionContext) unmarshalNSourceTypeWhereInput2ᚖgithubᚗcomᚋche
 func (ec *executionContext) unmarshalNSourceWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSourceWhereInput(ctx context.Context, v interface{}) (*ent.SourceWhereInput, error) {
 	res, err := ec.unmarshalInputSourceWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNStaffAccount2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccount(ctx context.Context, sel ast.SelectionSet, v ent.StaffAccount) graphql.Marshaler {
+	return ec._StaffAccount(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNStaffAccount2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccount(ctx context.Context, sel ast.SelectionSet, v *ent.StaffAccount) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._StaffAccount(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNStaffAccountConnection2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccountConnection(ctx context.Context, sel ast.SelectionSet, v ent.StaffAccountConnection) graphql.Marshaler {

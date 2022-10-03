@@ -63,7 +63,7 @@ func (DailyAssetPrice) Edges() []ent.Edge {
 func (DailyAssetPrice) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.QueryField(),
+		entgql.QueryField("dailyAssetPrices"),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

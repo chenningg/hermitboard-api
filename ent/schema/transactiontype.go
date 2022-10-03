@@ -56,7 +56,7 @@ func (TransactionType) Edges() []ent.Edge {
 func (TransactionType) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.QueryField(),
+		entgql.QueryField("transactionTypes"),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

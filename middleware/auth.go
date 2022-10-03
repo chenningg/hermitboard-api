@@ -77,7 +77,7 @@ func Auth(authService auth.AuthServicer) func(next http.Handler) http.Handler {
 				ctx = context.WithValue(ctx, auth.SessionContextKey, session)
 
 				// Reset the expiry for the session.
-				expiration, err := auth.SecondsToDuration(authService.Config().SessionTimeout)
+				expiration := authService.Config().SessionTimeout
 				if err != nil {
 					http.Error(
 						w, "could not convert seconds to duration for session timeout", http.StatusInternalServerError,

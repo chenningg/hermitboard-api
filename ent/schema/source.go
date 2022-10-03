@@ -56,7 +56,7 @@ func (Source) Edges() []ent.Edge {
 func (Source) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.QueryField(),
+		entgql.QueryField("sources"),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

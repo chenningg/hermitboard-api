@@ -11,6 +11,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
+	"github.com/chenningg/hermitboard-api/auth"
 	"github.com/chenningg/hermitboard-api/ent"
 	"github.com/chenningg/hermitboard-api/pulid"
 	gqlparser "github.com/vektah/gqlparser/v2"
@@ -270,7 +271,12 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateAccount func(childComplexity int, input ent.CreateAccountInput) int
+		CreateAccount          func(childComplexity int, input ent.CreateAccountInput) int
+		CreateStaffAccount     func(childComplexity int, input ent.CreateStaffAccountInput) int
+		LoginToAccount         func(childComplexity int, input auth.LoginToAccountInput) int
+		LoginToStaffAccount    func(childComplexity int, input auth.LoginToStaffAccountInput) int
+		LogoutFromAccount      func(childComplexity int) int
+		LogoutFromStaffAccount func(childComplexity int) int
 	}
 
 	PageInfo struct {
@@ -307,23 +313,23 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Accounts         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AccountOrder, where *ent.AccountWhereInput) int
-		Assetclasses     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetClassOrder, where *ent.AssetClassWhereInput) int
+		AssetClasses     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetClassOrder, where *ent.AssetClassWhereInput) int
 		Assets           func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AssetOrder, where *ent.AssetWhereInput) int
-		Authroles        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthRoleOrder, where *ent.AuthRoleWhereInput) int
-		Authtypes        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthTypeOrder, where *ent.AuthTypeWhereInput) int
+		AuthRoles        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthRoleOrder, where *ent.AuthRoleWhereInput) int
+		AuthTypes        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AuthTypeOrder, where *ent.AuthTypeWhereInput) int
 		Blockchains      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.BlockchainOrder, where *ent.BlockchainWhereInput) int
 		Connections      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ConnectionOrder, where *ent.ConnectionWhereInput) int
 		Cryptocurrencies func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.CryptocurrencyOrder, where *ent.CryptocurrencyWhereInput) int
-		Dailyassetprices func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.DailyAssetPriceOrder, where *ent.DailyAssetPriceWhereInput) int
+		DailyAssetPrices func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.DailyAssetPriceOrder, where *ent.DailyAssetPriceWhereInput) int
 		Exchanges        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.ExchangeOrder, where *ent.ExchangeWhereInput) int
 		Node             func(childComplexity int, id pulid.PULID) int
 		Nodes            func(childComplexity int, ids []pulid.PULID) int
 		Portfolios       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PortfolioOrder, where *ent.PortfolioWhereInput) int
+		SourceTypes      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceTypeOrder, where *ent.SourceTypeWhereInput) int
 		Sources          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceOrder, where *ent.SourceWhereInput) int
-		Sourcetypes      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.SourceTypeOrder, where *ent.SourceTypeWhereInput) int
-		Staffaccounts    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffAccountOrder, where *ent.StaffAccountWhereInput) int
+		StaffAccounts    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffAccountOrder, where *ent.StaffAccountWhereInput) int
+		TransactionTypes func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionTypeOrder, where *ent.TransactionTypeWhereInput) int
 		Transactions     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) int
-		Transactiontypes func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionTypeOrder, where *ent.TransactionTypeWhereInput) int
 	}
 
 	Source struct {
@@ -1494,6 +1500,56 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateAccount(childComplexity, args["input"].(ent.CreateAccountInput)), true
 
+	case "Mutation.createStaffAccount":
+		if e.complexity.Mutation.CreateStaffAccount == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createStaffAccount_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateStaffAccount(childComplexity, args["input"].(ent.CreateStaffAccountInput)), true
+
+	case "Mutation.loginToAccount":
+		if e.complexity.Mutation.LoginToAccount == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_loginToAccount_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.LoginToAccount(childComplexity, args["input"].(auth.LoginToAccountInput)), true
+
+	case "Mutation.loginToStaffAccount":
+		if e.complexity.Mutation.LoginToStaffAccount == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_loginToStaffAccount_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.LoginToStaffAccount(childComplexity, args["input"].(auth.LoginToStaffAccountInput)), true
+
+	case "Mutation.logoutFromAccount":
+		if e.complexity.Mutation.LogoutFromAccount == nil {
+			break
+		}
+
+		return e.complexity.Mutation.LogoutFromAccount(childComplexity), true
+
+	case "Mutation.logoutFromStaffAccount":
+		if e.complexity.Mutation.LogoutFromStaffAccount == nil {
+			break
+		}
+
+		return e.complexity.Mutation.LogoutFromStaffAccount(childComplexity), true
+
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
 			break
@@ -1656,17 +1712,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Accounts(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AccountOrder), args["where"].(*ent.AccountWhereInput)), true
 
-	case "Query.assetclasses":
-		if e.complexity.Query.Assetclasses == nil {
+	case "Query.assetClasses":
+		if e.complexity.Query.AssetClasses == nil {
 			break
 		}
 
-		args, err := ec.field_Query_assetclasses_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_assetClasses_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Assetclasses(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AssetClassOrder), args["where"].(*ent.AssetClassWhereInput)), true
+		return e.complexity.Query.AssetClasses(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AssetClassOrder), args["where"].(*ent.AssetClassWhereInput)), true
 
 	case "Query.assets":
 		if e.complexity.Query.Assets == nil {
@@ -1680,29 +1736,29 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Assets(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AssetOrder), args["where"].(*ent.AssetWhereInput)), true
 
-	case "Query.authroles":
-		if e.complexity.Query.Authroles == nil {
+	case "Query.authRoles":
+		if e.complexity.Query.AuthRoles == nil {
 			break
 		}
 
-		args, err := ec.field_Query_authroles_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_authRoles_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Authroles(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AuthRoleOrder), args["where"].(*ent.AuthRoleWhereInput)), true
+		return e.complexity.Query.AuthRoles(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AuthRoleOrder), args["where"].(*ent.AuthRoleWhereInput)), true
 
-	case "Query.authtypes":
-		if e.complexity.Query.Authtypes == nil {
+	case "Query.authTypes":
+		if e.complexity.Query.AuthTypes == nil {
 			break
 		}
 
-		args, err := ec.field_Query_authtypes_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_authTypes_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Authtypes(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AuthTypeOrder), args["where"].(*ent.AuthTypeWhereInput)), true
+		return e.complexity.Query.AuthTypes(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AuthTypeOrder), args["where"].(*ent.AuthTypeWhereInput)), true
 
 	case "Query.blockchains":
 		if e.complexity.Query.Blockchains == nil {
@@ -1740,17 +1796,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Cryptocurrencies(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.CryptocurrencyOrder), args["where"].(*ent.CryptocurrencyWhereInput)), true
 
-	case "Query.dailyassetprices":
-		if e.complexity.Query.Dailyassetprices == nil {
+	case "Query.dailyAssetPrices":
+		if e.complexity.Query.DailyAssetPrices == nil {
 			break
 		}
 
-		args, err := ec.field_Query_dailyassetprices_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_dailyAssetPrices_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Dailyassetprices(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.DailyAssetPriceOrder), args["where"].(*ent.DailyAssetPriceWhereInput)), true
+		return e.complexity.Query.DailyAssetPrices(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.DailyAssetPriceOrder), args["where"].(*ent.DailyAssetPriceWhereInput)), true
 
 	case "Query.exchanges":
 		if e.complexity.Query.Exchanges == nil {
@@ -1800,6 +1856,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Portfolios(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.PortfolioOrder), args["where"].(*ent.PortfolioWhereInput)), true
 
+	case "Query.sourceTypes":
+		if e.complexity.Query.SourceTypes == nil {
+			break
+		}
+
+		args, err := ec.field_Query_sourceTypes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.SourceTypes(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.SourceTypeOrder), args["where"].(*ent.SourceTypeWhereInput)), true
+
 	case "Query.sources":
 		if e.complexity.Query.Sources == nil {
 			break
@@ -1812,29 +1880,29 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Sources(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.SourceOrder), args["where"].(*ent.SourceWhereInput)), true
 
-	case "Query.sourcetypes":
-		if e.complexity.Query.Sourcetypes == nil {
+	case "Query.staffAccounts":
+		if e.complexity.Query.StaffAccounts == nil {
 			break
 		}
 
-		args, err := ec.field_Query_sourcetypes_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_staffAccounts_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Sourcetypes(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.SourceTypeOrder), args["where"].(*ent.SourceTypeWhereInput)), true
+		return e.complexity.Query.StaffAccounts(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.StaffAccountOrder), args["where"].(*ent.StaffAccountWhereInput)), true
 
-	case "Query.staffaccounts":
-		if e.complexity.Query.Staffaccounts == nil {
+	case "Query.transactionTypes":
+		if e.complexity.Query.TransactionTypes == nil {
 			break
 		}
 
-		args, err := ec.field_Query_staffaccounts_args(context.TODO(), rawArgs)
+		args, err := ec.field_Query_transactionTypes_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Query.Staffaccounts(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.StaffAccountOrder), args["where"].(*ent.StaffAccountWhereInput)), true
+		return e.complexity.Query.TransactionTypes(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.TransactionTypeOrder), args["where"].(*ent.TransactionTypeWhereInput)), true
 
 	case "Query.transactions":
 		if e.complexity.Query.Transactions == nil {
@@ -1847,18 +1915,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Transactions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.TransactionOrder), args["where"].(*ent.TransactionWhereInput)), true
-
-	case "Query.transactiontypes":
-		if e.complexity.Query.Transactiontypes == nil {
-			break
-		}
-
-		args, err := ec.field_Query_transactiontypes_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.Transactiontypes(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.TransactionTypeOrder), args["where"].(*ent.TransactionTypeWhereInput)), true
 
 	case "Source.createdAt":
 		if e.complexity.Source.CreatedAt == nil {
@@ -2431,6 +2487,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputDailyAssetPriceWhereInput,
 		ec.unmarshalInputExchangeOrder,
 		ec.unmarshalInputExchangeWhereInput,
+		ec.unmarshalInputLoginToAccountInput,
+		ec.unmarshalInputLoginToStaffAccountInput,
 		ec.unmarshalInputPortfolioOrder,
 		ec.unmarshalInputPortfolioWhereInput,
 		ec.unmarshalInputSourceOrder,

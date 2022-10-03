@@ -70,7 +70,7 @@ func (AuthRole) Edges() []ent.Edge {
 func (AuthRole) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.QueryField(),
+		entgql.QueryField("authRoles"),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

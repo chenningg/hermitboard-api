@@ -11,7 +11,6 @@ type RedisConfig struct {
 	Password string `env:"PASSWORD"`
 	Host     string `env:"HOST"`
 	Port     string `env:"PORT" envDefault:"14552"`
-	Name     string `env:"NAME"`
 }
 
 func (redisConfig RedisConfig) Validate() error {
@@ -22,6 +21,5 @@ func (redisConfig RedisConfig) Validate() error {
 		validation.Field(&redisConfig.Password, validation.Required),
 		validation.Field(&redisConfig.Host, validation.Required, is.Host),
 		validation.Field(&redisConfig.Port, validation.Required, is.Port),
-		validation.Field(&redisConfig.Name, validation.Required),
 	)
 }

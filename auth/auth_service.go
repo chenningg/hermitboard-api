@@ -5,8 +5,6 @@ import (
 
 	"github.com/chenningg/hermitboard-api/db"
 	"github.com/chenningg/hermitboard-api/ent"
-	"github.com/chenningg/hermitboard-api/ent/authrole"
-	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/redis"
 	"github.com/go-logr/logr"
 )
@@ -15,19 +13,17 @@ type AuthServicer interface {
 	Config() *AuthConfig
 	RedisService() *redis.RedisService
 	CreateAccount(
-		ctx context.Context, nickname string, email string, password string, provider authtype.Value,
-		authRoles []authrole.Value,
+		ctx context.Context, input ent.CreateAccountInput,
 	) (*ent.Account, error)
 	CreateStaffAccount(
-		ctx context.Context, nickname string, email string, password string, provider authtype.Value,
-		authRoles []authrole.Value,
+		ctx context.Context, input ent.CreateStaffAccountInput,
 	) (*ent.StaffAccount, error)
-	LoginToAccount(ctx context.Context, username string, password string) (
-		*ent.Account, SessionID, error,
+	LoginToAccount(ctx context.Context, input LoginToAccountInput) (
+		SessionID, error,
 	)
 	LoginToStaffAccount(
-		ctx context.Context, username string, password string,
-	) (*ent.StaffAccount, SessionID, error)
+		ctx context.Context, input LoginToStaffAccountInput,
+	) (SessionID, error)
 	LogoutFromAccount(ctx context.Context) error
 	LogoutFromStaffAccount(ctx context.Context) error
 }

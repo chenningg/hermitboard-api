@@ -57,7 +57,7 @@ func (Exchange) Edges() []ent.Edge {
 func (Exchange) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.QueryField(),
+		entgql.QueryField("exchanges"),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

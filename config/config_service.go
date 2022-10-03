@@ -86,12 +86,10 @@ func (configService *ConfigService) loadConfig() error {
 	config.Redis.Host = url.Encode(config.Redis.Host)
 	config.Redis.Password = url.Encode(config.Redis.Password)
 	config.Redis.User = url.Encode(config.Redis.User)
-	config.Redis.Name = url.Encode(config.Redis.Name)
 
 	// Create Redis url
 	config.Redis.Url = fmt.Sprintf(
-		"redis://%s:%s@%s:%s/%s", config.Redis.User, config.Redis.Password, config.Redis.Host, config.Redis.Port,
-		config.Redis.Name,
+		"redis://%s:%s@%s:%s/0", config.Redis.User, config.Redis.Password, config.Redis.Host, config.Redis.Port,
 	)
 
 	// Validate configuration and set it

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/chenningg/hermitboard-api/graph/model"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -107,6 +108,22 @@ func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel
 	}
 	res := graphql.MarshalTime(*v)
 	return res
+}
+
+func (ec *executionContext) unmarshalOVoid2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋgraphᚋmodelᚐVoid(ctx context.Context, v interface{}) (*model.Void, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(model.Void)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOVoid2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋgraphᚋmodelᚐVoid(ctx context.Context, sel ast.SelectionSet, v *model.Void) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
 }
 
 // endregion ***************************** type.gotpl *****************************

@@ -64,7 +64,7 @@ func (Cryptocurrency) Edges() []ent.Edge {
 func (Cryptocurrency) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.QueryField(),
+		entgql.QueryField("cryptocurrencies"),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

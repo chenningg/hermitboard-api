@@ -89,7 +89,7 @@ func main() {
 	router.Use(middleware.Auth(authService))
 
 	// Initialize the web server.
-	srv := handler.NewDefaultServer(resolver.NewSchema(dbService, redisService))
+	srv := handler.NewDefaultServer(resolver.NewSchema(dbService, redisService, authService))
 
 	// Create a database transactional client for GraphQL resolvers (stored in context).
 	srv.Use(entgql.Transactioner{TxOpener: dbService.Client()})
@@ -102,6 +102,14 @@ func main() {
 	router.Handle("/api", srv)
 
 	// Start the server.
+	logger.Info(
+		fmt.Sprintf(
+			"connect to http://%s:%s/playground for GraphQL playground", cfg.Server.Host, cfg.Server.Port,
+		),
+		"host", cfg.Server.Host,
+		"port", cfg.Server.Port,
+	)
+
 	err = http.ListenAndServe(cfg.Server.Host+":"+cfg.Server.Port, router)
 	if err != nil {
 		logger.Error(
@@ -110,11 +118,5 @@ func main() {
 			"port", cfg.Server.Port,
 		)
 	}
-	logger.Info(
-		fmt.Sprintf(
-			"connect to http://%s:%s/playground for GraphQL playground", cfg.Server.Host, cfg.Server.Port,
-		),
-		"host", cfg.Server.Host,
-		"port", cfg.Server.Port,
-	)
+
 }

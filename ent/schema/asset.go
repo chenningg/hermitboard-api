@@ -54,7 +54,7 @@ func (Asset) Edges() []ent.Edge {
 func (Asset) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.QueryField(),
+		entgql.QueryField("assets"),
 		entgql.Mutations(entgql.MutationUpdate()),
 	}
 }

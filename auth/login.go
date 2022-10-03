@@ -6,41 +6,54 @@ import (
 
 	"github.com/chenningg/hermitboard-api/ent"
 	"github.com/chenningg/hermitboard-api/ent/account"
-	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
 	"golang.org/x/crypto/bcrypt"
 )
 
 func (authService AuthService) LoginToAccount(
-	ctx context.Context, username string, password string,
+	ctx context.Context, input LoginToAccountInput,
 ) (
-	*ent.Account, SessionID, error,
+	SessionID, error,
 ) {
 	// Check for missing values.
-	if username == "" || password == "" {
-		return nil, "", fmt.Errorf("%w: auth.LoginToAccount(): missing username or password", ErrBadInput)
+	if input.Username == "" || input.Password == "" {
+		return "", fmt.Errorf("%w: auth.LoginToAccount(): missing username or password", ErrBadInput)
+	}
+
+	if len(input.Password) < 8 {
+		return "", fmt.Errorf(
+			"%w: auth.LoginToAccount(): password must be a minimum of 8 alphanumeric characters", ErrBadInput,
+		)
+	}
+
+	session := GetSessionFromContext(ctx)
+
+	if IsLoggedIn(session) {
+		return "", fmt.Errorf(
+			"%w: auth.LoginToAccount(): already logged in", ErrBadInput,
+		)
 	}
 
 	// Username can be either email or nickname.
 	dbClient := ent.FromContext(ctx)
 
 	accounts, err := dbClient.Account.Query().Where(
-		account.Or(
-			account.NicknameEQ(username), account.EmailEQ(username),
-			account.HasAuthTypeWith(authtype.ValueEQ(authtype.ValueLocal)),
+		account.And(
+			account.HasAuthTypeWith(authtype.ValueEQ(authtype.ValueLocal)), account.Or(
+				account.NicknameEQ(input.Username), account.EmailEQ(input.Username),
+			),
 		),
 	).All(ctx)
 	if err != nil {
-		return nil, "", fmt.Errorf(
+		return "", fmt.Errorf(
 			"%w: auth.LoginToAccount(): could not retrieve matching accounts from database for login: %v", ErrInternal,
 			err,
 		)
 	}
-
 	// If no accounts found, return incorrect username or password.
 	if len(accounts) == 0 {
-		return nil, "", ErrIncorrectUsernameOrPassword
+		return "", ErrIncorrectUsernameOrPassword
 	}
 
 	for _, acc := range accounts {
@@ -50,107 +63,114 @@ func (authService AuthService) LoginToAccount(
 			continue
 		}
 
-		err = bcrypt.CompareHashAndPassword([]byte(*acc.Password), []byte(password))
+		err = bcrypt.CompareHashAndPassword([]byte(*acc.Password), []byte(input.Password))
 		if err == nil {
 			// We have a match of username and password, create the user session.
 			sessionID, err := NewSessionID()
 			if err != nil {
-				return nil, "", fmt.Errorf(
+				return "", fmt.Errorf(
 					"%w: auth.LoginToAccount(): failed to create session ID: %v", ErrInternal, err,
-				)
-			}
-
-			// Get expiration time for a session.
-			expiration, err := SecondsToDuration(authService.Config().SessionTimeout)
-			if err != nil {
-				return nil, "", fmt.Errorf(
-					"%w: auth.LoginToAccount(): could not convert session expiry time: %v", ErrInternal, err,
 				)
 			}
 
 			// Get authRoles of the user.
 			authRoles, err := acc.QueryAuthRoles().All(ctx)
 			if err != nil {
-				return nil, "", fmt.Errorf(
+				return "", fmt.Errorf(
 					"%w: auth.LoginToAccount(): could not retrieve auth roles of the account: %v", ErrInternal, err,
 				)
 			}
 
-			var authRoleValues []authrole.Value
-			for _, authRole := range authRoles {
-				authRoleValues = append(authRoleValues, authRole.Value)
+			authRoleValues := make([]string, len(authRoles))
+			for i, authRole := range authRoles {
+				authRoleValues[i] = authRole.Value.String()
 			}
 
 			// Store user ID in Redis.
 			_, err = authService.redisService.Client().Set(
 				ctx,
 				fmt.Sprintf("%s:%s:userId", SessionRedisKey, sessionID),
-				acc.ID.String(), expiration,
+				acc.ID.String(), authService.Config().SessionTimeout,
 			).Result()
 			if err != nil {
-				return nil, "", fmt.Errorf(
-					"%w: auth.LoginToAccount(): could not store user ID in Redis: %v", ErrInternal, err,
+				return "", fmt.Errorf(
+					"%w: auth.LoginToAccount(): could not store user ID in redis: %v", ErrInternal, err,
 				)
 			}
 
 			// Store authRoles in Redis.
-			_, err = authService.redisService.Client().RPush(
+			_, err = authService.redisService.Client().SAdd(
 				ctx,
 				fmt.Sprintf("%s:%s:authRoles", SessionRedisKey, sessionID),
 				authRoleValues,
 			).Result()
 			if err != nil {
-				return nil, "", fmt.Errorf(
-					"%w: auth.LoginToAccount(): could not store auth roles in Redis: %v", ErrInternal, err,
+				return "", fmt.Errorf(
+					"%w: auth.LoginToAccount(): could not store auth roles in redis: %v", ErrInternal, err,
 				)
 			}
 
 			// Set expiry on the authRoles key as well.
 			_, err = authService.redisService.Client().Expire(
-				ctx, fmt.Sprintf("%s:%s:authRoles", SessionRedisKey, sessionID), expiration,
+				ctx, fmt.Sprintf("%s:%s:authRoles", SessionRedisKey, sessionID), authService.Config().SessionTimeout,
 			).Result()
 			if err != nil {
-				return nil, "", fmt.Errorf(
+				return "", fmt.Errorf(
 					"%w: auth.LoginToAccount(): could not set expiry for auth role key in Redis: %v", ErrInternal, err,
 				)
 			}
 
-			return acc, sessionID, nil
+			return sessionID, nil
 		}
 	}
 
 	// If we reach here, no accounts match the given username and password. Return an error.
-	return nil, "", ErrIncorrectUsernameOrPassword
+	return "", ErrIncorrectUsernameOrPassword
 }
 
 func (authService AuthService) LoginToStaffAccount(
-	ctx context.Context, username string, password string,
-) (*ent.StaffAccount, SessionID, error) {
+	ctx context.Context, input LoginToStaffAccountInput,
+) (SessionID, error) {
 	// Check for missing values.
-	if username == "" || password == "" {
-		return nil, "", fmt.Errorf("%w: auth.LoginToStaffAccount(): missing username or password", ErrBadInput)
+	if input.Username == "" || input.Password == "" {
+		return "", fmt.Errorf("%w: auth.LoginToStaffAccount(): missing username or password", ErrBadInput)
+	}
+
+	if len(input.Password) < 8 {
+		return "", fmt.Errorf(
+			"%w: auth.LoginToStaffAccount(): password must be a minimum of 8 alphanumeric characters", ErrBadInput,
+		)
+	}
+
+	session := GetSessionFromContext(ctx)
+
+	if IsLoggedIn(session) {
+		return "", fmt.Errorf(
+			"%w: auth.LoginToStaffAccount(): already logged in", ErrBadInput,
+		)
 	}
 
 	// Username can be either email or nickname.
 	dbClient := ent.FromContext(ctx)
 
 	staffAccounts, err := dbClient.StaffAccount.Query().Where(
-		staffaccount.Or(
-			staffaccount.NicknameEQ(username), staffaccount.EmailEQ(username),
+		staffaccount.And(
 			staffaccount.HasAuthTypeWith(authtype.ValueEQ(authtype.ValueLocal)),
+			staffaccount.Or(
+				staffaccount.NicknameEQ(input.Username), staffaccount.EmailEQ(input.Password),
+			),
 		),
 	).All(ctx)
 	if err != nil {
-		return nil, "", fmt.Errorf(
+		return "", fmt.Errorf(
 			"%w: auth.LoginToStaffAccount(): could not retrieve matching staff accounts from database for login: %v",
 			ErrInternal,
 			err,
 		)
 	}
-
 	// If no accounts found, return incorrect username or password.
 	if len(staffAccounts) == 0 {
-		return nil, "", ErrIncorrectUsernameOrPassword
+		return "", ErrIncorrectUsernameOrPassword
 	}
 
 	for _, staffAcc := range staffAccounts {
@@ -160,78 +180,69 @@ func (authService AuthService) LoginToStaffAccount(
 			continue
 		}
 
-		err = bcrypt.CompareHashAndPassword([]byte(*staffAcc.Password), []byte(password))
+		err = bcrypt.CompareHashAndPassword([]byte(*staffAcc.Password), []byte(input.Password))
 		if err == nil {
 			// We have a match of username and password, create the user session.
 			sessionID, err := NewSessionID()
 			if err != nil {
-				return nil, "", fmt.Errorf(
+				return "", fmt.Errorf(
 					"%w: auth.LoginToStaffAccount(): failed to create session ID: %v", ErrInternal, err,
-				)
-			}
-
-			// Get expiration time for a session.
-			expiration, err := SecondsToDuration(authService.Config().SessionTimeout)
-			if err != nil {
-				return nil, "", fmt.Errorf(
-					"%w: auth.LoginToStaffAccount(): could not convert session expiry time: %v", ErrInternal, err,
 				)
 			}
 
 			// Get authRoles of the user.
 			authRoles, err := staffAcc.QueryAuthRoles().All(ctx)
 			if err != nil {
-				return nil, "", fmt.Errorf(
+				return "", fmt.Errorf(
 					"%w: auth.LoginToStaffAccount(): could not retrieve auth roles of the staff account: %v",
 					ErrInternal,
 					err,
 				)
 			}
 
-			var authRoleValues []authrole.Value
-			for _, authRole := range authRoles {
-				authRoleValues = append(authRoleValues, authRole.Value)
+			authRoleValues := make([]string, len(authRoles))
+			for i, authRole := range authRoles {
+				authRoleValues[i] = authRole.Value.String()
 			}
 
 			// Store user ID in Redis.
 			_, err = authService.redisService.Client().Set(
 				ctx,
 				fmt.Sprintf("%s:%s:userId", SessionRedisKey, sessionID),
-				staffAcc.ID.String(), expiration,
+				staffAcc.ID.String(), authService.Config().SessionTimeout,
 			).Result()
 			if err != nil {
-				return nil, "", fmt.Errorf(
-					"%w: auth.LoginToStaffAccount(): could not store user ID in Redis: %v", ErrInternal, err,
+				return "", fmt.Errorf(
+					"%w: auth.LoginToStaffAccount(): could not store user ID in redis: %v", ErrInternal, err,
 				)
 			}
 
 			// Store authRoles in Redis.
-			_, err = authService.redisService.Client().RPush(
+			_, err = authService.redisService.Client().SAdd(
 				ctx,
-				fmt.Sprintf("%s:%s:authRoles", SessionRedisKey, sessionID),
-				authRoleValues,
+				fmt.Sprintf("%s:%s:authRoles", SessionRedisKey, sessionID), authRoleValues,
 			).Result()
 			if err != nil {
-				return nil, "", fmt.Errorf(
-					"%w: auth.LoginToStaffAccount(): could not store auth roles in Redis: %v", ErrInternal, err,
+				return "", fmt.Errorf(
+					"%w: auth.LoginToStaffAccount(): could not store auth roles in redis: %v", ErrInternal, err,
 				)
 			}
 
 			// Set expiry on the authRoles key as well.
 			_, err = authService.redisService.Client().Expire(
-				ctx, fmt.Sprintf("%s:%s:authRoles", SessionRedisKey, sessionID), expiration,
+				ctx, fmt.Sprintf("%s:%s:authRoles", SessionRedisKey, sessionID), authService.Config().SessionTimeout,
 			).Result()
 			if err != nil {
-				return nil, "", fmt.Errorf(
+				return "", fmt.Errorf(
 					"%w: auth.LoginToStaffAccount(): could not set expiry for auth role key in Redis: %v", ErrInternal,
 					err,
 				)
 			}
 
-			return staffAcc, sessionID, nil
+			return sessionID, nil
 		}
 	}
 
 	// If we reach here, no accounts match the given username and password. Return an error.
-	return nil, "", ErrIncorrectUsernameOrPassword
+	return "", ErrIncorrectUsernameOrPassword
 }

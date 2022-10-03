@@ -46,6 +46,8 @@ resolver:
 # if they match it will use them, otherwise it will generate them.
 autobind:
   - github.com/chenningg/hermitboard-api/ent
+  - github.com/chenningg/hermitboard-api/auth
+  - github.com/chenningg/hermitboard-api/graph/model
   # Bind generated enums by Ent as well
   - github.com/chenningg/hermitboard-api/ent/assetclass
   - github.com/chenningg/hermitboard-api/ent/authrole
@@ -70,6 +72,3 @@ models:
   Node:
     model:
       - github.com/chenningg/hermitboard-api/ent.Noder
-  SessionID:
-    model:
-      - github.com/chenningg/hermitboard-api/auth.SessionID

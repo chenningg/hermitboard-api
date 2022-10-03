@@ -3,6 +3,7 @@ package seed
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/chenningg/hermitboard-api/ent"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
@@ -12,7 +13,7 @@ import (
 
 func seedStaffAccounts(ctx context.Context, client *ent.Client) error {
 	// Create the first admin account
-	ownerPassword, err := bcrypt.GenerateFromPassword([]byte("owner"), 12)
+	ownerPassword, err := bcrypt.GenerateFromPassword([]byte("password"), 12)
 	if err != nil {
 		return fmt.Errorf("seedStaffAccounts(): failed to generate password for owner account")
 	}
@@ -34,6 +35,8 @@ func seedStaffAccounts(ctx context.Context, client *ent.Client) error {
 		SetNickname("owner").
 		SetEmail("owner@hermitboard.com").
 		SetPassword(string(ownerPassword)).
+		SetPasswordUpdatedAt(time.Now()).
+		SetEmailConfirmed(true).
 		AddAuthRoles(superAdminRole).
 		Save(ctx)
 	if err != nil {

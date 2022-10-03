@@ -12,13 +12,12 @@ import (
 )
 
 func (authService AuthService) CreateAccount(
-	ctx context.Context, nickname string, email string, password string, provider authtype.Value,
-	authRoles []authrole.Value,
+	ctx context.Context, input ent.CreateAccountInput,
 ) (
 	*ent.Account, error,
 ) {
 	// Check for empty values.
-	if nickname == "" || email == "" || provider == "" || authtype.ValueValidator(provider) != nil {
+	if input.Nickname == "" || input.Email == "" || input.AuthTypeID.String() == "" {
 		return nil, fmt.Errorf(
 			"%w: auth.CreateAccount(): missing or invalid fields in account creation", ErrBadInput,
 		)
@@ -34,32 +33,32 @@ func (authService AuthService) CreateAccount(
 		)
 	}
 
-	// If provider is local, a password must be provided to create an account.
-	if provider == authtype.ValueLocal && password == "" {
+	// Get the authtype.
+	authType, err := dbClient.AuthType.Query().Where(authtype.ID(input.AuthTypeID)).Only(ctx)
+	if err != nil {
 		return nil, fmt.Errorf(
-			"%w: auth.CreateAccount(): no password was provided for account creation with a local provider",
-			ErrBadInput,
+			"%w: auth.CreateAccount(): invalid auth type supplied", ErrBadInput,
 		)
 	}
 
-	// Get the auth type to populate.
-	authType, err := dbClient.AuthType.Query().Where(authtype.ValueEQ(provider)).Only(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("%w: auth.CreateAccount(): invalid auth type provided: %v", ErrBadInput, err)
-	}
-
 	accCreator := dbClient.Account.Create().
-		SetNickname(nickname).
-		SetEmail(email).
+		SetNickname(input.Nickname).
+		SetEmail(input.Email).
 		SetAuthType(authType)
 
-	if provider == authtype.ValueLocal {
+	if authType.Value == authtype.ValueLocal {
+		if input.Password == nil || *input.Password == "" {
+			return nil, fmt.Errorf(
+				"%w: auth.CreateAccount(): no password was provided for account creation with a local provider",
+				ErrBadInput,
+			)
+		}
 		// Check if password is minimum 8 characters.
-		if len(password) < 8 {
+		if len(*input.Password) < 8 {
 			return nil, fmt.Errorf("%w: auth.CreateAccount(): password provided is too weak", ErrBadInput)
 		}
 
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), authService.config.BcryptCost)
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*input.Password), authService.config.BcryptCost)
 		if err != nil {
 			return nil, fmt.Errorf(
 				"%w: auth.CreateAccount(): unable to hash provided password: %v", ErrInternal, err,
@@ -73,29 +72,40 @@ func (authService AuthService) CreateAccount(
 		accCreator.SetNillablePasswordUpdatedAt(&currTime)
 	}
 
-	if len(authRoles) > 0 {
+	if len(input.AuthRoleIDs) > 0 {
 		// Only allow staff to add auth roles when creating an account.
 		if HasAuthRoles(
 			session, []authrole.Value{authrole.ValueSupport, authrole.ValueAdmin, authrole.ValueSuperAdmin},
 		) {
+			// Get auth roles from database.
+			authRoles, err := dbClient.AuthRole.Query().Where(authrole.IDIn(input.AuthRoleIDs...)).All(ctx)
+			if err != nil {
+				return nil, fmt.Errorf(
+					"%w: auth.CreateAccount(): could not retrieve auth roles from database", ErrInternal,
+				)
+			}
+			if len(authRoles) == 0 {
+				return nil, fmt.Errorf(
+					"%w: auth.CreateAccount(): auth roles specified for account creation are not valid", ErrBadInput,
+				)
+			}
+
+			// Get auth role values.
+			authRoleValues := make([]authrole.Value, len(authRoles))
+			for i, ar := range authRoles {
+				authRoleValues[i] = ar.Value
+			}
+
 			// Check that the auth roles to populate are within authorization. SuperAdmins can populate auth roles at will.
 			if !HasAuthRoles(session, []authrole.Value{authrole.ValueSuperAdmin}) && !IsHigherAuthority(
-				session, authRoles,
+				session, authRoleValues,
 			) {
 				return nil, fmt.Errorf(
 					"%w: auth.CreateAccount(): insufficient authority to add the auth roles specified", ErrUnauthorized,
 				)
 			}
 
-			// Get the auth roles to populate.
-			authRoleValues, err := dbClient.AuthRole.Query().Where(authrole.ValueIn(authRoles...)).All(ctx)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"%w: auth.CreateAccount(): invalid auth roles provided: %v", ErrBadInput, err,
-				)
-			}
-
-			accCreator.AddAuthRoles(authRoleValues...)
+			accCreator.AddAuthRoles(authRoles...)
 		} else {
 			// Otherwise this session user has no authority to add auth roles.
 			return nil, fmt.Errorf(
@@ -124,11 +134,10 @@ func (authService AuthService) CreateAccount(
 }
 
 func (authService AuthService) CreateStaffAccount(
-	ctx context.Context, nickname string, email string, password string, provider authtype.Value,
-	authRoles []authrole.Value,
+	ctx context.Context, input ent.CreateStaffAccountInput,
 ) (*ent.StaffAccount, error) {
 	// Check for empty values.
-	if nickname == "" || email == "" || provider == "" || authtype.ValueValidator(provider) != nil {
+	if input.Nickname == "" || input.Email == "" || input.AuthTypeID.String() == "" {
 		return nil, fmt.Errorf(
 			"%w: auth.CreateStaffAccount(): missing or invalid fields in staff account creation", ErrBadInput,
 		)
@@ -137,40 +146,40 @@ func (authService AuthService) CreateStaffAccount(
 	dbClient := ent.FromContext(ctx)
 	session := GetSessionFromContext(ctx)
 
-	// Only allow logged in admins and super admins to create new staff accounts.
+	// Only allow logged in admin/super admin staff accounts to create more staff accounts.
 	if !IsLoggedIn(session) || !HasAuthRoles(session, []authrole.Value{authrole.ValueAdmin, authrole.ValueSuperAdmin}) {
 		return nil, fmt.Errorf(
-			"%w: auth.CreateStaffAccount(): not authorized to create a staff account",
+			"%w: auth.CreateStaffAccount(): not logged-in or unauthorized to create new staff accounts",
 			ErrUnauthorized,
 		)
 	}
 
-	// If provider is local, a password must be provided to create an account.
-	if provider == authtype.ValueLocal && password == "" {
+	// Get the authtype.
+	authType, err := dbClient.AuthType.Query().Where(authtype.ID(input.AuthTypeID)).Only(ctx)
+	if err != nil {
 		return nil, fmt.Errorf(
-			"%w: auth.CreateStaffAccount(): no password was provided for staff account creation with a local provider",
-			ErrBadInput,
+			"%w: auth.CreateStaffAccount(): invalid auth type supplied", ErrBadInput,
 		)
 	}
 
-	// Get the auth type to populate.
-	authType, err := dbClient.AuthType.Query().Where(authtype.ValueEQ(provider)).Only(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("%w: auth.CreateStaffAccount(): invalid auth type provided: %v", ErrBadInput, err)
-	}
-
 	staffAccCreator := dbClient.StaffAccount.Create().
-		SetNickname(nickname).
-		SetEmail(email).
+		SetNickname(input.Nickname).
+		SetEmail(input.Email).
 		SetAuthType(authType)
 
-	if provider == authtype.ValueLocal {
+	if authType.Value == authtype.ValueLocal {
+		if input.Password == nil || *input.Password == "" {
+			return nil, fmt.Errorf(
+				"%w: auth.CreateStaffAccount(): no password was provided for staff account creation with a local provider",
+				ErrBadInput,
+			)
+		}
 		// Check if password is minimum 8 characters.
-		if len(password) < 8 {
+		if len(*input.Password) < 8 {
 			return nil, fmt.Errorf("%w: auth.CreateStaffAccount(): password provided is too weak", ErrBadInput)
 		}
 
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), authService.config.BcryptCost)
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*input.Password), authService.config.BcryptCost)
 		if err != nil {
 			return nil, fmt.Errorf(
 				"%w: auth.CreateStaffAccount(): unable to hash provided password: %v", ErrInternal, err,
@@ -184,10 +193,30 @@ func (authService AuthService) CreateStaffAccount(
 		staffAccCreator.SetNillablePasswordUpdatedAt(&currTime)
 	}
 
-	if len(authRoles) > 0 {
+	if len(input.AuthRoleIDs) > 0 {
+		// Get auth roles from database.
+		authRoles, err := dbClient.AuthRole.Query().Where(authrole.IDIn(input.AuthRoleIDs...)).All(ctx)
+		if err != nil {
+			return nil, fmt.Errorf(
+				"%w: auth.CreateStaffAccount(): could not retrieve auth roles from database", ErrInternal,
+			)
+		}
+		if len(authRoles) == 0 {
+			return nil, fmt.Errorf(
+				"%w: auth.CreateStaffAccount(): auth roles specified for staff account creation are not valid",
+				ErrBadInput,
+			)
+		}
+
+		// Get auth role values.
+		authRoleValues := make([]authrole.Value, len(authRoles))
+		for i, ar := range authRoles {
+			authRoleValues[i] = ar.Value
+		}
+
 		// Check that the auth roles to populate are within authorization. SuperAdmins can populate auth roles at will.
 		if !HasAuthRoles(session, []authrole.Value{authrole.ValueSuperAdmin}) && !IsHigherAuthority(
-			session, authRoles,
+			session, authRoleValues,
 		) {
 			return nil, fmt.Errorf(
 				"%w: auth.CreateStaffAccount(): insufficient authority to add the auth roles specified",
@@ -195,15 +224,17 @@ func (authService AuthService) CreateStaffAccount(
 			)
 		}
 
-		// Get the auth roles to populate.
-		authRoleValues, err := dbClient.AuthRole.Query().Where(authrole.ValueIn(authRoles...)).All(ctx)
+		staffAccCreator.AddAuthRoles(authRoles...)
+	} else {
+		// Otherwise, by default, a newly created staff account is on the Support role.
+		authRoleSupport, err := dbClient.AuthRole.Query().Where(authrole.ValueEQ(authrole.ValueSupport)).Only(ctx)
 		if err != nil {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateStaffAccount(): invalid auth roles provided: %v", ErrBadInput, err,
+				"%w: auth.CreateStaffAccount(): could not add support auth role to staff account: %v", ErrInternal, err,
 			)
 		}
 
-		staffAccCreator.AddAuthRoles(authRoleValues...)
+		staffAccCreator.AddAuthRoles(authRoleSupport)
 	}
 
 	// Save the created staff account to the database.

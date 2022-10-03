@@ -15,26 +15,24 @@ import (
 
 // CreateAccountInput represents a mutation input for creating accounts.
 type CreateAccountInput struct {
-	Nickname       string
-	Email          string
-	EmailConfirmed *bool
-	Password       *string
-	AuthRoleIDs    []pulid.PULID
+	Nickname    string
+	Email       string
+	Password    *string
+	AuthRoleIDs []pulid.PULID
+	AuthTypeID  pulid.PULID
 }
 
 // Mutate applies the CreateAccountInput on the AccountMutation builder.
 func (i *CreateAccountInput) Mutate(m *AccountMutation) {
 	m.SetNickname(i.Nickname)
 	m.SetEmail(i.Email)
-	if v := i.EmailConfirmed; v != nil {
-		m.SetEmailConfirmed(*v)
-	}
 	if v := i.Password; v != nil {
 		m.SetPassword(*v)
 	}
 	if v := i.AuthRoleIDs; len(v) > 0 {
 		m.AddAuthRoleIDs(v...)
 	}
+	m.SetAuthTypeID(i.AuthTypeID)
 }
 
 // SetInput applies the change-set in the CreateAccountInput on the AccountCreate builder.
@@ -955,26 +953,24 @@ func (c *SourceTypeUpdateOne) SetInput(i UpdateSourceTypeInput) *SourceTypeUpdat
 
 // CreateStaffAccountInput represents a mutation input for creating staffaccounts.
 type CreateStaffAccountInput struct {
-	Nickname       string
-	Email          string
-	EmailConfirmed *bool
-	Password       *string
-	AuthRoleIDs    []pulid.PULID
+	Nickname    string
+	Email       string
+	Password    *string
+	AuthRoleIDs []pulid.PULID
+	AuthTypeID  pulid.PULID
 }
 
 // Mutate applies the CreateStaffAccountInput on the StaffAccountMutation builder.
 func (i *CreateStaffAccountInput) Mutate(m *StaffAccountMutation) {
 	m.SetNickname(i.Nickname)
 	m.SetEmail(i.Email)
-	if v := i.EmailConfirmed; v != nil {
-		m.SetEmailConfirmed(*v)
-	}
 	if v := i.Password; v != nil {
 		m.SetPassword(*v)
 	}
 	if v := i.AuthRoleIDs; len(v) > 0 {
 		m.AddAuthRoleIDs(v...)
 	}
+	m.SetAuthTypeID(i.AuthTypeID)
 }
 
 // SetInput applies the change-set in the CreateStaffAccountInput on the StaffAccountCreate builder.

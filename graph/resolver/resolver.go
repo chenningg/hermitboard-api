@@ -2,6 +2,7 @@ package resolver
 
 import (
 	"github.com/99designs/gqlgen/graphql"
+	"github.com/chenningg/hermitboard-api/auth"
 	"github.com/chenningg/hermitboard-api/db"
 	"github.com/chenningg/hermitboard-api/graph"
 	"github.com/chenningg/hermitboard-api/redis"
@@ -12,15 +13,18 @@ import (
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	db    db.DbServicer
-	redis redis.RedisServicer
+	dbService    db.DbServicer
+	redisService redis.RedisServicer
+	authService  auth.AuthServicer
 }
 
 // NewSchema creates a graphql executable schema.
-func NewSchema(db db.DbServicer, redis redis.RedisServicer) graphql.ExecutableSchema {
+func NewSchema(
+	dbService db.DbServicer, redisService redis.RedisServicer, authService auth.AuthServicer,
+) graphql.ExecutableSchema {
 	return graph.NewExecutableSchema(
 		graph.Config{
-			Resolvers: &Resolver{db, redis},
+			Resolvers: &Resolver{dbService, redisService, authService},
 		},
 	)
 }

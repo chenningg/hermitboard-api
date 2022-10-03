@@ -74,7 +74,7 @@ func (Portfolio) Edges() []ent.Edge {
 func (Portfolio) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.QueryField(),
+		entgql.QueryField("portfolios"),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

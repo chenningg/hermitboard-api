@@ -1,4 +1,20 @@
-type Mutation {
-    createAccount(input: CreateAccountInput!): Account
+scalar SessionID
 
+input LoginToAccountInput {
+    username: String!
+    password: String!
+}
+
+input LoginToStaffAccountInput {
+    username: String!
+    password: String!
+}
+
+type Mutation {
+    createAccount(input: CreateAccountInput!): Account!
+    createStaffAccount(input: CreateStaffAccountInput!): StaffAccount!
+    loginToAccount(input: LoginToAccountInput!): SessionID!
+    loginToStaffAccount(input: LoginToStaffAccountInput!): SessionID!
+    logoutFromAccount: Void
+    logoutFromStaffAccount: Void
 }

@@ -37,7 +37,8 @@ func (StaffAccount) Fields() []ent.Field {
 			Unique().
 			NotEmpty(),
 		field.Bool("email_confirmed").
-			Default(false),
+			Default(false).
+			Annotations(entgql.Skip(entgql.SkipMutationCreateInput)),
 		field.String("password").
 			Sensitive().
 			Optional().
@@ -67,7 +68,6 @@ func (StaffAccount) Edges() []ent.Edge {
 			Unique().
 			Annotations(
 				entgql.MapsTo("authType"),
-				entgql.Skip(entgql.SkipMutationCreateInput),
 			),
 	}
 }
@@ -75,7 +75,7 @@ func (StaffAccount) Edges() []ent.Edge {
 func (StaffAccount) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.QueryField(),
+		entgql.QueryField("staffAccounts"),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

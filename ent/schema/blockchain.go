@@ -64,7 +64,7 @@ func (Blockchain) Edges() []ent.Edge {
 func (Blockchain) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.QueryField(),
+		entgql.QueryField("blockchains"),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }

@@ -3,7 +3,8 @@ package auth
 import (
 	"context"
 	"fmt"
-	"time"
+	"io"
+	"strconv"
 
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -37,7 +38,7 @@ func (sessionID SessionID) String() string {
 
 // Session represents an authentication session on the server side, containing the user ID and their authorization roles.
 type Session struct {
-	SessionID SessionID                   // Session ID of the logged in user.
+	SessionID SessionID                   // Session ID of the logged-in user.
 	UserID    pulid.PULID                 // ID of the user.
 	AuthRoles map[authrole.Value]struct{} // Auth roles of the user.
 }
@@ -120,7 +121,22 @@ func GetAuthRolesFromSession(session *Session) []authrole.Value {
 	return keys
 }
 
-// SecondsToDuration converts seconds in integer to a duration value.
-func SecondsToDuration(seconds int) (time.Duration, error) {
-	return time.ParseDuration(fmt.Sprintf("%ds", seconds))
+// MarshalGQL implements graphql.Marshaler interface.
+func (sessionID SessionID) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(sessionID.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (sessionID *SessionID) UnmarshalGQL(val interface{}) error {
+	str, ok := val.(string)
+	if !ok {
+		return fmt.Errorf("%w: session ID %T must be a string", ErrBadInput, val)
+	}
+	parsedSessionID, err := ParseSessionID(str)
+	if err != nil {
+		return fmt.Errorf("%w: %s is not a valid session ID", ErrBadInput, str)
+	}
+
+	*sessionID = parsedSessionID
+	return nil
 }

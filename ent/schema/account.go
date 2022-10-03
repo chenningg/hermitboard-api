@@ -39,7 +39,8 @@ func (Account) Fields() []ent.Field {
 			NotEmpty().
 			Annotations(entgql.OrderField("EMAIL")),
 		field.Bool("email_confirmed").
-			Default(false),
+			Default(false).
+			Annotations(entgql.Skip(entgql.SkipMutationCreateInput)),
 		field.String("password").
 			Sensitive().
 			Optional().
@@ -75,7 +76,6 @@ func (Account) Edges() []ent.Edge {
 			Unique().
 			Annotations(
 				entgql.MapsTo("authType"),
-				entgql.Skip(entgql.SkipMutationCreateInput),
 			),
 		edge.To("connections", Connection.Type).
 			Annotations(
@@ -88,7 +88,7 @@ func (Account) Edges() []ent.Edge {
 func (Account) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entgql.RelayConnection(),
-		entgql.QueryField(),
+		entgql.QueryField("accounts"),
 		entgql.Mutations(entgql.MutationCreate(), entgql.MutationUpdate()),
 	}
 }
