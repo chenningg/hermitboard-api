@@ -74,9 +74,9 @@ func (su *SourceUpdate) ClearIcon() *SourceUpdate {
 	return su
 }
 
-// SetSourceTypeID sets the "source_type_id" field.
-func (su *SourceUpdate) SetSourceTypeID(pu pulid.PULID) *SourceUpdate {
-	su.mutation.SetSourceTypeID(pu)
+// SetSourceTypeID sets the "source_type" edge to the SourceType entity by ID.
+func (su *SourceUpdate) SetSourceTypeID(id pulid.PULID) *SourceUpdate {
+	su.mutation.SetSourceTypeID(id)
 	return su
 }
 
@@ -343,9 +343,9 @@ func (suo *SourceUpdateOne) ClearIcon() *SourceUpdateOne {
 	return suo
 }
 
-// SetSourceTypeID sets the "source_type_id" field.
-func (suo *SourceUpdateOne) SetSourceTypeID(pu pulid.PULID) *SourceUpdateOne {
-	suo.mutation.SetSourceTypeID(pu)
+// SetSourceTypeID sets the "source_type" edge to the SourceType entity by ID.
+func (suo *SourceUpdateOne) SetSourceTypeID(id pulid.PULID) *SourceUpdateOne {
+	suo.mutation.SetSourceTypeID(id)
 	return suo
 }
 

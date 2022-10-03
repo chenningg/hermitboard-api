@@ -1,0 +1,8 @@
+input DeletePortfolioInput {
+    id: ID!
+}
+
+extend type Mutation {
+    createPortfolio(input: CreatePortfolioInput!): Portfolio!
+    updatePortfolio(id: ID!, input: UpdatePortfolioInput!): Portfolio!
+}

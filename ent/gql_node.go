@@ -492,7 +492,7 @@ func (c *Connection) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     c.ID,
 		Type:   "Connection",
-		Fields: make([]*Field, 6),
+		Fields: make([]*Field, 7),
 		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
@@ -536,10 +536,18 @@ func (c *Connection) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "access_token",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(c.AccountID); err != nil {
+	if buf, err = json.Marshal(c.RefreshToken); err != nil {
 		return nil, err
 	}
 	node.Fields[5] = &Field{
+		Type:  "string",
+		Name:  "refresh_token",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.AccountID); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
 		Type:  "pulid.PULID",
 		Name:  "account_id",
 		Value: string(buf),
@@ -925,7 +933,7 @@ func (s *Source) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     s.ID,
 		Type:   "Source",
-		Fields: make([]*Field, 6),
+		Fields: make([]*Field, 5),
 		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
@@ -967,14 +975,6 @@ func (s *Source) Node(ctx context.Context) (node *Node, err error) {
 	node.Fields[4] = &Field{
 		Type:  "string",
 		Name:  "icon",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(s.SourceTypeID); err != nil {
-		return nil, err
-	}
-	node.Fields[5] = &Field{
-		Type:  "pulid.PULID",
-		Name:  "source_type_id",
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{

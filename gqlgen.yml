@@ -47,6 +47,8 @@ resolver:
 autobind:
   - github.com/chenningg/hermitboard-api/ent
   - github.com/chenningg/hermitboard-api/auth
+  - github.com/chenningg/hermitboard-api/portfolio
+  - github.com/chenningg/hermitboard-api/connection
   - github.com/chenningg/hermitboard-api/graph/model
   # Bind generated enums by Ent as well
   - github.com/chenningg/hermitboard-api/ent/assetclass

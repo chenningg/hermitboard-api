@@ -2109,7 +2109,7 @@ func (st *SourceTypeQuery) collectField(ctx context.Context, op *graphql.Operati
 							ids[i] = nodes[i].ID
 						}
 						var v []struct {
-							NodeID pulid.PULID `sql:"source_type_id"`
+							NodeID pulid.PULID `sql:"source_type_sources"`
 							Count  int         `sql:"count"`
 						}
 						query.Where(func(s *sql.Selector) {

@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 
-	"github.com/chenningg/hermitboard-api/db"
 	"github.com/chenningg/hermitboard-api/ent"
 	"github.com/chenningg/hermitboard-api/redis"
 	"github.com/go-logr/logr"
@@ -31,12 +30,11 @@ type AuthServicer interface {
 type AuthService struct {
 	logger       logr.Logger
 	config       AuthConfig
-	dbService    *db.DbService
 	redisService *redis.RedisService
 }
 
 func NewAuthService(
-	authConfig AuthConfig, logger logr.Logger, dbService *db.DbService, redisService *redis.RedisService,
+	authConfig AuthConfig, logger logr.Logger, redisService *redis.RedisService,
 ) *AuthService {
 	var authService = new(AuthService)
 
@@ -45,7 +43,6 @@ func NewAuthService(
 	authService.logger.V(2).Info("NewAuthService(): initializing auth service")
 	authService.config = authConfig
 
-	authService.dbService = dbService
 	authService.redisService = redisService
 
 	return authService

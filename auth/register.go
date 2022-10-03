@@ -27,7 +27,7 @@ func (authService AuthService) CreateAccount(
 	session := GetSessionFromContext(ctx)
 
 	// Don't allow logged in non-staff accounts to create an account.
-	if IsLoggedIn(session) && HasAuthRoles(session, NonStaffAuthRoles) {
+	if IsLoggedIn(session) && HasAuthRoles(session, NonStaffAuthRoles...) {
 		return nil, fmt.Errorf(
 			"%w: auth.CreateAccount(): non-staff account already logged in, cannot create account", ErrUnauthorized,
 		)
@@ -75,7 +75,7 @@ func (authService AuthService) CreateAccount(
 	if len(input.AuthRoleIDs) > 0 {
 		// Only allow staff to add auth roles when creating an account.
 		if HasAuthRoles(
-			session, []authrole.Value{authrole.ValueSupport, authrole.ValueAdmin, authrole.ValueSuperAdmin},
+			session, authrole.ValueSupport, authrole.ValueAdmin, authrole.ValueSuperAdmin,
 		) {
 			// Get auth roles from database.
 			authRoles, err := dbClient.AuthRole.Query().Where(authrole.IDIn(input.AuthRoleIDs...)).All(ctx)
@@ -97,7 +97,7 @@ func (authService AuthService) CreateAccount(
 			}
 
 			// Check that the auth roles to populate are within authorization. SuperAdmins can populate auth roles at will.
-			if !HasAuthRoles(session, []authrole.Value{authrole.ValueSuperAdmin}) && !IsHigherAuthority(
+			if !HasAuthRoles(session, authrole.ValueSuperAdmin) && !IsHigherAuthority(
 				session, authRoleValues,
 			) {
 				return nil, fmt.Errorf(
@@ -147,7 +147,7 @@ func (authService AuthService) CreateStaffAccount(
 	session := GetSessionFromContext(ctx)
 
 	// Only allow logged in admin/super admin staff accounts to create more staff accounts.
-	if !IsLoggedIn(session) || !HasAuthRoles(session, []authrole.Value{authrole.ValueAdmin, authrole.ValueSuperAdmin}) {
+	if !IsLoggedIn(session) || !HasAuthRoles(session, authrole.ValueAdmin, authrole.ValueSuperAdmin) {
 		return nil, fmt.Errorf(
 			"%w: auth.CreateStaffAccount(): not logged-in or unauthorized to create new staff accounts",
 			ErrUnauthorized,
@@ -215,7 +215,7 @@ func (authService AuthService) CreateStaffAccount(
 		}
 
 		// Check that the auth roles to populate are within authorization. SuperAdmins can populate auth roles at will.
-		if !HasAuthRoles(session, []authrole.Value{authrole.ValueSuperAdmin}) && !IsHigherAuthority(
+		if !HasAuthRoles(session, authrole.ValueSuperAdmin) && !IsHigherAuthority(
 			session, authRoleValues,
 		) {
 			return nil, fmt.Errorf(

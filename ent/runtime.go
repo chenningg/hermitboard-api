@@ -308,6 +308,10 @@ func init() {
 	connectionDescAccessToken := connectionFields[1].Descriptor()
 	// connection.AccessTokenValidator is a validator for the "access_token" field. It is called by the builders before save.
 	connection.AccessTokenValidator = connectionDescAccessToken.Validators[0].(func(string) error)
+	// connectionDescRefreshToken is the schema descriptor for refresh_token field.
+	connectionDescRefreshToken := connectionFields[2].Descriptor()
+	// connection.RefreshTokenValidator is a validator for the "refresh_token" field. It is called by the builders before save.
+	connection.RefreshTokenValidator = connectionDescRefreshToken.Validators[0].(func(string) error)
 	// connectionDescID is the schema descriptor for id field.
 	connectionDescID := connectionMixinFields0[0].Descriptor()
 	// connection.DefaultID holds the default value on creation for the id field.

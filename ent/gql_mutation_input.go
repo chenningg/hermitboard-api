@@ -403,7 +403,7 @@ func (c *BlockchainUpdateOne) SetInput(i UpdateBlockchainInput) *BlockchainUpdat
 type CreateConnectionInput struct {
 	Name         string
 	AccessToken  string
-	AccountID    pulid.PULID
+	RefreshToken *string
 	PortfolioIDs []pulid.PULID
 }
 
@@ -411,7 +411,9 @@ type CreateConnectionInput struct {
 func (i *CreateConnectionInput) Mutate(m *ConnectionMutation) {
 	m.SetName(i.Name)
 	m.SetAccessToken(i.AccessToken)
-	m.SetAccountID(i.AccountID)
+	if v := i.RefreshToken; v != nil {
+		m.SetRefreshToken(*v)
+	}
 	if v := i.PortfolioIDs; len(v) > 0 {
 		m.AddPortfolioIDs(v...)
 	}
@@ -429,8 +431,8 @@ type UpdateConnectionInput struct {
 	DeletedAt          *time.Time
 	Name               *string
 	AccessToken        *string
-	ClearAccount       bool
-	AccountID          *pulid.PULID
+	ClearRefreshToken  bool
+	RefreshToken       *string
 	AddPortfolioIDs    []pulid.PULID
 	RemovePortfolioIDs []pulid.PULID
 }
@@ -449,11 +451,11 @@ func (i *UpdateConnectionInput) Mutate(m *ConnectionMutation) {
 	if v := i.AccessToken; v != nil {
 		m.SetAccessToken(*v)
 	}
-	if i.ClearAccount {
-		m.ClearAccount()
+	if i.ClearRefreshToken {
+		m.ClearRefreshToken()
 	}
-	if v := i.AccountID; v != nil {
-		m.SetAccountID(*v)
+	if v := i.RefreshToken; v != nil {
+		m.SetRefreshToken(*v)
 	}
 	if v := i.AddPortfolioIDs; len(v) > 0 {
 		m.AddPortfolioIDs(v...)
@@ -751,7 +753,7 @@ func (c *ExchangeUpdateOne) SetInput(i UpdateExchangeInput) *ExchangeUpdateOne {
 type CreatePortfolioInput struct {
 	Name          string
 	IsPublic      *bool
-	AccountID     pulid.PULID
+	IsVisible     *bool
 	ConnectionIDs []pulid.PULID
 }
 
@@ -761,7 +763,9 @@ func (i *CreatePortfolioInput) Mutate(m *PortfolioMutation) {
 	if v := i.IsPublic; v != nil {
 		m.SetIsPublic(*v)
 	}
-	m.SetAccountID(i.AccountID)
+	if v := i.IsVisible; v != nil {
+		m.SetIsVisible(*v)
+	}
 	if v := i.ConnectionIDs; len(v) > 0 {
 		m.AddConnectionIDs(v...)
 	}

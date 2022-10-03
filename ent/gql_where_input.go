@@ -4283,21 +4283,6 @@ type SourceWhereInput struct {
 	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
 	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
 
-	// "source_type_id" field predicates.
-	SourceTypeID             *pulid.PULID  `json:"sourceTypeID,omitempty"`
-	SourceTypeIDNEQ          *pulid.PULID  `json:"sourceTypeIDNEQ,omitempty"`
-	SourceTypeIDIn           []pulid.PULID `json:"sourceTypeIDIn,omitempty"`
-	SourceTypeIDNotIn        []pulid.PULID `json:"sourceTypeIDNotIn,omitempty"`
-	SourceTypeIDGT           *pulid.PULID  `json:"sourceTypeIDGT,omitempty"`
-	SourceTypeIDGTE          *pulid.PULID  `json:"sourceTypeIDGTE,omitempty"`
-	SourceTypeIDLT           *pulid.PULID  `json:"sourceTypeIDLT,omitempty"`
-	SourceTypeIDLTE          *pulid.PULID  `json:"sourceTypeIDLTE,omitempty"`
-	SourceTypeIDContains     *pulid.PULID  `json:"sourceTypeIDContains,omitempty"`
-	SourceTypeIDHasPrefix    *pulid.PULID  `json:"sourceTypeIDHasPrefix,omitempty"`
-	SourceTypeIDHasSuffix    *pulid.PULID  `json:"sourceTypeIDHasSuffix,omitempty"`
-	SourceTypeIDEqualFold    *pulid.PULID  `json:"sourceTypeIDEqualFold,omitempty"`
-	SourceTypeIDContainsFold *pulid.PULID  `json:"sourceTypeIDContainsFold,omitempty"`
-
 	// "source_type" edge predicates.
 	HasSourceType     *bool                   `json:"hasSourceType,omitempty"`
 	HasSourceTypeWith []*SourceTypeWhereInput `json:"hasSourceTypeWith,omitempty"`
@@ -4514,45 +4499,6 @@ func (i *SourceWhereInput) P() (predicate.Source, error) {
 	}
 	if i.NameContainsFold != nil {
 		predicates = append(predicates, source.NameContainsFold(*i.NameContainsFold))
-	}
-	if i.SourceTypeID != nil {
-		predicates = append(predicates, source.SourceTypeIDEQ(*i.SourceTypeID))
-	}
-	if i.SourceTypeIDNEQ != nil {
-		predicates = append(predicates, source.SourceTypeIDNEQ(*i.SourceTypeIDNEQ))
-	}
-	if len(i.SourceTypeIDIn) > 0 {
-		predicates = append(predicates, source.SourceTypeIDIn(i.SourceTypeIDIn...))
-	}
-	if len(i.SourceTypeIDNotIn) > 0 {
-		predicates = append(predicates, source.SourceTypeIDNotIn(i.SourceTypeIDNotIn...))
-	}
-	if i.SourceTypeIDGT != nil {
-		predicates = append(predicates, source.SourceTypeIDGT(*i.SourceTypeIDGT))
-	}
-	if i.SourceTypeIDGTE != nil {
-		predicates = append(predicates, source.SourceTypeIDGTE(*i.SourceTypeIDGTE))
-	}
-	if i.SourceTypeIDLT != nil {
-		predicates = append(predicates, source.SourceTypeIDLT(*i.SourceTypeIDLT))
-	}
-	if i.SourceTypeIDLTE != nil {
-		predicates = append(predicates, source.SourceTypeIDLTE(*i.SourceTypeIDLTE))
-	}
-	if i.SourceTypeIDContains != nil {
-		predicates = append(predicates, source.SourceTypeIDContains(*i.SourceTypeIDContains))
-	}
-	if i.SourceTypeIDHasPrefix != nil {
-		predicates = append(predicates, source.SourceTypeIDHasPrefix(*i.SourceTypeIDHasPrefix))
-	}
-	if i.SourceTypeIDHasSuffix != nil {
-		predicates = append(predicates, source.SourceTypeIDHasSuffix(*i.SourceTypeIDHasSuffix))
-	}
-	if i.SourceTypeIDEqualFold != nil {
-		predicates = append(predicates, source.SourceTypeIDEqualFold(*i.SourceTypeIDEqualFold))
-	}
-	if i.SourceTypeIDContainsFold != nil {
-		predicates = append(predicates, source.SourceTypeIDContainsFold(*i.SourceTypeIDContainsFold))
 	}
 
 	if i.HasSourceType != nil {

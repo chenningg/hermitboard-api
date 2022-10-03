@@ -61,6 +61,26 @@ func (cu *ConnectionUpdate) SetAccessToken(s string) *ConnectionUpdate {
 	return cu
 }
 
+// SetRefreshToken sets the "refresh_token" field.
+func (cu *ConnectionUpdate) SetRefreshToken(s string) *ConnectionUpdate {
+	cu.mutation.SetRefreshToken(s)
+	return cu
+}
+
+// SetNillableRefreshToken sets the "refresh_token" field if the given value is not nil.
+func (cu *ConnectionUpdate) SetNillableRefreshToken(s *string) *ConnectionUpdate {
+	if s != nil {
+		cu.SetRefreshToken(*s)
+	}
+	return cu
+}
+
+// ClearRefreshToken clears the value of the "refresh_token" field.
+func (cu *ConnectionUpdate) ClearRefreshToken() *ConnectionUpdate {
+	cu.mutation.ClearRefreshToken()
+	return cu
+}
+
 // SetAccountID sets the "account_id" field.
 func (cu *ConnectionUpdate) SetAccountID(pu pulid.PULID) *ConnectionUpdate {
 	cu.mutation.SetAccountID(pu)
@@ -204,6 +224,11 @@ func (cu *ConnectionUpdate) check() error {
 			return &ValidationError{Name: "access_token", err: fmt.Errorf(`ent: validator failed for field "Connection.access_token": %w`, err)}
 		}
 	}
+	if v, ok := cu.mutation.RefreshToken(); ok {
+		if err := connection.RefreshTokenValidator(v); err != nil {
+			return &ValidationError{Name: "refresh_token", err: fmt.Errorf(`ent: validator failed for field "Connection.refresh_token": %w`, err)}
+		}
+	}
 	if _, ok := cu.mutation.AccountID(); cu.mutation.AccountCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Connection.account"`)
 	}
@@ -260,6 +285,19 @@ func (cu *ConnectionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: connection.FieldAccessToken,
+		})
+	}
+	if value, ok := cu.mutation.RefreshToken(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: connection.FieldRefreshToken,
+		})
+	}
+	if cu.mutation.RefreshTokenCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: connection.FieldRefreshToken,
 		})
 	}
 	if cu.mutation.AccountCleared() {
@@ -397,6 +435,26 @@ func (cuo *ConnectionUpdateOne) SetName(s string) *ConnectionUpdateOne {
 // SetAccessToken sets the "access_token" field.
 func (cuo *ConnectionUpdateOne) SetAccessToken(s string) *ConnectionUpdateOne {
 	cuo.mutation.SetAccessToken(s)
+	return cuo
+}
+
+// SetRefreshToken sets the "refresh_token" field.
+func (cuo *ConnectionUpdateOne) SetRefreshToken(s string) *ConnectionUpdateOne {
+	cuo.mutation.SetRefreshToken(s)
+	return cuo
+}
+
+// SetNillableRefreshToken sets the "refresh_token" field if the given value is not nil.
+func (cuo *ConnectionUpdateOne) SetNillableRefreshToken(s *string) *ConnectionUpdateOne {
+	if s != nil {
+		cuo.SetRefreshToken(*s)
+	}
+	return cuo
+}
+
+// ClearRefreshToken clears the value of the "refresh_token" field.
+func (cuo *ConnectionUpdateOne) ClearRefreshToken() *ConnectionUpdateOne {
+	cuo.mutation.ClearRefreshToken()
 	return cuo
 }
 
@@ -556,6 +614,11 @@ func (cuo *ConnectionUpdateOne) check() error {
 			return &ValidationError{Name: "access_token", err: fmt.Errorf(`ent: validator failed for field "Connection.access_token": %w`, err)}
 		}
 	}
+	if v, ok := cuo.mutation.RefreshToken(); ok {
+		if err := connection.RefreshTokenValidator(v); err != nil {
+			return &ValidationError{Name: "refresh_token", err: fmt.Errorf(`ent: validator failed for field "Connection.refresh_token": %w`, err)}
+		}
+	}
 	if _, ok := cuo.mutation.AccountID(); cuo.mutation.AccountCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Connection.account"`)
 	}
@@ -629,6 +692,19 @@ func (cuo *ConnectionUpdateOne) sqlSave(ctx context.Context) (_node *Connection,
 			Type:   field.TypeString,
 			Value:  value,
 			Column: connection.FieldAccessToken,
+		})
+	}
+	if value, ok := cuo.mutation.RefreshToken(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: connection.FieldRefreshToken,
+		})
+	}
+	if cuo.mutation.RefreshTokenCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: connection.FieldRefreshToken,
 		})
 	}
 	if cuo.mutation.AccountCleared() {

@@ -1,0 +1,9 @@
+input DeleteConnectionInput {
+    id: ID!
+}
+
+extend type Mutation {
+    createConnection(input: CreateConnectionInput!): Connection!
+    updateConnection(input: UpdateConnectionInput!): Connection!
+    deleteConnection(input: DeleteConnectionInput!): Void
+}

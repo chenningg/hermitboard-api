@@ -23,8 +23,6 @@ const (
 	FieldName = "name"
 	// FieldIcon holds the string denoting the icon field in the database.
 	FieldIcon = "icon"
-	// FieldSourceTypeID holds the string denoting the source_type_id field in the database.
-	FieldSourceTypeID = "source_type_id"
 	// EdgeSourceType holds the string denoting the source_type edge name in mutations.
 	EdgeSourceType = "source_type"
 	// Table holds the table name of the source in the database.
@@ -35,7 +33,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "sourcetype" package.
 	SourceTypeInverseTable = "source_types"
 	// SourceTypeColumn is the table column denoting the source_type relation/edge.
-	SourceTypeColumn = "source_type_id"
+	SourceTypeColumn = "source_type_sources"
 )
 
 // Columns holds all SQL columns for source fields.
@@ -46,13 +44,23 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldName,
 	FieldIcon,
-	FieldSourceTypeID,
+}
+
+// ForeignKeys holds the SQL foreign-keys that are owned by the "sources"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"source_type_sources",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}

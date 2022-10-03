@@ -117,6 +117,13 @@ func AccessToken(v string) predicate.Connection {
 	})
 }
 
+// RefreshToken applies equality check predicate on the "refresh_token" field. It's identical to RefreshTokenEQ.
+func RefreshToken(v string) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRefreshToken), v))
+	})
+}
+
 // AccountID applies equality check predicate on the "account_id" field. It's identical to AccountIDEQ.
 func AccountID(v pulid.PULID) predicate.Connection {
 	return predicate.Connection(func(s *sql.Selector) {
@@ -525,6 +532,119 @@ func AccessTokenEqualFold(v string) predicate.Connection {
 func AccessTokenContainsFold(v string) predicate.Connection {
 	return predicate.Connection(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldAccessToken), v))
+	})
+}
+
+// RefreshTokenEQ applies the EQ predicate on the "refresh_token" field.
+func RefreshTokenEQ(v string) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldRefreshToken), v))
+	})
+}
+
+// RefreshTokenNEQ applies the NEQ predicate on the "refresh_token" field.
+func RefreshTokenNEQ(v string) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldRefreshToken), v))
+	})
+}
+
+// RefreshTokenIn applies the In predicate on the "refresh_token" field.
+func RefreshTokenIn(vs ...string) predicate.Connection {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldRefreshToken), v...))
+	})
+}
+
+// RefreshTokenNotIn applies the NotIn predicate on the "refresh_token" field.
+func RefreshTokenNotIn(vs ...string) predicate.Connection {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldRefreshToken), v...))
+	})
+}
+
+// RefreshTokenGT applies the GT predicate on the "refresh_token" field.
+func RefreshTokenGT(v string) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldRefreshToken), v))
+	})
+}
+
+// RefreshTokenGTE applies the GTE predicate on the "refresh_token" field.
+func RefreshTokenGTE(v string) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldRefreshToken), v))
+	})
+}
+
+// RefreshTokenLT applies the LT predicate on the "refresh_token" field.
+func RefreshTokenLT(v string) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldRefreshToken), v))
+	})
+}
+
+// RefreshTokenLTE applies the LTE predicate on the "refresh_token" field.
+func RefreshTokenLTE(v string) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldRefreshToken), v))
+	})
+}
+
+// RefreshTokenContains applies the Contains predicate on the "refresh_token" field.
+func RefreshTokenContains(v string) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldRefreshToken), v))
+	})
+}
+
+// RefreshTokenHasPrefix applies the HasPrefix predicate on the "refresh_token" field.
+func RefreshTokenHasPrefix(v string) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldRefreshToken), v))
+	})
+}
+
+// RefreshTokenHasSuffix applies the HasSuffix predicate on the "refresh_token" field.
+func RefreshTokenHasSuffix(v string) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldRefreshToken), v))
+	})
+}
+
+// RefreshTokenIsNil applies the IsNil predicate on the "refresh_token" field.
+func RefreshTokenIsNil() predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldRefreshToken)))
+	})
+}
+
+// RefreshTokenNotNil applies the NotNil predicate on the "refresh_token" field.
+func RefreshTokenNotNil() predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldRefreshToken)))
+	})
+}
+
+// RefreshTokenEqualFold applies the EqualFold predicate on the "refresh_token" field.
+func RefreshTokenEqualFold(v string) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldRefreshToken), v))
+	})
+}
+
+// RefreshTokenContainsFold applies the ContainsFold predicate on the "refresh_token" field.
+func RefreshTokenContainsFold(v string) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldRefreshToken), v))
 	})
 }
 

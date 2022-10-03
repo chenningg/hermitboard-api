@@ -413,6 +413,7 @@ func (stq *SourceTypeQuery) loadSources(ctx context.Context, query *SourceQuery,
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	query.Where(predicate.Source(func(s *sql.Selector) {
 		s.Where(sql.InValues(sourcetype.SourcesColumn, fks...))
 	}))
@@ -421,10 +422,13 @@ func (stq *SourceTypeQuery) loadSources(ctx context.Context, query *SourceQuery,
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.SourceTypeID
-		node, ok := nodeids[fk]
+		fk := n.source_type_sources
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "source_type_sources" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "source_type_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "source_type_sources" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

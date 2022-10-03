@@ -3,6 +3,7 @@ package seed
 import (
 	"context"
 	"fmt"
+
 	"github.com/chenningg/hermitboard-api/ent"
 )
 
@@ -35,6 +36,11 @@ func Seed(ctx context.Context, client *ent.Client) error {
 
 	// Seed other entities.
 	err = seedStaffAccounts(ctx, client)
+	if err != nil {
+		return fmt.Errorf("SeedAll(): %v", err)
+	}
+
+	err = seedSources(ctx, client)
 	if err != nil {
 		return fmt.Errorf("SeedAll(): %v", err)
 	}

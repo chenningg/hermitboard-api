@@ -3,6 +3,7 @@ package seed
 import (
 	"context"
 	"fmt"
+
 	"github.com/chenningg/hermitboard-api/ent"
 	"github.com/chenningg/hermitboard-api/ent/sourcetype"
 )

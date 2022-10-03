@@ -28,6 +28,8 @@ type Connection struct {
 	Name string `json:"name,omitempty"`
 	// AccessToken holds the value of the "access_token" field.
 	AccessToken string `json:"access_token,omitempty"`
+	// RefreshToken holds the value of the "refresh_token" field.
+	RefreshToken *string `json:"refresh_token,omitempty"`
 	// AccountID holds the value of the "account_id" field.
 	AccountID pulid.PULID `json:"account_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -79,7 +81,7 @@ func (*Connection) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case connection.FieldID, connection.FieldAccountID:
 			values[i] = new(pulid.PULID)
-		case connection.FieldName, connection.FieldAccessToken:
+		case connection.FieldName, connection.FieldAccessToken, connection.FieldRefreshToken:
 			values[i] = new(sql.NullString)
 		case connection.FieldCreatedAt, connection.FieldUpdatedAt, connection.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -134,6 +136,13 @@ func (c *Connection) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field access_token", values[i])
 			} else if value.Valid {
 				c.AccessToken = value.String
+			}
+		case connection.FieldRefreshToken:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field refresh_token", values[i])
+			} else if value.Valid {
+				c.RefreshToken = new(string)
+				*c.RefreshToken = value.String
 			}
 		case connection.FieldAccountID:
 			if value, ok := values[i].(*pulid.PULID); !ok {
@@ -195,6 +204,11 @@ func (c *Connection) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("access_token=")
 	builder.WriteString(c.AccessToken)
+	builder.WriteString(", ")
+	if v := c.RefreshToken; v != nil {
+		builder.WriteString("refresh_token=")
+		builder.WriteString(*v)
+	}
 	builder.WriteString(", ")
 	builder.WriteString("account_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.AccountID))

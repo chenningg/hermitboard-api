@@ -78,7 +78,7 @@ func GetSessionFromContext(ctx context.Context) *Session {
 }
 
 // HasAuthRoles checks if any auth roles specified exist on the given Session. It returns true as long as one matching auth role is found.
-func HasAuthRoles(session *Session, authRoles []authrole.Value) bool {
+func HasAuthRoles(session *Session, authRoles ...authrole.Value) bool {
 	if session == nil {
 		return false
 	}

@@ -117,13 +117,6 @@ func Icon(v string) predicate.Source {
 	})
 }
 
-// SourceTypeID applies equality check predicate on the "source_type_id" field. It's identical to SourceTypeIDEQ.
-func SourceTypeID(v pulid.PULID) predicate.Source {
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSourceTypeID), v))
-	})
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Source {
 	return predicate.Source(func(s *sql.Selector) {
@@ -539,110 +532,6 @@ func IconEqualFold(v string) predicate.Source {
 func IconContainsFold(v string) predicate.Source {
 	return predicate.Source(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldIcon), v))
-	})
-}
-
-// SourceTypeIDEQ applies the EQ predicate on the "source_type_id" field.
-func SourceTypeIDEQ(v pulid.PULID) predicate.Source {
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldSourceTypeID), v))
-	})
-}
-
-// SourceTypeIDNEQ applies the NEQ predicate on the "source_type_id" field.
-func SourceTypeIDNEQ(v pulid.PULID) predicate.Source {
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldSourceTypeID), v))
-	})
-}
-
-// SourceTypeIDIn applies the In predicate on the "source_type_id" field.
-func SourceTypeIDIn(vs ...pulid.PULID) predicate.Source {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.In(s.C(FieldSourceTypeID), v...))
-	})
-}
-
-// SourceTypeIDNotIn applies the NotIn predicate on the "source_type_id" field.
-func SourceTypeIDNotIn(vs ...pulid.PULID) predicate.Source {
-	v := make([]any, len(vs))
-	for i := range v {
-		v[i] = vs[i]
-	}
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.NotIn(s.C(FieldSourceTypeID), v...))
-	})
-}
-
-// SourceTypeIDGT applies the GT predicate on the "source_type_id" field.
-func SourceTypeIDGT(v pulid.PULID) predicate.Source {
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldSourceTypeID), v))
-	})
-}
-
-// SourceTypeIDGTE applies the GTE predicate on the "source_type_id" field.
-func SourceTypeIDGTE(v pulid.PULID) predicate.Source {
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldSourceTypeID), v))
-	})
-}
-
-// SourceTypeIDLT applies the LT predicate on the "source_type_id" field.
-func SourceTypeIDLT(v pulid.PULID) predicate.Source {
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldSourceTypeID), v))
-	})
-}
-
-// SourceTypeIDLTE applies the LTE predicate on the "source_type_id" field.
-func SourceTypeIDLTE(v pulid.PULID) predicate.Source {
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldSourceTypeID), v))
-	})
-}
-
-// SourceTypeIDContains applies the Contains predicate on the "source_type_id" field.
-func SourceTypeIDContains(v pulid.PULID) predicate.Source {
-	vc := string(v)
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldSourceTypeID), vc))
-	})
-}
-
-// SourceTypeIDHasPrefix applies the HasPrefix predicate on the "source_type_id" field.
-func SourceTypeIDHasPrefix(v pulid.PULID) predicate.Source {
-	vc := string(v)
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldSourceTypeID), vc))
-	})
-}
-
-// SourceTypeIDHasSuffix applies the HasSuffix predicate on the "source_type_id" field.
-func SourceTypeIDHasSuffix(v pulid.PULID) predicate.Source {
-	vc := string(v)
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldSourceTypeID), vc))
-	})
-}
-
-// SourceTypeIDEqualFold applies the EqualFold predicate on the "source_type_id" field.
-func SourceTypeIDEqualFold(v pulid.PULID) predicate.Source {
-	vc := string(v)
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldSourceTypeID), vc))
-	})
-}
-
-// SourceTypeIDContainsFold applies the ContainsFold predicate on the "source_type_id" field.
-func SourceTypeIDContainsFold(v pulid.PULID) predicate.Source {
-	vc := string(v)
-	return predicate.Source(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldSourceTypeID), vc))
 	})
 }
 

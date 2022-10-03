@@ -26,6 +26,7 @@ type SourceQuery struct {
 	fields         []string
 	predicates     []predicate.Source
 	withSourceType *SourceTypeQuery
+	withFKs        bool
 	modifiers      []func(*sql.Selector)
 	loadTotal      []func(context.Context, []*Source) error
 	// intermediate query (i.e. traversal path).
@@ -353,11 +354,18 @@ func (sq *SourceQuery) prepareQuery(ctx context.Context) error {
 func (sq *SourceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Source, error) {
 	var (
 		nodes       = []*Source{}
+		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
 		loadedTypes = [1]bool{
 			sq.withSourceType != nil,
 		}
 	)
+	if sq.withSourceType != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, source.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Source).scanValues(nil, columns)
 	}
@@ -397,7 +405,10 @@ func (sq *SourceQuery) loadSourceType(ctx context.Context, query *SourceTypeQuer
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Source)
 	for i := range nodes {
-		fk := nodes[i].SourceTypeID
+		if nodes[i].source_type_sources == nil {
+			continue
+		}
+		fk := *nodes[i].source_type_sources
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -411,7 +422,7 @@ func (sq *SourceQuery) loadSourceType(ctx context.Context, query *SourceTypeQuer
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "source_type_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "source_type_sources" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

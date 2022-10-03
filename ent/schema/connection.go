@@ -36,8 +36,14 @@ func (Connection) Fields() []ent.Field {
 		field.String("access_token").
 			NotEmpty().
 			Annotations(entgql.Skip(entgql.SkipWhereInput)),
+		field.String("refresh_token").
+			Optional().
+			Nillable().
+			NotEmpty().
+			Annotations(entgql.Skip(entgql.SkipWhereInput)),
 		field.String("account_id").
-			GoType(pulid.PULID("")),
+			GoType(pulid.PULID("")).
+			Annotations(entgql.Skip(entgql.SkipMutationCreateInput | entgql.SkipMutationUpdateInput)),
 	}
 }
 
@@ -49,7 +55,10 @@ func (Connection) Edges() []ent.Edge {
 			Field("account_id").
 			Unique().
 			Required().
-			Annotations(entgql.MapsTo("account")),
+			Annotations(
+				entgql.MapsTo("account"),
+				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
+			),
 		edge.From("portfolios", Portfolio.Type).
 			Ref("connections").
 			Annotations(

@@ -23,6 +23,8 @@ const (
 	FieldName = "name"
 	// FieldAccessToken holds the string denoting the access_token field in the database.
 	FieldAccessToken = "access_token"
+	// FieldRefreshToken holds the string denoting the refresh_token field in the database.
+	FieldRefreshToken = "refresh_token"
 	// FieldAccountID holds the string denoting the account_id field in the database.
 	FieldAccountID = "account_id"
 	// EdgeAccount holds the string denoting the account edge name in mutations.
@@ -53,6 +55,7 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldName,
 	FieldAccessToken,
+	FieldRefreshToken,
 	FieldAccountID,
 }
 
@@ -85,6 +88,8 @@ var (
 	NameValidator func(string) error
 	// AccessTokenValidator is a validator for the "access_token" field. It is called by the builders before save.
 	AccessTokenValidator func(string) error
+	// RefreshTokenValidator is a validator for the "refresh_token" field. It is called by the builders before save.
+	RefreshTokenValidator func(string) error
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() pulid.PULID
 )

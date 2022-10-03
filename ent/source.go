@@ -28,11 +28,10 @@ type Source struct {
 	Name string `json:"name,omitempty"`
 	// Icon holds the value of the "icon" field.
 	Icon *string `json:"icon,omitempty"`
-	// SourceTypeID holds the value of the "source_type_id" field.
-	SourceTypeID pulid.PULID `json:"source_type_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SourceQuery when eager-loading is set.
-	Edges SourceEdges `json:"edges"`
+	Edges               SourceEdges `json:"edges"`
+	source_type_sources *pulid.PULID
 }
 
 // SourceEdges holds the relations/edges for other nodes in the graph.
@@ -64,12 +63,14 @@ func (*Source) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case source.FieldID, source.FieldSourceTypeID:
+		case source.FieldID:
 			values[i] = new(pulid.PULID)
 		case source.FieldName, source.FieldIcon:
 			values[i] = new(sql.NullString)
 		case source.FieldCreatedAt, source.FieldUpdatedAt, source.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
+		case source.ForeignKeys[0]: // source_type_sources
+			values[i] = &sql.NullScanner{S: new(pulid.PULID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Source", columns[i])
 		}
@@ -123,11 +124,12 @@ func (s *Source) assignValues(columns []string, values []any) error {
 				s.Icon = new(string)
 				*s.Icon = value.String
 			}
-		case source.FieldSourceTypeID:
-			if value, ok := values[i].(*pulid.PULID); !ok {
-				return fmt.Errorf("unexpected type %T for field source_type_id", values[i])
-			} else if value != nil {
-				s.SourceTypeID = *value
+		case source.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field source_type_sources", values[i])
+			} else if value.Valid {
+				s.source_type_sources = new(pulid.PULID)
+				*s.source_type_sources = *value.S.(*pulid.PULID)
 			}
 		}
 	}
@@ -180,9 +182,6 @@ func (s *Source) String() string {
 		builder.WriteString("icon=")
 		builder.WriteString(*v)
 	}
-	builder.WriteString(", ")
-	builder.WriteString("source_type_id=")
-	builder.WriteString(fmt.Sprintf("%v", s.SourceTypeID))
 	builder.WriteByte(')')
 	return builder.String()
 }

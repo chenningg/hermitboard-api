@@ -4612,6 +4612,7 @@ type ConnectionMutation struct {
 	deleted_at        *time.Time
 	name              *string
 	access_token      *string
+	refresh_token     *string
 	clearedFields     map[string]struct{}
 	account           *pulid.PULID
 	clearedaccount    bool
@@ -4920,6 +4921,55 @@ func (m *ConnectionMutation) ResetAccessToken() {
 	m.access_token = nil
 }
 
+// SetRefreshToken sets the "refresh_token" field.
+func (m *ConnectionMutation) SetRefreshToken(s string) {
+	m.refresh_token = &s
+}
+
+// RefreshToken returns the value of the "refresh_token" field in the mutation.
+func (m *ConnectionMutation) RefreshToken() (r string, exists bool) {
+	v := m.refresh_token
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRefreshToken returns the old "refresh_token" field's value of the Connection entity.
+// If the Connection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConnectionMutation) OldRefreshToken(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRefreshToken is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRefreshToken requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRefreshToken: %w", err)
+	}
+	return oldValue.RefreshToken, nil
+}
+
+// ClearRefreshToken clears the value of the "refresh_token" field.
+func (m *ConnectionMutation) ClearRefreshToken() {
+	m.refresh_token = nil
+	m.clearedFields[connection.FieldRefreshToken] = struct{}{}
+}
+
+// RefreshTokenCleared returns if the "refresh_token" field was cleared in this mutation.
+func (m *ConnectionMutation) RefreshTokenCleared() bool {
+	_, ok := m.clearedFields[connection.FieldRefreshToken]
+	return ok
+}
+
+// ResetRefreshToken resets all changes to the "refresh_token" field.
+func (m *ConnectionMutation) ResetRefreshToken() {
+	m.refresh_token = nil
+	delete(m.clearedFields, connection.FieldRefreshToken)
+}
+
 // SetAccountID sets the "account_id" field.
 func (m *ConnectionMutation) SetAccountID(pu pulid.PULID) {
 	m.account = &pu
@@ -5055,7 +5105,7 @@ func (m *ConnectionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConnectionMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, connection.FieldCreatedAt)
 	}
@@ -5070,6 +5120,9 @@ func (m *ConnectionMutation) Fields() []string {
 	}
 	if m.access_token != nil {
 		fields = append(fields, connection.FieldAccessToken)
+	}
+	if m.refresh_token != nil {
+		fields = append(fields, connection.FieldRefreshToken)
 	}
 	if m.account != nil {
 		fields = append(fields, connection.FieldAccountID)
@@ -5092,6 +5145,8 @@ func (m *ConnectionMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case connection.FieldAccessToken:
 		return m.AccessToken()
+	case connection.FieldRefreshToken:
+		return m.RefreshToken()
 	case connection.FieldAccountID:
 		return m.AccountID()
 	}
@@ -5113,6 +5168,8 @@ func (m *ConnectionMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldName(ctx)
 	case connection.FieldAccessToken:
 		return m.OldAccessToken(ctx)
+	case connection.FieldRefreshToken:
+		return m.OldRefreshToken(ctx)
 	case connection.FieldAccountID:
 		return m.OldAccountID(ctx)
 	}
@@ -5159,6 +5216,13 @@ func (m *ConnectionMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAccessToken(v)
 		return nil
+	case connection.FieldRefreshToken:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRefreshToken(v)
+		return nil
 	case connection.FieldAccountID:
 		v, ok := value.(pulid.PULID)
 		if !ok {
@@ -5199,6 +5263,9 @@ func (m *ConnectionMutation) ClearedFields() []string {
 	if m.FieldCleared(connection.FieldDeletedAt) {
 		fields = append(fields, connection.FieldDeletedAt)
 	}
+	if m.FieldCleared(connection.FieldRefreshToken) {
+		fields = append(fields, connection.FieldRefreshToken)
+	}
 	return fields
 }
 
@@ -5215,6 +5282,9 @@ func (m *ConnectionMutation) ClearField(name string) error {
 	switch name {
 	case connection.FieldDeletedAt:
 		m.ClearDeletedAt()
+		return nil
+	case connection.FieldRefreshToken:
+		m.ClearRefreshToken()
 		return nil
 	}
 	return fmt.Errorf("unknown Connection nullable field %s", name)
@@ -5238,6 +5308,9 @@ func (m *ConnectionMutation) ResetField(name string) error {
 		return nil
 	case connection.FieldAccessToken:
 		m.ResetAccessToken()
+		return nil
+	case connection.FieldRefreshToken:
+		m.ResetRefreshToken()
 		return nil
 	case connection.FieldAccountID:
 		m.ResetAccountID()
@@ -9247,40 +9320,9 @@ func (m *SourceMutation) ResetIcon() {
 	delete(m.clearedFields, source.FieldIcon)
 }
 
-// SetSourceTypeID sets the "source_type_id" field.
-func (m *SourceMutation) SetSourceTypeID(pu pulid.PULID) {
-	m.source_type = &pu
-}
-
-// SourceTypeID returns the value of the "source_type_id" field in the mutation.
-func (m *SourceMutation) SourceTypeID() (r pulid.PULID, exists bool) {
-	v := m.source_type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSourceTypeID returns the old "source_type_id" field's value of the Source entity.
-// If the Source object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *SourceMutation) OldSourceTypeID(ctx context.Context) (v pulid.PULID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSourceTypeID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSourceTypeID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSourceTypeID: %w", err)
-	}
-	return oldValue.SourceTypeID, nil
-}
-
-// ResetSourceTypeID resets all changes to the "source_type_id" field.
-func (m *SourceMutation) ResetSourceTypeID() {
-	m.source_type = nil
+// SetSourceTypeID sets the "source_type" edge to the SourceType entity by id.
+func (m *SourceMutation) SetSourceTypeID(id pulid.PULID) {
+	m.source_type = &id
 }
 
 // ClearSourceType clears the "source_type" edge to the SourceType entity.
@@ -9291,6 +9333,14 @@ func (m *SourceMutation) ClearSourceType() {
 // SourceTypeCleared reports if the "source_type" edge to the SourceType entity was cleared.
 func (m *SourceMutation) SourceTypeCleared() bool {
 	return m.clearedsource_type
+}
+
+// SourceTypeID returns the "source_type" edge ID in the mutation.
+func (m *SourceMutation) SourceTypeID() (id pulid.PULID, exists bool) {
+	if m.source_type != nil {
+		return *m.source_type, true
+	}
+	return
 }
 
 // SourceTypeIDs returns the "source_type" edge IDs in the mutation.
@@ -9328,7 +9378,7 @@ func (m *SourceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SourceMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 5)
 	if m.created_at != nil {
 		fields = append(fields, source.FieldCreatedAt)
 	}
@@ -9343,9 +9393,6 @@ func (m *SourceMutation) Fields() []string {
 	}
 	if m.icon != nil {
 		fields = append(fields, source.FieldIcon)
-	}
-	if m.source_type != nil {
-		fields = append(fields, source.FieldSourceTypeID)
 	}
 	return fields
 }
@@ -9365,8 +9412,6 @@ func (m *SourceMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case source.FieldIcon:
 		return m.Icon()
-	case source.FieldSourceTypeID:
-		return m.SourceTypeID()
 	}
 	return nil, false
 }
@@ -9386,8 +9431,6 @@ func (m *SourceMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldName(ctx)
 	case source.FieldIcon:
 		return m.OldIcon(ctx)
-	case source.FieldSourceTypeID:
-		return m.OldSourceTypeID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Source field %s", name)
 }
@@ -9431,13 +9474,6 @@ func (m *SourceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIcon(v)
-		return nil
-	case source.FieldSourceTypeID:
-		v, ok := value.(pulid.PULID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSourceTypeID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Source field %s", name)
@@ -9517,9 +9553,6 @@ func (m *SourceMutation) ResetField(name string) error {
 		return nil
 	case source.FieldIcon:
 		m.ResetIcon()
-		return nil
-	case source.FieldSourceTypeID:
-		m.ResetSourceTypeID()
 		return nil
 	}
 	return fmt.Errorf("unknown Source field %s", name)

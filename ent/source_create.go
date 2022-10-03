@@ -84,12 +84,6 @@ func (sc *SourceCreate) SetNillableIcon(s *string) *SourceCreate {
 	return sc
 }
 
-// SetSourceTypeID sets the "source_type_id" field.
-func (sc *SourceCreate) SetSourceTypeID(pu pulid.PULID) *SourceCreate {
-	sc.mutation.SetSourceTypeID(pu)
-	return sc
-}
-
 // SetID sets the "id" field.
 func (sc *SourceCreate) SetID(pu pulid.PULID) *SourceCreate {
 	sc.mutation.SetID(pu)
@@ -101,6 +95,12 @@ func (sc *SourceCreate) SetNillableID(pu *pulid.PULID) *SourceCreate {
 	if pu != nil {
 		sc.SetID(*pu)
 	}
+	return sc
+}
+
+// SetSourceTypeID sets the "source_type" edge to the SourceType entity by ID.
+func (sc *SourceCreate) SetSourceTypeID(id pulid.PULID) *SourceCreate {
+	sc.mutation.SetSourceTypeID(id)
 	return sc
 }
 
@@ -222,9 +222,6 @@ func (sc *SourceCreate) check() error {
 		}
 	}
 	if _, ok := sc.mutation.SourceTypeID(); !ok {
-		return &ValidationError{Name: "source_type_id", err: errors.New(`ent: missing required field "Source.source_type_id"`)}
-	}
-	if _, ok := sc.mutation.SourceTypeID(); !ok {
 		return &ValidationError{Name: "source_type", err: errors.New(`ent: missing required edge "Source.source_type"`)}
 	}
 	return nil
@@ -320,7 +317,7 @@ func (sc *SourceCreate) createSpec() (*Source, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.SourceTypeID = nodes[0]
+		_node.source_type_sources = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

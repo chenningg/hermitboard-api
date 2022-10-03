@@ -12,7 +12,9 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/chenningg/hermitboard-api/auth"
+	"github.com/chenningg/hermitboard-api/connection"
 	"github.com/chenningg/hermitboard-api/ent"
+	"github.com/chenningg/hermitboard-api/portfolio"
 	"github.com/chenningg/hermitboard-api/pulid"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -176,15 +178,16 @@ type ComplexityRoot struct {
 	}
 
 	Connection struct {
-		AccessToken func(childComplexity int) int
-		Account     func(childComplexity int) int
-		AccountID   func(childComplexity int) int
-		CreatedAt   func(childComplexity int) int
-		DeletedAt   func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Name        func(childComplexity int) int
-		Portfolios  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PortfolioOrder) int
-		UpdatedAt   func(childComplexity int) int
+		AccessToken  func(childComplexity int) int
+		Account      func(childComplexity int) int
+		AccountID    func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		DeletedAt    func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Name         func(childComplexity int) int
+		Portfolios   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PortfolioOrder) int
+		RefreshToken func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
 	}
 
 	ConnectionConnection struct {
@@ -272,11 +275,17 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateAccount          func(childComplexity int, input ent.CreateAccountInput) int
+		CreateConnection       func(childComplexity int, input ent.CreateConnectionInput) int
+		CreatePortfolio        func(childComplexity int, input ent.CreatePortfolioInput) int
 		CreateStaffAccount     func(childComplexity int, input ent.CreateStaffAccountInput) int
+		DeleteConnection       func(childComplexity int, input connection.DeleteConnectionInput) int
+		DeletePortfolio        func(childComplexity int, input portfolio.DeletePortfolioInput) int
 		LoginToAccount         func(childComplexity int, input auth.LoginToAccountInput) int
 		LoginToStaffAccount    func(childComplexity int, input auth.LoginToStaffAccountInput) int
 		LogoutFromAccount      func(childComplexity int) int
 		LogoutFromStaffAccount func(childComplexity int) int
+		UpdateConnection       func(childComplexity int, input ent.UpdateConnectionInput) int
+		UpdatePortfolio        func(childComplexity int, input ent.UpdatePortfolioInput) int
 	}
 
 	PageInfo struct {
@@ -333,14 +342,13 @@ type ComplexityRoot struct {
 	}
 
 	Source struct {
-		CreatedAt    func(childComplexity int) int
-		DeletedAt    func(childComplexity int) int
-		ID           func(childComplexity int) int
-		Icon         func(childComplexity int) int
-		Name         func(childComplexity int) int
-		SourceType   func(childComplexity int) int
-		SourceTypeID func(childComplexity int) int
-		UpdatedAt    func(childComplexity int) int
+		CreatedAt  func(childComplexity int) int
+		DeletedAt  func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Icon       func(childComplexity int) int
+		Name       func(childComplexity int) int
+		SourceType func(childComplexity int) int
+		UpdatedAt  func(childComplexity int) int
 	}
 
 	SourceConnection struct {
@@ -1121,6 +1129,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Connection.Portfolios(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.PortfolioOrder)), true
 
+	case "Connection.refreshToken":
+		if e.complexity.Connection.RefreshToken == nil {
+			break
+		}
+
+		return e.complexity.Connection.RefreshToken(childComplexity), true
+
 	case "Connection.updatedAt":
 		if e.complexity.Connection.UpdatedAt == nil {
 			break
@@ -1500,6 +1515,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateAccount(childComplexity, args["input"].(ent.CreateAccountInput)), true
 
+	case "Mutation.createConnection":
+		if e.complexity.Mutation.CreateConnection == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createConnection_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateConnection(childComplexity, args["input"].(ent.CreateConnectionInput)), true
+
+	case "Mutation.createPortfolio":
+		if e.complexity.Mutation.CreatePortfolio == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createPortfolio_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreatePortfolio(childComplexity, args["input"].(ent.CreatePortfolioInput)), true
+
 	case "Mutation.createStaffAccount":
 		if e.complexity.Mutation.CreateStaffAccount == nil {
 			break
@@ -1511,6 +1550,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateStaffAccount(childComplexity, args["input"].(ent.CreateStaffAccountInput)), true
+
+	case "Mutation.deleteConnection":
+		if e.complexity.Mutation.DeleteConnection == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteConnection_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteConnection(childComplexity, args["input"].(connection.DeleteConnectionInput)), true
+
+	case "Mutation.deletePortfolio":
+		if e.complexity.Mutation.DeletePortfolio == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deletePortfolio_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeletePortfolio(childComplexity, args["input"].(portfolio.DeletePortfolioInput)), true
 
 	case "Mutation.loginToAccount":
 		if e.complexity.Mutation.LoginToAccount == nil {
@@ -1549,6 +1612,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.LogoutFromStaffAccount(childComplexity), true
+
+	case "Mutation.updateConnection":
+		if e.complexity.Mutation.UpdateConnection == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateConnection_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateConnection(childComplexity, args["input"].(ent.UpdateConnectionInput)), true
+
+	case "Mutation.updatePortfolio":
+		if e.complexity.Mutation.UpdatePortfolio == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updatePortfolio_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdatePortfolio(childComplexity, args["input"].(ent.UpdatePortfolioInput)), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -1957,13 +2044,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Source.SourceType(childComplexity), true
-
-	case "Source.sourceTypeID":
-		if e.complexity.Source.SourceTypeID == nil {
-			break
-		}
-
-		return e.complexity.Source.SourceTypeID(childComplexity), true
 
 	case "Source.updatedAt":
 		if e.complexity.Source.UpdatedAt == nil {
@@ -2485,6 +2565,8 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCryptocurrencyWhereInput,
 		ec.unmarshalInputDailyAssetPriceOrder,
 		ec.unmarshalInputDailyAssetPriceWhereInput,
+		ec.unmarshalInputDeleteConnectionInput,
+		ec.unmarshalInputDeletePortfolioInput,
 		ec.unmarshalInputExchangeOrder,
 		ec.unmarshalInputExchangeWhereInput,
 		ec.unmarshalInputLoginToAccountInput,
@@ -2576,7 +2658,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 	return introspection.WrapTypeFromDef(parsedSchema, parsedSchema.Types[name]), nil
 }
 
-//go:embed "schema/auth.graphql" "schema/ent.graphql" "schema/schema.graphql"
+//go:embed "schema/auth.graphql" "schema/connection.graphql" "schema/ent.graphql" "schema/portfolio.graphql" "schema/schema.graphql"
 var sourcesFS embed.FS
 
 func sourceData(filename string) string {
@@ -2589,7 +2671,9 @@ func sourceData(filename string) string {
 
 var sources = []*ast.Source{
 	{Name: "schema/auth.graphql", Input: sourceData("schema/auth.graphql"), BuiltIn: false},
+	{Name: "schema/connection.graphql", Input: sourceData("schema/connection.graphql"), BuiltIn: false},
 	{Name: "schema/ent.graphql", Input: sourceData("schema/ent.graphql"), BuiltIn: false},
+	{Name: "schema/portfolio.graphql", Input: sourceData("schema/portfolio.graphql"), BuiltIn: false},
 	{Name: "schema/schema.graphql", Input: sourceData("schema/schema.graphql"), BuiltIn: false},
 }
 var parsedSchema = gqlparser.MustLoadSchema(sources...)

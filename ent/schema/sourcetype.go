@@ -29,6 +29,7 @@ func (SourceType) Fields() []ent.Field {
 	return []ent.Field{
 		field.Enum("value").
 			NamedValues(
+				"CryptocurrencyWallet", "CRYPTOCURRENCY_WALLET",
 				"Exchange", "EXCHANGE",
 				"Bank", "BANK",
 				"DecentralizedExchange", "DECENTRALIZED_EXCHANGE",

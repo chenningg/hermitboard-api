@@ -127,6 +127,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "access_token", Type: field.TypeString},
+		{Name: "refresh_token", Type: field.TypeString, Nullable: true},
 		{Name: "account_id", Type: field.TypeString},
 	}
 	// ConnectionsTable holds the schema information for the "connections" table.
@@ -137,7 +138,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "connections_accounts_connections",
-				Columns:    []*schema.Column{ConnectionsColumns[6]},
+				Columns:    []*schema.Column{ConnectionsColumns[7]},
 				RefColumns: []*schema.Column{AccountsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -146,7 +147,7 @@ var (
 			{
 				Name:    "connection_account_id_name",
 				Unique:  true,
-				Columns: []*schema.Column{ConnectionsColumns[6], ConnectionsColumns[4]},
+				Columns: []*schema.Column{ConnectionsColumns[7], ConnectionsColumns[4]},
 			},
 		},
 	}
@@ -259,7 +260,7 @@ var (
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "icon", Type: field.TypeString, Nullable: true},
-		{Name: "source_type_id", Type: field.TypeString},
+		{Name: "source_type_sources", Type: field.TypeString},
 	}
 	// SourcesTable holds the schema information for the "sources" table.
 	SourcesTable = &schema.Table{
@@ -281,7 +282,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "value", Type: field.TypeEnum, Enums: []string{"EXCHANGE", "BANK", "DECENTRALIZED_EXCHANGE"}},
+		{Name: "value", Type: field.TypeEnum, Enums: []string{"CRYPTOCURRENCY_WALLET", "EXCHANGE", "BANK", "DECENTRALIZED_EXCHANGE"}},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 	}
 	// SourceTypesTable holds the schema information for the "source_types" table.

@@ -7,7 +7,6 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"github.com/chenningg/hermitboard-api/ent/schema/mixin"
-	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // Source holds the schema definition for the Source entity.
@@ -30,14 +29,13 @@ func (Source) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
 			NotEmpty().
+			Unique().
 			Annotations(entgql.OrderField("NAME")),
 		field.String("icon").
 			Optional().
 			Nillable().
 			NotEmpty().
 			Annotations(entgql.Skip(entgql.SkipWhereInput)),
-		field.String("source_type_id").
-			GoType(pulid.PULID("")),
 	}
 }
 
@@ -46,7 +44,6 @@ func (Source) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("source_type", SourceType.Type).
 			Ref("sources").
-			Field("source_type_id").
 			Required().
 			Unique().
 			Annotations(entgql.MapsTo("sourceType")),

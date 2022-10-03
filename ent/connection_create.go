@@ -77,6 +77,20 @@ func (cc *ConnectionCreate) SetAccessToken(s string) *ConnectionCreate {
 	return cc
 }
 
+// SetRefreshToken sets the "refresh_token" field.
+func (cc *ConnectionCreate) SetRefreshToken(s string) *ConnectionCreate {
+	cc.mutation.SetRefreshToken(s)
+	return cc
+}
+
+// SetNillableRefreshToken sets the "refresh_token" field if the given value is not nil.
+func (cc *ConnectionCreate) SetNillableRefreshToken(s *string) *ConnectionCreate {
+	if s != nil {
+		cc.SetRefreshToken(*s)
+	}
+	return cc
+}
+
 // SetAccountID sets the "account_id" field.
 func (cc *ConnectionCreate) SetAccountID(pu pulid.PULID) *ConnectionCreate {
 	cc.mutation.SetAccountID(pu)
@@ -232,6 +246,11 @@ func (cc *ConnectionCreate) check() error {
 			return &ValidationError{Name: "access_token", err: fmt.Errorf(`ent: validator failed for field "Connection.access_token": %w`, err)}
 		}
 	}
+	if v, ok := cc.mutation.RefreshToken(); ok {
+		if err := connection.RefreshTokenValidator(v); err != nil {
+			return &ValidationError{Name: "refresh_token", err: fmt.Errorf(`ent: validator failed for field "Connection.refresh_token": %w`, err)}
+		}
+	}
 	if _, ok := cc.mutation.AccountID(); !ok {
 		return &ValidationError{Name: "account_id", err: errors.New(`ent: missing required field "Connection.account_id"`)}
 	}
@@ -313,6 +332,14 @@ func (cc *ConnectionCreate) createSpec() (*Connection, *sqlgraph.CreateSpec) {
 			Column: connection.FieldAccessToken,
 		})
 		_node.AccessToken = value
+	}
+	if value, ok := cc.mutation.RefreshToken(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: connection.FieldRefreshToken,
+		})
+		_node.RefreshToken = &value
 	}
 	if nodes := cc.mutation.AccountIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

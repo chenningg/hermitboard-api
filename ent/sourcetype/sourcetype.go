@@ -36,7 +36,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "source" package.
 	SourcesInverseTable = "sources"
 	// SourcesColumn is the table column denoting the sources relation/edge.
-	SourcesColumn = "source_type_id"
+	SourcesColumn = "source_type_sources"
 )
 
 // Columns holds all SQL columns for sourcetype fields.
@@ -79,6 +79,7 @@ type Value string
 
 // Value values.
 const (
+	ValueCryptocurrencyWallet  Value = "CRYPTOCURRENCY_WALLET"
 	ValueExchange              Value = "EXCHANGE"
 	ValueBank                  Value = "BANK"
 	ValueDecentralizedExchange Value = "DECENTRALIZED_EXCHANGE"
@@ -91,7 +92,7 @@ func (v Value) String() string {
 // ValueValidator is a validator for the "value" field enum values. It is called by the builders before save.
 func ValueValidator(v Value) error {
 	switch v {
-	case ValueExchange, ValueBank, ValueDecentralizedExchange:
+	case ValueCryptocurrencyWallet, ValueExchange, ValueBank, ValueDecentralizedExchange:
 		return nil
 	default:
 		return fmt.Errorf("sourcetype: invalid enum value for value field: %q", v)
