@@ -5,24 +5,21 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/chenningg/hermitboard-api/connection"
 	"github.com/chenningg/hermitboard-api/ent"
-	"github.com/chenningg/hermitboard-api/graph/model"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // CreateConnection is the resolver for the createConnection field.
-func (r *mutationResolver) CreateConnection(ctx context.Context, input ent.CreateConnectionInput) (*ent.Connection, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreateConnection(ctx context.Context, input ent.CreateConnectionInput) (
+	*ent.Connection, error,
+) {
+	return r.connectionService.CreateConnection(ctx, input)
 }
 
 // UpdateConnection is the resolver for the updateConnection field.
-func (r *mutationResolver) UpdateConnection(ctx context.Context, input ent.UpdateConnectionInput) (*ent.Connection, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-// DeleteConnection is the resolver for the deleteConnection field.
-func (r *mutationResolver) DeleteConnection(ctx context.Context, input connection.DeleteConnectionInput) (*model.Void, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) UpdateConnection(
+	ctx context.Context, id pulid.PULID, input ent.UpdateConnectionInput,
+) (*ent.Connection, error) {
+	return r.connectionService.UpdateConnection(ctx, id, input)
 }

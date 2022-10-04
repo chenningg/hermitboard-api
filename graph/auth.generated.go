@@ -10,10 +10,9 @@ import (
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/chenningg/hermitboard-api/auth"
-	"github.com/chenningg/hermitboard-api/connection"
 	"github.com/chenningg/hermitboard-api/ent"
 	"github.com/chenningg/hermitboard-api/graph/model"
-	"github.com/chenningg/hermitboard-api/portfolio"
+	"github.com/chenningg/hermitboard-api/pulid"
 	"github.com/vektah/gqlparser/v2/ast"
 )
 
@@ -27,11 +26,9 @@ type MutationResolver interface {
 	LogoutFromAccount(ctx context.Context) (*model.Void, error)
 	LogoutFromStaffAccount(ctx context.Context) (*model.Void, error)
 	CreateConnection(ctx context.Context, input ent.CreateConnectionInput) (*ent.Connection, error)
-	UpdateConnection(ctx context.Context, input ent.UpdateConnectionInput) (*ent.Connection, error)
-	DeleteConnection(ctx context.Context, input connection.DeleteConnectionInput) (*model.Void, error)
+	UpdateConnection(ctx context.Context, id pulid.PULID, input ent.UpdateConnectionInput) (*ent.Connection, error)
 	CreatePortfolio(ctx context.Context, input ent.CreatePortfolioInput) (*ent.Portfolio, error)
-	UpdatePortfolio(ctx context.Context, input ent.UpdatePortfolioInput) (*ent.Portfolio, error)
-	DeletePortfolio(ctx context.Context, input portfolio.DeletePortfolioInput) (*model.Void, error)
+	UpdatePortfolio(ctx context.Context, id pulid.PULID, input ent.UpdatePortfolioInput) (*ent.Portfolio, error)
 }
 
 // endregion ************************** generated!.gotpl **************************
@@ -98,36 +95,6 @@ func (ec *executionContext) field_Mutation_createStaffAccount_args(ctx context.C
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_deleteConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 connection.DeleteConnectionInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeleteConnectionInput2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋconnectionᚐDeleteConnectionInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_deletePortfolio_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 portfolio.DeletePortfolioInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNDeletePortfolioInput2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋportfolioᚐDeletePortfolioInput(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Mutation_loginToAccount_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -161,30 +128,48 @@ func (ec *executionContext) field_Mutation_loginToStaffAccount_args(ctx context.
 func (ec *executionContext) field_Mutation_updateConnection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 ent.UpdateConnectionInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateConnectionInput2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐUpdateConnectionInput(ctx, tmp)
+	var arg0 pulid.PULID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
+	args["id"] = arg0
+	var arg1 ent.UpdateConnectionInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdateConnectionInput2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐUpdateConnectionInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
 	return args, nil
 }
 
 func (ec *executionContext) field_Mutation_updatePortfolio_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 ent.UpdatePortfolioInput
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdatePortfolioInput2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐUpdatePortfolioInput(ctx, tmp)
+	var arg0 pulid.PULID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg0
+	args["id"] = arg0
+	var arg1 ent.UpdatePortfolioInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg1, err = ec.unmarshalNUpdatePortfolioInput2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐUpdatePortfolioInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg1
 	return args, nil
 }
 
@@ -637,7 +622,7 @@ func (ec *executionContext) _Mutation_updateConnection(ctx context.Context, fiel
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateConnection(rctx, fc.Args["input"].(ent.UpdateConnectionInput))
+		return ec.resolvers.Mutation().UpdateConnection(rctx, fc.Args["id"].(pulid.PULID), fc.Args["input"].(ent.UpdateConnectionInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -694,58 +679,6 @@ func (ec *executionContext) fieldContext_Mutation_updateConnection(ctx context.C
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_updateConnection_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_deleteConnection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_deleteConnection(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeleteConnection(rctx, fc.Args["input"].(connection.DeleteConnectionInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*model.Void)
-	fc.Result = res
-	return ec.marshalOVoid2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋgraphᚋmodelᚐVoid(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_deleteConnection(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Void does not have child fields")
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_deleteConnection_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -845,7 +778,7 @@ func (ec *executionContext) _Mutation_updatePortfolio(ctx context.Context, field
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdatePortfolio(rctx, fc.Args["input"].(ent.UpdatePortfolioInput))
+		return ec.resolvers.Mutation().UpdatePortfolio(rctx, fc.Args["id"].(pulid.PULID), fc.Args["input"].(ent.UpdatePortfolioInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -904,58 +837,6 @@ func (ec *executionContext) fieldContext_Mutation_updatePortfolio(ctx context.Co
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_updatePortfolio_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_deletePortfolio(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_deletePortfolio(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().DeletePortfolio(rctx, fc.Args["input"].(portfolio.DeletePortfolioInput))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*model.Void)
-	fc.Result = res
-	return ec.marshalOVoid2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋgraphᚋmodelᚐVoid(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_deletePortfolio(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Void does not have child fields")
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_deletePortfolio_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -1131,12 +1012,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "deleteConnection":
-
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_deleteConnection(ctx, field)
-			})
-
 		case "createPortfolio":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -1155,12 +1030,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "deletePortfolio":
-
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_deletePortfolio(ctx, field)
-			})
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

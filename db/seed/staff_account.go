@@ -31,6 +31,7 @@ func seedStaffAccounts(ctx context.Context, client *ent.Client) error {
 	}
 
 	_, err = client.StaffAccount.Create().
+		SetID("SAC_01GEGJGGJHXB9FWZ84SPKCVFG8").
 		SetAuthType(localAuthType).
 		SetNickname("owner").
 		SetEmail("owner@hermitboard.com").

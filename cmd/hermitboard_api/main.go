@@ -7,9 +7,11 @@ import (
 
 	"entgo.io/contrib/entgql"
 	"github.com/chenningg/hermitboard-api/auth"
+	"github.com/chenningg/hermitboard-api/connection"
 	"github.com/chenningg/hermitboard-api/db"
 	"github.com/chenningg/hermitboard-api/graph/resolver"
 	"github.com/chenningg/hermitboard-api/middleware"
+	"github.com/chenningg/hermitboard-api/portfolio"
 	"github.com/chenningg/hermitboard-api/redis"
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
@@ -74,7 +76,9 @@ func main() {
 	}(redisService)
 
 	// Create other services.
-	authService := auth.NewAuthService(cfg.Auth, logger.WithName("auth"), dbService, redisService)
+	authService := auth.NewAuthService(cfg.Auth, logger.WithName("auth"), redisService)
+	portfolioService := portfolio.NewPortfolioService(logger.WithName("portfolio"))
+	connectionService := connection.NewConnectionService(logger.WithName("connection"))
 
 	// Create router
 	router := chi.NewRouter()
@@ -85,11 +89,11 @@ func main() {
 	router.Use(middleware.Logger(logger.WithName("router")))
 	router.Use(chiMiddleware.Logger)
 	router.Use(chiMiddleware.Recoverer)
-	router.Use(chiMiddleware.Heartbeat("/health"))
+	router.Use(middleware.Heartbeat("/health"))
 	router.Use(middleware.Auth(authService))
 
 	// Initialize the web server.
-	srv := handler.NewDefaultServer(resolver.NewSchema(dbService, redisService, authService))
+	srv := handler.NewDefaultServer(resolver.NewSchema(dbService, authService, portfolioService, connectionService))
 
 	// Create a database transactional client for GraphQL resolvers (stored in context).
 	srv.Use(entgql.Transactioner{TxOpener: dbService.Client()})

@@ -10,9 +10,11 @@ import (
 
 func seedSourceTypes(ctx context.Context, client *ent.Client) error {
 	seedSourceTypes := []sourcetype.Value{
-		sourcetype.ValueExchange, sourcetype.ValueDecentralizedExchange, sourcetype.ValueBank,
+		sourcetype.ValueCryptocurrencyWallet, sourcetype.ValueExchange, sourcetype.ValueDecentralizedExchange,
+		sourcetype.ValueBank,
 	}
 	seedDescriptions := []string{
+		"A cryptocurrency wallet address representing an account on the blockchain.",
 		"Centralized exchanges with various investment assets.",
 		"Decentralized exchanges that primarily offer cryptocurrencies.",
 		"A bank that holds cash and possibly investments.",

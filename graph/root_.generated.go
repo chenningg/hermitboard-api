@@ -12,9 +12,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
 	"github.com/chenningg/hermitboard-api/auth"
-	"github.com/chenningg/hermitboard-api/connection"
 	"github.com/chenningg/hermitboard-api/ent"
-	"github.com/chenningg/hermitboard-api/portfolio"
 	"github.com/chenningg/hermitboard-api/pulid"
 	gqlparser "github.com/vektah/gqlparser/v2"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -278,14 +276,12 @@ type ComplexityRoot struct {
 		CreateConnection       func(childComplexity int, input ent.CreateConnectionInput) int
 		CreatePortfolio        func(childComplexity int, input ent.CreatePortfolioInput) int
 		CreateStaffAccount     func(childComplexity int, input ent.CreateStaffAccountInput) int
-		DeleteConnection       func(childComplexity int, input connection.DeleteConnectionInput) int
-		DeletePortfolio        func(childComplexity int, input portfolio.DeletePortfolioInput) int
 		LoginToAccount         func(childComplexity int, input auth.LoginToAccountInput) int
 		LoginToStaffAccount    func(childComplexity int, input auth.LoginToStaffAccountInput) int
 		LogoutFromAccount      func(childComplexity int) int
 		LogoutFromStaffAccount func(childComplexity int) int
-		UpdateConnection       func(childComplexity int, input ent.UpdateConnectionInput) int
-		UpdatePortfolio        func(childComplexity int, input ent.UpdatePortfolioInput) int
+		UpdateConnection       func(childComplexity int, id pulid.PULID, input ent.UpdateConnectionInput) int
+		UpdatePortfolio        func(childComplexity int, id pulid.PULID, input ent.UpdatePortfolioInput) int
 	}
 
 	PageInfo struct {
@@ -1551,30 +1547,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateStaffAccount(childComplexity, args["input"].(ent.CreateStaffAccountInput)), true
 
-	case "Mutation.deleteConnection":
-		if e.complexity.Mutation.DeleteConnection == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_deleteConnection_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.DeleteConnection(childComplexity, args["input"].(connection.DeleteConnectionInput)), true
-
-	case "Mutation.deletePortfolio":
-		if e.complexity.Mutation.DeletePortfolio == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_deletePortfolio_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.DeletePortfolio(childComplexity, args["input"].(portfolio.DeletePortfolioInput)), true
-
 	case "Mutation.loginToAccount":
 		if e.complexity.Mutation.LoginToAccount == nil {
 			break
@@ -1623,7 +1595,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateConnection(childComplexity, args["input"].(ent.UpdateConnectionInput)), true
+		return e.complexity.Mutation.UpdateConnection(childComplexity, args["id"].(pulid.PULID), args["input"].(ent.UpdateConnectionInput)), true
 
 	case "Mutation.updatePortfolio":
 		if e.complexity.Mutation.UpdatePortfolio == nil {
@@ -1635,7 +1607,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdatePortfolio(childComplexity, args["input"].(ent.UpdatePortfolioInput)), true
+		return e.complexity.Mutation.UpdatePortfolio(childComplexity, args["id"].(pulid.PULID), args["input"].(ent.UpdatePortfolioInput)), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {

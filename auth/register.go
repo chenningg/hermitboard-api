@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -36,8 +37,13 @@ func (authService AuthService) CreateAccount(
 	// Get the authtype.
 	authType, err := dbClient.AuthType.Query().Where(authtype.ID(input.AuthTypeID)).Only(ctx)
 	if err != nil {
+		if errors.Is(err, &ent.NotFoundError{}) {
+			return nil, fmt.Errorf(
+				"%w: auth.CreateAccount(): invalid auth type supplied", ErrBadInput,
+			)
+		}
 		return nil, fmt.Errorf(
-			"%w: auth.CreateAccount(): invalid auth type supplied", ErrBadInput,
+			"%w: auth.CreateAccount(): could not retrieve auth type for account creation", ErrInternal,
 		)
 	}
 
@@ -55,7 +61,7 @@ func (authService AuthService) CreateAccount(
 		}
 		// Check if password is minimum 8 characters.
 		if len(*input.Password) < 8 {
-			return nil, fmt.Errorf("%w: auth.CreateAccount(): password provided is too weak", ErrBadInput)
+			return nil, fmt.Errorf("%w: auth.CreateAccount(): password provided is too weak", ErrWeakPassword)
 		}
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*input.Password), authService.config.BcryptCost)
@@ -157,8 +163,13 @@ func (authService AuthService) CreateStaffAccount(
 	// Get the authtype.
 	authType, err := dbClient.AuthType.Query().Where(authtype.ID(input.AuthTypeID)).Only(ctx)
 	if err != nil {
+		if errors.Is(err, &ent.NotFoundError{}) {
+			return nil, fmt.Errorf(
+				"%w: auth.CreateStaffAccount(): invalid auth type supplied", ErrBadInput,
+			)
+		}
 		return nil, fmt.Errorf(
-			"%w: auth.CreateStaffAccount(): invalid auth type supplied", ErrBadInput,
+			"%w: auth.CreateStaffAccount(): could not retrieve auth type for staff account creation", ErrInternal,
 		)
 	}
 
@@ -176,7 +187,7 @@ func (authService AuthService) CreateStaffAccount(
 		}
 		// Check if password is minimum 8 characters.
 		if len(*input.Password) < 8 {
-			return nil, fmt.Errorf("%w: auth.CreateStaffAccount(): password provided is too weak", ErrBadInput)
+			return nil, fmt.Errorf("%w: auth.CreateStaffAccount(): password provided is too weak", ErrWeakPassword)
 		}
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*input.Password), authService.config.BcryptCost)

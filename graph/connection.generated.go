@@ -6,7 +6,7 @@ import (
 	"context"
 
 	"github.com/99designs/gqlgen/graphql"
-	"github.com/chenningg/hermitboard-api/connection"
+	hermitboard_api "github.com/chenningg/hermitboard-api"
 )
 
 // region    ************************** generated!.gotpl **************************
@@ -27,8 +27,8 @@ import (
 
 // region    **************************** input.gotpl *****************************
 
-func (ec *executionContext) unmarshalInputDeleteConnectionInput(ctx context.Context, obj interface{}) (connection.DeleteConnectionInput, error) {
-	var it connection.DeleteConnectionInput
+func (ec *executionContext) unmarshalInputDeleteConnectionInput(ctx context.Context, obj interface{}) (hermitboard_api.DeleteConnectionInput, error) {
+	var it hermitboard_api.DeleteConnectionInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -66,10 +66,5 @@ func (ec *executionContext) unmarshalInputDeleteConnectionInput(ctx context.Cont
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
-
-func (ec *executionContext) unmarshalNDeleteConnectionInput2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋconnectionᚐDeleteConnectionInput(ctx context.Context, v interface{}) (connection.DeleteConnectionInput, error) {
-	res, err := ec.unmarshalInputDeleteConnectionInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
 
 // endregion ***************************** type.gotpl *****************************

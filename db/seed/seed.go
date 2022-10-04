@@ -40,6 +40,11 @@ func Seed(ctx context.Context, client *ent.Client) error {
 		return fmt.Errorf("SeedAll(): %v", err)
 	}
 
+	err = seedAccounts(ctx, client)
+	if err != nil {
+		return fmt.Errorf("SeedAll(): %v", err)
+	}
+
 	err = seedSources(ctx, client)
 	if err != nil {
 		return fmt.Errorf("SeedAll(): %v", err)

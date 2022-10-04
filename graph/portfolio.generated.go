@@ -67,9 +67,4 @@ func (ec *executionContext) unmarshalInputDeletePortfolioInput(ctx context.Conte
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) unmarshalNDeletePortfolioInput2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋportfolioᚐDeletePortfolioInput(ctx context.Context, v interface{}) (portfolio.DeletePortfolioInput, error) {
-	res, err := ec.unmarshalInputDeletePortfolioInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 // endregion ***************************** type.gotpl *****************************

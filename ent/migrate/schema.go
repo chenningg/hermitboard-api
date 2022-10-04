@@ -258,7 +258,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
-		{Name: "name", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Unique: true},
 		{Name: "icon", Type: field.TypeString, Nullable: true},
 		{Name: "source_type_sources", Type: field.TypeString},
 	}

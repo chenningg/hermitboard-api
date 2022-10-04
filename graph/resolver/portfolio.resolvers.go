@@ -5,24 +5,21 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/chenningg/hermitboard-api/ent"
-	"github.com/chenningg/hermitboard-api/graph/model"
-	"github.com/chenningg/hermitboard-api/portfolio"
+	"github.com/chenningg/hermitboard-api/pulid"
 )
 
 // CreatePortfolio is the resolver for the createPortfolio field.
-func (r *mutationResolver) CreatePortfolio(ctx context.Context, input ent.CreatePortfolioInput) (*ent.Portfolio, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) CreatePortfolio(ctx context.Context, input ent.CreatePortfolioInput) (
+	*ent.Portfolio, error,
+) {
+	return r.portfolioService.CreatePortfolio(ctx, input)
 }
 
 // UpdatePortfolio is the resolver for the updatePortfolio field.
-func (r *mutationResolver) UpdatePortfolio(ctx context.Context, input ent.UpdatePortfolioInput) (*ent.Portfolio, error) {
-	panic(fmt.Errorf("not implemented"))
-}
-
-// DeletePortfolio is the resolver for the deletePortfolio field.
-func (r *mutationResolver) DeletePortfolio(ctx context.Context, input portfolio.DeletePortfolioInput) (*model.Void, error) {
-	panic(fmt.Errorf("not implemented"))
+func (r *mutationResolver) UpdatePortfolio(
+	ctx context.Context, id pulid.PULID, input ent.UpdatePortfolioInput,
+) (*ent.Portfolio, error) {
+	return r.portfolioService.UpdatePortfolio(ctx, id, input)
 }

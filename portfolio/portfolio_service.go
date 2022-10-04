@@ -87,12 +87,11 @@ func (portfolioService PortfolioService) CreatePortfolio(
 		}
 	}
 
-	newPortfolio := dbClient.Portfolio.Create().SetInput(input)
-
 	// Add the account ID to the portfolio.
-	newPortfolio.SetAccountID(session.UserID)
-
-	portfolio, err := newPortfolio.Save(ctx)
+	newPortfolio, err := dbClient.Portfolio.Create().
+		SetInput(input).
+		SetAccountID(session.UserID).
+		Save(ctx)
 	if err != nil {
 		// TODO: May also have constraint error such as if portfolio name conflicts with an existing portfolio.
 		return nil, fmt.Errorf(
@@ -100,7 +99,7 @@ func (portfolioService PortfolioService) CreatePortfolio(
 		)
 	}
 
-	return portfolio, nil
+	return newPortfolio, nil
 }
 
 func (portfolioService PortfolioService) UpdatePortfolio(
@@ -125,7 +124,11 @@ func (portfolioService PortfolioService) UpdatePortfolio(
 	}
 
 	// Check that portfolio being updated is owned by this session's user.
-	portfolio, err := dbClient.Portfolio.Query().Where(portfolio.IDEQ(id)).Only(ctx)
+	_, err := dbClient.Portfolio.Query().Where(
+		portfolio.And(
+			portfolio.IDEQ(id), portfolio.AccountIDEQ(session.UserID),
+		),
+	).Only(ctx)
 	if err != nil {
 		if errors.Is(err, &ent.NotFoundError{}) {
 			return nil, fmt.Errorf(
@@ -139,6 +142,54 @@ func (portfolioService PortfolioService) UpdatePortfolio(
 		)
 	}
 
-	// TODO
-	return nil, nil
+	if len(input.AddConnectionIDs) > 0 || len(input.RemoveConnectionIDs) > 0 {
+		// Check that the connection IDs belong to the user.
+		connectionsExisting, err := dbClient.Connection.Query().Where(connection.AccountIDEQ(session.UserID)).All(ctx)
+		if err != nil {
+			if errors.Is(err, &ent.NotFoundError{}) {
+				return nil, fmt.Errorf(
+					"%w: portfolio.UpdatePortfolio(): no connections found on this account",
+					ErrNotFound,
+				)
+			}
+			return nil, fmt.Errorf(
+				"%w: portfolio.UpdatePortfolio(): could not query account's connections",
+				ErrInternal,
+			)
+		}
+
+		var connectionsMap = map[pulid.PULID]struct{}{}
+		for _, connection := range connectionsExisting {
+			connectionsMap[connection.ID] = struct{}{}
+		}
+
+		for _, connectionToAdd := range input.AddConnectionIDs {
+			if _, ok := connectionsMap[connectionToAdd]; !ok {
+				return nil, fmt.Errorf(
+					"%w: portfolio.UpdatePortfolio(): cannot add a connection that doesn't exist on this account",
+					ErrBadInput,
+				)
+			}
+		}
+
+		for _, connectionToRemove := range input.RemoveConnectionIDs {
+			if _, ok := connectionsMap[connectionToRemove]; !ok {
+				return nil, fmt.Errorf(
+					"%w: portfolio.UpdatePortfolio(): cannot remove a connection that doesn't exist on this account",
+					ErrBadInput,
+				)
+			}
+		}
+	}
+
+	// Update the portfolio.
+	updatedPortfolio, err := dbClient.Portfolio.UpdateOneID(id).SetInput(input).Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"%w: portfolio.UpdatePortfolio(): could not update portfolio",
+			ErrInternal,
+		)
+	}
+
+	return updatedPortfolio, nil
 }
