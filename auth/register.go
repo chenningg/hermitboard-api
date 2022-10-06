@@ -15,7 +15,7 @@ import (
 func (authService AuthService) CreateAccount(
 	ctx context.Context, input ent.CreateAccountInput,
 ) (
-	*ent.Account, error,
+	*CreateAccountPayload, error,
 ) {
 	// Check for empty values.
 	if input.Nickname == "" || input.Email == "" || input.AuthTypeID.String() == "" {
@@ -61,7 +61,10 @@ func (authService AuthService) CreateAccount(
 		}
 		// Check if password is minimum 8 characters.
 		if len(*input.Password) < 8 {
-			return nil, fmt.Errorf("%w: auth.CreateAccount(): password provided is too weak", ErrWeakPassword)
+			return nil, fmt.Errorf(
+				"%w: auth.CreateAccount(): password must have a minimum of 8 alphanumeric characters or symbols",
+				ErrWeakPassword,
+			)
 		}
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*input.Password), authService.config.BcryptCost)
@@ -104,7 +107,7 @@ func (authService AuthService) CreateAccount(
 
 			// Check that the auth roles to populate are within authorization. SuperAdmins can populate auth roles at will.
 			if !HasAuthRoles(session, authrole.ValueSuperAdmin) && !IsHigherAuthority(
-				session, authRoleValues,
+				session, authRoleValues...,
 			) {
 				return nil, fmt.Errorf(
 					"%w: auth.CreateAccount(): insufficient authority to add the auth roles specified", ErrUnauthorized,
@@ -136,12 +139,23 @@ func (authService AuthService) CreateAccount(
 		return nil, fmt.Errorf("%w: auth.CreateAccount(): could not create account: %v", ErrInternal, err)
 	}
 
-	return acc, nil
+	// Make a new session for login.
+	newAuthRoles := make([]authrole.Value, len(acc.Edges.AuthRoles))
+	for i, newAuthRole := range acc.Edges.AuthRoles {
+		newAuthRoles[i] = newAuthRole.Value
+	}
+
+	newSession, err := authService.createSession(ctx, acc.ID, newAuthRoles...)
+	if err != nil {
+		return nil, fmt.Errorf("%w: auth.CreateAccount(): could not create new session: %v", ErrInternal, err)
+	}
+
+	return &CreateAccountPayload{acc, newSession}, nil
 }
 
 func (authService AuthService) CreateStaffAccount(
 	ctx context.Context, input ent.CreateStaffAccountInput,
-) (*ent.StaffAccount, error) {
+) (*CreateStaffAccountPayload, error) {
 	// Check for empty values.
 	if input.Nickname == "" || input.Email == "" || input.AuthTypeID.String() == "" {
 		return nil, fmt.Errorf(
@@ -187,7 +201,10 @@ func (authService AuthService) CreateStaffAccount(
 		}
 		// Check if password is minimum 8 characters.
 		if len(*input.Password) < 8 {
-			return nil, fmt.Errorf("%w: auth.CreateStaffAccount(): password provided is too weak", ErrWeakPassword)
+			return nil, fmt.Errorf(
+				"%w: auth.CreateStaffAccount(): password must have a minimum of 8 alphanumeric characters or symbols",
+				ErrWeakPassword,
+			)
 		}
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*input.Password), authService.config.BcryptCost)
@@ -227,7 +244,7 @@ func (authService AuthService) CreateStaffAccount(
 
 		// Check that the auth roles to populate are within authorization. SuperAdmins can populate auth roles at will.
 		if !HasAuthRoles(session, authrole.ValueSuperAdmin) && !IsHigherAuthority(
-			session, authRoleValues,
+			session, authRoleValues...,
 		) {
 			return nil, fmt.Errorf(
 				"%w: auth.CreateStaffAccount(): insufficient authority to add the auth roles specified",
@@ -254,5 +271,16 @@ func (authService AuthService) CreateStaffAccount(
 		return nil, fmt.Errorf("%w: auth.CreateStaffAccount(): could not create staff account: %v", ErrInternal, err)
 	}
 
-	return staffAcc, nil
+	// Make a new session for login.
+	newAuthRoles := make([]authrole.Value, len(staffAcc.Edges.AuthRoles))
+	for i, newAuthRole := range staffAcc.Edges.AuthRoles {
+		newAuthRoles[i] = newAuthRole.Value
+	}
+
+	newSession, err := authService.createSession(ctx, staffAcc.ID, newAuthRoles...)
+	if err != nil {
+		return nil, fmt.Errorf("%w: auth.CreateStaffAccount(): could not create new session: %v", ErrInternal, err)
+	}
+
+	return &CreateStaffAccountPayload{staffAcc, newSession}, nil
 }

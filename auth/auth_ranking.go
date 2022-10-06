@@ -14,7 +14,7 @@ var AuthRoleRanking = map[authrole.Value]int{
 }
 
 // IsHigherAuthority checks that the authenticated user has enough authority over another set of auth roles.
-func IsHigherAuthority(session *Session, against []authrole.Value) bool {
+func IsHigherAuthority(session *Session, against ...authrole.Value) bool {
 	myHighest := -1
 	againstHighest := 0
 	for _, myAuthRole := range GetAuthRolesFromSession(session) {

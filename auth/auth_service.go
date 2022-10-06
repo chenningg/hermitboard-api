@@ -10,7 +10,7 @@ import (
 
 type AuthServicer interface {
 	Config() *AuthConfig
-	RedisService() *redis.RedisService
+	GetSessionFromStore(ctx context.Context, sessionID SessionID) (*Session, error)
 	CreateAccount(
 		ctx context.Context, input ent.CreateAccountInput,
 	) (*ent.Account, error)
@@ -18,13 +18,12 @@ type AuthServicer interface {
 		ctx context.Context, input ent.CreateStaffAccountInput,
 	) (*ent.StaffAccount, error)
 	LoginToAccount(ctx context.Context, input LoginToAccountInput) (
-		SessionID, error,
+		*LoginToAccountPayload, error,
 	)
 	LoginToStaffAccount(
 		ctx context.Context, input LoginToStaffAccountInput,
-	) (SessionID, error)
-	LogoutFromAccount(ctx context.Context) error
-	LogoutFromStaffAccount(ctx context.Context) error
+	) (*LoginToStaffAccountPayload, error)
+	Logout(ctx context.Context) error
 }
 
 type AuthService struct {
@@ -50,8 +49,4 @@ func NewAuthService(
 
 func (authService AuthService) Config() *AuthConfig {
 	return &authService.config
-}
-
-func (authService AuthService) RedisService() *redis.RedisService {
-	return authService.redisService
 }
