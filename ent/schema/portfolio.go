@@ -34,15 +34,18 @@ func (Portfolio) Fields() []ent.Field {
 			Annotations(entgql.OrderField("NAME")),
 		field.Bool("is_public").
 			Default(false).
+			StructTag("json:\"isPublic,omitempty\"").
 			Comment("Whether this portfolio is visible to others.").
 			Annotations(entgql.OrderField("IS_PUBLIC")),
 		field.Bool("is_visible").
 			Default(true).
+			StructTag("json:\"isVisible,omitempty\"").
 			Comment("Whether this portfolio is visible to the owner.").
 			Annotations(
 				entgql.OrderField("IS_VISIBLE"),
 			),
 		field.String("account_id").
+			StructTag("json:\"accountID,omitempty\"").
 			GoType(pulid.PULID("")).
 			Annotations(entgql.Skip(entgql.SkipMutationCreateInput | entgql.SkipMutationUpdateInput)),
 	}

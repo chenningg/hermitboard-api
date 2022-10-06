@@ -42,9 +42,11 @@ func (DailyAssetPrice) Fields() []ent.Field {
 		field.Float("close").
 			Optional().
 			Nillable(),
-		field.Float("adjusted_close"),
+		field.Float("adjusted_close").
+			StructTag("json:\"adjustedClose,omitempty\""),
 		field.String("asset_id").
-			GoType(pulid.PULID("")),
+			GoType(pulid.PULID("")).
+			StructTag("json:\"assetID,omitempty\""),
 	}
 }
 

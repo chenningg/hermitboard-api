@@ -1,7 +1,7 @@
-scalar SessionID
+scalar SessionToken
 
 type Session {
-    id: SessionID!
+    token: SessionToken!
     userID: ID!
     authRoles: [AuthRoleValue!]!
 }

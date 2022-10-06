@@ -38,6 +38,7 @@ func (StaffAccount) Fields() []ent.Field {
 			NotEmpty(),
 		field.Bool("email_confirmed").
 			Default(false).
+			StructTag("json:\"emailConfirmed,omitempty\"").
 			Annotations(entgql.Skip(entgql.SkipMutationCreateInput)),
 		field.String("password").
 			Sensitive().
@@ -47,6 +48,7 @@ func (StaffAccount) Fields() []ent.Field {
 			Annotations(entgql.Skip(entgql.SkipType | entgql.SkipWhereInput)),
 		field.Time("password_updated_at").
 			UpdateDefault(time.Now).
+			StructTag("json:\"passwordUpdatedAt,omitempty\"").
 			Optional().
 			Nillable().
 			Annotations(
@@ -60,12 +62,14 @@ func (StaffAccount) Fields() []ent.Field {
 func (StaffAccount) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_roles", AuthRole.Type).
+			StructTag("json:\"authRoles,omitempty\"").
 			Annotations(
 				entgql.RelayConnection(), entgql.MapsTo("authRoles"),
 			),
 		edge.To("auth_type", AuthType.Type).
 			Required().
 			Unique().
+			StructTag("json:\"authType,omitempty\"").
 			Annotations(
 				entgql.MapsTo("authType"),
 			),

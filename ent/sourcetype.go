@@ -18,11 +18,11 @@ type SourceType struct {
 	// ID of the ent.
 	ID pulid.PULID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	// Value holds the value of the "value" field.
 	Value sourcetype.Value `json:"value,omitempty"`
 	// Description holds the value of the "description" field.

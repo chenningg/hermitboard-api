@@ -33,22 +33,22 @@ var NonStaffAuthRoles = []authrole.Value{
 }
 var StaffAuthRoles = []authrole.Value{authrole.ValueSupport, authrole.ValueAdmin, authrole.ValueSuperAdmin}
 
-type SessionID string
+type SessionToken string
 
 // Session represents an authentication session on the server side, containing the user ID and their authorization roles.
 type Session struct {
-	ID        SessionID        // Session ID of the logged-in user.
+	Token     SessionToken     // Session ID of the logged-in user.
 	UserID    pulid.PULID      // ID of the user.
 	AuthRoles []authrole.Value // Auth roles of the user.
 }
 
-// NewSessionID returns a new SessionID.
-func NewSessionID() (SessionID, error) {
+// NewSessionToken returns a new SessionToken.
+func NewSessionToken() (SessionToken, error) {
 	b := make([]byte, 20)
 	if _, err := rand.Read(b); err != nil {
-		return "", fmt.Errorf("NewSessionID(): could not generate a new session ID")
+		return "", fmt.Errorf("NewSessionToken(): could not generate a new session ID")
 	}
-	return SessionID(hex.EncodeToString(b)), nil
+	return SessionToken(hex.EncodeToString(b)), nil
 }
 
 // GetSessionFromContext returns the Session from a provided context, or nil if it is not found.
@@ -85,11 +85,11 @@ func HasAuthRoles(session *Session, authRoles ...authrole.Value) bool {
 
 // IsLoggedIn checks if the user is logged in (has a session).
 func IsLoggedIn(session *Session) bool {
-	if session == nil || session.ID == "" || session.UserID == "" || len(session.AuthRoles) == 0 {
+	if session == nil || session.Token == "" || session.UserID == "" || len(session.AuthRoles) == 0 {
 		return false
 	}
 
-	_, err := ParseSessionID(session.ID.String())
+	_, err := ParseSessionToken(session.Token.String())
 	if err != nil {
 		return false
 	}
@@ -101,13 +101,13 @@ func IsLoggedIn(session *Session) bool {
 func (authService AuthService) createSession(
 	ctx context.Context, userID pulid.PULID, authRoles ...authrole.Value,
 ) (*Session, error) {
-	sessionID, err := NewSessionID()
+	sessionToken, err := NewSessionToken()
 	if err != nil {
 		return nil, fmt.Errorf("auth.createSession(): %v", err)
 	}
 
 	newSession := Session{
-		ID:        sessionID,
+		Token:     sessionToken,
 		UserID:    userID,
 		AuthRoles: authRoles,
 	}
@@ -121,7 +121,7 @@ func (authService AuthService) createSession(
 	return &newSession, nil
 }
 
-// setSessionInRedis stringifies a Session object and add it to Redis under the session key.
+// setSessionInStore stringifies a Session object and add it to Redis under the session key.
 func (authService AuthService) setSessionInStore(ctx context.Context, session *Session) error {
 	expiration := authService.Config().SessionTimeout
 
@@ -136,7 +136,7 @@ func (authService AuthService) setSessionInStore(ctx context.Context, session *S
 	// Store in Redis as JSON string.
 	_, err = authService.redisService.Client().Set(
 		ctx,
-		fmt.Sprintf("%s:%s", SessionRedisKey, session.ID), bytes, expiration,
+		fmt.Sprintf("%s:%s", SessionRedisKey, session.Token), bytes, expiration,
 	).Result()
 	if err != nil {
 		return fmt.Errorf(
@@ -147,11 +147,11 @@ func (authService AuthService) setSessionInStore(ctx context.Context, session *S
 	return nil
 }
 
-// getSessionFromRedis retrieves a Session from Redis given the key and session ID. It also resets the expiry time of the session.
-func (authService AuthService) GetSessionFromStore(ctx context.Context, sessionID SessionID) (*Session, error) {
+// GetSessionFromStore retrieves a Session from Redis given the key and session ID. It also resets the expiry time of the session.
+func (authService AuthService) GetSessionFromStore(ctx context.Context, sessionToken SessionToken) (*Session, error) {
 	// Retrieve session from Redis.
 	sessionJSON, err := authService.redisService.Client().Get(
-		ctx, fmt.Sprintf("%s:%s", SessionRedisKey, sessionID.String()),
+		ctx, fmt.Sprintf("%s:%s", SessionRedisKey, sessionToken.String()),
 	).Result()
 	if err != nil {
 		if errors.Is(err, redis.Nil) {
@@ -173,7 +173,7 @@ func (authService AuthService) GetSessionFromStore(ctx context.Context, sessionI
 	expiration := authService.Config().SessionTimeout
 
 	_, err = authService.redisService.Client().Expire(
-		ctx, fmt.Sprintf("%s:%s", SessionRedisKey, freshSession.ID.String()), expiration,
+		ctx, fmt.Sprintf("%s:%s", SessionRedisKey, freshSession.Token.String()), expiration,
 	).Result()
 	if err != nil {
 		return nil, fmt.Errorf(
@@ -184,31 +184,31 @@ func (authService AuthService) GetSessionFromStore(ctx context.Context, sessionI
 	return &freshSession, nil
 }
 
-// ParseSessionID parses a session ID string and verifies that it is correct.
-func ParseSessionID(sessionIDStr string) (SessionID, error) {
-	if sessionIDStr == "" || len(sessionIDStr) != 40 {
-		return "", fmt.Errorf("%w: auth.ParseSessionID(): session id string length is not correct", ErrBadInput)
+// ParseSessionToken parses a session ID string and verifies that it is correct.
+func ParseSessionToken(sessionTokenStr string) (SessionToken, error) {
+	if sessionTokenStr == "" || len(sessionTokenStr) != 40 {
+		return "", fmt.Errorf("%w: auth.ParseSessionToken(): session id string length is not correct", ErrBadInput)
 	}
-	return SessionID(sessionIDStr), nil
+	return SessionToken(sessionTokenStr), nil
 }
 
 // String implements fmt.Stringer interface.
-func (sessionID SessionID) String() string {
-	return string(sessionID)
+func (sessionToken SessionToken) String() string {
+	return string(sessionToken)
 }
 
 // MarshalGQL implements graphql.Marshaler interface.
-func (sessionID SessionID) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(sessionID.String()))
+func (sessionToken SessionToken) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(sessionToken.String()))
 }
 
 // UnmarshalGQL implements graphql.Unmarshaler interface.
-func (sessionID *SessionID) UnmarshalGQL(val interface{}) error {
+func (sessionToken *SessionToken) UnmarshalGQL(val interface{}) error {
 	str, ok := val.(string)
 	if !ok {
 		return fmt.Errorf("%w: session ID %T must be a string", ErrBadInput, val)
 	}
 
-	*sessionID = SessionID(str)
+	*sessionToken = SessionToken(str)
 	return nil
 }

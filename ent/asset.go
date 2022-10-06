@@ -20,11 +20,11 @@ type Asset struct {
 	// ID of the ent.
 	ID pulid.PULID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AssetQuery when eager-loading is set.
 	Edges             AssetEdges `json:"edges"`
@@ -34,11 +34,11 @@ type Asset struct {
 // AssetEdges holds the relations/edges for other nodes in the graph.
 type AssetEdges struct {
 	// AssetClass holds the value of the asset_class edge.
-	AssetClass *AssetClass `json:"asset_class,omitempty"`
+	AssetClass *AssetClass `json:"assetClass,omitempty"`
 	// Cryptocurrency holds the value of the cryptocurrency edge.
 	Cryptocurrency *Cryptocurrency `json:"cryptocurrency,omitempty"`
 	// DailyAssetPrices holds the value of the daily_asset_prices edge.
-	DailyAssetPrices []*DailyAssetPrice `json:"daily_asset_prices,omitempty"`
+	DailyAssetPrices []*DailyAssetPrice `json:"dailyAssetPrices,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [3]bool

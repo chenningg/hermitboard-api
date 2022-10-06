@@ -34,6 +34,7 @@ func (Asset) Edges() []ent.Edge {
 		edge.To("asset_class", AssetClass.Type).
 			Unique().
 			Required().
+			StructTag("json:\"assetClass,omitempty\"").
 			Annotations(
 				entgql.MapsTo("assetClass"),
 			),
@@ -44,6 +45,7 @@ func (Asset) Edges() []ent.Edge {
 				entgql.Skip(entgql.SkipMutationUpdateInput),
 			),
 		edge.To("daily_asset_prices", DailyAssetPrice.Type).
+			StructTag("json:\"dailyAssetPrices,omitempty\"").
 			Annotations(
 				entgql.RelayConnection(), entgql.MapsTo("dailyAssetPrices"),
 				entgql.Skip(entgql.SkipWhereInput|entgql.SkipMutationUpdateInput),

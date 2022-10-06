@@ -23,27 +23,27 @@ type Transaction struct {
 	// ID of the ent.
 	ID pulid.PULID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	// Time holds the value of the "time" field.
 	Time time.Time `json:"time,omitempty"`
 	// Units holds the value of the "units" field.
 	Units int `json:"units,omitempty"`
 	// PricePerUnit holds the value of the "price_per_unit" field.
-	PricePerUnit float64 `json:"price_per_unit,omitempty"`
+	PricePerUnit float64 `json:"pricePerUnit,omitempty"`
 	// BlockchainID holds the value of the "blockchain_id" field.
-	BlockchainID *pulid.PULID `json:"blockchain_id,omitempty"`
+	BlockchainID *pulid.PULID `json:"blockchainID,omitempty"`
 	// ExchangeID holds the value of the "exchange_id" field.
-	ExchangeID pulid.PULID `json:"exchange_id,omitempty"`
+	ExchangeID pulid.PULID `json:"exchangeID,omitempty"`
 	// PortfolioID holds the value of the "portfolio_id" field.
-	PortfolioID pulid.PULID `json:"portfolio_id,omitempty"`
+	PortfolioID pulid.PULID `json:"portfolioID,omitempty"`
 	// BaseAssetID holds the value of the "base_asset_id" field.
-	BaseAssetID pulid.PULID `json:"base_asset_id,omitempty"`
+	BaseAssetID pulid.PULID `json:"baseAssetID,omitempty"`
 	// QuoteAssetID holds the value of the "quote_asset_id" field.
-	QuoteAssetID *pulid.PULID `json:"quote_asset_id,omitempty"`
+	QuoteAssetID *pulid.PULID `json:"quoteAssetID,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TransactionQuery when eager-loading is set.
 	Edges                        TransactionEdges `json:"edges"`
@@ -53,11 +53,11 @@ type Transaction struct {
 // TransactionEdges holds the relations/edges for other nodes in the graph.
 type TransactionEdges struct {
 	// TransactionType holds the value of the transaction_type edge.
-	TransactionType *TransactionType `json:"transaction_type,omitempty"`
+	TransactionType *TransactionType `json:"transactionType,omitempty"`
 	// BaseAsset holds the value of the base_asset edge.
-	BaseAsset *Asset `json:"base_asset,omitempty"`
+	BaseAsset *Asset `json:"baseAsset,omitempty"`
 	// QuoteAsset holds the value of the quote_asset edge.
-	QuoteAsset *Asset `json:"quote_asset,omitempty"`
+	QuoteAsset *Asset `json:"quoteAsset,omitempty"`
 	// Portfolio holds the value of the portfolio edge.
 	Portfolio *Portfolio `json:"portfolio,omitempty"`
 	// Exchange holds the value of the exchange edge.

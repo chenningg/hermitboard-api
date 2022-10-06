@@ -294,7 +294,7 @@ func (stq *SourceTypeQuery) WithSources(opts ...func(*SourceQuery)) *SourceTypeQ
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -322,7 +322,7 @@ func (stq *SourceTypeQuery) GroupBy(field string, fields ...string) *SourceTypeG
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //	}
 //
 //	client.SourceType.Query().

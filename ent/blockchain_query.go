@@ -331,7 +331,7 @@ func (bq *BlockchainQuery) WithTransactions(opts ...func(*TransactionQuery)) *Bl
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -359,7 +359,7 @@ func (bq *BlockchainQuery) GroupBy(field string, fields ...string) *BlockchainGr
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //	}
 //
 //	client.Blockchain.Query().

@@ -12,6 +12,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// TODO: Make sure an already logged in account from the same IP and device can't login again.
+// LoginToAccount logs in an account.
 func (authService AuthService) LoginToAccount(
 	ctx context.Context, input LoginToAccountInput,
 ) (

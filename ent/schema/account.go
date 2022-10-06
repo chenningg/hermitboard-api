@@ -40,6 +40,7 @@ func (Account) Fields() []ent.Field {
 			Annotations(entgql.OrderField("EMAIL")),
 		field.Bool("email_confirmed").
 			Default(false).
+			StructTag("json:\"emailConfirmed,omitempty\"").
 			Annotations(entgql.Skip(entgql.SkipMutationCreateInput)),
 		field.String("password").
 			Sensitive().
@@ -51,6 +52,7 @@ func (Account) Fields() []ent.Field {
 			UpdateDefault(time.Now).
 			Optional().
 			Nillable().
+			StructTag("json:\"passwordUpdatedAt,omitempty\"").
 			Annotations(
 				entgql.OrderField("PASSWORD_UPDATED_AT"),
 				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
@@ -63,6 +65,7 @@ func (Account) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("auth_roles", AuthRole.Type).
 			Required().
+			StructTag("json:\"authRoles,omitempty\"").
 			Annotations(
 				entgql.RelayConnection(), entgql.MapsTo("authRoles"),
 			),
@@ -74,6 +77,7 @@ func (Account) Edges() []ent.Edge {
 		edge.To("auth_type", AuthType.Type).
 			Required().
 			Unique().
+			StructTag("json:\"authType,omitempty\"").
 			Annotations(
 				entgql.MapsTo("authType"),
 			),

@@ -367,7 +367,7 @@ func (pq *PortfolioQuery) WithConnections(opts ...func(*ConnectionQuery)) *Portf
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -395,7 +395,7 @@ func (pq *PortfolioQuery) GroupBy(field string, fields ...string) *PortfolioGrou
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //	}
 //
 //	client.Portfolio.Query().

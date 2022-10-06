@@ -331,7 +331,7 @@ func (arq *AuthRoleQuery) WithStaffAccounts(opts ...func(*StaffAccountQuery)) *A
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -359,7 +359,7 @@ func (arq *AuthRoleQuery) GroupBy(field string, fields ...string) *AuthRoleGroup
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //	}
 //
 //	client.AuthRole.Query().

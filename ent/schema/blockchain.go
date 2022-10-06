@@ -41,6 +41,7 @@ func (Blockchain) Fields() []ent.Field {
 		field.Int64("chain_id").
 			Optional().
 			Nillable().
+			StructTag("json:\"chainID,omitempty\"").
 			Annotations(entgql.OrderField("CHAIN_ID")),
 	}
 }

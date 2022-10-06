@@ -60,6 +60,7 @@ func (AuthRole) Edges() []ent.Edge {
 			),
 		edge.From("staff_accounts", StaffAccount.Type).
 			Ref("auth_roles").
+			StructTag("json:\"staffAccounts,omitempty\"").
 			Annotations(
 				entgql.RelayConnection(), entgql.MapsTo("staffAccounts"),
 				entgql.Skip(entgql.SkipWhereInput|entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),

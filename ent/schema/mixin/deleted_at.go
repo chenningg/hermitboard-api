@@ -20,6 +20,7 @@ func (DeletedAtMixin) Fields() []ent.Field {
 			Optional().
 			Nillable().
 			UpdateDefault(time.Now).
+			StructTag("json:\"deletedAt,omitempty\"").
 			Annotations(
 				entgql.OrderField("DELETED_AT"),
 				entgql.Skip(entgql.SkipMutationCreateInput),

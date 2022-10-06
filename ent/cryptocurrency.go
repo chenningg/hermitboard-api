@@ -19,11 +19,11 @@ type Cryptocurrency struct {
 	// ID of the ent.
 	ID pulid.PULID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	// Symbol holds the value of the "symbol" field.
 	Symbol string `json:"symbol,omitempty"`
 	// A url to the image icon for this cryptocurrency.
@@ -31,7 +31,7 @@ type Cryptocurrency struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// AssetID holds the value of the "asset_id" field.
-	AssetID pulid.PULID `json:"asset_id,omitempty"`
+	AssetID pulid.PULID `json:"assetID,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CryptocurrencyQuery when eager-loading is set.
 	Edges CryptocurrencyEdges `json:"edges"`

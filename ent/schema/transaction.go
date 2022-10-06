@@ -30,18 +30,24 @@ func (Transaction) Fields() []ent.Field {
 	return []ent.Field{
 		field.Time("time"),
 		field.Int("units"),
-		field.Float("price_per_unit"),
+		field.Float("price_per_unit").
+			StructTag("json:\"pricePerUnit,omitempty\""),
 		field.String("blockchain_id").
 			GoType(pulid.PULID("")).
+			StructTag("json:\"blockchainID,omitempty\"").
 			Optional().
 			Nillable(),
 		field.String("exchange_id").
+			StructTag("json:\"exchangeID,omitempty\"").
 			GoType(pulid.PULID("")),
 		field.String("portfolio_id").
+			StructTag("json:\"portfolioID,omitempty\"").
 			GoType(pulid.PULID("")),
 		field.String("base_asset_id").
+			StructTag("json:\"baseAssetID,omitempty\"").
 			GoType(pulid.PULID("")),
 		field.String("quote_asset_id").
+			StructTag("json:\"quoteAssetID,omitempty\"").
 			GoType(pulid.PULID("")).
 			Optional().
 			Nillable(),
@@ -54,15 +60,18 @@ func (Transaction) Edges() []ent.Edge {
 		edge.To("transaction_type", TransactionType.Type).
 			Unique().
 			Required().
+			StructTag("json:\"transactionType,omitempty\"").
 			Annotations(entgql.MapsTo("transactionType")),
 		edge.To("base_asset", Asset.Type).
 			Field("base_asset_id").
 			Required().
 			Unique().
+			StructTag("json:\"baseAsset,omitempty\"").
 			Annotations(entgql.MapsTo("baseAsset")),
 		edge.To("quote_asset", Asset.Type).
 			Field("quote_asset_id").
 			Unique().
+			StructTag("json:\"quoteAsset,omitempty\"").
 			Annotations(entgql.MapsTo("quoteAsset")),
 		edge.From("portfolio", Portfolio.Type).
 			Ref("transactions").

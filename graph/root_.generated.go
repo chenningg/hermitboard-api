@@ -358,7 +358,7 @@ type ComplexityRoot struct {
 
 	Session struct {
 		AuthRoles func(childComplexity int) int
-		ID        func(childComplexity int) int
+		Token     func(childComplexity int) int
 		UserID    func(childComplexity int) int
 	}
 
@@ -2056,12 +2056,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Session.AuthRoles(childComplexity), true
 
-	case "Session.id":
-		if e.complexity.Session.ID == nil {
+	case "Session.token":
+		if e.complexity.Session.Token == nil {
 			break
 		}
 
-		return e.complexity.Session.ID(childComplexity), true
+		return e.complexity.Session.Token(childComplexity), true
 
 	case "Session.userID":
 		if e.complexity.Session.UserID == nil {

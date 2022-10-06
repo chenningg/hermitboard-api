@@ -3,7 +3,9 @@ package middleware
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/chenningg/hermitboard-api/auth"
 )
@@ -13,19 +15,31 @@ func Auth(authService auth.AuthServicer) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			// Check for session ID in Authorization header.
-			sessionIDStr := r.Header.Get(auth.AuthorizationHeader)
+			authorizationStr := r.Header.Get(auth.AuthorizationHeader)
+
 			ctx := r.Context()
 
 			// If sessionID exists, hydrate the request context with the authorization scopes.
-			if sessionIDStr != "" {
-				// Check if session ID is a valid format.
-				if _, err := auth.ParseSessionID(sessionIDStr); err != nil {
-					http.Error(w, "invalid session ID format", http.StatusUnauthorized)
+			if authorizationStr != "" {
+				authorizationStrArr := strings.Fields(authorizationStr)
+				if len(authorizationStrArr) != 2 {
+					http.Error(w, "invalid authorization token format", http.StatusUnauthorized)
+					panic(fmt.Errorf("invalid authorization token format"))
+				}
+
+				// Just ignore token type "Bearer"
+				// tokenType := authorizationStr[0]
+				sessionTokenStr := authorizationStrArr[1]
+
+				// Check if session token is a valid format.
+				sessionToken, err := auth.ParseSessionToken(sessionTokenStr)
+				if err != nil {
+					http.Error(w, "invalid authorization token format", http.StatusUnauthorized)
 					panic(err)
 				}
 
 				// Retrieve session from Redis and reset its expiry if found.
-				session, err := authService.GetSessionFromStore(ctx, auth.SessionID(sessionIDStr))
+				session, err := authService.GetSessionFromStore(ctx, sessionToken)
 				if err != nil {
 					// Session key not found, probably expired. Redirect to log in.
 					if errors.Is(err, auth.ErrNotFound) {

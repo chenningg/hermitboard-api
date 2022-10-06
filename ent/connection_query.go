@@ -330,7 +330,7 @@ func (cq *ConnectionQuery) WithPortfolios(opts ...func(*PortfolioQuery)) *Connec
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -358,7 +358,7 @@ func (cq *ConnectionQuery) GroupBy(field string, fields ...string) *ConnectionGr
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //	}
 //
 //	client.Connection.Query().

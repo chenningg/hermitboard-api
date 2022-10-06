@@ -331,7 +331,7 @@ func (saq *StaffAccountQuery) WithAuthType(opts ...func(*AuthTypeQuery)) *StaffA
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -359,7 +359,7 @@ func (saq *StaffAccountQuery) GroupBy(field string, fields ...string) *StaffAcco
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //	}
 //
 //	client.StaffAccount.Query().

@@ -19,11 +19,11 @@ type DailyAssetPrice struct {
 	// ID of the ent.
 	ID pulid.PULID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	// Time holds the value of the "time" field.
 	Time time.Time `json:"time,omitempty"`
 	// Open holds the value of the "open" field.
@@ -35,9 +35,9 @@ type DailyAssetPrice struct {
 	// Close holds the value of the "close" field.
 	Close *float64 `json:"close,omitempty"`
 	// AdjustedClose holds the value of the "adjusted_close" field.
-	AdjustedClose float64 `json:"adjusted_close,omitempty"`
+	AdjustedClose float64 `json:"adjustedClose,omitempty"`
 	// AssetID holds the value of the "asset_id" field.
-	AssetID pulid.PULID `json:"asset_id,omitempty"`
+	AssetID pulid.PULID `json:"assetID,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the DailyAssetPriceQuery when eager-loading is set.
 	Edges DailyAssetPriceEdges `json:"edges"`

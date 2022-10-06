@@ -330,7 +330,7 @@ func (cq *CryptocurrencyQuery) WithBlockchains(opts ...func(*BlockchainQuery)) *
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -358,7 +358,7 @@ func (cq *CryptocurrencyQuery) GroupBy(field string, fields ...string) *Cryptocu
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //	}
 //
 //	client.Cryptocurrency.Query().

@@ -35,14 +35,17 @@ func (Connection) Fields() []ent.Field {
 			Annotations(entgql.OrderField("NAME")),
 		field.String("access_token").
 			NotEmpty().
+			StructTag("json:\"accessToken,omitempty\"").
 			Annotations(entgql.Skip(entgql.SkipWhereInput)),
 		field.String("refresh_token").
 			Optional().
 			Nillable().
 			NotEmpty().
+			StructTag("json:\"refreshToken,omitempty\"").
 			Annotations(entgql.Skip(entgql.SkipWhereInput)),
 		field.String("account_id").
 			GoType(pulid.PULID("")).
+			StructTag("json:\"accountID,omitempty\"").
 			Annotations(entgql.Skip(entgql.SkipMutationCreateInput | entgql.SkipMutationUpdateInput)),
 	}
 }

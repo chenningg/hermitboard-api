@@ -44,6 +44,7 @@ func (Source) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("source_type", SourceType.Type).
 			Ref("sources").
+			StructTag("json:\"sourceType,omitempty\"").
 			Required().
 			Unique().
 			Annotations(entgql.MapsTo("sourceType")),

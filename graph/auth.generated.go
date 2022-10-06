@@ -290,8 +290,8 @@ func (ec *executionContext) fieldContext_CreateAccountPayload_session(ctx contex
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Session_id(ctx, field)
+			case "token":
+				return ec.fieldContext_Session_token(ctx, field)
 			case "userID":
 				return ec.fieldContext_Session_userID(ctx, field)
 			case "authRoles":
@@ -408,8 +408,8 @@ func (ec *executionContext) fieldContext_CreateStaffAccountPayload_session(ctx c
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Session_id(ctx, field)
+			case "token":
+				return ec.fieldContext_Session_token(ctx, field)
 			case "userID":
 				return ec.fieldContext_Session_userID(ctx, field)
 			case "authRoles":
@@ -530,8 +530,8 @@ func (ec *executionContext) fieldContext_LoginToAccountPayload_session(ctx conte
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Session_id(ctx, field)
+			case "token":
+				return ec.fieldContext_Session_token(ctx, field)
 			case "userID":
 				return ec.fieldContext_Session_userID(ctx, field)
 			case "authRoles":
@@ -648,8 +648,8 @@ func (ec *executionContext) fieldContext_LoginToStaffAccountPayload_session(ctx 
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_Session_id(ctx, field)
+			case "token":
+				return ec.fieldContext_Session_token(ctx, field)
 			case "userID":
 				return ec.fieldContext_Session_userID(ctx, field)
 			case "authRoles":
@@ -1258,8 +1258,8 @@ func (ec *executionContext) fieldContext_Mutation_updatePortfolio(ctx context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _Session_id(ctx context.Context, field graphql.CollectedField, obj *auth.Session) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Session_id(ctx, field)
+func (ec *executionContext) _Session_token(ctx context.Context, field graphql.CollectedField, obj *auth.Session) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Session_token(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1272,7 +1272,7 @@ func (ec *executionContext) _Session_id(ctx context.Context, field graphql.Colle
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
+		return obj.Token, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1284,19 +1284,19 @@ func (ec *executionContext) _Session_id(ctx context.Context, field graphql.Colle
 		}
 		return graphql.Null
 	}
-	res := resTmp.(auth.SessionID)
+	res := resTmp.(auth.SessionToken)
 	fc.Result = res
-	return ec.marshalNSessionID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSessionID(ctx, field.Selections, res)
+	return ec.marshalNSessionToken2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSessionToken(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Session_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Session_token(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Session",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type SessionID does not have child fields")
+			return nil, errors.New("field of type SessionToken does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1732,9 +1732,9 @@ func (ec *executionContext) _Session(ctx context.Context, sel ast.SelectionSet, 
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Session")
-		case "id":
+		case "token":
 
-			out.Values[i] = ec._Session_id(ctx, field, obj)
+			out.Values[i] = ec._Session_token(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -1844,13 +1844,13 @@ func (ec *executionContext) marshalNSession2ᚖgithubᚗcomᚋchenninggᚋhermit
 	return ec._Session(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNSessionID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSessionID(ctx context.Context, v interface{}) (auth.SessionID, error) {
-	var res auth.SessionID
+func (ec *executionContext) unmarshalNSessionToken2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSessionToken(ctx context.Context, v interface{}) (auth.SessionToken, error) {
+	var res auth.SessionToken
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNSessionID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSessionID(ctx context.Context, sel ast.SelectionSet, v auth.SessionID) graphql.Marshaler {
+func (ec *executionContext) marshalNSessionToken2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSessionToken(ctx context.Context, sel ast.SelectionSet, v auth.SessionToken) graphql.Marshaler {
 	return v
 }
 

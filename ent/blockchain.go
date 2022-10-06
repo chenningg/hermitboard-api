@@ -18,11 +18,11 @@ type Blockchain struct {
 	// ID of the ent.
 	ID pulid.PULID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Symbol holds the value of the "symbol" field.
@@ -30,7 +30,7 @@ type Blockchain struct {
 	// Icon holds the value of the "icon" field.
 	Icon *string `json:"icon,omitempty"`
 	// ChainID holds the value of the "chain_id" field.
-	ChainID *int64 `json:"chain_id,omitempty"`
+	ChainID *int64 `json:"chainID,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BlockchainQuery when eager-loading is set.
 	Edges BlockchainEdges `json:"edges"`

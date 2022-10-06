@@ -367,7 +367,7 @@ func (aq *AssetQuery) WithDailyAssetPrices(opts ...func(*DailyAssetPriceQuery)) 
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -395,7 +395,7 @@ func (aq *AssetQuery) GroupBy(field string, fields ...string) *AssetGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //	}
 //
 //	client.Asset.Query().

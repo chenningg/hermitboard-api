@@ -292,7 +292,7 @@ func (dapq *DailyAssetPriceQuery) WithAsset(opts ...func(*AssetQuery)) *DailyAss
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -320,7 +320,7 @@ func (dapq *DailyAssetPriceQuery) GroupBy(field string, fields ...string) *Daily
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"created_at,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //	}
 //
 //	client.DailyAssetPrice.Query().

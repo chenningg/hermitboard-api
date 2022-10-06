@@ -19,19 +19,19 @@ type Connection struct {
 	// ID of the ent.
 	ID pulid.PULID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// AccessToken holds the value of the "access_token" field.
-	AccessToken string `json:"access_token,omitempty"`
+	AccessToken string `json:"accessToken,omitempty"`
 	// RefreshToken holds the value of the "refresh_token" field.
-	RefreshToken *string `json:"refresh_token,omitempty"`
+	RefreshToken *string `json:"refreshToken,omitempty"`
 	// AccountID holds the value of the "account_id" field.
-	AccountID pulid.PULID `json:"account_id,omitempty"`
+	AccountID pulid.PULID `json:"accountID,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ConnectionQuery when eager-loading is set.
 	Edges ConnectionEdges `json:"edges"`

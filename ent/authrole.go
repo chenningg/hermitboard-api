@@ -18,11 +18,11 @@ type AuthRole struct {
 	// ID of the ent.
 	ID pulid.PULID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	// Value holds the value of the "value" field.
 	Value authrole.Value `json:"value,omitempty"`
 	// Description holds the value of the "description" field.
@@ -37,7 +37,7 @@ type AuthRoleEdges struct {
 	// Accounts holds the value of the accounts edge.
 	Accounts []*Account `json:"accounts,omitempty"`
 	// StaffAccounts holds the value of the staff_accounts edge.
-	StaffAccounts []*StaffAccount `json:"staff_accounts,omitempty"`
+	StaffAccounts []*StaffAccount `json:"staffAccounts,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool

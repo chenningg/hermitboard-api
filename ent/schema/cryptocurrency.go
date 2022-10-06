@@ -41,6 +41,7 @@ func (Cryptocurrency) Fields() []ent.Field {
 			NotEmpty().
 			Annotations(entgql.OrderField("NAME")),
 		field.String("asset_id").
+			StructTag("json:\"assetID,omitempty\"").
 			GoType(pulid.PULID("")),
 	}
 }

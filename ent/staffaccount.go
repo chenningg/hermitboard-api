@@ -19,21 +19,21 @@ type StaffAccount struct {
 	// ID of the ent.
 	ID pulid.PULID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	// Nickname holds the value of the "nickname" field.
 	Nickname string `json:"nickname,omitempty"`
 	// Email holds the value of the "email" field.
 	Email string `json:"email,omitempty"`
 	// EmailConfirmed holds the value of the "email_confirmed" field.
-	EmailConfirmed bool `json:"email_confirmed,omitempty"`
+	EmailConfirmed bool `json:"emailConfirmed,omitempty"`
 	// Password holds the value of the "password" field.
 	Password *string `json:"-"`
 	// PasswordUpdatedAt holds the value of the "password_updated_at" field.
-	PasswordUpdatedAt *time.Time `json:"password_updated_at,omitempty"`
+	PasswordUpdatedAt *time.Time `json:"passwordUpdatedAt,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the StaffAccountQuery when eager-loading is set.
 	Edges                   StaffAccountEdges `json:"edges"`
@@ -43,9 +43,9 @@ type StaffAccount struct {
 // StaffAccountEdges holds the relations/edges for other nodes in the graph.
 type StaffAccountEdges struct {
 	// AuthRoles holds the value of the auth_roles edge.
-	AuthRoles []*AuthRole `json:"auth_roles,omitempty"`
+	AuthRoles []*AuthRole `json:"authRoles,omitempty"`
 	// AuthType holds the value of the auth_type edge.
-	AuthType *AuthType `json:"auth_type,omitempty"`
+	AuthType *AuthType `json:"authType,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool

@@ -19,19 +19,19 @@ type Portfolio struct {
 	// ID of the ent.
 	ID pulid.PULID `json:"id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
-	CreatedAt time.Time `json:"created_at,omitempty"`
+	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
-	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	UpdatedAt time.Time `json:"updatedAt,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
-	DeletedAt *time.Time `json:"deleted_at,omitempty"`
+	DeletedAt *time.Time `json:"deletedAt,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Whether this portfolio is visible to others.
-	IsPublic bool `json:"is_public,omitempty"`
+	IsPublic bool `json:"isPublic,omitempty"`
 	// Whether this portfolio is visible to the owner.
-	IsVisible bool `json:"is_visible,omitempty"`
+	IsVisible bool `json:"isVisible,omitempty"`
 	// AccountID holds the value of the "account_id" field.
-	AccountID pulid.PULID `json:"account_id,omitempty"`
+	AccountID pulid.PULID `json:"accountID,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PortfolioQuery when eager-loading is set.
 	Edges PortfolioEdges `json:"edges"`

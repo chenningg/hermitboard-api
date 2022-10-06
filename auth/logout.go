@@ -15,7 +15,7 @@ func (authService AuthService) Logout(ctx context.Context) error {
 
 	// Otherwise delete all sessions from Redis.
 	_, err := authService.redisService.Client().Del(
-		ctx, fmt.Sprintf("%s:%s", SessionRedisKey, session.ID),
+		ctx, fmt.Sprintf("%s:%s", SessionRedisKey, session.Token),
 	).Result()
 	if err != nil {
 		return fmt.Errorf("%w: unable to delete session to logout: %v", ErrInternal, err)

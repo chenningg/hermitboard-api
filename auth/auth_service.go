@@ -10,7 +10,7 @@ import (
 
 type AuthServicer interface {
 	Config() *AuthConfig
-	GetSessionFromStore(ctx context.Context, sessionID SessionID) (*Session, error)
+	GetSessionFromStore(ctx context.Context, sessionToken SessionToken) (*Session, error)
 	CreateAccount(
 		ctx context.Context, input ent.CreateAccountInput,
 	) (*CreateAccountPayload, error)
