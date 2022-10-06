@@ -199,6 +199,16 @@ type ComplexityRoot struct {
 		Node   func(childComplexity int) int
 	}
 
+	CreateAccountPayload struct {
+		Account func(childComplexity int) int
+		Session func(childComplexity int) int
+	}
+
+	CreateStaffAccountPayload struct {
+		Session      func(childComplexity int) int
+		StaffAccount func(childComplexity int) int
+	}
+
 	Cryptocurrency struct {
 		Asset       func(childComplexity int) int
 		AssetID     func(childComplexity int) int
@@ -271,17 +281,26 @@ type ComplexityRoot struct {
 		Node   func(childComplexity int) int
 	}
 
+	LoginToAccountPayload struct {
+		Account func(childComplexity int) int
+		Session func(childComplexity int) int
+	}
+
+	LoginToStaffAccountPayload struct {
+		Session      func(childComplexity int) int
+		StaffAccount func(childComplexity int) int
+	}
+
 	Mutation struct {
-		CreateAccount          func(childComplexity int, input ent.CreateAccountInput) int
-		CreateConnection       func(childComplexity int, input ent.CreateConnectionInput) int
-		CreatePortfolio        func(childComplexity int, input ent.CreatePortfolioInput) int
-		CreateStaffAccount     func(childComplexity int, input ent.CreateStaffAccountInput) int
-		LoginToAccount         func(childComplexity int, input auth.LoginToAccountInput) int
-		LoginToStaffAccount    func(childComplexity int, input auth.LoginToStaffAccountInput) int
-		LogoutFromAccount      func(childComplexity int) int
-		LogoutFromStaffAccount func(childComplexity int) int
-		UpdateConnection       func(childComplexity int, id pulid.PULID, input ent.UpdateConnectionInput) int
-		UpdatePortfolio        func(childComplexity int, id pulid.PULID, input ent.UpdatePortfolioInput) int
+		CreateAccount       func(childComplexity int, input ent.CreateAccountInput) int
+		CreateConnection    func(childComplexity int, input ent.CreateConnectionInput) int
+		CreatePortfolio     func(childComplexity int, input ent.CreatePortfolioInput) int
+		CreateStaffAccount  func(childComplexity int, input ent.CreateStaffAccountInput) int
+		LoginToAccount      func(childComplexity int, input auth.LoginToAccountInput) int
+		LoginToStaffAccount func(childComplexity int, input auth.LoginToStaffAccountInput) int
+		Logout              func(childComplexity int) int
+		UpdateConnection    func(childComplexity int, id pulid.PULID, input ent.UpdateConnectionInput) int
+		UpdatePortfolio     func(childComplexity int, id pulid.PULID, input ent.UpdatePortfolioInput) int
 	}
 
 	PageInfo struct {
@@ -335,6 +354,12 @@ type ComplexityRoot struct {
 		StaffAccounts    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.StaffAccountOrder, where *ent.StaffAccountWhereInput) int
 		TransactionTypes func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionTypeOrder, where *ent.TransactionTypeWhereInput) int
 		Transactions     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.TransactionOrder, where *ent.TransactionWhereInput) int
+	}
+
+	Session struct {
+		AuthRoles func(childComplexity int) int
+		ID        func(childComplexity int) int
+		UserID    func(childComplexity int) int
 	}
 
 	Source struct {
@@ -1174,6 +1199,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ConnectionEdge.Node(childComplexity), true
 
+	case "CreateAccountPayload.account":
+		if e.complexity.CreateAccountPayload.Account == nil {
+			break
+		}
+
+		return e.complexity.CreateAccountPayload.Account(childComplexity), true
+
+	case "CreateAccountPayload.session":
+		if e.complexity.CreateAccountPayload.Session == nil {
+			break
+		}
+
+		return e.complexity.CreateAccountPayload.Session(childComplexity), true
+
+	case "CreateStaffAccountPayload.session":
+		if e.complexity.CreateStaffAccountPayload.Session == nil {
+			break
+		}
+
+		return e.complexity.CreateStaffAccountPayload.Session(childComplexity), true
+
+	case "CreateStaffAccountPayload.staffAccount":
+		if e.complexity.CreateStaffAccountPayload.StaffAccount == nil {
+			break
+		}
+
+		return e.complexity.CreateStaffAccountPayload.StaffAccount(childComplexity), true
+
 	case "Cryptocurrency.asset":
 		if e.complexity.Cryptocurrency.Asset == nil {
 			break
@@ -1499,6 +1552,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ExchangeEdge.Node(childComplexity), true
 
+	case "LoginToAccountPayload.account":
+		if e.complexity.LoginToAccountPayload.Account == nil {
+			break
+		}
+
+		return e.complexity.LoginToAccountPayload.Account(childComplexity), true
+
+	case "LoginToAccountPayload.session":
+		if e.complexity.LoginToAccountPayload.Session == nil {
+			break
+		}
+
+		return e.complexity.LoginToAccountPayload.Session(childComplexity), true
+
+	case "LoginToStaffAccountPayload.session":
+		if e.complexity.LoginToStaffAccountPayload.Session == nil {
+			break
+		}
+
+		return e.complexity.LoginToStaffAccountPayload.Session(childComplexity), true
+
+	case "LoginToStaffAccountPayload.staffAccount":
+		if e.complexity.LoginToStaffAccountPayload.StaffAccount == nil {
+			break
+		}
+
+		return e.complexity.LoginToStaffAccountPayload.StaffAccount(childComplexity), true
+
 	case "Mutation.createAccount":
 		if e.complexity.Mutation.CreateAccount == nil {
 			break
@@ -1571,19 +1652,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.LoginToStaffAccount(childComplexity, args["input"].(auth.LoginToStaffAccountInput)), true
 
-	case "Mutation.logoutFromAccount":
-		if e.complexity.Mutation.LogoutFromAccount == nil {
+	case "Mutation.logout":
+		if e.complexity.Mutation.Logout == nil {
 			break
 		}
 
-		return e.complexity.Mutation.LogoutFromAccount(childComplexity), true
-
-	case "Mutation.logoutFromStaffAccount":
-		if e.complexity.Mutation.LogoutFromStaffAccount == nil {
-			break
-		}
-
-		return e.complexity.Mutation.LogoutFromStaffAccount(childComplexity), true
+		return e.complexity.Mutation.Logout(childComplexity), true
 
 	case "Mutation.updateConnection":
 		if e.complexity.Mutation.UpdateConnection == nil {
@@ -1974,6 +2048,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Transactions(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.TransactionOrder), args["where"].(*ent.TransactionWhereInput)), true
+
+	case "Session.authRoles":
+		if e.complexity.Session.AuthRoles == nil {
+			break
+		}
+
+		return e.complexity.Session.AuthRoles(childComplexity), true
+
+	case "Session.id":
+		if e.complexity.Session.ID == nil {
+			break
+		}
+
+		return e.complexity.Session.ID(childComplexity), true
+
+	case "Session.userID":
+		if e.complexity.Session.UserID == nil {
+			break
+		}
+
+		return e.complexity.Session.UserID(childComplexity), true
 
 	case "Source.createdAt":
 		if e.complexity.Source.CreatedAt == nil {

@@ -17,7 +17,7 @@ var AuthRoleRanking = map[authrole.Value]int{
 func IsHigherAuthority(session *Session, against ...authrole.Value) bool {
 	myHighest := -1
 	againstHighest := 0
-	for _, myAuthRole := range GetAuthRolesFromSession(session) {
+	for _, myAuthRole := range session.AuthRoles {
 		if myAuthority, ok := AuthRoleRanking[myAuthRole]; ok {
 			if myAuthority > myHighest {
 				myHighest = myAuthority

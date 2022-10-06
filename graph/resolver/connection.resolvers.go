@@ -11,15 +11,11 @@ import (
 )
 
 // CreateConnection is the resolver for the createConnection field.
-func (r *mutationResolver) CreateConnection(ctx context.Context, input ent.CreateConnectionInput) (
-	*ent.Connection, error,
-) {
+func (r *mutationResolver) CreateConnection(ctx context.Context, input ent.CreateConnectionInput) (*ent.Connection, error) {
 	return r.connectionService.CreateConnection(ctx, input)
 }
 
 // UpdateConnection is the resolver for the updateConnection field.
-func (r *mutationResolver) UpdateConnection(
-	ctx context.Context, id pulid.PULID, input ent.UpdateConnectionInput,
-) (*ent.Connection, error) {
+func (r *mutationResolver) UpdateConnection(ctx context.Context, id pulid.PULID, input ent.UpdateConnectionInput) (*ent.Connection, error) {
 	return r.connectionService.UpdateConnection(ctx, id, input)
 }

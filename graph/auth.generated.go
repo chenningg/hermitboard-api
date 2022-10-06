@@ -11,6 +11,7 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/chenningg/hermitboard-api/auth"
 	"github.com/chenningg/hermitboard-api/ent"
+	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/graph/model"
 	"github.com/chenningg/hermitboard-api/pulid"
 	"github.com/vektah/gqlparser/v2/ast"
@@ -19,12 +20,11 @@ import (
 // region    ************************** generated!.gotpl **************************
 
 type MutationResolver interface {
-	CreateAccount(ctx context.Context, input ent.CreateAccountInput) (*ent.Account, error)
-	CreateStaffAccount(ctx context.Context, input ent.CreateStaffAccountInput) (*ent.StaffAccount, error)
-	LoginToAccount(ctx context.Context, input auth.LoginToAccountInput) (auth.SessionID, error)
-	LoginToStaffAccount(ctx context.Context, input auth.LoginToStaffAccountInput) (auth.SessionID, error)
-	LogoutFromAccount(ctx context.Context) (*model.Void, error)
-	LogoutFromStaffAccount(ctx context.Context) (*model.Void, error)
+	CreateAccount(ctx context.Context, input ent.CreateAccountInput) (*auth.CreateAccountPayload, error)
+	CreateStaffAccount(ctx context.Context, input ent.CreateStaffAccountInput) (*auth.CreateStaffAccountPayload, error)
+	LoginToAccount(ctx context.Context, input auth.LoginToAccountInput) (*auth.LoginToAccountPayload, error)
+	LoginToStaffAccount(ctx context.Context, input auth.LoginToStaffAccountInput) (*auth.LoginToStaffAccountPayload, error)
+	Logout(ctx context.Context) (*model.Void, error)
 	CreateConnection(ctx context.Context, input ent.CreateConnectionInput) (*ent.Connection, error)
 	UpdateConnection(ctx context.Context, id pulid.PULID, input ent.UpdateConnectionInput) (*ent.Connection, error)
 	CreatePortfolio(ctx context.Context, input ent.CreatePortfolioInput) (*ent.Portfolio, error)
@@ -181,8 +181,8 @@ func (ec *executionContext) field_Mutation_updatePortfolio_args(ctx context.Cont
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _Mutation_createAccount(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_createAccount(ctx, field)
+func (ec *executionContext) _CreateAccountPayload_account(ctx context.Context, field graphql.CollectedField, obj *auth.CreateAccountPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateAccountPayload_account(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -195,7 +195,7 @@ func (ec *executionContext) _Mutation_createAccount(ctx context.Context, field g
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateAccount(rctx, fc.Args["input"].(ent.CreateAccountInput))
+		return obj.Account, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -212,12 +212,12 @@ func (ec *executionContext) _Mutation_createAccount(ctx context.Context, field g
 	return ec.marshalNAccount2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccount(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_createAccount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_CreateAccountPayload_account(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "Mutation",
+		Object:     "CreateAccountPayload",
 		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
+		IsMethod:   false,
+		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
@@ -246,6 +246,466 @@ func (ec *executionContext) fieldContext_Mutation_createAccount(ctx context.Cont
 				return ec.fieldContext_Account_connections(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Account", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateAccountPayload_session(ctx context.Context, field graphql.CollectedField, obj *auth.CreateAccountPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateAccountPayload_session(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Session, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*auth.Session)
+	fc.Result = res
+	return ec.marshalNSession2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSession(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateAccountPayload_session(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateAccountPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Session_id(ctx, field)
+			case "userID":
+				return ec.fieldContext_Session_userID(ctx, field)
+			case "authRoles":
+				return ec.fieldContext_Session_authRoles(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Session", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateStaffAccountPayload_staffAccount(ctx context.Context, field graphql.CollectedField, obj *auth.CreateStaffAccountPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateStaffAccountPayload_staffAccount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StaffAccount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.StaffAccount)
+	fc.Result = res
+	return ec.marshalNStaffAccount2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccount(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateStaffAccountPayload_staffAccount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateStaffAccountPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_StaffAccount_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_StaffAccount_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_StaffAccount_updatedAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_StaffAccount_deletedAt(ctx, field)
+			case "nickname":
+				return ec.fieldContext_StaffAccount_nickname(ctx, field)
+			case "email":
+				return ec.fieldContext_StaffAccount_email(ctx, field)
+			case "emailConfirmed":
+				return ec.fieldContext_StaffAccount_emailConfirmed(ctx, field)
+			case "passwordUpdatedAt":
+				return ec.fieldContext_StaffAccount_passwordUpdatedAt(ctx, field)
+			case "authRoles":
+				return ec.fieldContext_StaffAccount_authRoles(ctx, field)
+			case "authType":
+				return ec.fieldContext_StaffAccount_authType(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type StaffAccount", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CreateStaffAccountPayload_session(ctx context.Context, field graphql.CollectedField, obj *auth.CreateStaffAccountPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CreateStaffAccountPayload_session(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Session, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*auth.Session)
+	fc.Result = res
+	return ec.marshalNSession2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSession(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CreateStaffAccountPayload_session(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CreateStaffAccountPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Session_id(ctx, field)
+			case "userID":
+				return ec.fieldContext_Session_userID(ctx, field)
+			case "authRoles":
+				return ec.fieldContext_Session_authRoles(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Session", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LoginToAccountPayload_account(ctx context.Context, field graphql.CollectedField, obj *auth.LoginToAccountPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LoginToAccountPayload_account(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Account, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Account)
+	fc.Result = res
+	return ec.marshalNAccount2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccount(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LoginToAccountPayload_account(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LoginToAccountPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Account_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Account_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Account_updatedAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_Account_deletedAt(ctx, field)
+			case "nickname":
+				return ec.fieldContext_Account_nickname(ctx, field)
+			case "email":
+				return ec.fieldContext_Account_email(ctx, field)
+			case "emailConfirmed":
+				return ec.fieldContext_Account_emailConfirmed(ctx, field)
+			case "passwordUpdatedAt":
+				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
+			case "authRoles":
+				return ec.fieldContext_Account_authRoles(ctx, field)
+			case "portfolios":
+				return ec.fieldContext_Account_portfolios(ctx, field)
+			case "authType":
+				return ec.fieldContext_Account_authType(ctx, field)
+			case "connections":
+				return ec.fieldContext_Account_connections(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Account", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LoginToAccountPayload_session(ctx context.Context, field graphql.CollectedField, obj *auth.LoginToAccountPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LoginToAccountPayload_session(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Session, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*auth.Session)
+	fc.Result = res
+	return ec.marshalNSession2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSession(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LoginToAccountPayload_session(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LoginToAccountPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Session_id(ctx, field)
+			case "userID":
+				return ec.fieldContext_Session_userID(ctx, field)
+			case "authRoles":
+				return ec.fieldContext_Session_authRoles(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Session", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LoginToStaffAccountPayload_staffAccount(ctx context.Context, field graphql.CollectedField, obj *auth.LoginToStaffAccountPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LoginToStaffAccountPayload_staffAccount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.StaffAccount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.StaffAccount)
+	fc.Result = res
+	return ec.marshalNStaffAccount2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccount(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LoginToStaffAccountPayload_staffAccount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LoginToStaffAccountPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_StaffAccount_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_StaffAccount_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_StaffAccount_updatedAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_StaffAccount_deletedAt(ctx, field)
+			case "nickname":
+				return ec.fieldContext_StaffAccount_nickname(ctx, field)
+			case "email":
+				return ec.fieldContext_StaffAccount_email(ctx, field)
+			case "emailConfirmed":
+				return ec.fieldContext_StaffAccount_emailConfirmed(ctx, field)
+			case "passwordUpdatedAt":
+				return ec.fieldContext_StaffAccount_passwordUpdatedAt(ctx, field)
+			case "authRoles":
+				return ec.fieldContext_StaffAccount_authRoles(ctx, field)
+			case "authType":
+				return ec.fieldContext_StaffAccount_authType(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type StaffAccount", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _LoginToStaffAccountPayload_session(ctx context.Context, field graphql.CollectedField, obj *auth.LoginToStaffAccountPayload) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_LoginToStaffAccountPayload_session(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Session, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*auth.Session)
+	fc.Result = res
+	return ec.marshalNSession2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSession(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_LoginToStaffAccountPayload_session(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "LoginToStaffAccountPayload",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Session_id(ctx, field)
+			case "userID":
+				return ec.fieldContext_Session_userID(ctx, field)
+			case "authRoles":
+				return ec.fieldContext_Session_authRoles(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Session", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createAccount(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createAccount(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateAccount(rctx, fc.Args["input"].(ent.CreateAccountInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*auth.CreateAccountPayload)
+	fc.Result = res
+	return ec.marshalNCreateAccountPayload2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐCreateAccountPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createAccount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "account":
+				return ec.fieldContext_CreateAccountPayload_account(ctx, field)
+			case "session":
+				return ec.fieldContext_CreateAccountPayload_session(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CreateAccountPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -288,9 +748,9 @@ func (ec *executionContext) _Mutation_createStaffAccount(ctx context.Context, fi
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*ent.StaffAccount)
+	res := resTmp.(*auth.CreateStaffAccountPayload)
 	fc.Result = res
-	return ec.marshalNStaffAccount2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccount(ctx, field.Selections, res)
+	return ec.marshalNCreateStaffAccountPayload2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐCreateStaffAccountPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_createStaffAccount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -301,28 +761,12 @@ func (ec *executionContext) fieldContext_Mutation_createStaffAccount(ctx context
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
-			case "id":
-				return ec.fieldContext_StaffAccount_id(ctx, field)
-			case "createdAt":
-				return ec.fieldContext_StaffAccount_createdAt(ctx, field)
-			case "updatedAt":
-				return ec.fieldContext_StaffAccount_updatedAt(ctx, field)
-			case "deletedAt":
-				return ec.fieldContext_StaffAccount_deletedAt(ctx, field)
-			case "nickname":
-				return ec.fieldContext_StaffAccount_nickname(ctx, field)
-			case "email":
-				return ec.fieldContext_StaffAccount_email(ctx, field)
-			case "emailConfirmed":
-				return ec.fieldContext_StaffAccount_emailConfirmed(ctx, field)
-			case "passwordUpdatedAt":
-				return ec.fieldContext_StaffAccount_passwordUpdatedAt(ctx, field)
-			case "authRoles":
-				return ec.fieldContext_StaffAccount_authRoles(ctx, field)
-			case "authType":
-				return ec.fieldContext_StaffAccount_authType(ctx, field)
+			case "staffAccount":
+				return ec.fieldContext_CreateStaffAccountPayload_staffAccount(ctx, field)
+			case "session":
+				return ec.fieldContext_CreateStaffAccountPayload_session(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type StaffAccount", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type CreateStaffAccountPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -365,9 +809,9 @@ func (ec *executionContext) _Mutation_loginToAccount(ctx context.Context, field 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(auth.SessionID)
+	res := resTmp.(*auth.LoginToAccountPayload)
 	fc.Result = res
-	return ec.marshalNSessionID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSessionID(ctx, field.Selections, res)
+	return ec.marshalNLoginToAccountPayload2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐLoginToAccountPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_loginToAccount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -377,7 +821,13 @@ func (ec *executionContext) fieldContext_Mutation_loginToAccount(ctx context.Con
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type SessionID does not have child fields")
+			switch field.Name {
+			case "account":
+				return ec.fieldContext_LoginToAccountPayload_account(ctx, field)
+			case "session":
+				return ec.fieldContext_LoginToAccountPayload_session(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type LoginToAccountPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -420,9 +870,9 @@ func (ec *executionContext) _Mutation_loginToStaffAccount(ctx context.Context, f
 		}
 		return graphql.Null
 	}
-	res := resTmp.(auth.SessionID)
+	res := resTmp.(*auth.LoginToStaffAccountPayload)
 	fc.Result = res
-	return ec.marshalNSessionID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSessionID(ctx, field.Selections, res)
+	return ec.marshalNLoginToStaffAccountPayload2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐLoginToStaffAccountPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_loginToStaffAccount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -432,7 +882,13 @@ func (ec *executionContext) fieldContext_Mutation_loginToStaffAccount(ctx contex
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type SessionID does not have child fields")
+			switch field.Name {
+			case "staffAccount":
+				return ec.fieldContext_LoginToStaffAccountPayload_staffAccount(ctx, field)
+			case "session":
+				return ec.fieldContext_LoginToStaffAccountPayload_session(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type LoginToStaffAccountPayload", field.Name)
 		},
 	}
 	defer func() {
@@ -449,8 +905,8 @@ func (ec *executionContext) fieldContext_Mutation_loginToStaffAccount(ctx contex
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_logoutFromAccount(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_logoutFromAccount(ctx, field)
+func (ec *executionContext) _Mutation_logout(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_logout(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -463,7 +919,7 @@ func (ec *executionContext) _Mutation_logoutFromAccount(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().LogoutFromAccount(rctx)
+		return ec.resolvers.Mutation().Logout(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -477,48 +933,7 @@ func (ec *executionContext) _Mutation_logoutFromAccount(ctx context.Context, fie
 	return ec.marshalOVoid2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋgraphᚋmodelᚐVoid(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_logoutFromAccount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Void does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_logoutFromStaffAccount(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_logoutFromStaffAccount(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().LogoutFromStaffAccount(rctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*model.Void)
-	fc.Result = res
-	return ec.marshalOVoid2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋgraphᚋmodelᚐVoid(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_logoutFromStaffAccount(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_logout(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -843,6 +1258,138 @@ func (ec *executionContext) fieldContext_Mutation_updatePortfolio(ctx context.Co
 	return fc, nil
 }
 
+func (ec *executionContext) _Session_id(ctx context.Context, field graphql.CollectedField, obj *auth.Session) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Session_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(auth.SessionID)
+	fc.Result = res
+	return ec.marshalNSessionID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSessionID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Session_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type SessionID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Session_userID(ctx context.Context, field graphql.CollectedField, obj *auth.Session) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Session_userID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(pulid.PULID)
+	fc.Result = res
+	return ec.marshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Session_userID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Session_authRoles(ctx context.Context, field graphql.CollectedField, obj *auth.Session) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Session_authRoles(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.AuthRoles, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]authrole.Value)
+	fc.Result = res
+	return ec.marshalNAuthRoleValue2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚋauthroleᚐValueᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Session_authRoles(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Session",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type AuthRoleValue does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
@@ -927,6 +1474,146 @@ func (ec *executionContext) unmarshalInputLoginToStaffAccountInput(ctx context.C
 
 // region    **************************** object.gotpl ****************************
 
+var createAccountPayloadImplementors = []string{"CreateAccountPayload"}
+
+func (ec *executionContext) _CreateAccountPayload(ctx context.Context, sel ast.SelectionSet, obj *auth.CreateAccountPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, createAccountPayloadImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CreateAccountPayload")
+		case "account":
+
+			out.Values[i] = ec._CreateAccountPayload_account(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "session":
+
+			out.Values[i] = ec._CreateAccountPayload_session(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var createStaffAccountPayloadImplementors = []string{"CreateStaffAccountPayload"}
+
+func (ec *executionContext) _CreateStaffAccountPayload(ctx context.Context, sel ast.SelectionSet, obj *auth.CreateStaffAccountPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, createStaffAccountPayloadImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CreateStaffAccountPayload")
+		case "staffAccount":
+
+			out.Values[i] = ec._CreateStaffAccountPayload_staffAccount(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "session":
+
+			out.Values[i] = ec._CreateStaffAccountPayload_session(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var loginToAccountPayloadImplementors = []string{"LoginToAccountPayload"}
+
+func (ec *executionContext) _LoginToAccountPayload(ctx context.Context, sel ast.SelectionSet, obj *auth.LoginToAccountPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, loginToAccountPayloadImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LoginToAccountPayload")
+		case "account":
+
+			out.Values[i] = ec._LoginToAccountPayload_account(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "session":
+
+			out.Values[i] = ec._LoginToAccountPayload_session(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var loginToStaffAccountPayloadImplementors = []string{"LoginToStaffAccountPayload"}
+
+func (ec *executionContext) _LoginToStaffAccountPayload(ctx context.Context, sel ast.SelectionSet, obj *auth.LoginToStaffAccountPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, loginToStaffAccountPayloadImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("LoginToStaffAccountPayload")
+		case "staffAccount":
+
+			out.Values[i] = ec._LoginToStaffAccountPayload_staffAccount(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "session":
+
+			out.Values[i] = ec._LoginToStaffAccountPayload_session(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -982,16 +1669,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "logoutFromAccount":
+		case "logout":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_logoutFromAccount(ctx, field)
-			})
-
-		case "logoutFromStaffAccount":
-
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_logoutFromStaffAccount(ctx, field)
+				return ec._Mutation_logout(ctx, field)
 			})
 
 		case "createConnection":
@@ -1041,18 +1722,126 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 	return out
 }
 
+var sessionImplementors = []string{"Session"}
+
+func (ec *executionContext) _Session(ctx context.Context, sel ast.SelectionSet, obj *auth.Session) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, sessionImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Session")
+		case "id":
+
+			out.Values[i] = ec._Session_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "userID":
+
+			out.Values[i] = ec._Session_userID(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "authRoles":
+
+			out.Values[i] = ec._Session_authRoles(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
+
+func (ec *executionContext) marshalNCreateAccountPayload2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐCreateAccountPayload(ctx context.Context, sel ast.SelectionSet, v auth.CreateAccountPayload) graphql.Marshaler {
+	return ec._CreateAccountPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCreateAccountPayload2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐCreateAccountPayload(ctx context.Context, sel ast.SelectionSet, v *auth.CreateAccountPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CreateAccountPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNCreateStaffAccountPayload2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐCreateStaffAccountPayload(ctx context.Context, sel ast.SelectionSet, v auth.CreateStaffAccountPayload) graphql.Marshaler {
+	return ec._CreateStaffAccountPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCreateStaffAccountPayload2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐCreateStaffAccountPayload(ctx context.Context, sel ast.SelectionSet, v *auth.CreateStaffAccountPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CreateStaffAccountPayload(ctx, sel, v)
+}
 
 func (ec *executionContext) unmarshalNLoginToAccountInput2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐLoginToAccountInput(ctx context.Context, v interface{}) (auth.LoginToAccountInput, error) {
 	res, err := ec.unmarshalInputLoginToAccountInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNLoginToAccountPayload2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐLoginToAccountPayload(ctx context.Context, sel ast.SelectionSet, v auth.LoginToAccountPayload) graphql.Marshaler {
+	return ec._LoginToAccountPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNLoginToAccountPayload2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐLoginToAccountPayload(ctx context.Context, sel ast.SelectionSet, v *auth.LoginToAccountPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._LoginToAccountPayload(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNLoginToStaffAccountInput2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐLoginToStaffAccountInput(ctx context.Context, v interface{}) (auth.LoginToStaffAccountInput, error) {
 	res, err := ec.unmarshalInputLoginToStaffAccountInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNLoginToStaffAccountPayload2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐLoginToStaffAccountPayload(ctx context.Context, sel ast.SelectionSet, v auth.LoginToStaffAccountPayload) graphql.Marshaler {
+	return ec._LoginToStaffAccountPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNLoginToStaffAccountPayload2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐLoginToStaffAccountPayload(ctx context.Context, sel ast.SelectionSet, v *auth.LoginToStaffAccountPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._LoginToStaffAccountPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNSession2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSession(ctx context.Context, sel ast.SelectionSet, v *auth.Session) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Session(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNSessionID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋauthᚐSessionID(ctx context.Context, v interface{}) (auth.SessionID, error) {

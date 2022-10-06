@@ -11,15 +11,11 @@ import (
 )
 
 // CreatePortfolio is the resolver for the createPortfolio field.
-func (r *mutationResolver) CreatePortfolio(ctx context.Context, input ent.CreatePortfolioInput) (
-	*ent.Portfolio, error,
-) {
+func (r *mutationResolver) CreatePortfolio(ctx context.Context, input ent.CreatePortfolioInput) (*ent.Portfolio, error) {
 	return r.portfolioService.CreatePortfolio(ctx, input)
 }
 
 // UpdatePortfolio is the resolver for the updatePortfolio field.
-func (r *mutationResolver) UpdatePortfolio(
-	ctx context.Context, id pulid.PULID, input ent.UpdatePortfolioInput,
-) (*ent.Portfolio, error) {
+func (r *mutationResolver) UpdatePortfolio(ctx context.Context, id pulid.PULID, input ent.UpdatePortfolioInput) (*ent.Portfolio, error) {
 	return r.portfolioService.UpdatePortfolio(ctx, id, input)
 }

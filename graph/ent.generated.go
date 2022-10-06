@@ -29836,10 +29836,6 @@ func (ec *executionContext) _TransactionTypeEdge(ctx context.Context, sel ast.Se
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNAccount2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccount(ctx context.Context, sel ast.SelectionSet, v ent.Account) graphql.Marshaler {
-	return ec._Account(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNAccount2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccount(ctx context.Context, sel ast.SelectionSet, v *ent.Account) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -30023,6 +30019,67 @@ func (ec *executionContext) unmarshalNAuthRoleValue2githubᚗcomᚋchenninggᚋh
 
 func (ec *executionContext) marshalNAuthRoleValue2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚋauthroleᚐValue(ctx context.Context, sel ast.SelectionSet, v authrole.Value) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) unmarshalNAuthRoleValue2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚋauthroleᚐValueᚄ(ctx context.Context, v interface{}) ([]authrole.Value, error) {
+	var vSlice []interface{}
+	if v != nil {
+		vSlice = graphql.CoerceList(v)
+	}
+	var err error
+	res := make([]authrole.Value, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNAuthRoleValue2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚋauthroleᚐValue(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNAuthRoleValue2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚋauthroleᚐValueᚄ(ctx context.Context, sel ast.SelectionSet, v []authrole.Value) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNAuthRoleValue2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚋauthroleᚐValue(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalNAuthRoleWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAuthRoleWhereInput(ctx context.Context, v interface{}) (*ent.AuthRoleWhereInput, error) {
@@ -30503,10 +30560,6 @@ func (ec *executionContext) unmarshalNSourceTypeWhereInput2ᚖgithubᚗcomᚋche
 func (ec *executionContext) unmarshalNSourceWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSourceWhereInput(ctx context.Context, v interface{}) (*ent.SourceWhereInput, error) {
 	res, err := ec.unmarshalInputSourceWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNStaffAccount2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccount(ctx context.Context, sel ast.SelectionSet, v ent.StaffAccount) graphql.Marshaler {
-	return ec._StaffAccount(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNStaffAccount2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐStaffAccount(ctx context.Context, sel ast.SelectionSet, v *ent.StaffAccount) graphql.Marshaler {

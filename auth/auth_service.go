@@ -13,10 +13,10 @@ type AuthServicer interface {
 	GetSessionFromStore(ctx context.Context, sessionID SessionID) (*Session, error)
 	CreateAccount(
 		ctx context.Context, input ent.CreateAccountInput,
-	) (*ent.Account, error)
+	) (*CreateAccountPayload, error)
 	CreateStaffAccount(
 		ctx context.Context, input ent.CreateStaffAccountInput,
-	) (*ent.StaffAccount, error)
+	) (*CreateStaffAccountPayload, error)
 	LoginToAccount(ctx context.Context, input LoginToAccountInput) (
 		*LoginToAccountPayload, error,
 	)

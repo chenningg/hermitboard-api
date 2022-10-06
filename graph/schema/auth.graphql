@@ -1,4 +1,10 @@
-scalar Session
+scalar SessionID
+
+type Session {
+    id: SessionID!
+    userID: ID!
+    authRoles: [AuthRoleValue!]!
+}
 
 input LoginToAccountInput {
     username: String!
@@ -21,7 +27,7 @@ type LoginToStaffAccountPayload {
 }
 
 type CreateAccountPayload {
-    account: StaffAccount!
+    account: Account!
     session: Session!
 }
 
@@ -35,6 +41,5 @@ type Mutation {
     createStaffAccount(input: CreateStaffAccountInput!): CreateStaffAccountPayload!
     loginToAccount(input: LoginToAccountInput!): LoginToAccountPayload!
     loginToStaffAccount(input: LoginToStaffAccountInput!): LoginToStaffAccountPayload!
-    logoutFromAccount: Void
-    logoutFromStaffAccount: Void
+    logout: Void
 }
