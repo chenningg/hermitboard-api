@@ -7,16 +7,16 @@ import (
 
 	"entgo.io/contrib/entgql"
 	"github.com/chenningg/hermitboard-api/auth"
+	"github.com/chenningg/hermitboard-api/config"
 	"github.com/chenningg/hermitboard-api/connection"
 	"github.com/chenningg/hermitboard-api/db"
+	"github.com/chenningg/hermitboard-api/graph"
 	"github.com/chenningg/hermitboard-api/graph/resolver"
 	"github.com/chenningg/hermitboard-api/middleware"
 	"github.com/chenningg/hermitboard-api/portfolio"
 	"github.com/chenningg/hermitboard-api/redis"
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
-
-	"github.com/chenningg/hermitboard-api/config"
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zerologr"
 	"github.com/rs/zerolog"
@@ -97,6 +97,14 @@ func main() {
 
 	// Create a database transactional client for GraphQL resolvers (stored in context).
 	srv.Use(entgql.Transactioner{TxOpener: dbService.Client()})
+
+	// Set custom error presenter to capture GraphQL errors returned from resolvers.
+	srv.SetErrorPresenter(
+		graph.ErrorPresenter,
+	)
+
+	// Set recoverer func to handle panics.
+	srv.SetRecoverFunc()
 
 	// Routes.
 	// Only show playground if in development.

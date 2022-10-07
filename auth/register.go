@@ -9,6 +9,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent"
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
+	"github.com/chenningg/hermitboard-api/graph"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -20,7 +21,8 @@ func (authService AuthService) CreateAccount(
 	// Check for empty values.
 	if input.Nickname == "" || input.Email == "" || input.AuthTypeID.String() == "" {
 		return nil, fmt.Errorf(
-			"%w: auth.CreateAccount(): missing or invalid fields in account creation", ErrBadInput,
+			"auth.CreateAccount(): %w",
+			graph.NewGraphQLError("missing or invalid fields in account creation", graph.BadUserInput),
 		)
 	}
 
@@ -30,7 +32,8 @@ func (authService AuthService) CreateAccount(
 	// Don't allow logged in non-staff accounts to create an account.
 	if IsLoggedIn(session) && HasAuthRoles(session, NonStaffAuthRoles...) {
 		return nil, fmt.Errorf(
-			"%w: auth.CreateAccount(): non-staff account already logged in, cannot create account", ErrUnauthorized,
+			"auth.CreateAccount(): %w: a non-staff account cannot create an account",
+			graph.NewGraphQLError("already logged in", graph.Forbidden),
 		)
 	}
 
@@ -39,11 +42,13 @@ func (authService AuthService) CreateAccount(
 	if err != nil {
 		if errors.Is(err, &ent.NotFoundError{}) {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateAccount(): invalid auth type supplied", ErrBadInput,
+				"auth.CreateAccount(): %w: %v", graph.NewGraphQLError("invalid auth type supplied", graph.BadUserInput),
+				err,
 			)
 		}
 		return nil, fmt.Errorf(
-			"%w: auth.CreateAccount(): could not retrieve auth type for account creation", ErrInternal,
+			"auth.CreateAccount(): %w: %v",
+			graph.NewGraphQLError("could not retrieve auth type", graph.InternalServerError), err,
 		)
 	}
 
@@ -55,22 +60,24 @@ func (authService AuthService) CreateAccount(
 	if authType.Value == authtype.ValueLocal {
 		if input.Password == nil || *input.Password == "" {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateAccount(): no password was provided for account creation with a local provider",
-				ErrBadInput,
+				"auth.CreateAccount(): %w: a local provider requires a password",
+				graph.NewGraphQLError("no password was provided for account creation", graph.BadUserInput),
 			)
 		}
 		// Check if password is minimum 8 characters.
 		if len(*input.Password) < 8 {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateAccount(): password must have a minimum of 8 alphanumeric characters or symbols",
-				ErrWeakPassword,
+				"auth.CreateAccount(): %w", graph.NewGraphQLError(
+					"password must have a minimum of 8 alphanumeric characters or symbols", graph.BadUserInput,
+				),
 			)
 		}
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*input.Password), authService.config.BcryptCost)
 		if err != nil {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateAccount(): unable to hash provided password: %v", ErrInternal, err,
+				"auth.CreateAccount(): %w: %v",
+				graph.NewGraphQLError("unable to store provided password", graph.InternalServerError), err,
 			)
 		}
 		hashedPasswordStr := string(hashedPassword)
@@ -90,12 +97,15 @@ func (authService AuthService) CreateAccount(
 			authRoles, err := dbClient.AuthRole.Query().Where(authrole.IDIn(input.AuthRoleIDs...)).All(ctx)
 			if err != nil {
 				return nil, fmt.Errorf(
-					"%w: auth.CreateAccount(): could not retrieve auth roles from database", ErrInternal,
+					"auth.CreateAccount(): %w: %v",
+					graph.NewGraphQLError("could not create account", graph.InternalServerError), err,
 				)
 			}
 			if len(authRoles) == 0 {
 				return nil, fmt.Errorf(
-					"%w: auth.CreateAccount(): auth roles specified for account creation are not valid", ErrBadInput,
+					"auth.CreateAccount(): %w: no matching auth roles found in database", graph.NewGraphQLError(
+						"auth roles specified for account creation are not valid", graph.BadUserInput,
+					),
 				)
 			}
 
@@ -110,7 +120,8 @@ func (authService AuthService) CreateAccount(
 				session, authRoleValues...,
 			) {
 				return nil, fmt.Errorf(
-					"%w: auth.CreateAccount(): insufficient authority to add the auth roles specified", ErrUnauthorized,
+					"auth.CreateAccount(): %w",
+					graph.NewGraphQLError("insufficient authority to add the auth roles specified", graph.Forbidden),
 				)
 			}
 
@@ -118,7 +129,8 @@ func (authService AuthService) CreateAccount(
 		} else {
 			// Otherwise this session user has no authority to add auth roles.
 			return nil, fmt.Errorf(
-				"%w: auth.CreateAccount(): unauthorized to add auth roles to account", ErrUnauthorized,
+				"auth.CreateAccount(): %w",
+				graph.NewGraphQLError("unauthorized to add auth roles to an account", graph.Forbidden),
 			)
 		}
 	} else {
@@ -126,7 +138,8 @@ func (authService AuthService) CreateAccount(
 		authRoleFree, err := dbClient.AuthRole.Query().Where(authrole.ValueEQ(authrole.ValueFree)).Only(ctx)
 		if err != nil {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateAccount(): could not add free auth role to account: %v", ErrInternal, err,
+				"auth.CreateAccount(): %w: could not retrieve free auth role from database: %v",
+				graph.NewGraphQLError("could not create account", graph.InternalServerError), err,
 			)
 		}
 
@@ -136,7 +149,10 @@ func (authService AuthService) CreateAccount(
 	// Save the created account to the database.
 	acc, err := accCreator.Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("%w: auth.CreateAccount(): could not create account: %v", ErrInternal, err)
+		return nil, fmt.Errorf(
+			"auth.CreateAccount(): %w: %v",
+			graph.NewGraphQLError("could not create account", graph.InternalServerError), err,
+		)
 	}
 
 	// Make a new session for login.
@@ -147,7 +163,10 @@ func (authService AuthService) CreateAccount(
 
 	newSession, err := authService.createSession(ctx, acc.ID, newAuthRoles...)
 	if err != nil {
-		return nil, fmt.Errorf("%w: auth.CreateAccount(): could not create new session: %v", ErrInternal, err)
+		return nil, fmt.Errorf(
+			"auth.CreateAccount(): %w: %v",
+			graph.NewGraphQLError("could not create new session", graph.InternalServerError), err,
+		)
 	}
 
 	return &CreateAccountPayload{acc, newSession}, nil
@@ -157,9 +176,10 @@ func (authService AuthService) CreateStaffAccount(
 	ctx context.Context, input ent.CreateStaffAccountInput,
 ) (*CreateStaffAccountPayload, error) {
 	// Check for empty values.
-	if input.Nickname == "" || input.Email == "" || input.AuthTypeID.String() == "" {
+	if input.Nickname == "" || input.Email == "" || input.AuthTypeID.String() == "" || len(input.AuthRoleIDs) == 0 {
 		return nil, fmt.Errorf(
-			"%w: auth.CreateStaffAccount(): missing or invalid fields in staff account creation", ErrBadInput,
+			"auth.CreateStaffAccount(): %w",
+			graph.NewGraphQLError("missing or invalid fields in staff account creation", graph.BadUserInput),
 		)
 	}
 
@@ -167,10 +187,17 @@ func (authService AuthService) CreateStaffAccount(
 	session := GetSessionFromContext(ctx)
 
 	// Only allow logged in admin/super admin staff accounts to create more staff accounts.
-	if !IsLoggedIn(session) || !HasAuthRoles(session, authrole.ValueAdmin, authrole.ValueSuperAdmin) {
+	if !IsLoggedIn(session) {
 		return nil, fmt.Errorf(
-			"%w: auth.CreateStaffAccount(): not logged-in or unauthorized to create new staff accounts",
-			ErrUnauthorized,
+			"auth.CreateStaffAccount(): %w",
+			graph.NewGraphQLError("not logged in", graph.Unauthenticated),
+		)
+	}
+
+	if !HasAuthRoles(session, authrole.ValueAdmin, authrole.ValueSuperAdmin) {
+		return nil, fmt.Errorf(
+			"auth.CreateStaffAccount(): %w",
+			graph.NewGraphQLError("unauthorized to create staff accounts", graph.Forbidden),
 		)
 	}
 
@@ -179,11 +206,14 @@ func (authService AuthService) CreateStaffAccount(
 	if err != nil {
 		if errors.Is(err, &ent.NotFoundError{}) {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateStaffAccount(): invalid auth type supplied", ErrBadInput,
+				"auth.CreateStaffAccount(): %w: %v",
+				graph.NewGraphQLError("invalid auth type supplied", graph.BadUserInput),
+				err,
 			)
 		}
 		return nil, fmt.Errorf(
-			"%w: auth.CreateStaffAccount(): could not retrieve auth type for staff account creation", ErrInternal,
+			"auth.CreateStaffAccount(): %w: %v",
+			graph.NewGraphQLError("could not retrieve auth type", graph.InternalServerError), err,
 		)
 	}
 
@@ -195,22 +225,24 @@ func (authService AuthService) CreateStaffAccount(
 	if authType.Value == authtype.ValueLocal {
 		if input.Password == nil || *input.Password == "" {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateStaffAccount(): no password was provided for staff account creation with a local provider",
-				ErrBadInput,
+				"auth.CreateStaffAccount(): %w: a local provider requires a password",
+				graph.NewGraphQLError("no password was provided for account creation", graph.BadUserInput),
 			)
 		}
 		// Check if password is minimum 8 characters.
 		if len(*input.Password) < 8 {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateStaffAccount(): password must have a minimum of 8 alphanumeric characters or symbols",
-				ErrWeakPassword,
+				"auth.CreateStaffAccount(): %w", graph.NewGraphQLError(
+					"password must have a minimum of 8 alphanumeric characters or symbols", graph.BadUserInput,
+				),
 			)
 		}
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*input.Password), authService.config.BcryptCost)
 		if err != nil {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateStaffAccount(): unable to hash provided password: %v", ErrInternal, err,
+				"auth.CreateStaffAccount(): %w: %v",
+				graph.NewGraphQLError("unable to store provided password", graph.InternalServerError), err,
 			)
 		}
 		hashedPasswordStr := string(hashedPassword)
@@ -226,13 +258,15 @@ func (authService AuthService) CreateStaffAccount(
 		authRoles, err := dbClient.AuthRole.Query().Where(authrole.IDIn(input.AuthRoleIDs...)).All(ctx)
 		if err != nil {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateStaffAccount(): could not retrieve auth roles from database", ErrInternal,
+				"auth.CreateAccount(): %w: %v",
+				graph.NewGraphQLError("could not create staff account", graph.InternalServerError), err,
 			)
 		}
 		if len(authRoles) == 0 {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateStaffAccount(): auth roles specified for staff account creation are not valid",
-				ErrBadInput,
+				"auth.CreateAccount(): %w: no matching auth roles found in database", graph.NewGraphQLError(
+					"auth roles specified for staff account creation are not valid", graph.BadUserInput,
+				),
 			)
 		}
 
@@ -247,28 +281,21 @@ func (authService AuthService) CreateStaffAccount(
 			session, authRoleValues...,
 		) {
 			return nil, fmt.Errorf(
-				"%w: auth.CreateStaffAccount(): insufficient authority to add the auth roles specified",
-				ErrUnauthorized,
+				"auth.CreateStaffAccount(): %w",
+				graph.NewGraphQLError("insufficient authority to add the auth roles specified", graph.Forbidden),
 			)
 		}
 
 		staffAccCreator.AddAuthRoles(authRoles...)
-	} else {
-		// Otherwise, by default, a newly created staff account is on the Support role.
-		authRoleSupport, err := dbClient.AuthRole.Query().Where(authrole.ValueEQ(authrole.ValueSupport)).Only(ctx)
-		if err != nil {
-			return nil, fmt.Errorf(
-				"%w: auth.CreateStaffAccount(): could not add support auth role to staff account: %v", ErrInternal, err,
-			)
-		}
-
-		staffAccCreator.AddAuthRoles(authRoleSupport)
 	}
 
 	// Save the created staff account to the database.
 	staffAcc, err := staffAccCreator.Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("%w: auth.CreateStaffAccount(): could not create staff account: %v", ErrInternal, err)
+		return nil, fmt.Errorf(
+			"auth.CreateStaffAccount(): %w: %v",
+			graph.NewGraphQLError("could not create staff account", graph.InternalServerError), err,
+		)
 	}
 
 	// Make a new session for login.
@@ -279,7 +306,10 @@ func (authService AuthService) CreateStaffAccount(
 
 	newSession, err := authService.createSession(ctx, staffAcc.ID, newAuthRoles...)
 	if err != nil {
-		return nil, fmt.Errorf("%w: auth.CreateStaffAccount(): could not create new session: %v", ErrInternal, err)
+		return nil, fmt.Errorf(
+			"auth.CreateStaffAccount(): %w: %v",
+			graph.NewGraphQLError("could not create new session", graph.InternalServerError), err,
+		)
 	}
 
 	return &CreateStaffAccountPayload{staffAcc, newSession}, nil

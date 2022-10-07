@@ -9,7 +9,8 @@ type AppConfig struct {
 }
 
 func (appConfig AppConfig) Validate() error {
-	return validation.ValidateStruct(&appConfig,
+	return validation.ValidateStruct(
+		&appConfig,
 		validation.Field(&appConfig.Env, validation.NotNil),
 	)
 }

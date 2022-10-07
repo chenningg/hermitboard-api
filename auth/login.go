@@ -9,11 +9,12 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
+	"github.com/chenningg/hermitboard-api/graph"
 	"golang.org/x/crypto/bcrypt"
 )
 
-// TODO: Make sure an already logged in account from the same IP and device can't login again.
 // LoginToAccount logs in an account.
+// TODO: Make sure an already logged in account from the same IP and device can't login again.
 func (authService AuthService) LoginToAccount(
 	ctx context.Context, input LoginToAccountInput,
 ) (
@@ -21,12 +22,15 @@ func (authService AuthService) LoginToAccount(
 ) {
 	// Check for missing values.
 	if input.Username == "" || input.Password == "" {
-		return nil, fmt.Errorf("%w: auth.LoginToAccount(): missing username or password", ErrBadInput)
+		return nil, fmt.Errorf(
+			"auth.LoginToAccount(): %w", graph.NewGraphQLError("missing username or password", graph.BadUserInput),
+		)
 	}
 
 	if len(input.Password) < 8 {
 		return nil, fmt.Errorf(
-			"%w: auth.LoginToAccount(): password must be a minimum of 8 alphanumeric characters", ErrBadInput,
+			"auth.LoginToAccount(): %w",
+			graph.NewGraphQLError("password must be a minimum of 8 alphanumeric characters", graph.BadUserInput),
 		)
 	}
 
@@ -34,7 +38,7 @@ func (authService AuthService) LoginToAccount(
 
 	if IsLoggedIn(session) {
 		return nil, fmt.Errorf(
-			"%w: auth.LoginToAccount(): already logged in", ErrBadInput,
+			"auth.LoginToAccount(): %w", graph.NewGraphQLError("already logged in", graph.Forbidden),
 		)
 	}
 
@@ -50,13 +54,17 @@ func (authService AuthService) LoginToAccount(
 	).All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"%w: auth.LoginToAccount(): could not retrieve matching accounts from database for login: %v", ErrInternal,
-			err,
+			"auth.LoginToAccount(): %w: %v", graph.NewGraphQLError(
+				"could not retrieve matching accounts from database for login", graph.InternalServerError,
+			), err,
 		)
 	}
 	// If no accounts found, return incorrect username or password.
 	if len(accounts) == 0 {
-		return nil, ErrIncorrectUsernameOrPassword
+		return nil, fmt.Errorf(
+			"auth.LoginToAccount(): %w: could not find a matching account in the database",
+			graph.NewGraphQLError("incorrect username or password", graph.Unauthenticated),
+		)
 	}
 
 	for _, acc := range accounts {
@@ -73,8 +81,8 @@ func (authService AuthService) LoginToAccount(
 			authRoles, err := acc.QueryAuthRoles().All(ctx)
 			if err != nil {
 				return nil, fmt.Errorf(
-					"%w: auth.LoginToStaffAccount(): could not retrieve auth roles of the staff account: %v",
-					ErrInternal, err,
+					"auth.LoginToAccount(): could not retrieve auth roles of the logging in account: %w: %v",
+					graph.NewGraphQLError("could not load account", graph.InternalServerError), err,
 				)
 			}
 
@@ -87,8 +95,8 @@ func (authService AuthService) LoginToAccount(
 			newSession, err := authService.createSession(ctx, acc.ID, authRoleValues...)
 			if err != nil {
 				return nil, fmt.Errorf(
-					"%w: auth.LoginToStaffAccount(): could not create a new session: %v",
-					ErrInternal, err,
+					"auth.LoginToAccount(): %w: %v",
+					graph.NewGraphQLError("could not create a new session", graph.InternalServerError), err,
 				)
 			}
 
@@ -100,7 +108,10 @@ func (authService AuthService) LoginToAccount(
 	}
 
 	// If we reach here, no accounts match the given username and password. Return an error.
-	return nil, ErrIncorrectUsernameOrPassword
+	return nil, fmt.Errorf(
+		"auth.LoginToAccount(): %w",
+		graph.NewGraphQLError("invalid username or password", graph.Unauthenticated),
+	)
 }
 
 func (authService AuthService) LoginToStaffAccount(
@@ -108,12 +119,15 @@ func (authService AuthService) LoginToStaffAccount(
 ) (*LoginToStaffAccountPayload, error) {
 	// Check for missing values.
 	if input.Username == "" || input.Password == "" {
-		return nil, fmt.Errorf("%w: auth.LoginToStaffAccount(): missing username or password", ErrBadInput)
+		return nil, fmt.Errorf(
+			"auth.LoginToStaffAccount(): %w", graph.NewGraphQLError("missing username or password", graph.BadUserInput),
+		)
 	}
 
 	if len(input.Password) < 8 {
 		return nil, fmt.Errorf(
-			"%w: auth.LoginToStaffAccount(): password must be a minimum of 8 alphanumeric characters", ErrBadInput,
+			"auth.LoginToStaffAccount(): %w",
+			graph.NewGraphQLError("password must be a minimum of 8 alphanumeric characters", graph.BadUserInput),
 		)
 	}
 
@@ -121,7 +135,7 @@ func (authService AuthService) LoginToStaffAccount(
 
 	if IsLoggedIn(session) {
 		return nil, fmt.Errorf(
-			"%w: auth.LoginToStaffAccount(): already logged in", ErrBadInput,
+			"auth.LoginToStaffAccount(): %w", graph.NewGraphQLError("already logged in", graph.Forbidden),
 		)
 	}
 
@@ -138,14 +152,19 @@ func (authService AuthService) LoginToStaffAccount(
 	).All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"%w: auth.LoginToStaffAccount(): could not retrieve matching staff accounts from database for login: %v",
-			ErrInternal,
-			err,
+			"auth.LoginToStaffAccount(): %w: %v", graph.NewGraphQLError(
+				"could not retrieve matching staff accounts from database for login", graph.InternalServerError,
+			), err,
 		)
 	}
 	// If no accounts found, return incorrect username or password.
 	if len(staffAccounts) == 0 {
-		return nil, ErrIncorrectUsernameOrPassword
+		return nil, fmt.Errorf(
+			"auth.LoginToStaffAccount(): %w: could not find a matching staff account in the database",
+			graph.NewGraphQLError(
+				"incorrect username or password", graph.Unauthenticated,
+			),
+		)
 	}
 
 	for _, staffAcc := range staffAccounts {
@@ -162,8 +181,8 @@ func (authService AuthService) LoginToStaffAccount(
 			authRoles, err := staffAcc.QueryAuthRoles().All(ctx)
 			if err != nil {
 				return nil, fmt.Errorf(
-					"%w: auth.LoginToStaffAccount(): could not retrieve auth roles of the staff account: %v",
-					ErrInternal, err,
+					"auth.LoginToStaffAccount(): %w: could not retrieve auth roles of the logging in staff account: %v",
+					graph.NewGraphQLError("could not load staff account", graph.InternalServerError), err,
 				)
 			}
 
@@ -176,8 +195,8 @@ func (authService AuthService) LoginToStaffAccount(
 			newSession, err := authService.createSession(ctx, staffAcc.ID, authRoleValues...)
 			if err != nil {
 				return nil, fmt.Errorf(
-					"%w: auth.LoginToStaffAccount(): could not create a new session: %v",
-					ErrInternal, err,
+					"auth.LoginToStaffAccount(): %w: %v",
+					graph.NewGraphQLError("could not create a new session", graph.InternalServerError), err,
 				)
 			}
 
@@ -188,6 +207,9 @@ func (authService AuthService) LoginToStaffAccount(
 		}
 	}
 
-	// If we reach here, no accounts match the given username and password. Return an error.
-	return nil, ErrIncorrectUsernameOrPassword
+	// If we reach here, no staff accounts match the given username and password. Return an error.
+	return nil, fmt.Errorf(
+		"auth.LoginToStaffAccount(): %w",
+		graph.NewGraphQLError("invalid username or password", graph.Unauthenticated),
+	)
 }

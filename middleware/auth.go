@@ -3,11 +3,11 @@ package middleware
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/chenningg/hermitboard-api/auth"
+	"github.com/chenningg/hermitboard-api/graph"
 )
 
 // Auth checks for a session ID in the Authorization header and hydrates the context with the session ID of the requester.
@@ -23,8 +23,10 @@ func Auth(authService auth.AuthServicer) func(next http.Handler) http.Handler {
 			if authorizationStr != "" {
 				authorizationStrArr := strings.Fields(authorizationStr)
 				if len(authorizationStrArr) != 2 {
-					http.Error(w, "invalid authorization token format", http.StatusUnauthorized)
-					panic(fmt.Errorf("invalid authorization token format"))
+					http.Error(
+						w, "invalid authorization token format, expecting `Bearer <token>`", http.StatusUnauthorized,
+					)
+					return
 				}
 
 				// Just ignore token type "Bearer"
@@ -35,18 +37,24 @@ func Auth(authService auth.AuthServicer) func(next http.Handler) http.Handler {
 				sessionToken, err := auth.ParseSessionToken(sessionTokenStr)
 				if err != nil {
 					http.Error(w, "invalid authorization token format", http.StatusUnauthorized)
-					panic(err)
+					return
 				}
 
 				// Retrieve session from Redis and reset its expiry if found.
 				session, err := authService.GetSessionFromStore(ctx, sessionToken)
 				if err != nil {
 					// Session key not found, probably expired. Redirect to log in.
-					if errors.Is(err, auth.ErrNotFound) {
-						http.Error(w, "session ID not found or expired", http.StatusNotFound)
+					var graphQLError *graph.GraphQLError
+					if errors.As(err, graphQLError) {
+						if graphQLError.Code == graph.InternalServerError {
+							http.Error(w, graphQLError.Msg, http.StatusInternalServerError)
+						} else {
+							http.Error(w, graphQLError.Msg, http.StatusUnauthorized)
+						}
 					} else {
 						http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 					}
+					return
 				}
 
 				// Store the Session struct into context.

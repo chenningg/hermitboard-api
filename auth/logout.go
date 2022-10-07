@@ -3,6 +3,8 @@ package auth
 import (
 	"context"
 	"fmt"
+
+	"github.com/chenningg/hermitboard-api/graph"
 )
 
 func (authService AuthService) Logout(ctx context.Context) error {
@@ -10,7 +12,10 @@ func (authService AuthService) Logout(ctx context.Context) error {
 
 	// If not logged in, then naturally you cannot log out.
 	if !IsLoggedIn(session) {
-		return fmt.Errorf("%w: you are not logged in, unable to logout", ErrBadInput)
+		return fmt.Errorf(
+			"auth.Logout(): %w",
+			graph.NewGraphQLError("you are not logged in, unable to logout", graph.Unauthenticated),
+		)
 	}
 
 	// Otherwise delete all sessions from Redis.
@@ -18,7 +23,10 @@ func (authService AuthService) Logout(ctx context.Context) error {
 		ctx, fmt.Sprintf("%s:%s", SessionRedisKey, session.Token),
 	).Result()
 	if err != nil {
-		return fmt.Errorf("%w: unable to delete session to logout: %v", ErrInternal, err)
+		return fmt.Errorf(
+			"auth.Logout(): %w: %v",
+			graph.NewGraphQLError("session could not be terminated", graph.InternalServerError), err,
+		)
 	}
 
 	return nil
