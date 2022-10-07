@@ -11,8 +11,8 @@ import (
 	"strconv"
 
 	"github.com/chenningg/hermitboard-api/ent/authrole"
-	"github.com/chenningg/hermitboard-api/graph"
 	"github.com/chenningg/hermitboard-api/pulid"
+	"github.com/chenningg/hermitboard-api/resperror"
 	"github.com/go-redis/redis/v9"
 )
 
@@ -131,7 +131,7 @@ func (authService AuthService) setSessionInStore(ctx context.Context, session *S
 	if err != nil {
 		return fmt.Errorf(
 			"auth.setSessionInStore(): %w: failed to serialize session for Redis storage: %v",
-			graph.NewGraphQLError("could not store session", graph.InternalServerError), err,
+			resperror.NewGraphQLError("could not store session", resperror.GQLInternalServerError), err,
 		)
 	}
 
@@ -143,7 +143,7 @@ func (authService AuthService) setSessionInStore(ctx context.Context, session *S
 	if err != nil {
 		return fmt.Errorf(
 			"auth.setSessionInStore(): %w: %v",
-			graph.NewGraphQLError("could not store session", graph.InternalServerError), err,
+			resperror.NewGraphQLError("could not store session", resperror.GQLInternalServerError), err,
 		)
 	}
 
@@ -160,12 +160,12 @@ func (authService AuthService) GetSessionFromStore(ctx context.Context, sessionT
 		if errors.Is(err, redis.Nil) {
 			return nil, fmt.Errorf(
 				"auth.GetSessionFromStore(): %w: %v",
-				graph.NewGraphQLError("session could not be found", graph.Unauthenticated), err,
+				resperror.NewGraphQLError("session could not be found", resperror.GQLUnauthenticated), err,
 			)
 		}
 		return nil, fmt.Errorf(
 			"auth.GetSessionFromStore(): %w: %v",
-			graph.NewGraphQLError("could not retrieve session", graph.InternalServerError), err,
+			resperror.NewGraphQLError("could not retrieve session", resperror.GQLInternalServerError), err,
 		)
 	}
 
@@ -175,7 +175,7 @@ func (authService AuthService) GetSessionFromStore(ctx context.Context, sessionT
 	if err != nil {
 		return nil, fmt.Errorf(
 			"auth.GetSessionFromStore(): %w: failed to unmarshal session from Redis: %v",
-			graph.NewGraphQLError("could not retrieve session", graph.InternalServerError), err,
+			resperror.NewGraphQLError("could not retrieve session", resperror.GQLInternalServerError), err,
 		)
 	}
 
@@ -188,7 +188,7 @@ func (authService AuthService) GetSessionFromStore(ctx context.Context, sessionT
 	if err != nil {
 		return nil, fmt.Errorf(
 			"auth.GetSessionFromStore(): %w: %v",
-			graph.NewGraphQLError("could not refresh session", graph.InternalServerError), err,
+			resperror.NewGraphQLError("could not refresh session", resperror.GQLInternalServerError), err,
 		)
 	}
 
@@ -200,7 +200,7 @@ func ParseSessionToken(sessionTokenStr string) (SessionToken, error) {
 	if sessionTokenStr == "" || len(sessionTokenStr) != 40 {
 		return "", fmt.Errorf(
 			"auth.ParseSessionToken(): %w",
-			graph.NewGraphQLError("invalid session token", graph.Unauthenticated),
+			resperror.NewGraphQLError("invalid session token", resperror.GQLUnauthenticated),
 		)
 	}
 	return SessionToken(sessionTokenStr), nil
@@ -222,7 +222,7 @@ func (sessionToken *SessionToken) UnmarshalGQL(val interface{}) error {
 	if !ok {
 		return fmt.Errorf(
 			"auth.SessionToken.UnmarshalGQL(): %w: current token type %T",
-			graph.NewGraphQLError("session token must be a string", graph.GraphQlValidationFailed), val,
+			resperror.NewGraphQLError("session token must be a string", resperror.GQLValidationFailed), val,
 		)
 	}
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/chenningg/hermitboard-api/graph"
+	"github.com/chenningg/hermitboard-api/resperror"
 )
 
 func (authService AuthService) Logout(ctx context.Context) error {
@@ -14,7 +14,7 @@ func (authService AuthService) Logout(ctx context.Context) error {
 	if !IsLoggedIn(session) {
 		return fmt.Errorf(
 			"auth.Logout(): %w",
-			graph.NewGraphQLError("you are not logged in, unable to logout", graph.Unauthenticated),
+			resperror.NewGraphQLError("you are not logged in, unable to logout", resperror.GQLUnauthenticated),
 		)
 	}
 
@@ -25,7 +25,7 @@ func (authService AuthService) Logout(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf(
 			"auth.Logout(): %w: %v",
-			graph.NewGraphQLError("session could not be terminated", graph.InternalServerError), err,
+			resperror.NewGraphQLError("session could not be terminated", resperror.GQLInternalServerError), err,
 		)
 	}
 

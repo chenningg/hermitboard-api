@@ -9,7 +9,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/authrole"
 	"github.com/chenningg/hermitboard-api/ent/authtype"
 	"github.com/chenningg/hermitboard-api/ent/staffaccount"
-	"github.com/chenningg/hermitboard-api/graph"
+	"github.com/chenningg/hermitboard-api/resperror"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,14 +23,17 @@ func (authService AuthService) LoginToAccount(
 	// Check for missing values.
 	if input.Username == "" || input.Password == "" {
 		return nil, fmt.Errorf(
-			"auth.LoginToAccount(): %w", graph.NewGraphQLError("missing username or password", graph.BadUserInput),
+			"auth.LoginToAccount(): %w",
+			resperror.NewGraphQLError("missing username or password", resperror.GQLBadUserInput),
 		)
 	}
 
 	if len(input.Password) < 8 {
 		return nil, fmt.Errorf(
 			"auth.LoginToAccount(): %w",
-			graph.NewGraphQLError("password must be a minimum of 8 alphanumeric characters", graph.BadUserInput),
+			resperror.NewGraphQLError(
+				"password must be a minimum of 8 alphanumeric characters", resperror.GQLBadUserInput,
+			),
 		)
 	}
 
@@ -38,7 +41,7 @@ func (authService AuthService) LoginToAccount(
 
 	if IsLoggedIn(session) {
 		return nil, fmt.Errorf(
-			"auth.LoginToAccount(): %w", graph.NewGraphQLError("already logged in", graph.Forbidden),
+			"auth.LoginToAccount(): %w", resperror.NewGraphQLError("already logged in", resperror.GQLForbidden),
 		)
 	}
 
@@ -54,8 +57,8 @@ func (authService AuthService) LoginToAccount(
 	).All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"auth.LoginToAccount(): %w: %v", graph.NewGraphQLError(
-				"could not retrieve matching accounts from database for login", graph.InternalServerError,
+			"auth.LoginToAccount(): %w: %v", resperror.NewGraphQLError(
+				"could not retrieve matching accounts from database for login", resperror.GQLInternalServerError,
 			), err,
 		)
 	}
@@ -63,7 +66,7 @@ func (authService AuthService) LoginToAccount(
 	if len(accounts) == 0 {
 		return nil, fmt.Errorf(
 			"auth.LoginToAccount(): %w: could not find a matching account in the database",
-			graph.NewGraphQLError("incorrect username or password", graph.Unauthenticated),
+			resperror.NewGraphQLError("incorrect username or password", resperror.GQLUnauthenticated),
 		)
 	}
 
@@ -82,7 +85,7 @@ func (authService AuthService) LoginToAccount(
 			if err != nil {
 				return nil, fmt.Errorf(
 					"auth.LoginToAccount(): could not retrieve auth roles of the logging in account: %w: %v",
-					graph.NewGraphQLError("could not load account", graph.InternalServerError), err,
+					resperror.NewGraphQLError("could not load account", resperror.GQLInternalServerError), err,
 				)
 			}
 
@@ -96,7 +99,7 @@ func (authService AuthService) LoginToAccount(
 			if err != nil {
 				return nil, fmt.Errorf(
 					"auth.LoginToAccount(): %w: %v",
-					graph.NewGraphQLError("could not create a new session", graph.InternalServerError), err,
+					resperror.NewGraphQLError("could not create a new session", resperror.GQLInternalServerError), err,
 				)
 			}
 
@@ -110,7 +113,7 @@ func (authService AuthService) LoginToAccount(
 	// If we reach here, no accounts match the given username and password. Return an error.
 	return nil, fmt.Errorf(
 		"auth.LoginToAccount(): %w",
-		graph.NewGraphQLError("invalid username or password", graph.Unauthenticated),
+		resperror.NewGraphQLError("invalid username or password", resperror.GQLUnauthenticated),
 	)
 }
 
@@ -120,14 +123,17 @@ func (authService AuthService) LoginToStaffAccount(
 	// Check for missing values.
 	if input.Username == "" || input.Password == "" {
 		return nil, fmt.Errorf(
-			"auth.LoginToStaffAccount(): %w", graph.NewGraphQLError("missing username or password", graph.BadUserInput),
+			"auth.LoginToStaffAccount(): %w",
+			resperror.NewGraphQLError("missing username or password", resperror.GQLBadUserInput),
 		)
 	}
 
 	if len(input.Password) < 8 {
 		return nil, fmt.Errorf(
 			"auth.LoginToStaffAccount(): %w",
-			graph.NewGraphQLError("password must be a minimum of 8 alphanumeric characters", graph.BadUserInput),
+			resperror.NewGraphQLError(
+				"password must be a minimum of 8 alphanumeric characters", resperror.GQLBadUserInput,
+			),
 		)
 	}
 
@@ -135,7 +141,7 @@ func (authService AuthService) LoginToStaffAccount(
 
 	if IsLoggedIn(session) {
 		return nil, fmt.Errorf(
-			"auth.LoginToStaffAccount(): %w", graph.NewGraphQLError("already logged in", graph.Forbidden),
+			"auth.LoginToStaffAccount(): %w", resperror.NewGraphQLError("already logged in", resperror.GQLForbidden),
 		)
 	}
 
@@ -152,8 +158,8 @@ func (authService AuthService) LoginToStaffAccount(
 	).All(ctx)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"auth.LoginToStaffAccount(): %w: %v", graph.NewGraphQLError(
-				"could not retrieve matching staff accounts from database for login", graph.InternalServerError,
+			"auth.LoginToStaffAccount(): %w: %v", resperror.NewGraphQLError(
+				"could not retrieve matching staff accounts from database for login", resperror.GQLInternalServerError,
 			), err,
 		)
 	}
@@ -161,8 +167,8 @@ func (authService AuthService) LoginToStaffAccount(
 	if len(staffAccounts) == 0 {
 		return nil, fmt.Errorf(
 			"auth.LoginToStaffAccount(): %w: could not find a matching staff account in the database",
-			graph.NewGraphQLError(
-				"incorrect username or password", graph.Unauthenticated,
+			resperror.NewGraphQLError(
+				"incorrect username or password", resperror.GQLUnauthenticated,
 			),
 		)
 	}
@@ -182,7 +188,7 @@ func (authService AuthService) LoginToStaffAccount(
 			if err != nil {
 				return nil, fmt.Errorf(
 					"auth.LoginToStaffAccount(): %w: could not retrieve auth roles of the logging in staff account: %v",
-					graph.NewGraphQLError("could not load staff account", graph.InternalServerError), err,
+					resperror.NewGraphQLError("could not load staff account", resperror.GQLInternalServerError), err,
 				)
 			}
 
@@ -196,7 +202,7 @@ func (authService AuthService) LoginToStaffAccount(
 			if err != nil {
 				return nil, fmt.Errorf(
 					"auth.LoginToStaffAccount(): %w: %v",
-					graph.NewGraphQLError("could not create a new session", graph.InternalServerError), err,
+					resperror.NewGraphQLError("could not create a new session", resperror.GQLInternalServerError), err,
 				)
 			}
 
@@ -210,6 +216,6 @@ func (authService AuthService) LoginToStaffAccount(
 	// If we reach here, no staff accounts match the given username and password. Return an error.
 	return nil, fmt.Errorf(
 		"auth.LoginToStaffAccount(): %w",
-		graph.NewGraphQLError("invalid username or password", graph.Unauthenticated),
+		resperror.NewGraphQLError("invalid username or password", resperror.GQLUnauthenticated),
 	)
 }
