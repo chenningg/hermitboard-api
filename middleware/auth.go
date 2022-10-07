@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/chenningg/hermitboard-api/auth"
-	"github.com/chenningg/hermitboard-api/graph"
+	"github.com/chenningg/hermitboard-api/resperror"
 )
 
 // Auth checks for a session ID in the Authorization header and hydrates the context with the session ID of the requester.
@@ -44,9 +44,9 @@ func Auth(authService auth.AuthServicer) func(next http.Handler) http.Handler {
 				session, err := authService.GetSessionFromStore(ctx, sessionToken)
 				if err != nil {
 					// Session key not found, probably expired. Redirect to log in.
-					var graphQLError *graph.GraphQLError
+					var graphQLError *resperror.GraphQLError
 					if errors.As(err, graphQLError) {
-						if graphQLError.Code == graph.InternalServerError {
+						if graphQLError.Code == resperror.GQLInternalServerError {
 							http.Error(w, graphQLError.Msg, http.StatusInternalServerError)
 						} else {
 							http.Error(w, graphQLError.Msg, http.StatusUnauthorized)

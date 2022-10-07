@@ -31,13 +31,13 @@ var graphQLErrorCodeToStatus = map[GraphQLErrorCode]int{
 }
 
 // Error implements the error interface.
-func (graphQLError GraphQLError) Error() string {
+func (graphQLError *GraphQLError) Error() string {
 	return graphQLError.Msg
 }
 
 // NewGraphQLError creates a new GraphQLError. The message must be safe for external consumption.
-func NewGraphQLError(msg string, code GraphQLErrorCode) GraphQLError {
-	return GraphQLError{Msg: msg, Code: code}
+func NewGraphQLError(msg string, code GraphQLErrorCode) error {
+	return &GraphQLError{Msg: msg, Code: code}
 }
 
 func GraphQLErrorCodeToStatus(code GraphQLErrorCode) int {

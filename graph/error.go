@@ -28,19 +28,21 @@ func AddGraphQLError(ctx context.Context, err error) {
 
 // ErrorPresenter captures errors returned from resolvers and formats them.
 func ErrorPresenter(ctx context.Context, e error) *gqlerror.Error {
-	// First, call the normal graphQL error presenter to add the request path to the error.
-	err := graphql.DefaultErrorPresenter(ctx, e)
-
-	// Turn the error into our custom error and add extra fields.
+	// If we manage to find our custom error, return our error instead.
 	var graphQLError *resperror.GraphQLError
-	if errors.As(err, &graphQLError) {
-		err.Message = graphQLError.Msg
-		err.Extensions = map[string]interface{}{
-			"code":           graphQLError.Code,
-			"responseStatus": resperror.GraphQLErrorCodeToStatus(graphQLError.Code),
+	if errors.As(e, &graphQLError) {
+		return &gqlerror.Error{
+			Path:    graphql.GetPath(ctx),
+			Message: graphQLError.Msg,
+			Extensions: map[string]interface{}{
+				"code":           graphQLError.Code,
+				"responseStatus": resperror.GraphQLErrorCodeToStatus(graphQLError.Code),
+			},
 		}
 	}
 
+	// Otherwise, call the normal graphQL error presenter to add the request path to the error.
+	err := graphql.DefaultErrorPresenter(ctx, e)
 	return err
 }
 
