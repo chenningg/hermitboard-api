@@ -99,12 +99,10 @@ func main() {
 	srv.Use(entgql.Transactioner{TxOpener: dbService.Client()})
 
 	// Set custom error presenter to capture GraphQL errors returned from resolvers.
-	srv.SetErrorPresenter(
-		graph.ErrorPresenter,
-	)
+	srv.SetErrorPresenter(graph.ErrorPresenter)
 
-	// Set recoverer func to handle panics.
-	srv.SetRecoverFunc()
+	// Set recover func to handle panics.
+	srv.SetRecoverFunc(graph.Recover)
 
 	// Routes.
 	// Only show playground if in development.
@@ -130,5 +128,4 @@ func main() {
 			"port", cfg.Server.Port,
 		)
 	}
-
 }
