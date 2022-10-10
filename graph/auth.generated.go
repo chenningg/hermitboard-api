@@ -236,6 +236,8 @@ func (ec *executionContext) fieldContext_CreateAccountPayload_account(ctx contex
 				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
+			case "friends":
+				return ec.fieldContext_Account_friends(ctx, field)
 			case "authRoles":
 				return ec.fieldContext_Account_authRoles(ctx, field)
 			case "portfolios":
@@ -476,6 +478,8 @@ func (ec *executionContext) fieldContext_LoginToAccountPayload_account(ctx conte
 				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
+			case "friends":
+				return ec.fieldContext_Account_friends(ctx, field)
 			case "authRoles":
 				return ec.fieldContext_Account_authRoles(ctx, field)
 			case "portfolios":

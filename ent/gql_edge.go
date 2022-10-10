@@ -8,6 +8,27 @@ import (
 	"github.com/99designs/gqlgen/graphql"
 )
 
+func (a *Account) Friends(
+	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AccountOrder, where *AccountWhereInput,
+) (*AccountConnection, error) {
+	opts := []AccountPaginateOption{
+		WithAccountOrder(orderBy),
+		WithAccountFilter(where.Filter),
+	}
+	alias := graphql.GetFieldContext(ctx).Field.Alias
+	totalCount, hasTotalCount := a.Edges.totalCount[0][alias]
+	if nodes, err := a.NamedFriends(alias); err == nil || hasTotalCount {
+		pager, err := newAccountPager(opts)
+		if err != nil {
+			return nil, err
+		}
+		conn := &AccountConnection{Edges: []*AccountEdge{}, TotalCount: totalCount}
+		conn.build(nodes, pager, after, first, before, last)
+		return conn, nil
+	}
+	return a.QueryFriends().Paginate(ctx, after, first, before, last, opts...)
+}
+
 func (a *Account) AuthRoles(
 	ctx context.Context, after *Cursor, first *int, before *Cursor, last *int, orderBy *AuthRoleOrder, where *AuthRoleWhereInput,
 ) (*AuthRoleConnection, error) {
@@ -16,7 +37,7 @@ func (a *Account) AuthRoles(
 		WithAuthRoleFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := a.Edges.totalCount[0][alias]
+	totalCount, hasTotalCount := a.Edges.totalCount[1][alias]
 	if nodes, err := a.NamedAuthRoles(alias); err == nil || hasTotalCount {
 		pager, err := newAuthRolePager(opts)
 		if err != nil {
@@ -37,7 +58,7 @@ func (a *Account) Portfolios(
 		WithPortfolioFilter(where.Filter),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := a.Edges.totalCount[1][alias]
+	totalCount, hasTotalCount := a.Edges.totalCount[2][alias]
 	if nodes, err := a.NamedPortfolios(alias); err == nil || hasTotalCount {
 		pager, err := newPortfolioPager(opts)
 		if err != nil {
@@ -65,7 +86,7 @@ func (a *Account) Connections(
 		WithConnectionOrder(orderBy),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := a.Edges.totalCount[3][alias]
+	totalCount, hasTotalCount := a.Edges.totalCount[4][alias]
 	if nodes, err := a.NamedConnections(alias); err == nil || hasTotalCount {
 		pager, err := newConnectionPager(opts)
 		if err != nil {

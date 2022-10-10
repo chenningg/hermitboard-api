@@ -73,6 +73,9 @@ type AccountMutation struct {
 	password            *string
 	password_updated_at *time.Time
 	clearedFields       map[string]struct{}
+	friends             map[pulid.PULID]struct{}
+	removedfriends      map[pulid.PULID]struct{}
+	clearedfriends      bool
 	auth_roles          map[pulid.PULID]struct{}
 	removedauth_roles   map[pulid.PULID]struct{}
 	clearedauth_roles   bool
@@ -518,6 +521,60 @@ func (m *AccountMutation) PasswordUpdatedAtCleared() bool {
 func (m *AccountMutation) ResetPasswordUpdatedAt() {
 	m.password_updated_at = nil
 	delete(m.clearedFields, account.FieldPasswordUpdatedAt)
+}
+
+// AddFriendIDs adds the "friends" edge to the Account entity by ids.
+func (m *AccountMutation) AddFriendIDs(ids ...pulid.PULID) {
+	if m.friends == nil {
+		m.friends = make(map[pulid.PULID]struct{})
+	}
+	for i := range ids {
+		m.friends[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFriends clears the "friends" edge to the Account entity.
+func (m *AccountMutation) ClearFriends() {
+	m.clearedfriends = true
+}
+
+// FriendsCleared reports if the "friends" edge to the Account entity was cleared.
+func (m *AccountMutation) FriendsCleared() bool {
+	return m.clearedfriends
+}
+
+// RemoveFriendIDs removes the "friends" edge to the Account entity by IDs.
+func (m *AccountMutation) RemoveFriendIDs(ids ...pulid.PULID) {
+	if m.removedfriends == nil {
+		m.removedfriends = make(map[pulid.PULID]struct{})
+	}
+	for i := range ids {
+		delete(m.friends, ids[i])
+		m.removedfriends[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFriends returns the removed IDs of the "friends" edge to the Account entity.
+func (m *AccountMutation) RemovedFriendsIDs() (ids []pulid.PULID) {
+	for id := range m.removedfriends {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FriendsIDs returns the "friends" edge IDs in the mutation.
+func (m *AccountMutation) FriendsIDs() (ids []pulid.PULID) {
+	for id := range m.friends {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFriends resets all changes to the "friends" edge.
+func (m *AccountMutation) ResetFriends() {
+	m.friends = nil
+	m.clearedfriends = false
+	m.removedfriends = nil
 }
 
 // AddAuthRoleIDs adds the "auth_roles" edge to the AuthRole entity by ids.
@@ -979,7 +1036,10 @@ func (m *AccountMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *AccountMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
+	if m.friends != nil {
+		edges = append(edges, account.EdgeFriends)
+	}
 	if m.auth_roles != nil {
 		edges = append(edges, account.EdgeAuthRoles)
 	}
@@ -999,6 +1059,12 @@ func (m *AccountMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *AccountMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case account.EdgeFriends:
+		ids := make([]ent.Value, 0, len(m.friends))
+		for id := range m.friends {
+			ids = append(ids, id)
+		}
+		return ids
 	case account.EdgeAuthRoles:
 		ids := make([]ent.Value, 0, len(m.auth_roles))
 		for id := range m.auth_roles {
@@ -1027,7 +1093,10 @@ func (m *AccountMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AccountMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
+	if m.removedfriends != nil {
+		edges = append(edges, account.EdgeFriends)
+	}
 	if m.removedauth_roles != nil {
 		edges = append(edges, account.EdgeAuthRoles)
 	}
@@ -1044,6 +1113,12 @@ func (m *AccountMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *AccountMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case account.EdgeFriends:
+		ids := make([]ent.Value, 0, len(m.removedfriends))
+		for id := range m.removedfriends {
+			ids = append(ids, id)
+		}
+		return ids
 	case account.EdgeAuthRoles:
 		ids := make([]ent.Value, 0, len(m.removedauth_roles))
 		for id := range m.removedauth_roles {
@@ -1068,7 +1143,10 @@ func (m *AccountMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *AccountMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
+	if m.clearedfriends {
+		edges = append(edges, account.EdgeFriends)
+	}
 	if m.clearedauth_roles {
 		edges = append(edges, account.EdgeAuthRoles)
 	}
@@ -1088,6 +1166,8 @@ func (m *AccountMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *AccountMutation) EdgeCleared(name string) bool {
 	switch name {
+	case account.EdgeFriends:
+		return m.clearedfriends
 	case account.EdgeAuthRoles:
 		return m.clearedauth_roles
 	case account.EdgePortfolios:
@@ -1115,6 +1195,9 @@ func (m *AccountMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *AccountMutation) ResetEdge(name string) error {
 	switch name {
+	case account.EdgeFriends:
+		m.ResetFriends()
+		return nil
 	case account.EdgeAuthRoles:
 		m.ResetAuthRoles()
 		return nil

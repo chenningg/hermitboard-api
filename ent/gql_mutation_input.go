@@ -50,6 +50,8 @@ type UpdateAccountInput struct {
 	EmailConfirmed    *bool
 	ClearPassword     bool
 	Password          *string
+	AddFriendIDs      []pulid.PULID
+	RemoveFriendIDs   []pulid.PULID
 	AddAuthRoleIDs    []pulid.PULID
 	RemoveAuthRoleIDs []pulid.PULID
 	ClearAuthType     bool
@@ -78,6 +80,12 @@ func (i *UpdateAccountInput) Mutate(m *AccountMutation) {
 	}
 	if v := i.Password; v != nil {
 		m.SetPassword(*v)
+	}
+	if v := i.AddFriendIDs; len(v) > 0 {
+		m.AddFriendIDs(v...)
+	}
+	if v := i.RemoveFriendIDs; len(v) > 0 {
+		m.RemoveFriendIDs(v...)
 	}
 	if v := i.AddAuthRoleIDs; len(v) > 0 {
 		m.AddAuthRoleIDs(v...)

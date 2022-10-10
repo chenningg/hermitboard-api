@@ -42,6 +42,8 @@ type Account struct {
 
 // AccountEdges holds the relations/edges for other nodes in the graph.
 type AccountEdges struct {
+	// Friends holds the value of the friends edge.
+	Friends []*Account `json:"friends,omitempty"`
 	// AuthRoles holds the value of the auth_roles edge.
 	AuthRoles []*AuthRole `json:"authRoles,omitempty"`
 	// Portfolios holds the value of the portfolios edge.
@@ -52,19 +54,29 @@ type AccountEdges struct {
 	Connections []*Connection `json:"connections,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 	// totalCount holds the count of the edges above.
-	totalCount [4]map[string]int
+	totalCount [5]map[string]int
 
+	namedFriends     map[string][]*Account
 	namedAuthRoles   map[string][]*AuthRole
 	namedPortfolios  map[string][]*Portfolio
 	namedConnections map[string][]*Connection
 }
 
+// FriendsOrErr returns the Friends value or an error if the edge
+// was not loaded in eager-loading.
+func (e AccountEdges) FriendsOrErr() ([]*Account, error) {
+	if e.loadedTypes[0] {
+		return e.Friends, nil
+	}
+	return nil, &NotLoadedError{edge: "friends"}
+}
+
 // AuthRolesOrErr returns the AuthRoles value or an error if the edge
 // was not loaded in eager-loading.
 func (e AccountEdges) AuthRolesOrErr() ([]*AuthRole, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		return e.AuthRoles, nil
 	}
 	return nil, &NotLoadedError{edge: "auth_roles"}
@@ -73,7 +85,7 @@ func (e AccountEdges) AuthRolesOrErr() ([]*AuthRole, error) {
 // PortfoliosOrErr returns the Portfolios value or an error if the edge
 // was not loaded in eager-loading.
 func (e AccountEdges) PortfoliosOrErr() ([]*Portfolio, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Portfolios, nil
 	}
 	return nil, &NotLoadedError{edge: "portfolios"}
@@ -82,7 +94,7 @@ func (e AccountEdges) PortfoliosOrErr() ([]*Portfolio, error) {
 // AuthTypeOrErr returns the AuthType value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e AccountEdges) AuthTypeOrErr() (*AuthType, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.AuthType == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: authtype.Label}
@@ -95,7 +107,7 @@ func (e AccountEdges) AuthTypeOrErr() (*AuthType, error) {
 // ConnectionsOrErr returns the Connections value or an error if the edge
 // was not loaded in eager-loading.
 func (e AccountEdges) ConnectionsOrErr() ([]*Connection, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Connections, nil
 	}
 	return nil, &NotLoadedError{edge: "connections"}
@@ -200,6 +212,11 @@ func (a *Account) assignValues(columns []string, values []any) error {
 	return nil
 }
 
+// QueryFriends queries the "friends" edge of the Account entity.
+func (a *Account) QueryFriends() *AccountQuery {
+	return (&AccountClient{config: a.config}).QueryFriends(a)
+}
+
 // QueryAuthRoles queries the "auth_roles" edge of the Account entity.
 func (a *Account) QueryAuthRoles() *AuthRoleQuery {
 	return (&AccountClient{config: a.config}).QueryAuthRoles(a)
@@ -271,6 +288,30 @@ func (a *Account) String() string {
 	}
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedFriends returns the Friends named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (a *Account) NamedFriends(name string) ([]*Account, error) {
+	if a.Edges.namedFriends == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := a.Edges.namedFriends[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (a *Account) appendNamedFriends(name string, edges ...*Account) {
+	if a.Edges.namedFriends == nil {
+		a.Edges.namedFriends = make(map[string][]*Account)
+	}
+	if len(edges) == 0 {
+		a.Edges.namedFriends[name] = []*Account{}
+	} else {
+		a.Edges.namedFriends[name] = append(a.Edges.namedFriends[name], edges...)
+	}
 }
 
 // NamedAuthRoles returns the AuthRoles named value or an error if the edge was not

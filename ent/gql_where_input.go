@@ -122,6 +122,10 @@ type AccountWhereInput struct {
 	PasswordUpdatedAtIsNil  bool        `json:"passwordUpdatedAtIsNil,omitempty"`
 	PasswordUpdatedAtNotNil bool        `json:"passwordUpdatedAtNotNil,omitempty"`
 
+	// "friends" edge predicates.
+	HasFriends     *bool                `json:"hasFriends,omitempty"`
+	HasFriendsWith []*AccountWhereInput `json:"hasFriendsWith,omitempty"`
+
 	// "auth_roles" edge predicates.
 	HasAuthRoles     *bool                 `json:"hasAuthRoles,omitempty"`
 	HasAuthRolesWith []*AuthRoleWhereInput `json:"hasAuthRolesWith,omitempty"`
@@ -423,6 +427,24 @@ func (i *AccountWhereInput) P() (predicate.Account, error) {
 		predicates = append(predicates, account.PasswordUpdatedAtNotNil())
 	}
 
+	if i.HasFriends != nil {
+		p := account.HasFriends()
+		if !*i.HasFriends {
+			p = account.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasFriendsWith) > 0 {
+		with := make([]predicate.Account, 0, len(i.HasFriendsWith))
+		for _, w := range i.HasFriendsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasFriendsWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, account.HasFriendsWith(with...))
+	}
 	if i.HasAuthRoles != nil {
 		p := account.HasAuthRoles()
 		if !*i.HasAuthRoles {

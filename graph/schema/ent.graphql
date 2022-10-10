@@ -9,6 +9,25 @@ type Account implements Node {
   email: String!
   emailConfirmed: Boolean!
   passwordUpdatedAt: Time
+  friends(
+    """Returns the elements in the list that come after the specified cursor."""
+    after: Cursor
+
+    """Returns the first _n_ elements from the list."""
+    first: Int
+
+    """Returns the elements in the list that come before the specified cursor."""
+    before: Cursor
+
+    """Returns the last _n_ elements from the list."""
+    last: Int
+
+    """Ordering options for Accounts returned from the connection."""
+    orderBy: AccountOrder
+
+    """Filtering options for Accounts returned from the connection."""
+    where: AccountWhereInput
+  ): AccountConnection!
   authRoles(
     """Returns the elements in the list that come after the specified cursor."""
     after: Cursor
@@ -185,6 +204,9 @@ input AccountWhereInput {
   passwordUpdatedAtLTE: Time
   passwordUpdatedAtIsNil: Boolean
   passwordUpdatedAtNotNil: Boolean
+  """friends edge predicates"""
+  hasFriends: Boolean
+  hasFriendsWith: [AccountWhereInput!]
   """auth_roles edge predicates"""
   hasAuthRoles: Boolean
   hasAuthRolesWith: [AuthRoleWhereInput!]
@@ -2841,6 +2863,8 @@ input UpdateAccountInput {
   emailConfirmed: Boolean
   clearPassword: Boolean
   password: String
+  addFriendIDs: [ID!]
+  removeFriendIDs: [ID!]
   addAuthRoleIDs: [ID!]
   removeAuthRoleIDs: [ID!]
   clearAuthType: Boolean

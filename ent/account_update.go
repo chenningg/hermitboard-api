@@ -109,6 +109,21 @@ func (au *AccountUpdate) ClearPasswordUpdatedAt() *AccountUpdate {
 	return au
 }
 
+// AddFriendIDs adds the "friends" edge to the Account entity by IDs.
+func (au *AccountUpdate) AddFriendIDs(ids ...pulid.PULID) *AccountUpdate {
+	au.mutation.AddFriendIDs(ids...)
+	return au
+}
+
+// AddFriends adds the "friends" edges to the Account entity.
+func (au *AccountUpdate) AddFriends(a ...*Account) *AccountUpdate {
+	ids := make([]pulid.PULID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.AddFriendIDs(ids...)
+}
+
 // AddAuthRoleIDs adds the "auth_roles" edge to the AuthRole entity by IDs.
 func (au *AccountUpdate) AddAuthRoleIDs(ids ...pulid.PULID) *AccountUpdate {
 	au.mutation.AddAuthRoleIDs(ids...)
@@ -168,6 +183,27 @@ func (au *AccountUpdate) AddConnections(c ...*Connection) *AccountUpdate {
 // Mutation returns the AccountMutation object of the builder.
 func (au *AccountUpdate) Mutation() *AccountMutation {
 	return au.mutation
+}
+
+// ClearFriends clears all "friends" edges to the Account entity.
+func (au *AccountUpdate) ClearFriends() *AccountUpdate {
+	au.mutation.ClearFriends()
+	return au
+}
+
+// RemoveFriendIDs removes the "friends" edge to Account entities by IDs.
+func (au *AccountUpdate) RemoveFriendIDs(ids ...pulid.PULID) *AccountUpdate {
+	au.mutation.RemoveFriendIDs(ids...)
+	return au
+}
+
+// RemoveFriends removes "friends" edges to Account entities.
+func (au *AccountUpdate) RemoveFriends(a ...*Account) *AccountUpdate {
+	ids := make([]pulid.PULID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return au.RemoveFriendIDs(ids...)
 }
 
 // ClearAuthRoles clears all "auth_roles" edges to the AuthRole entity.
@@ -423,6 +459,60 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeTime,
 			Column: account.FieldPasswordUpdatedAt,
 		})
+	}
+	if au.mutation.FriendsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   account.FriendsTable,
+			Columns: account.FriendsPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: account.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.RemovedFriendsIDs(); len(nodes) > 0 && !au.mutation.FriendsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   account.FriendsTable,
+			Columns: account.FriendsPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: account.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := au.mutation.FriendsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   account.FriendsTable,
+			Columns: account.FriendsPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: account.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if au.mutation.AuthRolesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -716,6 +806,21 @@ func (auo *AccountUpdateOne) ClearPasswordUpdatedAt() *AccountUpdateOne {
 	return auo
 }
 
+// AddFriendIDs adds the "friends" edge to the Account entity by IDs.
+func (auo *AccountUpdateOne) AddFriendIDs(ids ...pulid.PULID) *AccountUpdateOne {
+	auo.mutation.AddFriendIDs(ids...)
+	return auo
+}
+
+// AddFriends adds the "friends" edges to the Account entity.
+func (auo *AccountUpdateOne) AddFriends(a ...*Account) *AccountUpdateOne {
+	ids := make([]pulid.PULID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.AddFriendIDs(ids...)
+}
+
 // AddAuthRoleIDs adds the "auth_roles" edge to the AuthRole entity by IDs.
 func (auo *AccountUpdateOne) AddAuthRoleIDs(ids ...pulid.PULID) *AccountUpdateOne {
 	auo.mutation.AddAuthRoleIDs(ids...)
@@ -775,6 +880,27 @@ func (auo *AccountUpdateOne) AddConnections(c ...*Connection) *AccountUpdateOne 
 // Mutation returns the AccountMutation object of the builder.
 func (auo *AccountUpdateOne) Mutation() *AccountMutation {
 	return auo.mutation
+}
+
+// ClearFriends clears all "friends" edges to the Account entity.
+func (auo *AccountUpdateOne) ClearFriends() *AccountUpdateOne {
+	auo.mutation.ClearFriends()
+	return auo
+}
+
+// RemoveFriendIDs removes the "friends" edge to Account entities by IDs.
+func (auo *AccountUpdateOne) RemoveFriendIDs(ids ...pulid.PULID) *AccountUpdateOne {
+	auo.mutation.RemoveFriendIDs(ids...)
+	return auo
+}
+
+// RemoveFriends removes "friends" edges to Account entities.
+func (auo *AccountUpdateOne) RemoveFriends(a ...*Account) *AccountUpdateOne {
+	ids := make([]pulid.PULID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return auo.RemoveFriendIDs(ids...)
 }
 
 // ClearAuthRoles clears all "auth_roles" edges to the AuthRole entity.
@@ -1060,6 +1186,60 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 			Type:   field.TypeTime,
 			Column: account.FieldPasswordUpdatedAt,
 		})
+	}
+	if auo.mutation.FriendsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   account.FriendsTable,
+			Columns: account.FriendsPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: account.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.RemovedFriendsIDs(); len(nodes) > 0 && !auo.mutation.FriendsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   account.FriendsTable,
+			Columns: account.FriendsPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: account.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := auo.mutation.FriendsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   account.FriendsTable,
+			Columns: account.FriendsPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: account.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if auo.mutation.AuthRolesCleared() {
 		edge := &sqlgraph.EdgeSpec{

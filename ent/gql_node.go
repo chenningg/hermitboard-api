@@ -61,7 +61,7 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 		ID:     a.ID,
 		Type:   "Account",
 		Fields: make([]*Field, 7),
-		Edges:  make([]*Edge, 4),
+		Edges:  make([]*Edge, 5),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(a.CreatedAt); err != nil {
@@ -121,42 +121,52 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
-		Type: "AuthRole",
-		Name: "auth_roles",
+		Type: "Account",
+		Name: "friends",
 	}
-	err = a.QueryAuthRoles().
-		Select(authrole.FieldID).
+	err = a.QueryFriends().
+		Select(account.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
 		return nil, err
 	}
 	node.Edges[1] = &Edge{
-		Type: "Portfolio",
-		Name: "portfolios",
+		Type: "AuthRole",
+		Name: "auth_roles",
 	}
-	err = a.QueryPortfolios().
-		Select(portfolio.FieldID).
+	err = a.QueryAuthRoles().
+		Select(authrole.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
 	node.Edges[2] = &Edge{
-		Type: "AuthType",
-		Name: "auth_type",
+		Type: "Portfolio",
+		Name: "portfolios",
 	}
-	err = a.QueryAuthType().
-		Select(authtype.FieldID).
+	err = a.QueryPortfolios().
+		Select(portfolio.FieldID).
 		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}
 	node.Edges[3] = &Edge{
+		Type: "AuthType",
+		Name: "auth_type",
+	}
+	err = a.QueryAuthType().
+		Select(authtype.FieldID).
+		Scan(ctx, &node.Edges[3].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[4] = &Edge{
 		Type: "Connection",
 		Name: "connections",
 	}
 	err = a.QueryConnections().
 		Select(connection.FieldID).
-		Scan(ctx, &node.Edges[3].IDs)
+		Scan(ctx, &node.Edges[4].IDs)
 	if err != nil {
 		return nil, err
 	}

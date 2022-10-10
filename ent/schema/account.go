@@ -63,6 +63,11 @@ func (Account) Fields() []ent.Field {
 // Edges of the Account.
 func (Account) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("friends", Account.Type).
+			Annotations(
+				entgql.RelayConnection(), entgql.MapsTo("friends"),
+				entgql.Skip(entgql.SkipMutationCreateInput),
+			),
 		edge.To("auth_roles", AuthRole.Type).
 			Required().
 			StructTag("json:\"authRoles,omitempty\"").

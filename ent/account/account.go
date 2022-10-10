@@ -29,6 +29,8 @@ const (
 	FieldPassword = "password"
 	// FieldPasswordUpdatedAt holds the string denoting the password_updated_at field in the database.
 	FieldPasswordUpdatedAt = "password_updated_at"
+	// EdgeFriends holds the string denoting the friends edge name in mutations.
+	EdgeFriends = "friends"
 	// EdgeAuthRoles holds the string denoting the auth_roles edge name in mutations.
 	EdgeAuthRoles = "auth_roles"
 	// EdgePortfolios holds the string denoting the portfolios edge name in mutations.
@@ -39,6 +41,8 @@ const (
 	EdgeConnections = "connections"
 	// Table holds the table name of the account in the database.
 	Table = "accounts"
+	// FriendsTable is the table that holds the friends relation/edge. The primary key declared below.
+	FriendsTable = "account_friends"
 	// AuthRolesTable is the table that holds the auth_roles relation/edge. The primary key declared below.
 	AuthRolesTable = "account_auth_roles"
 	// AuthRolesInverseTable is the table name for the AuthRole entity.
@@ -87,6 +91,9 @@ var ForeignKeys = []string{
 }
 
 var (
+	// FriendsPrimaryKey and FriendsColumn2 are the table columns denoting the
+	// primary key for the friends relation (M2M).
+	FriendsPrimaryKey = []string{"account_id", "friend_id"}
 	// AuthRolesPrimaryKey and AuthRolesColumn2 are the table columns denoting the
 	// primary key for the auth_roles relation (M2M).
 	AuthRolesPrimaryKey = []string{"account_id", "auth_role_id"}

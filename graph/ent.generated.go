@@ -161,6 +161,66 @@ func (ec *executionContext) field_Account_connections_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Account_friends_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.AccountOrder
+	if tmp, ok := rawArgs["orderBy"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderBy"))
+		arg4, err = ec.unmarshalOAccountOrder2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccountOrder(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["orderBy"] = arg4
+	var arg5 *ent.AccountWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg5, err = ec.unmarshalOAccountWhereInput2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccountWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg5
+	return args, nil
+}
+
 func (ec *executionContext) field_Account_portfolios_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2228,6 +2288,69 @@ func (ec *executionContext) fieldContext_Account_passwordUpdatedAt(ctx context.C
 	return fc, nil
 }
 
+func (ec *executionContext) _Account_friends(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Account_friends(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Friends(ctx, fc.Args["after"].(*ent.Cursor), fc.Args["first"].(*int), fc.Args["before"].(*ent.Cursor), fc.Args["last"].(*int), fc.Args["orderBy"].(*ent.AccountOrder), fc.Args["where"].(*ent.AccountWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.AccountConnection)
+	fc.Result = res
+	return ec.marshalNAccountConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccountConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Account_friends(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Account",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "edges":
+				return ec.fieldContext_AccountConnection_edges(ctx, field)
+			case "pageInfo":
+				return ec.fieldContext_AccountConnection_pageInfo(ctx, field)
+			case "totalCount":
+				return ec.fieldContext_AccountConnection_totalCount(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type AccountConnection", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Account_friends_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Account_authRoles(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Account_authRoles(ctx, field)
 	if err != nil {
@@ -2672,6 +2795,8 @@ func (ec *executionContext) fieldContext_AccountEdge_node(ctx context.Context, f
 				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
+			case "friends":
+				return ec.fieldContext_Account_friends(ctx, field)
 			case "authRoles":
 				return ec.fieldContext_Account_authRoles(ctx, field)
 			case "portfolios":
@@ -6092,6 +6217,8 @@ func (ec *executionContext) fieldContext_Connection_account(ctx context.Context,
 				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
+			case "friends":
+				return ec.fieldContext_Account_friends(ctx, field)
 			case "authRoles":
 				return ec.fieldContext_Account_authRoles(ctx, field)
 			case "portfolios":
@@ -9112,6 +9239,8 @@ func (ec *executionContext) fieldContext_Portfolio_account(ctx context.Context, 
 				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
+			case "friends":
+				return ec.fieldContext_Account_friends(ctx, field)
 			case "authRoles":
 				return ec.fieldContext_Account_authRoles(ctx, field)
 			case "portfolios":
@@ -14309,7 +14438,7 @@ func (ec *executionContext) unmarshalInputAccountWhereInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "nickname", "nicknameNEQ", "nicknameIn", "nicknameNotIn", "nicknameGT", "nicknameGTE", "nicknameLT", "nicknameLTE", "nicknameContains", "nicknameHasPrefix", "nicknameHasSuffix", "nicknameEqualFold", "nicknameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "emailConfirmed", "emailConfirmedNEQ", "passwordUpdatedAt", "passwordUpdatedAtNEQ", "passwordUpdatedAtIn", "passwordUpdatedAtNotIn", "passwordUpdatedAtGT", "passwordUpdatedAtGTE", "passwordUpdatedAtLT", "passwordUpdatedAtLTE", "passwordUpdatedAtIsNil", "passwordUpdatedAtNotNil", "hasAuthRoles", "hasAuthRolesWith", "hasPortfolios", "hasPortfoliosWith", "hasAuthType", "hasAuthTypeWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "nickname", "nicknameNEQ", "nicknameIn", "nicknameNotIn", "nicknameGT", "nicknameGTE", "nicknameLT", "nicknameLTE", "nicknameContains", "nicknameHasPrefix", "nicknameHasSuffix", "nicknameEqualFold", "nicknameContainsFold", "email", "emailNEQ", "emailIn", "emailNotIn", "emailGT", "emailGTE", "emailLT", "emailLTE", "emailContains", "emailHasPrefix", "emailHasSuffix", "emailEqualFold", "emailContainsFold", "emailConfirmed", "emailConfirmedNEQ", "passwordUpdatedAt", "passwordUpdatedAtNEQ", "passwordUpdatedAtIn", "passwordUpdatedAtNotIn", "passwordUpdatedAtGT", "passwordUpdatedAtGTE", "passwordUpdatedAtLT", "passwordUpdatedAtLTE", "passwordUpdatedAtIsNil", "passwordUpdatedAtNotNil", "hasFriends", "hasFriendsWith", "hasAuthRoles", "hasAuthRolesWith", "hasPortfolios", "hasPortfoliosWith", "hasAuthType", "hasAuthTypeWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -14913,6 +15042,22 @@ func (ec *executionContext) unmarshalInputAccountWhereInput(ctx context.Context,
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("passwordUpdatedAtNotNil"))
 			it.PasswordUpdatedAtNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasFriends":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasFriends"))
+			it.HasFriends, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasFriendsWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasFriendsWith"))
+			it.HasFriendsWith, err = ec.unmarshalOAccountWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐAccountWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -25113,7 +25258,7 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "nickname", "email", "emailConfirmed", "clearPassword", "password", "addAuthRoleIDs", "removeAuthRoleIDs", "clearAuthType", "authTypeID"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "nickname", "email", "emailConfirmed", "clearPassword", "password", "addFriendIDs", "removeFriendIDs", "addAuthRoleIDs", "removeAuthRoleIDs", "clearAuthType", "authTypeID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -25173,6 +25318,22 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			it.Password, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "addFriendIDs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addFriendIDs"))
+			it.AddFriendIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "removeFriendIDs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("removeFriendIDs"))
+			it.RemoveFriendIDs, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -26615,6 +26776,26 @@ func (ec *executionContext) _Account(ctx context.Context, sel ast.SelectionSet, 
 
 			out.Values[i] = ec._Account_passwordUpdatedAt(ctx, field, obj)
 
+		case "friends":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Account_friends(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "authRoles":
 			field := field
 

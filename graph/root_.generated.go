@@ -50,6 +50,7 @@ type ComplexityRoot struct {
 		DeletedAt         func(childComplexity int) int
 		Email             func(childComplexity int) int
 		EmailConfirmed    func(childComplexity int) int
+		Friends           func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.AccountOrder, where *ent.AccountWhereInput) int
 		ID                func(childComplexity int) int
 		Nickname          func(childComplexity int) int
 		PasswordUpdatedAt func(childComplexity int) int
@@ -554,6 +555,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Account.EmailConfirmed(childComplexity), true
+
+	case "Account.friends":
+		if e.complexity.Account.Friends == nil {
+			break
+		}
+
+		args, err := ec.field_Account_friends_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Account.Friends(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.AccountOrder), args["where"].(*ent.AccountWhereInput)), true
 
 	case "Account.id":
 		if e.complexity.Account.ID == nil {

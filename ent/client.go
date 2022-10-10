@@ -314,6 +314,22 @@ func (c *AccountClient) GetX(ctx context.Context, id pulid.PULID) *Account {
 	return obj
 }
 
+// QueryFriends queries the friends edge of a Account.
+func (c *AccountClient) QueryFriends(a *Account) *AccountQuery {
+	query := &AccountQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := a.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(account.Table, account.FieldID, id),
+			sqlgraph.To(account.Table, account.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, account.FriendsTable, account.FriendsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(a.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryAuthRoles queries the auth_roles edge of a Account.
 func (c *AccountClient) QueryAuthRoles(a *Account) *AuthRoleQuery {
 	query := &AuthRoleQuery{config: c.config}

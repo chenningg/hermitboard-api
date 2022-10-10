@@ -29,6 +29,7 @@ type AccountQuery struct {
 	order                []OrderFunc
 	fields               []string
 	predicates           []predicate.Account
+	withFriends          *AccountQuery
 	withAuthRoles        *AuthRoleQuery
 	withPortfolios       *PortfolioQuery
 	withAuthType         *AuthTypeQuery
@@ -36,6 +37,7 @@ type AccountQuery struct {
 	withFKs              bool
 	modifiers            []func(*sql.Selector)
 	loadTotal            []func(context.Context, []*Account) error
+	withNamedFriends     map[string]*AccountQuery
 	withNamedAuthRoles   map[string]*AuthRoleQuery
 	withNamedPortfolios  map[string]*PortfolioQuery
 	withNamedConnections map[string]*ConnectionQuery
@@ -73,6 +75,28 @@ func (aq *AccountQuery) Unique(unique bool) *AccountQuery {
 func (aq *AccountQuery) Order(o ...OrderFunc) *AccountQuery {
 	aq.order = append(aq.order, o...)
 	return aq
+}
+
+// QueryFriends chains the current query on the "friends" edge.
+func (aq *AccountQuery) QueryFriends() *AccountQuery {
+	query := &AccountQuery{config: aq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := aq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := aq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(account.Table, account.FieldID, selector),
+			sqlgraph.To(account.Table, account.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, account.FriendsTable, account.FriendsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(aq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryAuthRoles chains the current query on the "auth_roles" edge.
@@ -344,6 +368,7 @@ func (aq *AccountQuery) Clone() *AccountQuery {
 		offset:          aq.offset,
 		order:           append([]OrderFunc{}, aq.order...),
 		predicates:      append([]predicate.Account{}, aq.predicates...),
+		withFriends:     aq.withFriends.Clone(),
 		withAuthRoles:   aq.withAuthRoles.Clone(),
 		withPortfolios:  aq.withPortfolios.Clone(),
 		withAuthType:    aq.withAuthType.Clone(),
@@ -353,6 +378,17 @@ func (aq *AccountQuery) Clone() *AccountQuery {
 		path:   aq.path,
 		unique: aq.unique,
 	}
+}
+
+// WithFriends tells the query-builder to eager-load the nodes that are connected to
+// the "friends" edge. The optional arguments are used to configure the query builder of the edge.
+func (aq *AccountQuery) WithFriends(opts ...func(*AccountQuery)) *AccountQuery {
+	query := &AccountQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	aq.withFriends = query
+	return aq
 }
 
 // WithAuthRoles tells the query-builder to eager-load the nodes that are connected to
@@ -468,7 +504,8 @@ func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 		nodes       = []*Account{}
 		withFKs     = aq.withFKs
 		_spec       = aq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
+			aq.withFriends != nil,
 			aq.withAuthRoles != nil,
 			aq.withPortfolios != nil,
 			aq.withAuthType != nil,
@@ -502,6 +539,13 @@ func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := aq.withFriends; query != nil {
+		if err := aq.loadFriends(ctx, query, nodes,
+			func(n *Account) { n.Edges.Friends = []*Account{} },
+			func(n *Account, e *Account) { n.Edges.Friends = append(n.Edges.Friends, e) }); err != nil {
+			return nil, err
+		}
+	}
 	if query := aq.withAuthRoles; query != nil {
 		if err := aq.loadAuthRoles(ctx, query, nodes,
 			func(n *Account) { n.Edges.AuthRoles = []*AuthRole{} },
@@ -526,6 +570,13 @@ func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 		if err := aq.loadConnections(ctx, query, nodes,
 			func(n *Account) { n.Edges.Connections = []*Connection{} },
 			func(n *Account, e *Connection) { n.Edges.Connections = append(n.Edges.Connections, e) }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range aq.withNamedFriends {
+		if err := aq.loadFriends(ctx, query, nodes,
+			func(n *Account) { n.appendNamedFriends(name) },
+			func(n *Account, e *Account) { n.appendNamedFriends(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -558,6 +609,64 @@ func (aq *AccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Acco
 	return nodes, nil
 }
 
+func (aq *AccountQuery) loadFriends(ctx context.Context, query *AccountQuery, nodes []*Account, init func(*Account), assign func(*Account, *Account)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[pulid.PULID]*Account)
+	nids := make(map[pulid.PULID]map[*Account]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(account.FriendsTable)
+		s.Join(joinT).On(s.C(account.FieldID), joinT.C(account.FriendsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(account.FriendsPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(account.FriendsPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	neighbors, err := query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+		assign := spec.Assign
+		values := spec.ScanValues
+		spec.ScanValues = func(columns []string) ([]any, error) {
+			values, err := values(columns[1:])
+			if err != nil {
+				return nil, err
+			}
+			return append([]any{new(pulid.PULID)}, values...), nil
+		}
+		spec.Assign = func(columns []string, values []any) error {
+			outValue := *values[0].(*pulid.PULID)
+			inValue := *values[1].(*pulid.PULID)
+			if nids[inValue] == nil {
+				nids[inValue] = map[*Account]struct{}{byID[outValue]: struct{}{}}
+				return assign(columns[1:], values[1:])
+			}
+			nids[inValue][byID[outValue]] = struct{}{}
+			return nil
+		}
+	})
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "friends" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
 func (aq *AccountQuery) loadAuthRoles(ctx context.Context, query *AuthRoleQuery, nodes []*Account, init func(*Account), assign func(*Account, *AuthRole)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[pulid.PULID]*Account)
@@ -801,6 +910,20 @@ func (aq *AccountQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// WithNamedFriends tells the query-builder to eager-load the nodes that are connected to the "friends"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (aq *AccountQuery) WithNamedFriends(name string, opts ...func(*AccountQuery)) *AccountQuery {
+	query := &AccountQuery{config: aq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	if aq.withNamedFriends == nil {
+		aq.withNamedFriends = make(map[string]*AccountQuery)
+	}
+	aq.withNamedFriends[name] = query
+	return aq
 }
 
 // WithNamedAuthRoles tells the query-builder to eager-load the nodes that are connected to the "auth_roles"

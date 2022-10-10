@@ -135,6 +135,21 @@ func (ac *AccountCreate) SetNillableID(pu *pulid.PULID) *AccountCreate {
 	return ac
 }
 
+// AddFriendIDs adds the "friends" edge to the Account entity by IDs.
+func (ac *AccountCreate) AddFriendIDs(ids ...pulid.PULID) *AccountCreate {
+	ac.mutation.AddFriendIDs(ids...)
+	return ac
+}
+
+// AddFriends adds the "friends" edges to the Account entity.
+func (ac *AccountCreate) AddFriends(a ...*Account) *AccountCreate {
+	ids := make([]pulid.PULID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return ac.AddFriendIDs(ids...)
+}
+
 // AddAuthRoleIDs adds the "auth_roles" edge to the AuthRole entity by IDs.
 func (ac *AccountCreate) AddAuthRoleIDs(ids ...pulid.PULID) *AccountCreate {
 	ac.mutation.AddAuthRoleIDs(ids...)
@@ -423,6 +438,25 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 			Column: account.FieldPasswordUpdatedAt,
 		})
 		_node.PasswordUpdatedAt = &value
+	}
+	if nodes := ac.mutation.FriendsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   account.FriendsTable,
+			Columns: account.FriendsPrimaryKey,
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: account.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ac.mutation.AuthRolesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

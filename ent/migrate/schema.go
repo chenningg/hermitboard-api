@@ -393,6 +393,31 @@ var (
 		Columns:    TransactionTypesColumns,
 		PrimaryKey: []*schema.Column{TransactionTypesColumns[0]},
 	}
+	// AccountFriendsColumns holds the columns for the "account_friends" table.
+	AccountFriendsColumns = []*schema.Column{
+		{Name: "account_id", Type: field.TypeString},
+		{Name: "friend_id", Type: field.TypeString},
+	}
+	// AccountFriendsTable holds the schema information for the "account_friends" table.
+	AccountFriendsTable = &schema.Table{
+		Name:       "account_friends",
+		Columns:    AccountFriendsColumns,
+		PrimaryKey: []*schema.Column{AccountFriendsColumns[0], AccountFriendsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "account_friends_account_id",
+				Columns:    []*schema.Column{AccountFriendsColumns[0]},
+				RefColumns: []*schema.Column{AccountsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "account_friends_friend_id",
+				Columns:    []*schema.Column{AccountFriendsColumns[1]},
+				RefColumns: []*schema.Column{AccountsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// AccountAuthRolesColumns holds the columns for the "account_auth_roles" table.
 	AccountAuthRolesColumns = []*schema.Column{
 		{Name: "account_id", Type: field.TypeString},
@@ -511,6 +536,7 @@ var (
 		StaffAccountsTable,
 		TransactionsTable,
 		TransactionTypesTable,
+		AccountFriendsTable,
 		AccountAuthRolesTable,
 		BlockchainCryptocurrenciesTable,
 		PortfolioConnectionsTable,
@@ -533,6 +559,8 @@ func init() {
 	TransactionsTable.ForeignKeys[3].RefTable = TransactionTypesTable
 	TransactionsTable.ForeignKeys[4].RefTable = AssetsTable
 	TransactionsTable.ForeignKeys[5].RefTable = AssetsTable
+	AccountFriendsTable.ForeignKeys[0].RefTable = AccountsTable
+	AccountFriendsTable.ForeignKeys[1].RefTable = AccountsTable
 	AccountAuthRolesTable.ForeignKeys[0].RefTable = AccountsTable
 	AccountAuthRolesTable.ForeignKeys[1].RefTable = AuthRolesTable
 	BlockchainCryptocurrenciesTable.ForeignKeys[0].RefTable = BlockchainsTable
