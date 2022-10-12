@@ -15,7 +15,7 @@ func seedSources(ctx context.Context, client *ent.Client) error {
 		return fmt.Errorf("seedSources(): could not get source type: %v", err)
 	}
 
-	// Create a EVM wallet source.
+	// Create an EVM wallet source.
 	_, err = client.Source.Create().
 		SetName("EVM Wallet").
 		SetIcon("https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/240px-Ethereum-icon-purple.svg.png").

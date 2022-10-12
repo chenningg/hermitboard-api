@@ -11,12 +11,13 @@ DROP TABLE IF EXISTS exchanges;
 DROP TABLE IF EXISTS cryptocurrencies;
 DROP TABLE IF EXISTS assets;
 DROP TABLE IF EXISTS asset_classes;
-DROP TABLE IF EXISTS sources;
-DROP TABLE IF EXISTS source_types;
 DROP TABLE IF EXISTS portfolio_connections;
 DROP TABLE IF EXISTS connections;
 DROP TABLE IF EXISTS portfolios;
+DROP TABLE IF EXISTS account_friends;
 DROP TABLE IF EXISTS accounts;
+DROP TABLE IF EXISTS sources;
+DROP TABLE IF EXISTS source_types;
 DROP TABLE IF EXISTS staff_accounts;
 DROP TABLE IF EXISTS auth_types;
 
