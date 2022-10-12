@@ -3,6 +3,7 @@ package graph
 import (
 	"context"
 	"errors"
+	"log"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/chenningg/hermitboard-api/resperror"
@@ -12,7 +13,7 @@ import (
 // AddGraphQLError unwraps an error to find a wrapped HTTP error and populate it in the GraphQL response.
 func AddGraphQLError(ctx context.Context, err error) {
 	var graphQLError *resperror.GraphQLError
-	if errors.As(err, graphQLError) {
+	if errors.As(err, &graphQLError) {
 		graphql.AddError(
 			ctx, &gqlerror.Error{
 				Path:    graphql.GetPath(ctx),
@@ -28,6 +29,7 @@ func AddGraphQLError(ctx context.Context, err error) {
 
 // ErrorPresenter captures errors returned from resolvers and formats them.
 func ErrorPresenter(ctx context.Context, e error) *gqlerror.Error {
+	log.Println(e)
 	// If we manage to find our custom error, return our error instead.
 	var graphQLError *resperror.GraphQLError
 	if errors.As(e, &graphQLError) {

@@ -13,6 +13,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/account"
 	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
+	"github.com/chenningg/hermitboard-api/ent/source"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -97,6 +98,12 @@ func (cc *ConnectionCreate) SetAccountID(pu pulid.PULID) *ConnectionCreate {
 	return cc
 }
 
+// SetSourceID sets the "source_id" field.
+func (cc *ConnectionCreate) SetSourceID(pu pulid.PULID) *ConnectionCreate {
+	cc.mutation.SetSourceID(pu)
+	return cc
+}
+
 // SetID sets the "id" field.
 func (cc *ConnectionCreate) SetID(pu pulid.PULID) *ConnectionCreate {
 	cc.mutation.SetID(pu)
@@ -109,6 +116,11 @@ func (cc *ConnectionCreate) SetNillableID(pu *pulid.PULID) *ConnectionCreate {
 		cc.SetID(*pu)
 	}
 	return cc
+}
+
+// SetSource sets the "source" edge to the Source entity.
+func (cc *ConnectionCreate) SetSource(s *Source) *ConnectionCreate {
+	return cc.SetSourceID(s.ID)
 }
 
 // SetAccount sets the "account" edge to the Account entity.
@@ -254,6 +266,12 @@ func (cc *ConnectionCreate) check() error {
 	if _, ok := cc.mutation.AccountID(); !ok {
 		return &ValidationError{Name: "account_id", err: errors.New(`ent: missing required field "Connection.account_id"`)}
 	}
+	if _, ok := cc.mutation.SourceID(); !ok {
+		return &ValidationError{Name: "source_id", err: errors.New(`ent: missing required field "Connection.source_id"`)}
+	}
+	if _, ok := cc.mutation.SourceID(); !ok {
+		return &ValidationError{Name: "source", err: errors.New(`ent: missing required edge "Connection.source"`)}
+	}
 	if _, ok := cc.mutation.AccountID(); !ok {
 		return &ValidationError{Name: "account", err: errors.New(`ent: missing required edge "Connection.account"`)}
 	}
@@ -340,6 +358,26 @@ func (cc *ConnectionCreate) createSpec() (*Connection, *sqlgraph.CreateSpec) {
 			Column: connection.FieldRefreshToken,
 		})
 		_node.RefreshToken = &value
+	}
+	if nodes := cc.mutation.SourceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   connection.SourceTable,
+			Columns: []string{connection.SourceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: source.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SourceID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := cc.mutation.AccountIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

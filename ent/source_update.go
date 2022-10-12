@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/ent/source"
 	"github.com/chenningg/hermitboard-api/ent/sourcetype"
@@ -74,6 +75,21 @@ func (su *SourceUpdate) ClearIcon() *SourceUpdate {
 	return su
 }
 
+// AddConnectionIDs adds the "connections" edge to the Connection entity by IDs.
+func (su *SourceUpdate) AddConnectionIDs(ids ...pulid.PULID) *SourceUpdate {
+	su.mutation.AddConnectionIDs(ids...)
+	return su
+}
+
+// AddConnections adds the "connections" edges to the Connection entity.
+func (su *SourceUpdate) AddConnections(c ...*Connection) *SourceUpdate {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return su.AddConnectionIDs(ids...)
+}
+
 // SetSourceTypeID sets the "source_type" edge to the SourceType entity by ID.
 func (su *SourceUpdate) SetSourceTypeID(id pulid.PULID) *SourceUpdate {
 	su.mutation.SetSourceTypeID(id)
@@ -88,6 +104,27 @@ func (su *SourceUpdate) SetSourceType(s *SourceType) *SourceUpdate {
 // Mutation returns the SourceMutation object of the builder.
 func (su *SourceUpdate) Mutation() *SourceMutation {
 	return su.mutation
+}
+
+// ClearConnections clears all "connections" edges to the Connection entity.
+func (su *SourceUpdate) ClearConnections() *SourceUpdate {
+	su.mutation.ClearConnections()
+	return su
+}
+
+// RemoveConnectionIDs removes the "connections" edge to Connection entities by IDs.
+func (su *SourceUpdate) RemoveConnectionIDs(ids ...pulid.PULID) *SourceUpdate {
+	su.mutation.RemoveConnectionIDs(ids...)
+	return su
+}
+
+// RemoveConnections removes "connections" edges to Connection entities.
+func (su *SourceUpdate) RemoveConnections(c ...*Connection) *SourceUpdate {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return su.RemoveConnectionIDs(ids...)
 }
 
 // ClearSourceType clears the "source_type" edge to the SourceType entity.
@@ -245,6 +282,60 @@ func (su *SourceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: source.FieldIcon,
 		})
 	}
+	if su.mutation.ConnectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   source.ConnectionsTable,
+			Columns: []string{source.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedConnectionsIDs(); len(nodes) > 0 && !su.mutation.ConnectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   source.ConnectionsTable,
+			Columns: []string{source.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.ConnectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   source.ConnectionsTable,
+			Columns: []string{source.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if su.mutation.SourceTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -343,6 +434,21 @@ func (suo *SourceUpdateOne) ClearIcon() *SourceUpdateOne {
 	return suo
 }
 
+// AddConnectionIDs adds the "connections" edge to the Connection entity by IDs.
+func (suo *SourceUpdateOne) AddConnectionIDs(ids ...pulid.PULID) *SourceUpdateOne {
+	suo.mutation.AddConnectionIDs(ids...)
+	return suo
+}
+
+// AddConnections adds the "connections" edges to the Connection entity.
+func (suo *SourceUpdateOne) AddConnections(c ...*Connection) *SourceUpdateOne {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return suo.AddConnectionIDs(ids...)
+}
+
 // SetSourceTypeID sets the "source_type" edge to the SourceType entity by ID.
 func (suo *SourceUpdateOne) SetSourceTypeID(id pulid.PULID) *SourceUpdateOne {
 	suo.mutation.SetSourceTypeID(id)
@@ -357,6 +463,27 @@ func (suo *SourceUpdateOne) SetSourceType(s *SourceType) *SourceUpdateOne {
 // Mutation returns the SourceMutation object of the builder.
 func (suo *SourceUpdateOne) Mutation() *SourceMutation {
 	return suo.mutation
+}
+
+// ClearConnections clears all "connections" edges to the Connection entity.
+func (suo *SourceUpdateOne) ClearConnections() *SourceUpdateOne {
+	suo.mutation.ClearConnections()
+	return suo
+}
+
+// RemoveConnectionIDs removes the "connections" edge to Connection entities by IDs.
+func (suo *SourceUpdateOne) RemoveConnectionIDs(ids ...pulid.PULID) *SourceUpdateOne {
+	suo.mutation.RemoveConnectionIDs(ids...)
+	return suo
+}
+
+// RemoveConnections removes "connections" edges to Connection entities.
+func (suo *SourceUpdateOne) RemoveConnections(c ...*Connection) *SourceUpdateOne {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return suo.RemoveConnectionIDs(ids...)
 }
 
 // ClearSourceType clears the "source_type" edge to the SourceType entity.
@@ -543,6 +670,60 @@ func (suo *SourceUpdateOne) sqlSave(ctx context.Context) (_node *Source, err err
 			Type:   field.TypeString,
 			Column: source.FieldIcon,
 		})
+	}
+	if suo.mutation.ConnectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   source.ConnectionsTable,
+			Columns: []string{source.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedConnectionsIDs(); len(nodes) > 0 && !suo.mutation.ConnectionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   source.ConnectionsTable,
+			Columns: []string{source.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.ConnectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   source.ConnectionsTable,
+			Columns: []string{source.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if suo.mutation.SourceTypeCleared() {
 		edge := &sqlgraph.EdgeSpec{

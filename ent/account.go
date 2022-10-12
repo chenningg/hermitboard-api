@@ -34,6 +34,8 @@ type Account struct {
 	Password *string `json:"-"`
 	// PasswordUpdatedAt holds the value of the "password_updated_at" field.
 	PasswordUpdatedAt *time.Time `json:"passwordUpdatedAt,omitempty"`
+	// ProfilePictureURL holds the value of the "profile_picture_url" field.
+	ProfilePictureURL *string `json:"profilePictureUrl,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the AccountQuery when eager-loading is set.
 	Edges             AccountEdges `json:"edges"`
@@ -122,7 +124,7 @@ func (*Account) scanValues(columns []string) ([]any, error) {
 			values[i] = new(pulid.PULID)
 		case account.FieldEmailConfirmed:
 			values[i] = new(sql.NullBool)
-		case account.FieldNickname, account.FieldEmail, account.FieldPassword:
+		case account.FieldNickname, account.FieldEmail, account.FieldPassword, account.FieldProfilePictureURL:
 			values[i] = new(sql.NullString)
 		case account.FieldCreatedAt, account.FieldUpdatedAt, account.FieldDeletedAt, account.FieldPasswordUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -199,6 +201,13 @@ func (a *Account) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				a.PasswordUpdatedAt = new(time.Time)
 				*a.PasswordUpdatedAt = value.Time
+			}
+		case account.FieldProfilePictureURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field profile_picture_url", values[i])
+			} else if value.Valid {
+				a.ProfilePictureURL = new(string)
+				*a.ProfilePictureURL = value.String
 			}
 		case account.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullScanner); !ok {
@@ -285,6 +294,11 @@ func (a *Account) String() string {
 	if v := a.PasswordUpdatedAt; v != nil {
 		builder.WriteString("password_updated_at=")
 		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := a.ProfilePictureURL; v != nil {
+		builder.WriteString("profile_picture_url=")
+		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')
 	return builder.String()

@@ -27,12 +27,23 @@ const (
 	FieldRefreshToken = "refresh_token"
 	// FieldAccountID holds the string denoting the account_id field in the database.
 	FieldAccountID = "account_id"
+	// FieldSourceID holds the string denoting the source_id field in the database.
+	FieldSourceID = "source_id"
+	// EdgeSource holds the string denoting the source edge name in mutations.
+	EdgeSource = "source"
 	// EdgeAccount holds the string denoting the account edge name in mutations.
 	EdgeAccount = "account"
 	// EdgePortfolios holds the string denoting the portfolios edge name in mutations.
 	EdgePortfolios = "portfolios"
 	// Table holds the table name of the connection in the database.
 	Table = "connections"
+	// SourceTable is the table that holds the source relation/edge.
+	SourceTable = "connections"
+	// SourceInverseTable is the table name for the Source entity.
+	// It exists in this package in order to avoid circular dependency with the "source" package.
+	SourceInverseTable = "sources"
+	// SourceColumn is the table column denoting the source relation/edge.
+	SourceColumn = "source_id"
 	// AccountTable is the table that holds the account relation/edge.
 	AccountTable = "connections"
 	// AccountInverseTable is the table name for the Account entity.
@@ -57,6 +68,7 @@ var Columns = []string{
 	FieldAccessToken,
 	FieldRefreshToken,
 	FieldAccountID,
+	FieldSourceID,
 }
 
 var (

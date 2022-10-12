@@ -131,6 +131,13 @@ func AccountID(v pulid.PULID) predicate.Connection {
 	})
 }
 
+// SourceID applies equality check predicate on the "source_id" field. It's identical to SourceIDEQ.
+func SourceID(v pulid.PULID) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSourceID), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Connection {
 	return predicate.Connection(func(s *sql.Selector) {
@@ -749,6 +756,138 @@ func AccountIDContainsFold(v pulid.PULID) predicate.Connection {
 	vc := string(v)
 	return predicate.Connection(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldAccountID), vc))
+	})
+}
+
+// SourceIDEQ applies the EQ predicate on the "source_id" field.
+func SourceIDEQ(v pulid.PULID) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldSourceID), v))
+	})
+}
+
+// SourceIDNEQ applies the NEQ predicate on the "source_id" field.
+func SourceIDNEQ(v pulid.PULID) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldSourceID), v))
+	})
+}
+
+// SourceIDIn applies the In predicate on the "source_id" field.
+func SourceIDIn(vs ...pulid.PULID) predicate.Connection {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldSourceID), v...))
+	})
+}
+
+// SourceIDNotIn applies the NotIn predicate on the "source_id" field.
+func SourceIDNotIn(vs ...pulid.PULID) predicate.Connection {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldSourceID), v...))
+	})
+}
+
+// SourceIDGT applies the GT predicate on the "source_id" field.
+func SourceIDGT(v pulid.PULID) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldSourceID), v))
+	})
+}
+
+// SourceIDGTE applies the GTE predicate on the "source_id" field.
+func SourceIDGTE(v pulid.PULID) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldSourceID), v))
+	})
+}
+
+// SourceIDLT applies the LT predicate on the "source_id" field.
+func SourceIDLT(v pulid.PULID) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldSourceID), v))
+	})
+}
+
+// SourceIDLTE applies the LTE predicate on the "source_id" field.
+func SourceIDLTE(v pulid.PULID) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldSourceID), v))
+	})
+}
+
+// SourceIDContains applies the Contains predicate on the "source_id" field.
+func SourceIDContains(v pulid.PULID) predicate.Connection {
+	vc := string(v)
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldSourceID), vc))
+	})
+}
+
+// SourceIDHasPrefix applies the HasPrefix predicate on the "source_id" field.
+func SourceIDHasPrefix(v pulid.PULID) predicate.Connection {
+	vc := string(v)
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldSourceID), vc))
+	})
+}
+
+// SourceIDHasSuffix applies the HasSuffix predicate on the "source_id" field.
+func SourceIDHasSuffix(v pulid.PULID) predicate.Connection {
+	vc := string(v)
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldSourceID), vc))
+	})
+}
+
+// SourceIDEqualFold applies the EqualFold predicate on the "source_id" field.
+func SourceIDEqualFold(v pulid.PULID) predicate.Connection {
+	vc := string(v)
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldSourceID), vc))
+	})
+}
+
+// SourceIDContainsFold applies the ContainsFold predicate on the "source_id" field.
+func SourceIDContainsFold(v pulid.PULID) predicate.Connection {
+	vc := string(v)
+	return predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldSourceID), vc))
+	})
+}
+
+// HasSource applies the HasEdge predicate on the "source" edge.
+func HasSource() predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SourceTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, SourceTable, SourceColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSourceWith applies the HasEdge predicate on the "source" edge with a given conditions (other predicates).
+func HasSourceWith(preds ...predicate.Source) predicate.Connection {
+	return predicate.Connection(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(SourceInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, SourceTable, SourceColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

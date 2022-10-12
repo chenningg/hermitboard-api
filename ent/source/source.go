@@ -23,10 +23,19 @@ const (
 	FieldName = "name"
 	// FieldIcon holds the string denoting the icon field in the database.
 	FieldIcon = "icon"
+	// EdgeConnections holds the string denoting the connections edge name in mutations.
+	EdgeConnections = "connections"
 	// EdgeSourceType holds the string denoting the source_type edge name in mutations.
 	EdgeSourceType = "source_type"
 	// Table holds the table name of the source in the database.
 	Table = "sources"
+	// ConnectionsTable is the table that holds the connections relation/edge.
+	ConnectionsTable = "connections"
+	// ConnectionsInverseTable is the table name for the Connection entity.
+	// It exists in this package in order to avoid circular dependency with the "connection" package.
+	ConnectionsInverseTable = "connections"
+	// ConnectionsColumn is the table column denoting the connections relation/edge.
+	ConnectionsColumn = "source_id"
 	// SourceTypeTable is the table that holds the source_type relation/edge.
 	SourceTypeTable = "sources"
 	// SourceTypeInverseTable is the table name for the SourceType entity.

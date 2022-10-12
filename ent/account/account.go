@@ -29,6 +29,8 @@ const (
 	FieldPassword = "password"
 	// FieldPasswordUpdatedAt holds the string denoting the password_updated_at field in the database.
 	FieldPasswordUpdatedAt = "password_updated_at"
+	// FieldProfilePictureURL holds the string denoting the profile_picture_url field in the database.
+	FieldProfilePictureURL = "profile_picture_url"
 	// EdgeFriends holds the string denoting the friends edge name in mutations.
 	EdgeFriends = "friends"
 	// EdgeAuthRoles holds the string denoting the auth_roles edge name in mutations.
@@ -82,6 +84,7 @@ var Columns = []string{
 	FieldEmailConfirmed,
 	FieldPassword,
 	FieldPasswordUpdatedAt,
+	FieldProfilePictureURL,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "accounts"

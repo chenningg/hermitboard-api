@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/source"
 	"github.com/chenningg/hermitboard-api/ent/sourcetype"
 	"github.com/chenningg/hermitboard-api/pulid"
@@ -96,6 +97,21 @@ func (sc *SourceCreate) SetNillableID(pu *pulid.PULID) *SourceCreate {
 		sc.SetID(*pu)
 	}
 	return sc
+}
+
+// AddConnectionIDs adds the "connections" edge to the Connection entity by IDs.
+func (sc *SourceCreate) AddConnectionIDs(ids ...pulid.PULID) *SourceCreate {
+	sc.mutation.AddConnectionIDs(ids...)
+	return sc
+}
+
+// AddConnections adds the "connections" edges to the Connection entity.
+func (sc *SourceCreate) AddConnections(c ...*Connection) *SourceCreate {
+	ids := make([]pulid.PULID, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return sc.AddConnectionIDs(ids...)
 }
 
 // SetSourceTypeID sets the "source_type" edge to the SourceType entity by ID.
@@ -299,6 +315,25 @@ func (sc *SourceCreate) createSpec() (*Source, *sqlgraph.CreateSpec) {
 			Column: source.FieldIcon,
 		})
 		_node.Icon = &value
+	}
+	if nodes := sc.mutation.ConnectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   source.ConnectionsTable,
+			Columns: []string{source.ConnectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: connection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := sc.mutation.SourceTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

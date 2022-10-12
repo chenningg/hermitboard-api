@@ -215,6 +215,14 @@ func (b *Blockchain) Transactions(
 	return b.QueryTransactions().Paginate(ctx, after, first, before, last, opts...)
 }
 
+func (c *Connection) Source(ctx context.Context) (*Source, error) {
+	result, err := c.Edges.SourceOrErr()
+	if IsNotLoaded(err) {
+		result, err = c.QuerySource().Only(ctx)
+	}
+	return result, err
+}
+
 func (c *Connection) Account(ctx context.Context) (*Account, error) {
 	result, err := c.Edges.AccountOrErr()
 	if IsNotLoaded(err) {
@@ -230,7 +238,7 @@ func (c *Connection) Portfolios(
 		WithPortfolioOrder(orderBy),
 	}
 	alias := graphql.GetFieldContext(ctx).Field.Alias
-	totalCount, hasTotalCount := c.Edges.totalCount[1][alias]
+	totalCount, hasTotalCount := c.Edges.totalCount[2][alias]
 	if nodes, err := c.NamedPortfolios(alias); err == nil || hasTotalCount {
 		pager, err := newPortfolioPager(opts)
 		if err != nil {
@@ -348,6 +356,14 @@ func (po *Portfolio) Connections(
 		return conn, nil
 	}
 	return po.QueryConnections().Paginate(ctx, after, first, before, last, opts...)
+}
+
+func (s *Source) Connections(ctx context.Context) ([]*Connection, error) {
+	result, err := s.NamedConnections(graphql.GetFieldContext(ctx).Field.Alias)
+	if IsNotLoaded(err) {
+		result, err = s.QueryConnections().All(ctx)
+	}
+	return result, err
 }
 
 func (s *Source) SourceType(ctx context.Context) (*SourceType, error) {

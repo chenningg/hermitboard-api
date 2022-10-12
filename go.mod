@@ -11,6 +11,7 @@ require (
 	github.com/caarlos0/env/v6 v6.9.3
 	github.com/dmarkham/enumer v1.5.5
 	github.com/go-chi/chi/v5 v5.0.7
+	github.com/go-chi/cors v1.2.1
 	github.com/go-logr/logr v1.2.3
 	github.com/go-logr/zerologr v1.2.2
 	github.com/go-redis/redis/v9 v9.0.0-beta.2

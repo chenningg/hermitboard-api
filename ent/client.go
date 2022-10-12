@@ -1046,6 +1046,22 @@ func (c *ConnectionClient) GetX(ctx context.Context, id pulid.PULID) *Connection
 	return obj
 }
 
+// QuerySource queries the source edge of a Connection.
+func (c *ConnectionClient) QuerySource(co *Connection) *SourceQuery {
+	query := &SourceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(connection.Table, connection.FieldID, id),
+			sqlgraph.To(source.Table, source.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, connection.SourceTable, connection.SourceColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryAccount queries the account edge of a Connection.
 func (c *ConnectionClient) QueryAccount(co *Connection) *AccountQuery {
 	query := &AccountQuery{config: c.config}
@@ -1638,6 +1654,22 @@ func (c *SourceClient) GetX(ctx context.Context, id pulid.PULID) *Source {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryConnections queries the connections edge of a Source.
+func (c *SourceClient) QueryConnections(s *Source) *ConnectionQuery {
+	query := &ConnectionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(source.Table, source.FieldID, id),
+			sqlgraph.To(connection.Table, connection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, source.ConnectionsTable, source.ConnectionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // QuerySourceType queries the source_type edge of a Source.

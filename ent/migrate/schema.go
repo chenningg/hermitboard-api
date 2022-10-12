@@ -19,6 +19,7 @@ var (
 		{Name: "email_confirmed", Type: field.TypeBool, Default: false},
 		{Name: "password", Type: field.TypeString, Nullable: true},
 		{Name: "password_updated_at", Type: field.TypeTime, Nullable: true},
+		{Name: "profile_picture_url", Type: field.TypeString, Nullable: true},
 		{Name: "account_auth_type", Type: field.TypeString},
 	}
 	// AccountsTable holds the schema information for the "accounts" table.
@@ -29,7 +30,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "accounts_auth_types_auth_type",
-				Columns:    []*schema.Column{AccountsColumns[9]},
+				Columns:    []*schema.Column{AccountsColumns[10]},
 				RefColumns: []*schema.Column{AuthTypesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -129,6 +130,7 @@ var (
 		{Name: "access_token", Type: field.TypeString},
 		{Name: "refresh_token", Type: field.TypeString, Nullable: true},
 		{Name: "account_id", Type: field.TypeString},
+		{Name: "source_id", Type: field.TypeString},
 	}
 	// ConnectionsTable holds the schema information for the "connections" table.
 	ConnectionsTable = &schema.Table{
@@ -140,6 +142,12 @@ var (
 				Symbol:     "connections_accounts_connections",
 				Columns:    []*schema.Column{ConnectionsColumns[7]},
 				RefColumns: []*schema.Column{AccountsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "connections_sources_source",
+				Columns:    []*schema.Column{ConnectionsColumns[8]},
+				RefColumns: []*schema.Column{SourcesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
@@ -548,6 +556,7 @@ func init() {
 	AccountsTable.ForeignKeys[0].RefTable = AuthTypesTable
 	AssetsTable.ForeignKeys[0].RefTable = AssetClassesTable
 	ConnectionsTable.ForeignKeys[0].RefTable = AccountsTable
+	ConnectionsTable.ForeignKeys[1].RefTable = SourcesTable
 	CryptocurrenciesTable.ForeignKeys[0].RefTable = AssetsTable
 	DailyAssetPricesTable.ForeignKeys[0].RefTable = AssetsTable
 	PortfoliosTable.ForeignKeys[0].RefTable = AccountsTable

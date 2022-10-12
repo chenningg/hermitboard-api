@@ -138,6 +138,13 @@ func PasswordUpdatedAt(v time.Time) predicate.Account {
 	})
 }
 
+// ProfilePictureURL applies equality check predicate on the "profile_picture_url" field. It's identical to ProfilePictureURLEQ.
+func ProfilePictureURL(v string) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldProfilePictureURL), v))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
@@ -744,6 +751,119 @@ func PasswordUpdatedAtIsNil() predicate.Account {
 func PasswordUpdatedAtNotNil() predicate.Account {
 	return predicate.Account(func(s *sql.Selector) {
 		s.Where(sql.NotNull(s.C(FieldPasswordUpdatedAt)))
+	})
+}
+
+// ProfilePictureURLEQ applies the EQ predicate on the "profile_picture_url" field.
+func ProfilePictureURLEQ(v string) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldProfilePictureURL), v))
+	})
+}
+
+// ProfilePictureURLNEQ applies the NEQ predicate on the "profile_picture_url" field.
+func ProfilePictureURLNEQ(v string) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldProfilePictureURL), v))
+	})
+}
+
+// ProfilePictureURLIn applies the In predicate on the "profile_picture_url" field.
+func ProfilePictureURLIn(vs ...string) predicate.Account {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.In(s.C(FieldProfilePictureURL), v...))
+	})
+}
+
+// ProfilePictureURLNotIn applies the NotIn predicate on the "profile_picture_url" field.
+func ProfilePictureURLNotIn(vs ...string) predicate.Account {
+	v := make([]any, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.NotIn(s.C(FieldProfilePictureURL), v...))
+	})
+}
+
+// ProfilePictureURLGT applies the GT predicate on the "profile_picture_url" field.
+func ProfilePictureURLGT(v string) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldProfilePictureURL), v))
+	})
+}
+
+// ProfilePictureURLGTE applies the GTE predicate on the "profile_picture_url" field.
+func ProfilePictureURLGTE(v string) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldProfilePictureURL), v))
+	})
+}
+
+// ProfilePictureURLLT applies the LT predicate on the "profile_picture_url" field.
+func ProfilePictureURLLT(v string) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldProfilePictureURL), v))
+	})
+}
+
+// ProfilePictureURLLTE applies the LTE predicate on the "profile_picture_url" field.
+func ProfilePictureURLLTE(v string) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldProfilePictureURL), v))
+	})
+}
+
+// ProfilePictureURLContains applies the Contains predicate on the "profile_picture_url" field.
+func ProfilePictureURLContains(v string) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldProfilePictureURL), v))
+	})
+}
+
+// ProfilePictureURLHasPrefix applies the HasPrefix predicate on the "profile_picture_url" field.
+func ProfilePictureURLHasPrefix(v string) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldProfilePictureURL), v))
+	})
+}
+
+// ProfilePictureURLHasSuffix applies the HasSuffix predicate on the "profile_picture_url" field.
+func ProfilePictureURLHasSuffix(v string) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldProfilePictureURL), v))
+	})
+}
+
+// ProfilePictureURLIsNil applies the IsNil predicate on the "profile_picture_url" field.
+func ProfilePictureURLIsNil() predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldProfilePictureURL)))
+	})
+}
+
+// ProfilePictureURLNotNil applies the NotNil predicate on the "profile_picture_url" field.
+func ProfilePictureURLNotNil() predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldProfilePictureURL)))
+	})
+}
+
+// ProfilePictureURLEqualFold applies the EqualFold predicate on the "profile_picture_url" field.
+func ProfilePictureURLEqualFold(v string) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldProfilePictureURL), v))
+	})
+}
+
+// ProfilePictureURLContainsFold applies the ContainsFold predicate on the "profile_picture_url" field.
+func ProfilePictureURLContainsFold(v string) predicate.Account {
+	return predicate.Account(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldProfilePictureURL), v))
 	})
 }
 

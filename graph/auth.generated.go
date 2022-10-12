@@ -236,6 +236,8 @@ func (ec *executionContext) fieldContext_CreateAccountPayload_account(ctx contex
 				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
+			case "profilePictureURL":
+				return ec.fieldContext_Account_profilePictureURL(ctx, field)
 			case "friends":
 				return ec.fieldContext_Account_friends(ctx, field)
 			case "authRoles":
@@ -478,6 +480,8 @@ func (ec *executionContext) fieldContext_LoginToAccountPayload_account(ctx conte
 				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
+			case "profilePictureURL":
+				return ec.fieldContext_Account_profilePictureURL(ctx, field)
 			case "friends":
 				return ec.fieldContext_Account_friends(ctx, field)
 			case "authRoles":
@@ -1005,6 +1009,10 @@ func (ec *executionContext) fieldContext_Mutation_createConnection(ctx context.C
 				return ec.fieldContext_Connection_refreshToken(ctx, field)
 			case "accountID":
 				return ec.fieldContext_Connection_accountID(ctx, field)
+			case "sourceID":
+				return ec.fieldContext_Connection_sourceID(ctx, field)
+			case "source":
+				return ec.fieldContext_Connection_source(ctx, field)
 			case "account":
 				return ec.fieldContext_Connection_account(ctx, field)
 			case "portfolios":
@@ -1082,6 +1090,10 @@ func (ec *executionContext) fieldContext_Mutation_updateConnection(ctx context.C
 				return ec.fieldContext_Connection_refreshToken(ctx, field)
 			case "accountID":
 				return ec.fieldContext_Connection_accountID(ctx, field)
+			case "sourceID":
+				return ec.fieldContext_Connection_sourceID(ctx, field)
+			case "source":
+				return ec.fieldContext_Connection_source(ctx, field)
 			case "account":
 				return ec.fieldContext_Connection_account(ctx, field)
 			case "portfolios":

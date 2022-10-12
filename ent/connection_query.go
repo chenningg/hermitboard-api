@@ -15,6 +15,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
+	"github.com/chenningg/hermitboard-api/ent/source"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -27,6 +28,7 @@ type ConnectionQuery struct {
 	order               []OrderFunc
 	fields              []string
 	predicates          []predicate.Connection
+	withSource          *SourceQuery
 	withAccount         *AccountQuery
 	withPortfolios      *PortfolioQuery
 	modifiers           []func(*sql.Selector)
@@ -66,6 +68,28 @@ func (cq *ConnectionQuery) Unique(unique bool) *ConnectionQuery {
 func (cq *ConnectionQuery) Order(o ...OrderFunc) *ConnectionQuery {
 	cq.order = append(cq.order, o...)
 	return cq
+}
+
+// QuerySource chains the current query on the "source" edge.
+func (cq *ConnectionQuery) QuerySource() *SourceQuery {
+	query := &SourceQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(connection.Table, connection.FieldID, selector),
+			sqlgraph.To(source.Table, source.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, connection.SourceTable, connection.SourceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QueryAccount chains the current query on the "account" edge.
@@ -293,6 +317,7 @@ func (cq *ConnectionQuery) Clone() *ConnectionQuery {
 		offset:         cq.offset,
 		order:          append([]OrderFunc{}, cq.order...),
 		predicates:     append([]predicate.Connection{}, cq.predicates...),
+		withSource:     cq.withSource.Clone(),
 		withAccount:    cq.withAccount.Clone(),
 		withPortfolios: cq.withPortfolios.Clone(),
 		// clone intermediate query.
@@ -300,6 +325,17 @@ func (cq *ConnectionQuery) Clone() *ConnectionQuery {
 		path:   cq.path,
 		unique: cq.unique,
 	}
+}
+
+// WithSource tells the query-builder to eager-load the nodes that are connected to
+// the "source" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ConnectionQuery) WithSource(opts ...func(*SourceQuery)) *ConnectionQuery {
+	query := &SourceQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withSource = query
+	return cq
 }
 
 // WithAccount tells the query-builder to eager-load the nodes that are connected to
@@ -392,7 +428,8 @@ func (cq *ConnectionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 	var (
 		nodes       = []*Connection{}
 		_spec       = cq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
+			cq.withSource != nil,
 			cq.withAccount != nil,
 			cq.withPortfolios != nil,
 		}
@@ -417,6 +454,12 @@ func (cq *ConnectionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
+	}
+	if query := cq.withSource; query != nil {
+		if err := cq.loadSource(ctx, query, nodes, nil,
+			func(n *Connection, e *Source) { n.Edges.Source = e }); err != nil {
+			return nil, err
+		}
 	}
 	if query := cq.withAccount; query != nil {
 		if err := cq.loadAccount(ctx, query, nodes, nil,
@@ -446,6 +489,32 @@ func (cq *ConnectionQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*C
 	return nodes, nil
 }
 
+func (cq *ConnectionQuery) loadSource(ctx context.Context, query *SourceQuery, nodes []*Connection, init func(*Connection), assign func(*Connection, *Source)) error {
+	ids := make([]pulid.PULID, 0, len(nodes))
+	nodeids := make(map[pulid.PULID][]*Connection)
+	for i := range nodes {
+		fk := nodes[i].SourceID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	query.Where(source.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "source_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (cq *ConnectionQuery) loadAccount(ctx context.Context, query *AccountQuery, nodes []*Connection, init func(*Connection), assign func(*Connection, *Account)) error {
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Connection)

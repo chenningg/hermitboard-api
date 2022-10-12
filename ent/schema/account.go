@@ -57,6 +57,13 @@ func (Account) Fields() []ent.Field {
 				entgql.OrderField("PASSWORD_UPDATED_AT"),
 				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput),
 			),
+		field.String("profile_picture_url").
+			Optional().
+			Nillable().
+			StructTag("json:\"profilePictureUrl,omitempty\"").
+			Annotations(
+				entgql.Skip(entgql.SkipMutationCreateInput | entgql.SkipWhereInput),
+			),
 	}
 }
 

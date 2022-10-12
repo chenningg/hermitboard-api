@@ -121,6 +121,20 @@ func (ac *AccountCreate) SetNillablePasswordUpdatedAt(t *time.Time) *AccountCrea
 	return ac
 }
 
+// SetProfilePictureURL sets the "profile_picture_url" field.
+func (ac *AccountCreate) SetProfilePictureURL(s string) *AccountCreate {
+	ac.mutation.SetProfilePictureURL(s)
+	return ac
+}
+
+// SetNillableProfilePictureURL sets the "profile_picture_url" field if the given value is not nil.
+func (ac *AccountCreate) SetNillableProfilePictureURL(s *string) *AccountCreate {
+	if s != nil {
+		ac.SetProfilePictureURL(*s)
+	}
+	return ac
+}
+
 // SetID sets the "id" field.
 func (ac *AccountCreate) SetID(pu pulid.PULID) *AccountCreate {
 	ac.mutation.SetID(pu)
@@ -438,6 +452,14 @@ func (ac *AccountCreate) createSpec() (*Account, *sqlgraph.CreateSpec) {
 			Column: account.FieldPasswordUpdatedAt,
 		})
 		_node.PasswordUpdatedAt = &value
+	}
+	if value, ok := ac.mutation.ProfilePictureURL(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: account.FieldProfilePictureURL,
+		})
+		_node.ProfilePictureURL = &value
 	}
 	if nodes := ac.mutation.FriendsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

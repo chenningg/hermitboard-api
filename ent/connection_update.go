@@ -15,6 +15,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
+	"github.com/chenningg/hermitboard-api/ent/source"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -87,6 +88,17 @@ func (cu *ConnectionUpdate) SetAccountID(pu pulid.PULID) *ConnectionUpdate {
 	return cu
 }
 
+// SetSourceID sets the "source_id" field.
+func (cu *ConnectionUpdate) SetSourceID(pu pulid.PULID) *ConnectionUpdate {
+	cu.mutation.SetSourceID(pu)
+	return cu
+}
+
+// SetSource sets the "source" edge to the Source entity.
+func (cu *ConnectionUpdate) SetSource(s *Source) *ConnectionUpdate {
+	return cu.SetSourceID(s.ID)
+}
+
 // SetAccount sets the "account" edge to the Account entity.
 func (cu *ConnectionUpdate) SetAccount(a *Account) *ConnectionUpdate {
 	return cu.SetAccountID(a.ID)
@@ -110,6 +122,12 @@ func (cu *ConnectionUpdate) AddPortfolios(p ...*Portfolio) *ConnectionUpdate {
 // Mutation returns the ConnectionMutation object of the builder.
 func (cu *ConnectionUpdate) Mutation() *ConnectionMutation {
 	return cu.mutation
+}
+
+// ClearSource clears the "source" edge to the Source entity.
+func (cu *ConnectionUpdate) ClearSource() *ConnectionUpdate {
+	cu.mutation.ClearSource()
+	return cu
 }
 
 // ClearAccount clears the "account" edge to the Account entity.
@@ -229,6 +247,9 @@ func (cu *ConnectionUpdate) check() error {
 			return &ValidationError{Name: "refresh_token", err: fmt.Errorf(`ent: validator failed for field "Connection.refresh_token": %w`, err)}
 		}
 	}
+	if _, ok := cu.mutation.SourceID(); cu.mutation.SourceCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Connection.source"`)
+	}
 	if _, ok := cu.mutation.AccountID(); cu.mutation.AccountCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Connection.account"`)
 	}
@@ -299,6 +320,41 @@ func (cu *ConnectionUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Column: connection.FieldRefreshToken,
 		})
+	}
+	if cu.mutation.SourceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   connection.SourceTable,
+			Columns: []string{connection.SourceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: source.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.SourceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   connection.SourceTable,
+			Columns: []string{connection.SourceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: source.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if cu.mutation.AccountCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -464,6 +520,17 @@ func (cuo *ConnectionUpdateOne) SetAccountID(pu pulid.PULID) *ConnectionUpdateOn
 	return cuo
 }
 
+// SetSourceID sets the "source_id" field.
+func (cuo *ConnectionUpdateOne) SetSourceID(pu pulid.PULID) *ConnectionUpdateOne {
+	cuo.mutation.SetSourceID(pu)
+	return cuo
+}
+
+// SetSource sets the "source" edge to the Source entity.
+func (cuo *ConnectionUpdateOne) SetSource(s *Source) *ConnectionUpdateOne {
+	return cuo.SetSourceID(s.ID)
+}
+
 // SetAccount sets the "account" edge to the Account entity.
 func (cuo *ConnectionUpdateOne) SetAccount(a *Account) *ConnectionUpdateOne {
 	return cuo.SetAccountID(a.ID)
@@ -487,6 +554,12 @@ func (cuo *ConnectionUpdateOne) AddPortfolios(p ...*Portfolio) *ConnectionUpdate
 // Mutation returns the ConnectionMutation object of the builder.
 func (cuo *ConnectionUpdateOne) Mutation() *ConnectionMutation {
 	return cuo.mutation
+}
+
+// ClearSource clears the "source" edge to the Source entity.
+func (cuo *ConnectionUpdateOne) ClearSource() *ConnectionUpdateOne {
+	cuo.mutation.ClearSource()
+	return cuo
 }
 
 // ClearAccount clears the "account" edge to the Account entity.
@@ -619,6 +692,9 @@ func (cuo *ConnectionUpdateOne) check() error {
 			return &ValidationError{Name: "refresh_token", err: fmt.Errorf(`ent: validator failed for field "Connection.refresh_token": %w`, err)}
 		}
 	}
+	if _, ok := cuo.mutation.SourceID(); cuo.mutation.SourceCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Connection.source"`)
+	}
 	if _, ok := cuo.mutation.AccountID(); cuo.mutation.AccountCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Connection.account"`)
 	}
@@ -706,6 +782,41 @@ func (cuo *ConnectionUpdateOne) sqlSave(ctx context.Context) (_node *Connection,
 			Type:   field.TypeString,
 			Column: connection.FieldRefreshToken,
 		})
+	}
+	if cuo.mutation.SourceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   connection.SourceTable,
+			Columns: []string{connection.SourceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: source.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.SourceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   connection.SourceTable,
+			Columns: []string{connection.SourceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: source.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if cuo.mutation.AccountCleared() {
 		edge := &sqlgraph.EdgeSpec{

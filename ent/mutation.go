@@ -72,6 +72,7 @@ type AccountMutation struct {
 	email_confirmed     *bool
 	password            *string
 	password_updated_at *time.Time
+	profile_picture_url *string
 	clearedFields       map[string]struct{}
 	friends             map[pulid.PULID]struct{}
 	removedfriends      map[pulid.PULID]struct{}
@@ -523,6 +524,55 @@ func (m *AccountMutation) ResetPasswordUpdatedAt() {
 	delete(m.clearedFields, account.FieldPasswordUpdatedAt)
 }
 
+// SetProfilePictureURL sets the "profile_picture_url" field.
+func (m *AccountMutation) SetProfilePictureURL(s string) {
+	m.profile_picture_url = &s
+}
+
+// ProfilePictureURL returns the value of the "profile_picture_url" field in the mutation.
+func (m *AccountMutation) ProfilePictureURL() (r string, exists bool) {
+	v := m.profile_picture_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProfilePictureURL returns the old "profile_picture_url" field's value of the Account entity.
+// If the Account object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountMutation) OldProfilePictureURL(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProfilePictureURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProfilePictureURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProfilePictureURL: %w", err)
+	}
+	return oldValue.ProfilePictureURL, nil
+}
+
+// ClearProfilePictureURL clears the value of the "profile_picture_url" field.
+func (m *AccountMutation) ClearProfilePictureURL() {
+	m.profile_picture_url = nil
+	m.clearedFields[account.FieldProfilePictureURL] = struct{}{}
+}
+
+// ProfilePictureURLCleared returns if the "profile_picture_url" field was cleared in this mutation.
+func (m *AccountMutation) ProfilePictureURLCleared() bool {
+	_, ok := m.clearedFields[account.FieldProfilePictureURL]
+	return ok
+}
+
+// ResetProfilePictureURL resets all changes to the "profile_picture_url" field.
+func (m *AccountMutation) ResetProfilePictureURL() {
+	m.profile_picture_url = nil
+	delete(m.clearedFields, account.FieldProfilePictureURL)
+}
+
 // AddFriendIDs adds the "friends" edge to the Account entity by ids.
 func (m *AccountMutation) AddFriendIDs(ids ...pulid.PULID) {
 	if m.friends == nil {
@@ -797,7 +847,7 @@ func (m *AccountMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AccountMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, account.FieldCreatedAt)
 	}
@@ -821,6 +871,9 @@ func (m *AccountMutation) Fields() []string {
 	}
 	if m.password_updated_at != nil {
 		fields = append(fields, account.FieldPasswordUpdatedAt)
+	}
+	if m.profile_picture_url != nil {
+		fields = append(fields, account.FieldProfilePictureURL)
 	}
 	return fields
 }
@@ -846,6 +899,8 @@ func (m *AccountMutation) Field(name string) (ent.Value, bool) {
 		return m.Password()
 	case account.FieldPasswordUpdatedAt:
 		return m.PasswordUpdatedAt()
+	case account.FieldProfilePictureURL:
+		return m.ProfilePictureURL()
 	}
 	return nil, false
 }
@@ -871,6 +926,8 @@ func (m *AccountMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldPassword(ctx)
 	case account.FieldPasswordUpdatedAt:
 		return m.OldPasswordUpdatedAt(ctx)
+	case account.FieldProfilePictureURL:
+		return m.OldProfilePictureURL(ctx)
 	}
 	return nil, fmt.Errorf("unknown Account field %s", name)
 }
@@ -936,6 +993,13 @@ func (m *AccountMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPasswordUpdatedAt(v)
 		return nil
+	case account.FieldProfilePictureURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProfilePictureURL(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Account field %s", name)
 }
@@ -975,6 +1039,9 @@ func (m *AccountMutation) ClearedFields() []string {
 	if m.FieldCleared(account.FieldPasswordUpdatedAt) {
 		fields = append(fields, account.FieldPasswordUpdatedAt)
 	}
+	if m.FieldCleared(account.FieldProfilePictureURL) {
+		fields = append(fields, account.FieldProfilePictureURL)
+	}
 	return fields
 }
 
@@ -997,6 +1064,9 @@ func (m *AccountMutation) ClearField(name string) error {
 		return nil
 	case account.FieldPasswordUpdatedAt:
 		m.ClearPasswordUpdatedAt()
+		return nil
+	case account.FieldProfilePictureURL:
+		m.ClearProfilePictureURL()
 		return nil
 	}
 	return fmt.Errorf("unknown Account nullable field %s", name)
@@ -1029,6 +1099,9 @@ func (m *AccountMutation) ResetField(name string) error {
 		return nil
 	case account.FieldPasswordUpdatedAt:
 		m.ResetPasswordUpdatedAt()
+		return nil
+	case account.FieldProfilePictureURL:
+		m.ResetProfilePictureURL()
 		return nil
 	}
 	return fmt.Errorf("unknown Account field %s", name)
@@ -4697,6 +4770,8 @@ type ConnectionMutation struct {
 	access_token      *string
 	refresh_token     *string
 	clearedFields     map[string]struct{}
+	source            *pulid.PULID
+	clearedsource     bool
 	account           *pulid.PULID
 	clearedaccount    bool
 	portfolios        map[pulid.PULID]struct{}
@@ -5089,6 +5164,68 @@ func (m *ConnectionMutation) ResetAccountID() {
 	m.account = nil
 }
 
+// SetSourceID sets the "source_id" field.
+func (m *ConnectionMutation) SetSourceID(pu pulid.PULID) {
+	m.source = &pu
+}
+
+// SourceID returns the value of the "source_id" field in the mutation.
+func (m *ConnectionMutation) SourceID() (r pulid.PULID, exists bool) {
+	v := m.source
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSourceID returns the old "source_id" field's value of the Connection entity.
+// If the Connection object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ConnectionMutation) OldSourceID(ctx context.Context) (v pulid.PULID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSourceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSourceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSourceID: %w", err)
+	}
+	return oldValue.SourceID, nil
+}
+
+// ResetSourceID resets all changes to the "source_id" field.
+func (m *ConnectionMutation) ResetSourceID() {
+	m.source = nil
+}
+
+// ClearSource clears the "source" edge to the Source entity.
+func (m *ConnectionMutation) ClearSource() {
+	m.clearedsource = true
+}
+
+// SourceCleared reports if the "source" edge to the Source entity was cleared.
+func (m *ConnectionMutation) SourceCleared() bool {
+	return m.clearedsource
+}
+
+// SourceIDs returns the "source" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SourceID instead. It exists only for internal usage by the builders.
+func (m *ConnectionMutation) SourceIDs() (ids []pulid.PULID) {
+	if id := m.source; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSource resets all changes to the "source" edge.
+func (m *ConnectionMutation) ResetSource() {
+	m.source = nil
+	m.clearedsource = false
+}
+
 // ClearAccount clears the "account" edge to the Account entity.
 func (m *ConnectionMutation) ClearAccount() {
 	m.clearedaccount = true
@@ -5188,7 +5325,7 @@ func (m *ConnectionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ConnectionMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, connection.FieldCreatedAt)
 	}
@@ -5209,6 +5346,9 @@ func (m *ConnectionMutation) Fields() []string {
 	}
 	if m.account != nil {
 		fields = append(fields, connection.FieldAccountID)
+	}
+	if m.source != nil {
+		fields = append(fields, connection.FieldSourceID)
 	}
 	return fields
 }
@@ -5232,6 +5372,8 @@ func (m *ConnectionMutation) Field(name string) (ent.Value, bool) {
 		return m.RefreshToken()
 	case connection.FieldAccountID:
 		return m.AccountID()
+	case connection.FieldSourceID:
+		return m.SourceID()
 	}
 	return nil, false
 }
@@ -5255,6 +5397,8 @@ func (m *ConnectionMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldRefreshToken(ctx)
 	case connection.FieldAccountID:
 		return m.OldAccountID(ctx)
+	case connection.FieldSourceID:
+		return m.OldSourceID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Connection field %s", name)
 }
@@ -5312,6 +5456,13 @@ func (m *ConnectionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAccountID(v)
+		return nil
+	case connection.FieldSourceID:
+		v, ok := value.(pulid.PULID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSourceID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Connection field %s", name)
@@ -5398,13 +5549,19 @@ func (m *ConnectionMutation) ResetField(name string) error {
 	case connection.FieldAccountID:
 		m.ResetAccountID()
 		return nil
+	case connection.FieldSourceID:
+		m.ResetSourceID()
+		return nil
 	}
 	return fmt.Errorf("unknown Connection field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ConnectionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
+	if m.source != nil {
+		edges = append(edges, connection.EdgeSource)
+	}
 	if m.account != nil {
 		edges = append(edges, connection.EdgeAccount)
 	}
@@ -5418,6 +5575,10 @@ func (m *ConnectionMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *ConnectionMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case connection.EdgeSource:
+		if id := m.source; id != nil {
+			return []ent.Value{*id}
+		}
 	case connection.EdgeAccount:
 		if id := m.account; id != nil {
 			return []ent.Value{*id}
@@ -5434,7 +5595,7 @@ func (m *ConnectionMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ConnectionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedportfolios != nil {
 		edges = append(edges, connection.EdgePortfolios)
 	}
@@ -5457,7 +5618,10 @@ func (m *ConnectionMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ConnectionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
+	if m.clearedsource {
+		edges = append(edges, connection.EdgeSource)
+	}
 	if m.clearedaccount {
 		edges = append(edges, connection.EdgeAccount)
 	}
@@ -5471,6 +5635,8 @@ func (m *ConnectionMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *ConnectionMutation) EdgeCleared(name string) bool {
 	switch name {
+	case connection.EdgeSource:
+		return m.clearedsource
 	case connection.EdgeAccount:
 		return m.clearedaccount
 	case connection.EdgePortfolios:
@@ -5483,6 +5649,9 @@ func (m *ConnectionMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *ConnectionMutation) ClearEdge(name string) error {
 	switch name {
+	case connection.EdgeSource:
+		m.ClearSource()
+		return nil
 	case connection.EdgeAccount:
 		m.ClearAccount()
 		return nil
@@ -5494,6 +5663,9 @@ func (m *ConnectionMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ConnectionMutation) ResetEdge(name string) error {
 	switch name {
+	case connection.EdgeSource:
+		m.ResetSource()
+		return nil
 	case connection.EdgeAccount:
 		m.ResetAccount()
 		return nil
@@ -9086,6 +9258,9 @@ type SourceMutation struct {
 	name               *string
 	icon               *string
 	clearedFields      map[string]struct{}
+	connections        map[pulid.PULID]struct{}
+	removedconnections map[pulid.PULID]struct{}
+	clearedconnections bool
 	source_type        *pulid.PULID
 	clearedsource_type bool
 	done               bool
@@ -9403,6 +9578,60 @@ func (m *SourceMutation) ResetIcon() {
 	delete(m.clearedFields, source.FieldIcon)
 }
 
+// AddConnectionIDs adds the "connections" edge to the Connection entity by ids.
+func (m *SourceMutation) AddConnectionIDs(ids ...pulid.PULID) {
+	if m.connections == nil {
+		m.connections = make(map[pulid.PULID]struct{})
+	}
+	for i := range ids {
+		m.connections[ids[i]] = struct{}{}
+	}
+}
+
+// ClearConnections clears the "connections" edge to the Connection entity.
+func (m *SourceMutation) ClearConnections() {
+	m.clearedconnections = true
+}
+
+// ConnectionsCleared reports if the "connections" edge to the Connection entity was cleared.
+func (m *SourceMutation) ConnectionsCleared() bool {
+	return m.clearedconnections
+}
+
+// RemoveConnectionIDs removes the "connections" edge to the Connection entity by IDs.
+func (m *SourceMutation) RemoveConnectionIDs(ids ...pulid.PULID) {
+	if m.removedconnections == nil {
+		m.removedconnections = make(map[pulid.PULID]struct{})
+	}
+	for i := range ids {
+		delete(m.connections, ids[i])
+		m.removedconnections[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedConnections returns the removed IDs of the "connections" edge to the Connection entity.
+func (m *SourceMutation) RemovedConnectionsIDs() (ids []pulid.PULID) {
+	for id := range m.removedconnections {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ConnectionsIDs returns the "connections" edge IDs in the mutation.
+func (m *SourceMutation) ConnectionsIDs() (ids []pulid.PULID) {
+	for id := range m.connections {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetConnections resets all changes to the "connections" edge.
+func (m *SourceMutation) ResetConnections() {
+	m.connections = nil
+	m.clearedconnections = false
+	m.removedconnections = nil
+}
+
 // SetSourceTypeID sets the "source_type" edge to the SourceType entity by id.
 func (m *SourceMutation) SetSourceTypeID(id pulid.PULID) {
 	m.source_type = &id
@@ -9643,7 +9872,10 @@ func (m *SourceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SourceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.connections != nil {
+		edges = append(edges, source.EdgeConnections)
+	}
 	if m.source_type != nil {
 		edges = append(edges, source.EdgeSourceType)
 	}
@@ -9654,6 +9886,12 @@ func (m *SourceMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *SourceMutation) AddedIDs(name string) []ent.Value {
 	switch name {
+	case source.EdgeConnections:
+		ids := make([]ent.Value, 0, len(m.connections))
+		for id := range m.connections {
+			ids = append(ids, id)
+		}
+		return ids
 	case source.EdgeSourceType:
 		if id := m.source_type; id != nil {
 			return []ent.Value{*id}
@@ -9664,19 +9902,33 @@ func (m *SourceMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SourceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removedconnections != nil {
+		edges = append(edges, source.EdgeConnections)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *SourceMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case source.EdgeConnections:
+		ids := make([]ent.Value, 0, len(m.removedconnections))
+		for id := range m.removedconnections {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SourceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.clearedconnections {
+		edges = append(edges, source.EdgeConnections)
+	}
 	if m.clearedsource_type {
 		edges = append(edges, source.EdgeSourceType)
 	}
@@ -9687,6 +9939,8 @@ func (m *SourceMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *SourceMutation) EdgeCleared(name string) bool {
 	switch name {
+	case source.EdgeConnections:
+		return m.clearedconnections
 	case source.EdgeSourceType:
 		return m.clearedsource_type
 	}
@@ -9708,6 +9962,9 @@ func (m *SourceMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *SourceMutation) ResetEdge(name string) error {
 	switch name {
+	case source.EdgeConnections:
+		m.ResetConnections()
+		return nil
 	case source.EdgeSourceType:
 		m.ResetSourceType()
 		return nil

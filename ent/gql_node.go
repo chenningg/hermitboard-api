@@ -60,7 +60,7 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     a.ID,
 		Type:   "Account",
-		Fields: make([]*Field, 7),
+		Fields: make([]*Field, 8),
 		Edges:  make([]*Edge, 5),
 	}
 	var buf []byte
@@ -118,6 +118,14 @@ func (a *Account) Node(ctx context.Context) (node *Node, err error) {
 	node.Fields[6] = &Field{
 		Type:  "time.Time",
 		Name:  "password_updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(a.ProfilePictureURL); err != nil {
+		return nil, err
+	}
+	node.Fields[7] = &Field{
+		Type:  "string",
+		Name:  "profile_picture_url",
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
@@ -502,8 +510,8 @@ func (c *Connection) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     c.ID,
 		Type:   "Connection",
-		Fields: make([]*Field, 7),
-		Edges:  make([]*Edge, 2),
+		Fields: make([]*Field, 8),
+		Edges:  make([]*Edge, 3),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(c.CreatedAt); err != nil {
@@ -562,23 +570,41 @@ func (c *Connection) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "account_id",
 		Value: string(buf),
 	}
-	node.Edges[0] = &Edge{
-		Type: "Account",
-		Name: "account",
+	if buf, err = json.Marshal(c.SourceID); err != nil {
+		return nil, err
 	}
-	err = c.QueryAccount().
-		Select(account.FieldID).
+	node.Fields[7] = &Field{
+		Type:  "pulid.PULID",
+		Name:  "source_id",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Source",
+		Name: "source",
+	}
+	err = c.QuerySource().
+		Select(source.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
 		return nil, err
 	}
 	node.Edges[1] = &Edge{
+		Type: "Account",
+		Name: "account",
+	}
+	err = c.QueryAccount().
+		Select(account.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
 		Type: "Portfolio",
 		Name: "portfolios",
 	}
 	err = c.QueryPortfolios().
 		Select(portfolio.FieldID).
-		Scan(ctx, &node.Edges[1].IDs)
+		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -944,7 +970,7 @@ func (s *Source) Node(ctx context.Context) (node *Node, err error) {
 		ID:     s.ID,
 		Type:   "Source",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 1),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(s.CreatedAt); err != nil {
@@ -988,12 +1014,22 @@ func (s *Source) Node(ctx context.Context) (node *Node, err error) {
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
+		Type: "Connection",
+		Name: "connections",
+	}
+	err = s.QueryConnections().
+		Select(connection.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
 		Type: "SourceType",
 		Name: "source_type",
 	}
 	err = s.QuerySourceType().
 		Select(sourcetype.FieldID).
-		Scan(ctx, &node.Edges[0].IDs)
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}

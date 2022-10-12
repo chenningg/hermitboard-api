@@ -1259,6 +1259,16 @@ func (c *ConnectionQuery) collectField(ctx context.Context, op *graphql.Operatio
 	path = append([]string(nil), path...)
 	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
 		switch field.Name {
+		case "source":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &SourceQuery{config: c.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			c.withSource = query
 		case "account":
 			var (
 				alias = field.Alias
@@ -1316,10 +1326,10 @@ func (c *ConnectionQuery) collectField(ctx context.Context, op *graphql.Operatio
 						}
 						for i := range nodes {
 							n := m[nodes[i].ID]
-							if nodes[i].Edges.totalCount[1] == nil {
-								nodes[i].Edges.totalCount[1] = make(map[string]int)
+							if nodes[i].Edges.totalCount[2] == nil {
+								nodes[i].Edges.totalCount[2] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[1][alias] = n
+							nodes[i].Edges.totalCount[2][alias] = n
 						}
 						return nil
 					})
@@ -1327,10 +1337,10 @@ func (c *ConnectionQuery) collectField(ctx context.Context, op *graphql.Operatio
 					c.loadTotal = append(c.loadTotal, func(_ context.Context, nodes []*Connection) error {
 						for i := range nodes {
 							n := len(nodes[i].Edges.Portfolios)
-							if nodes[i].Edges.totalCount[1] == nil {
-								nodes[i].Edges.totalCount[1] = make(map[string]int)
+							if nodes[i].Edges.totalCount[2] == nil {
+								nodes[i].Edges.totalCount[2] = make(map[string]int)
 							}
-							nodes[i].Edges.totalCount[1][alias] = n
+							nodes[i].Edges.totalCount[2][alias] = n
 						}
 						return nil
 					})
@@ -2086,6 +2096,18 @@ func (s *SourceQuery) collectField(ctx context.Context, op *graphql.OperationCon
 	path = append([]string(nil), path...)
 	for _, field := range graphql.CollectFields(op, field.Selections, satisfies) {
 		switch field.Name {
+		case "connections":
+			var (
+				alias = field.Alias
+				path  = append(path, alias)
+				query = &ConnectionQuery{config: s.config}
+			)
+			if err := query.collectField(ctx, op, field, path, satisfies...); err != nil {
+				return err
+			}
+			s.WithNamedConnections(alias, func(wq *ConnectionQuery) {
+				*wq = *query
+			})
 		case "sourceType":
 			var (
 				alias = field.Alias

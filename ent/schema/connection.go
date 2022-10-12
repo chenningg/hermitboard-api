@@ -47,12 +47,24 @@ func (Connection) Fields() []ent.Field {
 			GoType(pulid.PULID("")).
 			StructTag("json:\"accountID,omitempty\"").
 			Annotations(entgql.Skip(entgql.SkipMutationCreateInput | entgql.SkipMutationUpdateInput)),
+		field.String("source_id").
+			GoType(pulid.PULID("")).
+			StructTag("json:\"sourceID,omitempty\"").
+			Annotations(entgql.Skip(entgql.SkipMutationUpdateInput)),
 	}
 }
 
 // Edges of the Connection.
 func (Connection) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("source", Source.Type).
+			Field("source_id").
+			Unique().
+			Required().
+			Annotations(
+				entgql.MapsTo("source"),
+				entgql.Skip(entgql.SkipMutationUpdateInput),
+			),
 		edge.From("account", Account.Type).
 			Ref("connections").
 			Field("account_id").

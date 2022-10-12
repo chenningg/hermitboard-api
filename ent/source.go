@@ -36,19 +36,32 @@ type Source struct {
 
 // SourceEdges holds the relations/edges for other nodes in the graph.
 type SourceEdges struct {
+	// Connections holds the value of the connections edge.
+	Connections []*Connection `json:"connections,omitempty"`
 	// SourceType holds the value of the source_type edge.
 	SourceType *SourceType `json:"sourceType,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 	// totalCount holds the count of the edges above.
-	totalCount [1]map[string]int
+	totalCount [2]map[string]int
+
+	namedConnections map[string][]*Connection
+}
+
+// ConnectionsOrErr returns the Connections value or an error if the edge
+// was not loaded in eager-loading.
+func (e SourceEdges) ConnectionsOrErr() ([]*Connection, error) {
+	if e.loadedTypes[0] {
+		return e.Connections, nil
+	}
+	return nil, &NotLoadedError{edge: "connections"}
 }
 
 // SourceTypeOrErr returns the SourceType value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e SourceEdges) SourceTypeOrErr() (*SourceType, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.SourceType == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: sourcetype.Label}
@@ -136,6 +149,11 @@ func (s *Source) assignValues(columns []string, values []any) error {
 	return nil
 }
 
+// QueryConnections queries the "connections" edge of the Source entity.
+func (s *Source) QueryConnections() *ConnectionQuery {
+	return (&SourceClient{config: s.config}).QueryConnections(s)
+}
+
 // QuerySourceType queries the "source_type" edge of the Source entity.
 func (s *Source) QuerySourceType() *SourceTypeQuery {
 	return (&SourceClient{config: s.config}).QuerySourceType(s)
@@ -184,6 +202,30 @@ func (s *Source) String() string {
 	}
 	builder.WriteByte(')')
 	return builder.String()
+}
+
+// NamedConnections returns the Connections named value or an error if the edge was not
+// loaded in eager-loading with this name.
+func (s *Source) NamedConnections(name string) ([]*Connection, error) {
+	if s.Edges.namedConnections == nil {
+		return nil, &NotLoadedError{edge: name}
+	}
+	nodes, ok := s.Edges.namedConnections[name]
+	if !ok {
+		return nil, &NotLoadedError{edge: name}
+	}
+	return nodes, nil
+}
+
+func (s *Source) appendNamedConnections(name string, edges ...*Connection) {
+	if s.Edges.namedConnections == nil {
+		s.Edges.namedConnections = make(map[string][]*Connection)
+	}
+	if len(edges) == 0 {
+		s.Edges.namedConnections[name] = []*Connection{}
+	} else {
+		s.Edges.namedConnections[name] = append(s.Edges.namedConnections[name], edges...)
+	}
 }
 
 // Sources is a parsable slice of Source.

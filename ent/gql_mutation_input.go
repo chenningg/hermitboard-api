@@ -43,19 +43,21 @@ func (c *AccountCreate) SetInput(i CreateAccountInput) *AccountCreate {
 
 // UpdateAccountInput represents a mutation input for updating accounts.
 type UpdateAccountInput struct {
-	ClearDeletedAt    bool
-	DeletedAt         *time.Time
-	Nickname          *string
-	Email             *string
-	EmailConfirmed    *bool
-	ClearPassword     bool
-	Password          *string
-	AddFriendIDs      []pulid.PULID
-	RemoveFriendIDs   []pulid.PULID
-	AddAuthRoleIDs    []pulid.PULID
-	RemoveAuthRoleIDs []pulid.PULID
-	ClearAuthType     bool
-	AuthTypeID        *pulid.PULID
+	ClearDeletedAt         bool
+	DeletedAt              *time.Time
+	Nickname               *string
+	Email                  *string
+	EmailConfirmed         *bool
+	ClearPassword          bool
+	Password               *string
+	ClearProfilePictureURL bool
+	ProfilePictureURL      *string
+	AddFriendIDs           []pulid.PULID
+	RemoveFriendIDs        []pulid.PULID
+	AddAuthRoleIDs         []pulid.PULID
+	RemoveAuthRoleIDs      []pulid.PULID
+	ClearAuthType          bool
+	AuthTypeID             *pulid.PULID
 }
 
 // Mutate applies the UpdateAccountInput on the AccountMutation builder.
@@ -80,6 +82,12 @@ func (i *UpdateAccountInput) Mutate(m *AccountMutation) {
 	}
 	if v := i.Password; v != nil {
 		m.SetPassword(*v)
+	}
+	if i.ClearProfilePictureURL {
+		m.ClearProfilePictureURL()
+	}
+	if v := i.ProfilePictureURL; v != nil {
+		m.SetProfilePictureURL(*v)
 	}
 	if v := i.AddFriendIDs; len(v) > 0 {
 		m.AddFriendIDs(v...)
@@ -412,6 +420,7 @@ type CreateConnectionInput struct {
 	Name         string
 	AccessToken  string
 	RefreshToken *string
+	SourceID     pulid.PULID
 	PortfolioIDs []pulid.PULID
 }
 
@@ -422,6 +431,7 @@ func (i *CreateConnectionInput) Mutate(m *ConnectionMutation) {
 	if v := i.RefreshToken; v != nil {
 		m.SetRefreshToken(*v)
 	}
+	m.SetSourceID(i.SourceID)
 	if v := i.PortfolioIDs; len(v) > 0 {
 		m.AddPortfolioIDs(v...)
 	}

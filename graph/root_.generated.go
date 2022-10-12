@@ -55,6 +55,7 @@ type ComplexityRoot struct {
 		Nickname          func(childComplexity int) int
 		PasswordUpdatedAt func(childComplexity int) int
 		Portfolios        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PortfolioOrder, where *ent.PortfolioWhereInput) int
+		ProfilePictureURL func(childComplexity int) int
 		UpdatedAt         func(childComplexity int) int
 	}
 
@@ -186,6 +187,8 @@ type ComplexityRoot struct {
 		Name         func(childComplexity int) int
 		Portfolios   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, orderBy *ent.PortfolioOrder) int
 		RefreshToken func(childComplexity int) int
+		Source       func(childComplexity int) int
+		SourceID     func(childComplexity int) int
 		UpdatedAt    func(childComplexity int) int
 	}
 
@@ -364,13 +367,14 @@ type ComplexityRoot struct {
 	}
 
 	Source struct {
-		CreatedAt  func(childComplexity int) int
-		DeletedAt  func(childComplexity int) int
-		ID         func(childComplexity int) int
-		Icon       func(childComplexity int) int
-		Name       func(childComplexity int) int
-		SourceType func(childComplexity int) int
-		UpdatedAt  func(childComplexity int) int
+		Connections func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		DeletedAt   func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Icon        func(childComplexity int) int
+		Name        func(childComplexity int) int
+		SourceType  func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
 	}
 
 	SourceConnection struct {
@@ -600,6 +604,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Account.Portfolios(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["orderBy"].(*ent.PortfolioOrder), args["where"].(*ent.PortfolioWhereInput)), true
+
+	case "Account.profilePictureURL":
+		if e.complexity.Account.ProfilePictureURL == nil {
+			break
+		}
+
+		return e.complexity.Account.ProfilePictureURL(childComplexity), true
 
 	case "Account.updatedAt":
 		if e.complexity.Account.UpdatedAt == nil {
@@ -1169,6 +1180,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Connection.RefreshToken(childComplexity), true
+
+	case "Connection.source":
+		if e.complexity.Connection.Source == nil {
+			break
+		}
+
+		return e.complexity.Connection.Source(childComplexity), true
+
+	case "Connection.sourceID":
+		if e.complexity.Connection.SourceID == nil {
+			break
+		}
+
+		return e.complexity.Connection.SourceID(childComplexity), true
 
 	case "Connection.updatedAt":
 		if e.complexity.Connection.UpdatedAt == nil {
@@ -2082,6 +2107,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Session.UserID(childComplexity), true
+
+	case "Source.connections":
+		if e.complexity.Source.Connections == nil {
+			break
+		}
+
+		return e.complexity.Source.Connections(childComplexity), true
 
 	case "Source.createdAt":
 		if e.complexity.Source.CreatedAt == nil {

@@ -42,6 +42,12 @@ func (Source) Fields() []ent.Field {
 // Edges of the Source.
 func (Source) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.From("connections", Connection.Type).
+			Ref("source").
+			Annotations(
+				entgql.MapsTo("connections"),
+				entgql.Skip(entgql.SkipMutationCreateInput|entgql.SkipMutationUpdateInput|entgql.SkipWhereInput),
+			),
 		edge.From("source_type", SourceType.Type).
 			Ref("sources").
 			StructTag("json:\"sourceType,omitempty\"").

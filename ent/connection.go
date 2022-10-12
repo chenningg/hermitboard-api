@@ -10,6 +10,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/chenningg/hermitboard-api/ent/account"
 	"github.com/chenningg/hermitboard-api/ent/connection"
+	"github.com/chenningg/hermitboard-api/ent/source"
 	"github.com/chenningg/hermitboard-api/pulid"
 )
 
@@ -32,6 +33,8 @@ type Connection struct {
 	RefreshToken *string `json:"refreshToken,omitempty"`
 	// AccountID holds the value of the "account_id" field.
 	AccountID pulid.PULID `json:"accountID,omitempty"`
+	// SourceID holds the value of the "source_id" field.
+	SourceID pulid.PULID `json:"sourceID,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ConnectionQuery when eager-loading is set.
 	Edges ConnectionEdges `json:"edges"`
@@ -39,23 +42,38 @@ type Connection struct {
 
 // ConnectionEdges holds the relations/edges for other nodes in the graph.
 type ConnectionEdges struct {
+	// Source holds the value of the source edge.
+	Source *Source `json:"source,omitempty"`
 	// Account holds the value of the account edge.
 	Account *Account `json:"account,omitempty"`
 	// Portfolios holds the value of the portfolios edge.
 	Portfolios []*Portfolio `json:"portfolios,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 	// totalCount holds the count of the edges above.
-	totalCount [2]map[string]int
+	totalCount [3]map[string]int
 
 	namedPortfolios map[string][]*Portfolio
+}
+
+// SourceOrErr returns the Source value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ConnectionEdges) SourceOrErr() (*Source, error) {
+	if e.loadedTypes[0] {
+		if e.Source == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: source.Label}
+		}
+		return e.Source, nil
+	}
+	return nil, &NotLoadedError{edge: "source"}
 }
 
 // AccountOrErr returns the Account value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ConnectionEdges) AccountOrErr() (*Account, error) {
-	if e.loadedTypes[0] {
+	if e.loadedTypes[1] {
 		if e.Account == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: account.Label}
@@ -68,7 +86,7 @@ func (e ConnectionEdges) AccountOrErr() (*Account, error) {
 // PortfoliosOrErr returns the Portfolios value or an error if the edge
 // was not loaded in eager-loading.
 func (e ConnectionEdges) PortfoliosOrErr() ([]*Portfolio, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Portfolios, nil
 	}
 	return nil, &NotLoadedError{edge: "portfolios"}
@@ -79,7 +97,7 @@ func (*Connection) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case connection.FieldID, connection.FieldAccountID:
+		case connection.FieldID, connection.FieldAccountID, connection.FieldSourceID:
 			values[i] = new(pulid.PULID)
 		case connection.FieldName, connection.FieldAccessToken, connection.FieldRefreshToken:
 			values[i] = new(sql.NullString)
@@ -150,9 +168,20 @@ func (c *Connection) assignValues(columns []string, values []any) error {
 			} else if value != nil {
 				c.AccountID = *value
 			}
+		case connection.FieldSourceID:
+			if value, ok := values[i].(*pulid.PULID); !ok {
+				return fmt.Errorf("unexpected type %T for field source_id", values[i])
+			} else if value != nil {
+				c.SourceID = *value
+			}
 		}
 	}
 	return nil
+}
+
+// QuerySource queries the "source" edge of the Connection entity.
+func (c *Connection) QuerySource() *SourceQuery {
+	return (&ConnectionClient{config: c.config}).QuerySource(c)
 }
 
 // QueryAccount queries the "account" edge of the Connection entity.
@@ -212,6 +241,9 @@ func (c *Connection) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("account_id=")
 	builder.WriteString(fmt.Sprintf("%v", c.AccountID))
+	builder.WriteString(", ")
+	builder.WriteString("source_id=")
+	builder.WriteString(fmt.Sprintf("%v", c.SourceID))
 	builder.WriteByte(')')
 	return builder.String()
 }

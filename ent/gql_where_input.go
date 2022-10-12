@@ -2192,6 +2192,25 @@ type ConnectionWhereInput struct {
 	AccountIDEqualFold    *pulid.PULID  `json:"accountIDEqualFold,omitempty"`
 	AccountIDContainsFold *pulid.PULID  `json:"accountIDContainsFold,omitempty"`
 
+	// "source_id" field predicates.
+	SourceID             *pulid.PULID  `json:"sourceID,omitempty"`
+	SourceIDNEQ          *pulid.PULID  `json:"sourceIDNEQ,omitempty"`
+	SourceIDIn           []pulid.PULID `json:"sourceIDIn,omitempty"`
+	SourceIDNotIn        []pulid.PULID `json:"sourceIDNotIn,omitempty"`
+	SourceIDGT           *pulid.PULID  `json:"sourceIDGT,omitempty"`
+	SourceIDGTE          *pulid.PULID  `json:"sourceIDGTE,omitempty"`
+	SourceIDLT           *pulid.PULID  `json:"sourceIDLT,omitempty"`
+	SourceIDLTE          *pulid.PULID  `json:"sourceIDLTE,omitempty"`
+	SourceIDContains     *pulid.PULID  `json:"sourceIDContains,omitempty"`
+	SourceIDHasPrefix    *pulid.PULID  `json:"sourceIDHasPrefix,omitempty"`
+	SourceIDHasSuffix    *pulid.PULID  `json:"sourceIDHasSuffix,omitempty"`
+	SourceIDEqualFold    *pulid.PULID  `json:"sourceIDEqualFold,omitempty"`
+	SourceIDContainsFold *pulid.PULID  `json:"sourceIDContainsFold,omitempty"`
+
+	// "source" edge predicates.
+	HasSource     *bool               `json:"hasSource,omitempty"`
+	HasSourceWith []*SourceWhereInput `json:"hasSourceWith,omitempty"`
+
 	// "account" edge predicates.
 	HasAccount     *bool                `json:"hasAccount,omitempty"`
 	HasAccountWith []*AccountWhereInput `json:"hasAccountWith,omitempty"`
@@ -2448,7 +2467,64 @@ func (i *ConnectionWhereInput) P() (predicate.Connection, error) {
 	if i.AccountIDContainsFold != nil {
 		predicates = append(predicates, connection.AccountIDContainsFold(*i.AccountIDContainsFold))
 	}
+	if i.SourceID != nil {
+		predicates = append(predicates, connection.SourceIDEQ(*i.SourceID))
+	}
+	if i.SourceIDNEQ != nil {
+		predicates = append(predicates, connection.SourceIDNEQ(*i.SourceIDNEQ))
+	}
+	if len(i.SourceIDIn) > 0 {
+		predicates = append(predicates, connection.SourceIDIn(i.SourceIDIn...))
+	}
+	if len(i.SourceIDNotIn) > 0 {
+		predicates = append(predicates, connection.SourceIDNotIn(i.SourceIDNotIn...))
+	}
+	if i.SourceIDGT != nil {
+		predicates = append(predicates, connection.SourceIDGT(*i.SourceIDGT))
+	}
+	if i.SourceIDGTE != nil {
+		predicates = append(predicates, connection.SourceIDGTE(*i.SourceIDGTE))
+	}
+	if i.SourceIDLT != nil {
+		predicates = append(predicates, connection.SourceIDLT(*i.SourceIDLT))
+	}
+	if i.SourceIDLTE != nil {
+		predicates = append(predicates, connection.SourceIDLTE(*i.SourceIDLTE))
+	}
+	if i.SourceIDContains != nil {
+		predicates = append(predicates, connection.SourceIDContains(*i.SourceIDContains))
+	}
+	if i.SourceIDHasPrefix != nil {
+		predicates = append(predicates, connection.SourceIDHasPrefix(*i.SourceIDHasPrefix))
+	}
+	if i.SourceIDHasSuffix != nil {
+		predicates = append(predicates, connection.SourceIDHasSuffix(*i.SourceIDHasSuffix))
+	}
+	if i.SourceIDEqualFold != nil {
+		predicates = append(predicates, connection.SourceIDEqualFold(*i.SourceIDEqualFold))
+	}
+	if i.SourceIDContainsFold != nil {
+		predicates = append(predicates, connection.SourceIDContainsFold(*i.SourceIDContainsFold))
+	}
 
+	if i.HasSource != nil {
+		p := connection.HasSource()
+		if !*i.HasSource {
+			p = connection.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSourceWith) > 0 {
+		with := make([]predicate.Source, 0, len(i.HasSourceWith))
+		for _, w := range i.HasSourceWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, fmt.Errorf("%w: field 'HasSourceWith'", err)
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, connection.HasSourceWith(with...))
+	}
 	if i.HasAccount != nil {
 		p := connection.HasAccount()
 		if !*i.HasAccount {

@@ -57,9 +57,11 @@ func GetSessionFromContext(ctx context.Context) *Session {
 	if ctx == nil {
 		return nil
 	}
-	if session, ok := ctx.Value(SessionContextKey).(Session); ok {
-		return &session
+
+	if session, ok := ctx.Value(SessionContextKey).(*Session); ok {
+		return session
 	}
+
 	return nil
 }
 

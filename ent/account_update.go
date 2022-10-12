@@ -109,6 +109,26 @@ func (au *AccountUpdate) ClearPasswordUpdatedAt() *AccountUpdate {
 	return au
 }
 
+// SetProfilePictureURL sets the "profile_picture_url" field.
+func (au *AccountUpdate) SetProfilePictureURL(s string) *AccountUpdate {
+	au.mutation.SetProfilePictureURL(s)
+	return au
+}
+
+// SetNillableProfilePictureURL sets the "profile_picture_url" field if the given value is not nil.
+func (au *AccountUpdate) SetNillableProfilePictureURL(s *string) *AccountUpdate {
+	if s != nil {
+		au.SetProfilePictureURL(*s)
+	}
+	return au
+}
+
+// ClearProfilePictureURL clears the value of the "profile_picture_url" field.
+func (au *AccountUpdate) ClearProfilePictureURL() *AccountUpdate {
+	au.mutation.ClearProfilePictureURL()
+	return au
+}
+
 // AddFriendIDs adds the "friends" edge to the Account entity by IDs.
 func (au *AccountUpdate) AddFriendIDs(ids ...pulid.PULID) *AccountUpdate {
 	au.mutation.AddFriendIDs(ids...)
@@ -460,6 +480,19 @@ func (au *AccountUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: account.FieldPasswordUpdatedAt,
 		})
 	}
+	if value, ok := au.mutation.ProfilePictureURL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: account.FieldProfilePictureURL,
+		})
+	}
+	if au.mutation.ProfilePictureURLCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: account.FieldProfilePictureURL,
+		})
+	}
 	if au.mutation.FriendsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -803,6 +836,26 @@ func (auo *AccountUpdateOne) SetPasswordUpdatedAt(t time.Time) *AccountUpdateOne
 // ClearPasswordUpdatedAt clears the value of the "password_updated_at" field.
 func (auo *AccountUpdateOne) ClearPasswordUpdatedAt() *AccountUpdateOne {
 	auo.mutation.ClearPasswordUpdatedAt()
+	return auo
+}
+
+// SetProfilePictureURL sets the "profile_picture_url" field.
+func (auo *AccountUpdateOne) SetProfilePictureURL(s string) *AccountUpdateOne {
+	auo.mutation.SetProfilePictureURL(s)
+	return auo
+}
+
+// SetNillableProfilePictureURL sets the "profile_picture_url" field if the given value is not nil.
+func (auo *AccountUpdateOne) SetNillableProfilePictureURL(s *string) *AccountUpdateOne {
+	if s != nil {
+		auo.SetProfilePictureURL(*s)
+	}
+	return auo
+}
+
+// ClearProfilePictureURL clears the value of the "profile_picture_url" field.
+func (auo *AccountUpdateOne) ClearProfilePictureURL() *AccountUpdateOne {
+	auo.mutation.ClearProfilePictureURL()
 	return auo
 }
 
@@ -1185,6 +1238,19 @@ func (auo *AccountUpdateOne) sqlSave(ctx context.Context) (_node *Account, err e
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: account.FieldPasswordUpdatedAt,
+		})
+	}
+	if value, ok := auo.mutation.ProfilePictureURL(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: account.FieldProfilePictureURL,
+		})
+	}
+	if auo.mutation.ProfilePictureURLCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: account.FieldProfilePictureURL,
 		})
 	}
 	if auo.mutation.FriendsCleared() {

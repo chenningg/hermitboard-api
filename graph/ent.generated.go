@@ -2288,6 +2288,47 @@ func (ec *executionContext) fieldContext_Account_passwordUpdatedAt(ctx context.C
 	return fc, nil
 }
 
+func (ec *executionContext) _Account_profilePictureURL(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Account_profilePictureURL(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProfilePictureURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Account_profilePictureURL(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Account",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Account_friends(ctx context.Context, field graphql.CollectedField, obj *ent.Account) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Account_friends(ctx, field)
 	if err != nil {
@@ -2795,6 +2836,8 @@ func (ec *executionContext) fieldContext_AccountEdge_node(ctx context.Context, f
 				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
+			case "profilePictureURL":
+				return ec.fieldContext_Account_profilePictureURL(ctx, field)
 			case "friends":
 				return ec.fieldContext_Account_friends(ctx, field)
 			case "authRoles":
@@ -6162,6 +6205,112 @@ func (ec *executionContext) fieldContext_Connection_accountID(ctx context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _Connection_sourceID(ctx context.Context, field graphql.CollectedField, obj *ent.Connection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Connection_sourceID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SourceID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(pulid.PULID)
+	fc.Result = res
+	return ec.marshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Connection_sourceID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Connection",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type ID does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Connection_source(ctx context.Context, field graphql.CollectedField, obj *ent.Connection) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Connection_source(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Source(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Source)
+	fc.Result = res
+	return ec.marshalNSource2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSource(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Connection_source(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Connection",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Source_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Source_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Source_updatedAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_Source_deletedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_Source_name(ctx, field)
+			case "icon":
+				return ec.fieldContext_Source_icon(ctx, field)
+			case "connections":
+				return ec.fieldContext_Source_connections(ctx, field)
+			case "sourceType":
+				return ec.fieldContext_Source_sourceType(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Source", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Connection_account(ctx context.Context, field graphql.CollectedField, obj *ent.Connection) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Connection_account(ctx, field)
 	if err != nil {
@@ -6217,6 +6366,8 @@ func (ec *executionContext) fieldContext_Connection_account(ctx context.Context,
 				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
+			case "profilePictureURL":
+				return ec.fieldContext_Account_profilePictureURL(ctx, field)
 			case "friends":
 				return ec.fieldContext_Account_friends(ctx, field)
 			case "authRoles":
@@ -6494,6 +6645,10 @@ func (ec *executionContext) fieldContext_ConnectionEdge_node(ctx context.Context
 				return ec.fieldContext_Connection_refreshToken(ctx, field)
 			case "accountID":
 				return ec.fieldContext_Connection_accountID(ctx, field)
+			case "sourceID":
+				return ec.fieldContext_Connection_sourceID(ctx, field)
+			case "source":
+				return ec.fieldContext_Connection_source(ctx, field)
 			case "account":
 				return ec.fieldContext_Connection_account(ctx, field)
 			case "portfolios":
@@ -9239,6 +9394,8 @@ func (ec *executionContext) fieldContext_Portfolio_account(ctx context.Context, 
 				return ec.fieldContext_Account_emailConfirmed(ctx, field)
 			case "passwordUpdatedAt":
 				return ec.fieldContext_Account_passwordUpdatedAt(ctx, field)
+			case "profilePictureURL":
+				return ec.fieldContext_Account_profilePictureURL(ctx, field)
 			case "friends":
 				return ec.fieldContext_Account_friends(ctx, field)
 			case "authRoles":
@@ -11138,6 +11295,73 @@ func (ec *executionContext) fieldContext_Source_icon(ctx context.Context, field 
 	return fc, nil
 }
 
+func (ec *executionContext) _Source_connections(ctx context.Context, field graphql.CollectedField, obj *ent.Source) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Source_connections(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Connections(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.Connection)
+	fc.Result = res
+	return ec.marshalOConnection2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐConnectionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Source_connections(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Source",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Connection_id(ctx, field)
+			case "createdAt":
+				return ec.fieldContext_Connection_createdAt(ctx, field)
+			case "updatedAt":
+				return ec.fieldContext_Connection_updatedAt(ctx, field)
+			case "deletedAt":
+				return ec.fieldContext_Connection_deletedAt(ctx, field)
+			case "name":
+				return ec.fieldContext_Connection_name(ctx, field)
+			case "accessToken":
+				return ec.fieldContext_Connection_accessToken(ctx, field)
+			case "refreshToken":
+				return ec.fieldContext_Connection_refreshToken(ctx, field)
+			case "accountID":
+				return ec.fieldContext_Connection_accountID(ctx, field)
+			case "sourceID":
+				return ec.fieldContext_Connection_sourceID(ctx, field)
+			case "source":
+				return ec.fieldContext_Connection_source(ctx, field)
+			case "account":
+				return ec.fieldContext_Connection_account(ctx, field)
+			case "portfolios":
+				return ec.fieldContext_Connection_portfolios(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Connection", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Source_sourceType(ctx context.Context, field graphql.CollectedField, obj *ent.Source) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Source_sourceType(ctx, field)
 	if err != nil {
@@ -11391,6 +11615,8 @@ func (ec *executionContext) fieldContext_SourceEdge_node(ctx context.Context, fi
 				return ec.fieldContext_Source_name(ctx, field)
 			case "icon":
 				return ec.fieldContext_Source_icon(ctx, field)
+			case "connections":
+				return ec.fieldContext_Source_connections(ctx, field)
 			case "sourceType":
 				return ec.fieldContext_Source_sourceType(ctx, field)
 			}
@@ -17718,7 +17944,7 @@ func (ec *executionContext) unmarshalInputConnectionWhereInput(ctx context.Conte
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "accountID", "accountIDNEQ", "accountIDIn", "accountIDNotIn", "accountIDGT", "accountIDGTE", "accountIDLT", "accountIDLTE", "accountIDContains", "accountIDHasPrefix", "accountIDHasSuffix", "accountIDEqualFold", "accountIDContainsFold", "hasAccount", "hasAccountWith"}
+	fieldsInOrder := [...]string{"not", "and", "or", "id", "idNEQ", "idIn", "idNotIn", "idGT", "idGTE", "idLT", "idLTE", "createdAt", "createdAtNEQ", "createdAtIn", "createdAtNotIn", "createdAtGT", "createdAtGTE", "createdAtLT", "createdAtLTE", "updatedAt", "updatedAtNEQ", "updatedAtIn", "updatedAtNotIn", "updatedAtGT", "updatedAtGTE", "updatedAtLT", "updatedAtLTE", "deletedAt", "deletedAtNEQ", "deletedAtIn", "deletedAtNotIn", "deletedAtGT", "deletedAtGTE", "deletedAtLT", "deletedAtLTE", "deletedAtIsNil", "deletedAtNotNil", "name", "nameNEQ", "nameIn", "nameNotIn", "nameGT", "nameGTE", "nameLT", "nameLTE", "nameContains", "nameHasPrefix", "nameHasSuffix", "nameEqualFold", "nameContainsFold", "accountID", "accountIDNEQ", "accountIDIn", "accountIDNotIn", "accountIDGT", "accountIDGTE", "accountIDLT", "accountIDLTE", "accountIDContains", "accountIDHasPrefix", "accountIDHasSuffix", "accountIDEqualFold", "accountIDContainsFold", "sourceID", "sourceIDNEQ", "sourceIDIn", "sourceIDNotIn", "sourceIDGT", "sourceIDGTE", "sourceIDLT", "sourceIDLTE", "sourceIDContains", "sourceIDHasPrefix", "sourceIDHasSuffix", "sourceIDEqualFold", "sourceIDContainsFold", "hasSource", "hasSourceWith", "hasAccount", "hasAccountWith"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -18229,6 +18455,126 @@ func (ec *executionContext) unmarshalInputConnectionWhereInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
+		case "sourceID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceID"))
+			it.SourceID, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDNEQ"))
+			it.SourceIDNEQ, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDIn"))
+			it.SourceIDIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDNotIn"))
+			it.SourceIDNotIn, err = ec.unmarshalOID2ᚕgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDGT"))
+			it.SourceIDGT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDGTE"))
+			it.SourceIDGTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDLT"))
+			it.SourceIDLT, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDLTE"))
+			it.SourceIDLTE, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDContains"))
+			it.SourceIDContains, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDHasPrefix"))
+			it.SourceIDHasPrefix, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDHasSuffix"))
+			it.SourceIDHasSuffix, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDEqualFold"))
+			it.SourceIDEqualFold, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceIDContainsFold"))
+			it.SourceIDContainsFold, err = ec.unmarshalOID2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasSource":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSource"))
+			it.HasSource, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasSourceWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSourceWith"))
+			it.HasSourceWith, err = ec.unmarshalOSourceWhereInput2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSourceWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "hasAccount":
 			var err error
 
@@ -18478,7 +18824,7 @@ func (ec *executionContext) unmarshalInputCreateConnectionInput(ctx context.Cont
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "accessToken", "refreshToken", "portfolioIDs"}
+	fieldsInOrder := [...]string{"name", "accessToken", "refreshToken", "sourceID", "portfolioIDs"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -18506,6 +18852,14 @@ func (ec *executionContext) unmarshalInputCreateConnectionInput(ctx context.Cont
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("refreshToken"))
 			it.RefreshToken, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "sourceID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("sourceID"))
+			it.SourceID, err = ec.unmarshalNID2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋpulidᚐPULID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -25258,7 +25612,7 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "nickname", "email", "emailConfirmed", "clearPassword", "password", "addFriendIDs", "removeFriendIDs", "addAuthRoleIDs", "removeAuthRoleIDs", "clearAuthType", "authTypeID"}
+	fieldsInOrder := [...]string{"clearDeletedAt", "deletedAt", "nickname", "email", "emailConfirmed", "clearPassword", "password", "clearProfilePictureURL", "profilePictureURL", "addFriendIDs", "removeFriendIDs", "addAuthRoleIDs", "removeAuthRoleIDs", "clearAuthType", "authTypeID"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -25318,6 +25672,22 @@ func (ec *executionContext) unmarshalInputUpdateAccountInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			it.Password, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "clearProfilePictureURL":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearProfilePictureURL"))
+			it.ClearProfilePictureURL, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "profilePictureURL":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("profilePictureURL"))
+			it.ProfilePictureURL, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -26776,6 +27146,10 @@ func (ec *executionContext) _Account(ctx context.Context, sel ast.SelectionSet, 
 
 			out.Values[i] = ec._Account_passwordUpdatedAt(ctx, field, obj)
 
+		case "profilePictureURL":
+
+			out.Values[i] = ec._Account_profilePictureURL(ctx, field, obj)
+
 		case "friends":
 			field := field
 
@@ -27795,6 +28169,33 @@ func (ec *executionContext) _Connection(ctx context.Context, sel ast.SelectionSe
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "sourceID":
+
+			out.Values[i] = ec._Connection_sourceID(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "source":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Connection_source(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "account":
 			field := field
 
@@ -29172,6 +29573,23 @@ func (ec *executionContext) _Source(ctx context.Context, sel ast.SelectionSet, o
 
 			out.Values[i] = ec._Source_icon(ctx, field, obj)
 
+		case "connections":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Source_connections(ctx, field, obj)
+				return res
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return innerFunc(ctx)
+
+			})
 		case "sourceType":
 			field := field
 
@@ -30653,6 +31071,16 @@ func (ec *executionContext) unmarshalNPortfolioWhereInput2ᚖgithubᚗcomᚋchen
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNSource2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSource(ctx context.Context, sel ast.SelectionSet, v *ent.Source) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Source(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNSourceConnection2githubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐSourceConnection(ctx context.Context, sel ast.SelectionSet, v ent.SourceConnection) graphql.Marshaler {
 	return ec._SourceConnection(ctx, sel, &v)
 }
@@ -31681,6 +32109,53 @@ func (ec *executionContext) unmarshalOBlockchainWhereInput2ᚖgithubᚗcomᚋche
 	}
 	res, err := ec.unmarshalInputBlockchainWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOConnection2ᚕᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐConnectionᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.Connection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐConnection(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalOConnection2ᚖgithubᚗcomᚋchenninggᚋhermitboardᚑapiᚋentᚐConnection(ctx context.Context, sel ast.SelectionSet, v *ent.Connection) graphql.Marshaler {

@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/predicate"
 	"github.com/chenningg/hermitboard-api/ent/source"
 	"github.com/chenningg/hermitboard-api/ent/sourcetype"
@@ -19,16 +21,18 @@ import (
 // SourceQuery is the builder for querying Source entities.
 type SourceQuery struct {
 	config
-	limit          *int
-	offset         *int
-	unique         *bool
-	order          []OrderFunc
-	fields         []string
-	predicates     []predicate.Source
-	withSourceType *SourceTypeQuery
-	withFKs        bool
-	modifiers      []func(*sql.Selector)
-	loadTotal      []func(context.Context, []*Source) error
+	limit                *int
+	offset               *int
+	unique               *bool
+	order                []OrderFunc
+	fields               []string
+	predicates           []predicate.Source
+	withConnections      *ConnectionQuery
+	withSourceType       *SourceTypeQuery
+	withFKs              bool
+	modifiers            []func(*sql.Selector)
+	loadTotal            []func(context.Context, []*Source) error
+	withNamedConnections map[string]*ConnectionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -63,6 +67,28 @@ func (sq *SourceQuery) Unique(unique bool) *SourceQuery {
 func (sq *SourceQuery) Order(o ...OrderFunc) *SourceQuery {
 	sq.order = append(sq.order, o...)
 	return sq
+}
+
+// QueryConnections chains the current query on the "connections" edge.
+func (sq *SourceQuery) QueryConnections() *ConnectionQuery {
+	query := &ConnectionQuery{config: sq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(source.Table, source.FieldID, selector),
+			sqlgraph.To(connection.Table, connection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, source.ConnectionsTable, source.ConnectionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // QuerySourceType chains the current query on the "source_type" edge.
@@ -263,17 +289,29 @@ func (sq *SourceQuery) Clone() *SourceQuery {
 		return nil
 	}
 	return &SourceQuery{
-		config:         sq.config,
-		limit:          sq.limit,
-		offset:         sq.offset,
-		order:          append([]OrderFunc{}, sq.order...),
-		predicates:     append([]predicate.Source{}, sq.predicates...),
-		withSourceType: sq.withSourceType.Clone(),
+		config:          sq.config,
+		limit:           sq.limit,
+		offset:          sq.offset,
+		order:           append([]OrderFunc{}, sq.order...),
+		predicates:      append([]predicate.Source{}, sq.predicates...),
+		withConnections: sq.withConnections.Clone(),
+		withSourceType:  sq.withSourceType.Clone(),
 		// clone intermediate query.
 		sql:    sq.sql.Clone(),
 		path:   sq.path,
 		unique: sq.unique,
 	}
+}
+
+// WithConnections tells the query-builder to eager-load the nodes that are connected to
+// the "connections" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SourceQuery) WithConnections(opts ...func(*ConnectionQuery)) *SourceQuery {
+	query := &ConnectionQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withConnections = query
+	return sq
 }
 
 // WithSourceType tells the query-builder to eager-load the nodes that are connected to
@@ -356,7 +394,8 @@ func (sq *SourceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sourc
 		nodes       = []*Source{}
 		withFKs     = sq.withFKs
 		_spec       = sq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
+			sq.withConnections != nil,
 			sq.withSourceType != nil,
 		}
 	)
@@ -387,9 +426,23 @@ func (sq *SourceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sourc
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := sq.withConnections; query != nil {
+		if err := sq.loadConnections(ctx, query, nodes,
+			func(n *Source) { n.Edges.Connections = []*Connection{} },
+			func(n *Source, e *Connection) { n.Edges.Connections = append(n.Edges.Connections, e) }); err != nil {
+			return nil, err
+		}
+	}
 	if query := sq.withSourceType; query != nil {
 		if err := sq.loadSourceType(ctx, query, nodes, nil,
 			func(n *Source, e *SourceType) { n.Edges.SourceType = e }); err != nil {
+			return nil, err
+		}
+	}
+	for name, query := range sq.withNamedConnections {
+		if err := sq.loadConnections(ctx, query, nodes,
+			func(n *Source) { n.appendNamedConnections(name) },
+			func(n *Source, e *Connection) { n.appendNamedConnections(name, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -401,6 +454,33 @@ func (sq *SourceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sourc
 	return nodes, nil
 }
 
+func (sq *SourceQuery) loadConnections(ctx context.Context, query *ConnectionQuery, nodes []*Source, init func(*Source), assign func(*Source, *Connection)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[pulid.PULID]*Source)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.Where(predicate.Connection(func(s *sql.Selector) {
+		s.Where(sql.InValues(source.ConnectionsColumn, fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.SourceID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "source_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 func (sq *SourceQuery) loadSourceType(ctx context.Context, query *SourceTypeQuery, nodes []*Source, init func(*Source), assign func(*Source, *SourceType)) error {
 	ids := make([]pulid.PULID, 0, len(nodes))
 	nodeids := make(map[pulid.PULID][]*Source)
@@ -532,6 +612,20 @@ func (sq *SourceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		selector.Limit(*limit)
 	}
 	return selector
+}
+
+// WithNamedConnections tells the query-builder to eager-load the nodes that are connected to the "connections"
+// edge with the given name. The optional arguments are used to configure the query builder of the edge.
+func (sq *SourceQuery) WithNamedConnections(name string, opts ...func(*ConnectionQuery)) *SourceQuery {
+	query := &ConnectionQuery{config: sq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	if sq.withNamedConnections == nil {
+		sq.withNamedConnections = make(map[string]*ConnectionQuery)
+	}
+	sq.withNamedConnections[name] = query
+	return sq
 }
 
 // SourceGroupBy is the group-by builder for Source entities.

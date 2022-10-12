@@ -1,4 +1,4 @@
-package middleware
+package auth
 
 import (
 	"context"
@@ -6,16 +6,15 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/chenningg/hermitboard-api/auth"
 	"github.com/chenningg/hermitboard-api/resperror"
 )
 
-// Auth checks for a session ID in the Authorization header and hydrates the context with the session ID of the requester.
-func Auth(authService auth.AuthServicer) func(next http.Handler) http.Handler {
+// Middleware checks for a session ID in the Authorization header and hydrates the context with the session ID of the requester.
+func Middleware(authService AuthServicer) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			// Check for session ID in Authorization header.
-			authorizationStr := r.Header.Get(auth.AuthorizationHeader)
+			authorizationStr := r.Header.Get(AuthorizationHeader)
 
 			ctx := r.Context()
 
@@ -34,18 +33,18 @@ func Auth(authService auth.AuthServicer) func(next http.Handler) http.Handler {
 				sessionTokenStr := authorizationStrArr[1]
 
 				// Check if session token is a valid format.
-				sessionToken, err := auth.ParseSessionToken(sessionTokenStr)
+				sessionToken, err := ParseSessionToken(sessionTokenStr)
 				if err != nil {
 					http.Error(w, "invalid authorization token format", http.StatusUnauthorized)
 					return
 				}
 
 				// Retrieve session from Redis and reset its expiry if found.
-				session, err := authService.GetSessionFromStore(ctx, sessionToken)
+				session, err := authService.GetSessionFromStore(r.Context(), sessionToken)
 				if err != nil {
 					// Session key not found, probably expired. Redirect to log in.
 					var graphQLError *resperror.GraphQLError
-					if errors.As(err, graphQLError) {
+					if errors.As(err, &graphQLError) {
 						if graphQLError.Code == resperror.GQLInternalServerError {
 							http.Error(w, graphQLError.Msg, http.StatusInternalServerError)
 						} else {
@@ -58,7 +57,7 @@ func Auth(authService auth.AuthServicer) func(next http.Handler) http.Handler {
 				}
 
 				// Store the Session struct into context.
-				ctx = context.WithValue(ctx, auth.SessionContextKey, session)
+				ctx = context.WithValue(r.Context(), SessionContextKey, session)
 			}
 
 			next.ServeHTTP(w, r.WithContext(ctx))

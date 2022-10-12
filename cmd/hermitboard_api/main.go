@@ -23,6 +23,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/go-chi/cors"
 )
 
 func main() {
@@ -84,13 +85,25 @@ func main() {
 	router := chi.NewRouter()
 
 	// Add middlewares.
+	router.Use(
+		cors.Handler(
+			cors.Options{
+				// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+				AllowedOrigins: []string{"https://*", "http://*"},
+				// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+				AllowedMethods:   []string{"GET", "POST"},
+				AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+				ExposedHeaders:   []string{"Link"},
+				AllowCredentials: false,
+			},
+		),
+	)
 	router.Use(chiMiddleware.RequestID)
 	router.Use(chiMiddleware.RealIP)
 	router.Use(middleware.Logger(logger.WithName("router")))
-	router.Use(chiMiddleware.Logger)
 	router.Use(chiMiddleware.Recoverer)
+	router.Use(auth.Middleware(authService))
 	router.Use(middleware.Heartbeat("/health"))
-	router.Use(middleware.Auth(authService))
 
 	// Initialize the web server.
 	srv := handler.NewDefaultServer(resolver.NewSchema(dbService, authService, portfolioService, connectionService))
