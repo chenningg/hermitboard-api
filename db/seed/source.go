@@ -48,6 +48,14 @@ func seedSources(ctx context.Context, client *ent.Client) error {
 		return fmt.Errorf("seedSources(): could not seed DBS bank source: %v", err)
 	}
 
+	_, err = client.Source.Create().
+		SetName("Standard Chartered Bank").
+		SetIcon("https://assets.stickpng.com/images/5a1d2dc54ac6b00ff574e292.png").
+		SetSourceType(bankSourceType).Save(ctx)
+	if err != nil {
+		return fmt.Errorf("seedSources(): could not seed SCB bank source: %v", err)
+	}
+
 	// Create a dex source.
 	_, err = client.Source.Create().
 		SetName("Uniswap").
@@ -64,6 +72,14 @@ func seedSources(ctx context.Context, client *ent.Client) error {
 		SetSourceType(cexSourceType).Save(ctx)
 	if err != nil {
 		return fmt.Errorf("seedSources(): could not seed Binance CEX source: %v", err)
+	}
+
+	_, err = client.Source.Create().
+		SetName("Interactive Brokers").
+		SetIcon("https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Interactive_Brokers_Logo_%282014%29.svg/2560px-Interactive_Brokers_Logo_%282014%29.svg.png").
+		SetSourceType(cexSourceType).Save(ctx)
+	if err != nil {
+		return fmt.Errorf("seedSources(): could not seed IB CEX source: %v", err)
 	}
 
 	return nil
