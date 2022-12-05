@@ -10,6 +10,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/pulid"
+	"github.com/chenningg/hermitboard-api/resperror"
 	"github.com/go-logr/logr"
 )
 
@@ -40,8 +41,8 @@ func (connectionService ConnectionService) CreateConnection(
 	// Check for empty fields.
 	if input.Name == "" || input.AccessToken == "" {
 		return nil, fmt.Errorf(
-			"%w: connection.CreateConnection(): input fields are invalid or missing",
-			ErrBadInput,
+			"connection.CreateConnection(): input fields are invalid or missing: %w",
+			resperror.NewGraphQLError("missing fields to create a connection", resperror.GQLBadUserInput),
 		)
 	}
 
@@ -51,8 +52,8 @@ func (connectionService ConnectionService) CreateConnection(
 	// Must be logged in and have non-staff auth role to create a connection.
 	if !auth.IsLoggedIn(session) || !auth.HasAuthRoles(session, auth.NonStaffAuthRoles...) {
 		return nil, fmt.Errorf(
-			"%w: connection.CreateConnection(): must be logged in as a non-staff user to create a connection",
-			ErrUnauthorized,
+			"connection.CreateConnection(): must be logged in as a non-staff user to create a connection: %w",
+			resperror.NewGraphQLError("unauthorized to create a connection", resperror.GQLForbidden),
 		)
 	}
 
@@ -62,13 +63,17 @@ func (connectionService ConnectionService) CreateConnection(
 		if err != nil {
 			if errors.Is(err, &ent.NotFoundError{}) {
 				return nil, fmt.Errorf(
-					"%w: connection.CreateConnection(): could not add connection as no portfolios were found on this account",
-					ErrNotFound,
+					"connection.CreateConnection(): could not add connection as no portfolios were found on this account: %w",
+					resperror.NewGraphQLError("missing portfolio to add connection to", resperror.GQLBadUserInput),
 				)
+
 			}
 			return nil, fmt.Errorf(
-				"%w: connection.CreateConnection(): could not query account's portfolios",
-				ErrInternal,
+				"connection.CreateConnection(): could not query account's portfolios: %w",
+				resperror.NewGraphQLError(
+					fmt.Sprintf("unable to retrieve portfolios %d", len(input.PortfolioIDs)),
+					resperror.GQLInternalServerError,
+				),
 			)
 		}
 
@@ -80,21 +85,25 @@ func (connectionService ConnectionService) CreateConnection(
 		for _, portfolioID := range input.PortfolioIDs {
 			if _, ok := portfoliosMap[portfolioID]; !ok {
 				return nil, fmt.Errorf(
-					"%w: connection.CreateConnection(): invalid portfolio IDs provided",
-					ErrBadInput,
+					"connection.CreateConnection(): invalid portfolio IDs provided: %w",
+					resperror.NewGraphQLError("invalid portfolio(s) to add connection to", resperror.GQLBadUserInput),
 				)
 			}
 		}
 	}
 
 	// Create the new connection
+	if input.RefreshToken != nil && *input.RefreshToken == "" {
+		input.RefreshToken = nil
+	}
+
 	newConnection, err := dbClient.Connection.Create().
 		SetInput(input).
 		SetAccountID(session.UserID).Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"%w: connection.CreateConnection(): could not create connection",
-			ErrInternal,
+			"connection.CreateConnection(): could not create connection: %w",
+			resperror.NewGraphQLError("could not create connection", resperror.GQLInternalServerError),
 		)
 	}
 
@@ -110,8 +119,8 @@ func (connectionService ConnectionService) UpdateConnection(
 	// Must be logged in and have non-staff auth role to update a connection.
 	if !auth.IsLoggedIn(session) || !auth.HasAuthRoles(session, auth.NonStaffAuthRoles...) {
 		return nil, fmt.Errorf(
-			"%w: connection.UpdateConnection(): must be logged in as a non-staff user to update a connection",
-			ErrUnauthorized,
+			"connection.UpdateConnection(): must be logged in as a non-staff user to update a connection: %w",
+			resperror.NewGraphQLError("unauthorized", resperror.GQLForbidden),
 		)
 	}
 
@@ -125,13 +134,13 @@ func (connectionService ConnectionService) UpdateConnection(
 	if err != nil {
 		if errors.Is(err, &ent.NotFoundError{}) {
 			return nil, fmt.Errorf(
-				"%w: connection.UpdateConnection(): could not update connection as no matching connection was found on this account",
-				ErrNotFound,
+				"connection.UpdateConnection(): could not update connection as no matching connection was found on this account: %w",
+				resperror.NewGraphQLError("no connection found", resperror.GQLBadUserInput),
 			)
 		}
 		return nil, fmt.Errorf(
-			"%w: connection.UpdateConnection(): could not query account's connections",
-			ErrInternal,
+			"connection.UpdateConnection(): could not query account's connections: %w",
+			resperror.NewGraphQLError("could not retrieve connections", resperror.GQLInternalServerError),
 		)
 	}
 
@@ -141,13 +150,13 @@ func (connectionService ConnectionService) UpdateConnection(
 		if err != nil {
 			if errors.Is(err, &ent.NotFoundError{}) {
 				return nil, fmt.Errorf(
-					"%w: connection.UpdateConnection(): could not update connection as no portfolios were found on this account",
-					ErrNotFound,
+					"connection.UpdateConnection(): could not update connection as no portfolios were found on this account: %w",
+					resperror.NewGraphQLError("no portfolios found", resperror.GQLBadUserInput),
 				)
 			}
 			return nil, fmt.Errorf(
-				"%w: connection.UpdateConnection(): could not query account's portfolios",
-				ErrInternal,
+				"connection.UpdateConnection(): could not query account's portfolios: %w",
+				resperror.NewGraphQLError("could not retrieve portfolios", resperror.GQLInternalServerError),
 			)
 		}
 
@@ -159,8 +168,8 @@ func (connectionService ConnectionService) UpdateConnection(
 		for _, portfolioID := range input.AddPortfolioIDs {
 			if _, ok := portfoliosMap[portfolioID]; !ok {
 				return nil, fmt.Errorf(
-					"%w: connection.UpdateConnection(): invalid portfolio IDs to add provided",
-					ErrBadInput,
+					"connection.UpdateConnection(): invalid portfolio IDs to add provided: %w",
+					resperror.NewGraphQLError("invalid portfolio(s) to add connection to", resperror.GQLBadUserInput),
 				)
 			}
 		}
@@ -168,8 +177,10 @@ func (connectionService ConnectionService) UpdateConnection(
 		for _, portfolioID := range input.RemovePortfolioIDs {
 			if _, ok := portfoliosMap[portfolioID]; !ok {
 				return nil, fmt.Errorf(
-					"%w: connection.UpdateConnection(): invalid portfolio IDs to remove provided",
-					ErrBadInput,
+					"connection.UpdateConnection(): invalid portfolio IDs to remove provided: %w",
+					resperror.NewGraphQLError(
+						"invalid portfolio(s) to remove connection from", resperror.GQLBadUserInput,
+					),
 				)
 			}
 		}
@@ -181,8 +192,8 @@ func (connectionService ConnectionService) UpdateConnection(
 		SetAccountID(session.UserID).Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"%w: connection.CreateConnection(): could not create connection",
-			ErrInternal,
+			"connection.CreateConnection(): could not update connection: %w",
+			resperror.NewGraphQLError("could not update connection", resperror.GQLInternalServerError),
 		)
 	}
 

@@ -39,6 +39,15 @@ func seedSources(ctx context.Context, client *ent.Client) error {
 		return fmt.Errorf("seedSources(): could not seed EVM wallet source: %v", err)
 	}
 
+	// Create an EVM test wallet Goerli source.
+	_, err = client.Source.Create().
+		SetName("Goerli Wallet").
+		SetIcon("https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Ethereum-icon-purple.svg/240px-Ethereum-icon-purple.svg.png").
+		SetSourceType(cryptoWalletSourceType).Save(ctx)
+	if err != nil {
+		return fmt.Errorf("seedSources(): could not seed Goerli wallet source: %v", err)
+	}
+
 	// Create a bank wallet source.
 	_, err = client.Source.Create().
 		SetName("DBS Bank").

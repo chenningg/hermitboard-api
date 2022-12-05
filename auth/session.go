@@ -72,7 +72,7 @@ func HasAuthRoles(session *Session, authRoles ...authrole.Value) bool {
 	}
 
 	// Make session auth roles into a map for easier searching.
-	var m map[authrole.Value]bool
+	m := make(map[authrole.Value]bool)
 	for _, sessionAuthRole := range session.AuthRoles {
 		m[sessionAuthRole] = true
 	}

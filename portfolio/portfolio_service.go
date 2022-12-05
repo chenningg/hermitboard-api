@@ -11,6 +11,7 @@ import (
 	"github.com/chenningg/hermitboard-api/ent/connection"
 	"github.com/chenningg/hermitboard-api/ent/portfolio"
 	"github.com/chenningg/hermitboard-api/pulid"
+	"github.com/chenningg/hermitboard-api/resperror"
 	"github.com/go-logr/logr"
 )
 
@@ -44,20 +45,24 @@ func (portfolioService PortfolioService) CreatePortfolio(
 	// Check if logged in.
 	if !auth.IsLoggedIn(session) {
 		return nil, fmt.Errorf(
-			"%w: portfolio.CreatePortfolio(): not logged in, cannot create portfolio", ErrUnauthorized,
+			"portfolio.CreatePortfolio(): not logged in, cannot create portfolio: %w",
+			resperror.NewGraphQLError("not logged in", resperror.GQLUnauthenticated),
 		)
 	}
 
 	// Check for empty fields.
 	if input.Name == "" {
-		return nil, fmt.Errorf("%w: portfolio.CreatePortfolio(): portfolio name cannot be empty", ErrBadInput)
+		return nil, fmt.Errorf(
+			"portfolio.CreatePortfolio(): portfolio name cannot be empty: %w",
+			resperror.NewGraphQLError("missing portfolio name", resperror.GQLBadUserInput),
+		)
 	}
 
 	// Only user accounts and non-demo accounts can create portfolios.
-	if !auth.HasAuthRoles(session, authrole.ValueDemo) || !auth.HasAuthRoles(session, auth.NonStaffAuthRoles...) {
+	if auth.HasAuthRoles(session, authrole.ValueDemo) || !auth.HasAuthRoles(session, auth.NonStaffAuthRoles...) {
 		return nil, fmt.Errorf(
-			"%w: portfolio.CreatePortfolio(): only non-staff and non-demo accounts can create portfolios",
-			ErrUnauthorized,
+			"portfolio.CreatePortfolio(): only non-staff and non-demo accounts can create portfolios: %w",
+			resperror.NewGraphQLError("not authorized", resperror.GQLForbidden),
 		)
 	}
 
@@ -66,7 +71,8 @@ func (portfolioService PortfolioService) CreatePortfolio(
 		connections, err := dbClient.Connection.Query().Where(connection.AccountIDEQ(session.UserID)).All(ctx)
 		if err != nil {
 			return nil, fmt.Errorf(
-				"%w: portfolio.CreatePortfolio(): could not retrieve account connections", ErrInternal,
+				"portfolio.CreatePortfolio(): could not retrieve account connections: %w",
+				resperror.NewGraphQLError("unable to retrieve connections", resperror.GQLInternalServerError),
 			)
 		}
 
@@ -80,8 +86,8 @@ func (portfolioService PortfolioService) CreatePortfolio(
 			// If we can't find the connection in the account, we cannot create this portfolio.
 			if _, ok := connectionsMap[connectionToAddToPortfolio]; !ok {
 				return nil, fmt.Errorf(
-					"%w: portfolio.CreatePortfolio(): a connection supplied does not exist on this account",
-					ErrBadInput,
+					"portfolio.CreatePortfolio(): a connection supplied does not exist on this account: %w",
+					resperror.NewGraphQLError("connection to add could not be found", resperror.GQLBadUserInput),
 				)
 			}
 		}
@@ -95,7 +101,8 @@ func (portfolioService PortfolioService) CreatePortfolio(
 	if err != nil {
 		// TODO: May also have constraint error such as if portfolio name conflicts with an existing portfolio.
 		return nil, fmt.Errorf(
-			"%w: portfolio.CreatePortfolio(): could not create a new portfolio", ErrInternal,
+			"portfolio.CreatePortfolio(): could not create a new portfolio: %w",
+			resperror.NewGraphQLError("failed to create portfolio", resperror.GQLInternalServerError),
 		)
 	}
 
@@ -111,15 +118,16 @@ func (portfolioService PortfolioService) UpdatePortfolio(
 	// Check if logged in.
 	if !auth.IsLoggedIn(session) {
 		return nil, fmt.Errorf(
-			"%w: portfolio.UpdatePortfolio(): not logged in, cannot update portfolio", ErrUnauthorized,
+			"portfolio.UpdatePortfolio(): not logged in, cannot update portfolio: %w",
+			resperror.NewGraphQLError("not logged in", resperror.GQLUnauthenticated),
 		)
 	}
 
 	// Only user accounts and non-demo accounts can update portfolios.
 	if !auth.HasAuthRoles(session, authrole.ValueDemo) || !auth.HasAuthRoles(session, auth.NonStaffAuthRoles...) {
 		return nil, fmt.Errorf(
-			"%w: portfolio.UpdatePortfolio(): only non-staff and non-demo accounts can update portfolios",
-			ErrUnauthorized,
+			"portfolio.UpdatePortfolio(): only non-staff and non-demo accounts can update portfolios: %w",
+			resperror.NewGraphQLError("not authorized", resperror.GQLForbidden),
 		)
 	}
 
@@ -132,13 +140,13 @@ func (portfolioService PortfolioService) UpdatePortfolio(
 	if err != nil {
 		if errors.Is(err, &ent.NotFoundError{}) {
 			return nil, fmt.Errorf(
-				"%w: portfolio.UpdatePortfolio(): could not find a portfolio with a matching ID under this account",
-				ErrNotFound,
+				"portfolio.UpdatePortfolio(): could not find a portfolio with a matching ID under this account: %w",
+				resperror.NewGraphQLError("portfolio not found", resperror.GQLBadUserInput),
 			)
 		}
 		return nil, fmt.Errorf(
-			"%w: portfolio.UpdatePortfolio(): could not query account's portfolios",
-			ErrInternal,
+			"portfolio.UpdatePortfolio(): could not query account's portfolios: %w",
+			resperror.NewGraphQLError("could not retrieve portfolios", resperror.GQLInternalServerError),
 		)
 	}
 
@@ -148,13 +156,13 @@ func (portfolioService PortfolioService) UpdatePortfolio(
 		if err != nil {
 			if errors.Is(err, &ent.NotFoundError{}) {
 				return nil, fmt.Errorf(
-					"%w: portfolio.UpdatePortfolio(): no connections found on this account",
-					ErrNotFound,
+					"portfolio.UpdatePortfolio(): no connections found on this account: %w",
+					resperror.NewGraphQLError("no connections found", resperror.GQLBadUserInput),
 				)
 			}
 			return nil, fmt.Errorf(
-				"%w: portfolio.UpdatePortfolio(): could not query account's connections",
-				ErrInternal,
+				"portfolio.UpdatePortfolio(): could not query account's connections: %w",
+				resperror.NewGraphQLError("could not retrieve connections", resperror.GQLInternalServerError),
 			)
 		}
 
@@ -166,8 +174,8 @@ func (portfolioService PortfolioService) UpdatePortfolio(
 		for _, connectionToAdd := range input.AddConnectionIDs {
 			if _, ok := connectionsMap[connectionToAdd]; !ok {
 				return nil, fmt.Errorf(
-					"%w: portfolio.UpdatePortfolio(): cannot add a connection that doesn't exist on this account",
-					ErrBadInput,
+					"portfolio.UpdatePortfolio(): cannot add a connection that doesn't exist on this account: %w",
+					resperror.NewGraphQLError("connection does not exist to add", resperror.GQLBadUserInput),
 				)
 			}
 		}
@@ -175,8 +183,8 @@ func (portfolioService PortfolioService) UpdatePortfolio(
 		for _, connectionToRemove := range input.RemoveConnectionIDs {
 			if _, ok := connectionsMap[connectionToRemove]; !ok {
 				return nil, fmt.Errorf(
-					"%w: portfolio.UpdatePortfolio(): cannot remove a connection that doesn't exist on this account",
-					ErrBadInput,
+					"portfolio.UpdatePortfolio(): cannot remove a connection that doesn't exist on this account: %w",
+					resperror.NewGraphQLError("connection does not exist to remove", resperror.GQLBadUserInput),
 				)
 			}
 		}
@@ -186,8 +194,8 @@ func (portfolioService PortfolioService) UpdatePortfolio(
 	updatedPortfolio, err := dbClient.Portfolio.UpdateOneID(id).SetInput(input).Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf(
-			"%w: portfolio.UpdatePortfolio(): could not update portfolio",
-			ErrInternal,
+			"portfolio.UpdatePortfolio(): could not update portfolio: %w",
+			resperror.NewGraphQLError("could not update portfolio", resperror.GQLInternalServerError),
 		)
 	}
 
