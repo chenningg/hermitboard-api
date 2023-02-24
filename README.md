@@ -1,3 +1,3 @@
 # Hermitboard API
 
-Backend GraphQL API for Hermitboard.
+![Hermitboard Banner](https://i.imgur.com/eZJrLH1.png)
