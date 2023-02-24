@@ -18,6 +18,6 @@ Hermitboard is a financial superapp that allows you to track your portfolio hold
 ![Friends and chat](https://i.imgur.com/YjyHoFt.png)
 
 ## How it works
-Hermitboard connects to various banks and exchanges via OAuth. We do this so that you log in directly to your bank and we do not hold your login details. It retrieves price data of various equities and cryptocurrencies from a few sources. For the FYP, we focused on using ![The Graph](https://thegraph.com/) for decentralized indexing of cryptocurrency data.
+Hermitboard connects to various banks and exchanges via OAuth. We do this so that you log in directly to your bank and we do not hold your login details. It retrieves price data of various equities and cryptocurrencies from a few sources. For the FYP, we focused on using [The Graph](https://thegraph.com/) for decentralized indexing of cryptocurrency data.
 
-The application runs on a ![Go](https://go.dev/) backend, with a frontend coded in ![React Native](https://reactnative.dev/). Authentication sessions are maintained via session tokens on ![Redis](https://redis.io/). Communication between backend and frontend is established through a ![GraphQL](https://graphql.org/) API.
+The application runs on a [Go](https://go.dev/) backend, with a frontend coded in [React Native](https://reactnative.dev/). Authentication sessions are maintained via session tokens on [Redis](https://redis.io/). Communication between backend and frontend is established through a [GraphQL](https://graphql.org/) API.
