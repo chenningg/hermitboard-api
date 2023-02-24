@@ -2,6 +2,8 @@
 
 Hermitboard is a financial superapp that allows you to track your portfolio holdings across various asset classes and locations, including but not limited to bank accounts, equities and cryptocurrencies. It also allows you to set budgets and keep track of your spending, all in one place. Built as a final year project at the Nanyang Technological University of Singapore.
 
+This repository contains the backend of Hermitboard.
+
 ## Features
 - Add connections to data sources (banks, exchanges, cryptocurrency wallets)
 - View balances and transactions
